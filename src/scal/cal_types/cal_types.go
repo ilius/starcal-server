@@ -23,6 +23,7 @@ package cal_types
 import "errors"
 
 import "scal"
+// don't import "scal/utils"
 
 type CalType struct {
     Name string
@@ -75,24 +76,36 @@ func RegisterCalType(
         
 }
 
+func invalidCalType(calTypeName string) error {
+    return errors.New("invalid calendar type '" + calTypeName + "'")
+}
+
 func Convert(date scal.Date, fromTypeName string, toTypeName string) (scal.Date, error) {
     fromType, fromOk := CalTypesMap[fromTypeName]
     toType, toOk := CalTypesMap[toTypeName]
     if !fromOk {
-        return scal.Date{},
-            errors.New("invalid calendar type '" + fromTypeName + "'")
+        return scal.Date{}, invalidCalType(fromTypeName)
     }
     if !toOk {
-        return scal.Date{},
-            errors.New("invalid calendar type '" + toTypeName + "'")
+        return scal.Date{}, invalidCalType(toTypeName)
     }
     return toType.JdTo(fromType.ToJd(date)), nil
 }
 
-
-
-
-
+func ToJd(date scal.Date, calTypeName string) (int, error) {
+    calType, calTypeOk := CalTypesMap[calTypeName]
+    if !calTypeOk {
+        return 0, invalidCalType(calTypeName)
+    }
+    return calType.ToJd(date), nil
+}
+func JdTo(jd int, calTypeName string) (scal.Date, error) {
+    calType, calTypeOk := CalTypesMap[calTypeName]
+    if !calTypeOk {
+        return scal.Date{}, invalidCalType(calTypeName)
+    }
+    return calType.JdTo(jd), nil
+}
 
 
 
