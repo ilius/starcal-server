@@ -1,4 +1,4 @@
-package loader
+package cal_types_init
 
 import _ "scal/cal_types/gregorian"
 import _ "scal/cal_types/jalali"
