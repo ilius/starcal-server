@@ -106,7 +106,7 @@ func (self JdSetOccurrence) GetDaysJdList() []int {
     return IntListBySet(self.JdSet)
 }
 func (self JdSetOccurrence) GetEpochIntervalList() IntervalList {
-    loc := self.GetEvent().GetLoc()
+    loc := self.GetEvent().Location()
     //self.JdSet.RLock()
     list := make(IntervalList, 0, self.Len())
     for jdI := range self.JdSet.Iter() {
@@ -134,7 +134,7 @@ func (self IntervalListOccurrence) Len() int {
     return len(self.List)
 }
 func (self IntervalListOccurrence) GetStartJd() int {
-    loc := self.GetEvent().GetLoc()
+    loc := self.GetEvent().Location()
     startEpoch := self.List[0].Start
     for _, interval := range self.List {
         if interval.Start < startEpoch {
@@ -144,7 +144,7 @@ func (self IntervalListOccurrence) GetStartJd() int {
     return GetJdByEpoch(startEpoch, loc)
 }
 func (self IntervalListOccurrence) GetEndJd() int {
-    loc := self.GetEvent().GetLoc()
+    loc := self.GetEvent().Location()
     endEpoch := self.List[0].End
     for _, interval := range self.List {
         if interval.End > endEpoch {
@@ -158,7 +158,7 @@ func (self IntervalListOccurrence) Intersection(other Occurrence) (Occurrence, e
     return IntervalListOccurrence{self.GetEvent(), list}, err
 }
 func (self IntervalListOccurrence) GetDaysJdList() []int {
-    loc := self.GetEvent().GetLoc()
+    loc := self.GetEvent().Location()
     /*
     inCount = len(self.List)
     jdCountMax := 3 + int(
