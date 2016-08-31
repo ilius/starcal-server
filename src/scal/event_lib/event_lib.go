@@ -22,12 +22,9 @@
 import "os"
 
 import . "scal/lib/mapset"
+import . "scal/utils"
 import . "scal/interval"
 
-var DayLen = 24*3600
-
-var IcsMinStartYear = 1970
-var IcsMaxEndYear = 2050
 
 
 /*
@@ -38,11 +35,6 @@ func getEventUID(event Event) string {
     return event_st + '_' + time_st + '@' + host
 }
 */
-
-type Event interface {
-    // FIXME
-    time.Location GetLoc()
-}
 
 
 type Occurrence interface {
