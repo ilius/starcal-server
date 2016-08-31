@@ -19,12 +19,11 @@
 
 // "timeRange" -> "intervalList" FIXME
 
-import "os"
+package event_lib
 
 import . "scal/lib/mapset"
 import . "scal/utils"
 import . "scal/interval"
-
 
 
 /*
@@ -51,6 +50,8 @@ type Occurrence interface {
     //GetJdFloatIntervalList() []FloatInterval // FIXME
 }
 
+
+
 type JdSetOccurrence struct {
     Event Event
     JdSet Set
@@ -62,8 +63,9 @@ func (self JdSetOccurrence) Len() int {
 }
 func (self JdSetOccurrence) GetStartJd() int {
     jds := self.JdSet.ToSlice()
-    start := jds[0]
-    for _, jd := range jds {
+    start := jds[0].(int)
+    for _, jdI := range jds {
+        jd := jdI.(int)
         if jd < start {
             start = jd
         }
@@ -72,8 +74,9 @@ func (self JdSetOccurrence) GetStartJd() int {
 }
 func (self JdSetOccurrence) GetEndJd() int {
     jds := self.JdSet.ToSlice()
-    end := jds[0]
-    for _, jd := range jds {
+    end := jds[0].(int)
+    for _, jdI := range jds {
+        jd := jdI.(int)
         if jd > end {
             end = jd
         }
@@ -99,25 +102,26 @@ func (self JdSetOccurrence) Intersection(other Occurrence) (Occurrence, error) {
         return IntervalListOccurrence{self.GetEvent(), list}, err
     }
 }
-func (self JdSetOccurrence) GetDaysJdList int[] {
-    return self.JdSet.ToSlice()
+func (self JdSetOccurrence) GetDaysJdList() []int {
+    return IntListBySet(self.JdSet)
 }
-func (self JdSetOccurrence) GetEpochIntervalList IntervalList {
+func (self JdSetOccurrence) GetEpochIntervalList() IntervalList {
     loc := self.GetEvent().GetLoc()
-    self.JdSet.RLock()
+    //self.JdSet.RLock()
     list := make(IntervalList, 0, self.Len())
-    for jd := range self.JdSet.s {
-        list = append(list, IntervalByJd(jd, loc))
+    for jdI := range self.JdSet.Iter() {
+        list = append(list, IntervalByJd(jdI.(int), loc))
     }
-    self.JdSet.RUnlock()
+    //self.JdSet.RUnlock()
     return list
 }
 
 
 
-JdSetOccurrence_CalcJdIntervalList(occur Occurrence) IntervalList {
+func JdSetOccurrence_CalcJdIntervalList(occur Occurrence) IntervalList {
     // occur is JdSetOccurrence
     // FIXME
+    return IntervalList{}
 }
 
 type IntervalListOccurrence struct {
@@ -169,7 +173,7 @@ func (self IntervalListOccurrence) GetDaysJdList() []int {
     var tmpStartJd, tmpEndJd int
     for _, interval := range self.List {
         tmpStartJd = GetJdByEpoch(interval.Start, loc)
-        if interval.EndClosed {
+        if interval.ClosedEnd {
             tmpEndJd = GetJdByEpoch(interval.End, loc)
         } else {
             tmpEndJd = GetJdByEpoch(interval.End - 1, loc)
@@ -178,7 +182,7 @@ func (self IntervalListOccurrence) GetDaysJdList() []int {
             jdSet.Add(tmpJd)
         }
     }
-    return jdSet.ToSlice()
+    return IntListBySet(jdSet)
 }
 func (self IntervalListOccurrence) GetEpochIntervalList() IntervalList {
     return self.List

@@ -7,6 +7,7 @@ import "math"
 import "errors"
 
 import "scal"
+import . "scal/lib/mapset"
 import "scal/cal_types"
 import "scal/cal_types/gregorian"
 
@@ -20,6 +21,14 @@ func IntMin(a, b int) int {
         return a
     }
     return b
+}
+
+func IntListBySet(set Set) []int {
+    ret := make([]int, set.Cardinality())
+    for index, inf := range set.ToSlice() {
+        ret[index] = inf.(int)
+    }
+    return ret
 }
 
 func bisectLeftRange(a []int, v int, lo, hi int) int {  
