@@ -19,7 +19,7 @@
 
 // "timeRange" -> "intervalList" FIXME
 
-package event_lib
+package occurrence
 
 import . "scal/lib/mapset"
 import . "scal/utils"
