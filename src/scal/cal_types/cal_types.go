@@ -40,8 +40,8 @@ type CalType struct {
     GetMonthLen func(year int, month int) int
 }
 
-var CalTypesList []CalType
-var CalTypesMap = make(map[string]CalType)
+var CalTypesList []*CalType
+var CalTypesMap = make(map[string]*CalType)
 
 func RegisterCalType(
     Name string,
@@ -71,13 +71,22 @@ func RegisterCalType(
         JdTo,
         GetMonthLen,
     }
-    CalTypesList = append(CalTypesList, calType)
-    CalTypesMap[Name] = calType
+    CalTypesList = append(CalTypesList, &calType)
+    CalTypesMap[Name] = &calType
         
 }
 
 func invalidCalType(calTypeName string) error {
     return errors.New("invalid calendar type '" + calTypeName + "'")
+}
+
+
+func GetCalType(calTypeName string) (*CalType, error) {
+    calType, calTypeOk := CalTypesMap[calTypeName]
+    if !calTypeOk {
+        return nil, invalidCalType(calTypeName)
+    }
+    return calType, nil
 }
 
 func Convert(date scal.Date, fromTypeName string, toTypeName string) (scal.Date, error) {
