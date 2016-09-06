@@ -84,6 +84,9 @@ type CustomEvent struct {
     BaseEvent
     rules EventRuleList
 }
+func (self CustomEvent) Type() string {
+    return "custom"
+}
 func (self CustomEvent) Rules() EventRuleList {
     return self.rules
 }

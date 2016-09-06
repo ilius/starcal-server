@@ -20,6 +20,9 @@ type MonthlyEvent struct {
     dayStartSeconds int
     dayEndSeconds int
 }
+func (self MonthlyEvent) Type() string {
+    return "monthly"
+}
 func (self MonthlyEvent) StartJd() int {
     return self.startJd
 }
@@ -48,7 +51,7 @@ func (self MonthlyEvent) DayEndHMS() scal.HMS {
 
 func (self MonthlyEvent) Model() MonthlyEventModel {
     return MonthlyEventModel{
-        BaseEventModel: self.BaseModel("monthly"),
+        BaseEventModel: self.BaseModel(),
         StartJd: self.startJd,
         EndJd: self.endJd,
         Day: self.day,
@@ -57,7 +60,7 @@ func (self MonthlyEvent) Model() MonthlyEventModel {
     }
 }
 func (self MonthlyEventModel) GetEvent() (MonthlyEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("monthly")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return MonthlyEvent{}, err
     }

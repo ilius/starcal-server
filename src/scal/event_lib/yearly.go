@@ -16,6 +16,9 @@ type YearlyEvent struct {
     startYear int
     startYearEnable bool
 }
+func (self YearlyEvent) Type() string {
+    return "yearly"
+}
 func (self YearlyEvent) Month() int {
     return self.month
 }
@@ -32,7 +35,7 @@ func (self YearlyEvent) StartYearEnable() bool {
 
 func (self YearlyEvent) Model() YearlyEventModel {
     return YearlyEventModel{
-        BaseEventModel: self.BaseModel("yearly"),
+        BaseEventModel: self.BaseModel(),
         Month: self.month,
         Day: self.day,
         StartYear: self.startYear,
@@ -40,7 +43,7 @@ func (self YearlyEvent) Model() YearlyEventModel {
     }
 }
 func (self YearlyEventModel) GetEvent() (YearlyEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("yearly")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return YearlyEvent{}, err
     }

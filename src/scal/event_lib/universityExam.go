@@ -19,6 +19,9 @@ type UniversityExamEvent struct {
     dayEndSeconds int
     courseId int
 }
+func (self UniversityExamEvent) Type() string {
+    return "universityExam"
+}
 func (self UniversityExamEvent) DayStartSeconds() int {
     return self.dayStartSeconds
 }
@@ -36,7 +39,7 @@ func (self UniversityExamEvent) DayEndHMS() scal.HMS {
 
 func (self UniversityExamEvent) Model() UniversityExamEventModel {
     return UniversityExamEventModel{
-        BaseEventModel: self.BaseModel("universityExam"),
+        BaseEventModel: self.BaseModel(),
         Jd: self.jd,
         DayStartSeconds: self.dayStartSeconds,
         DayEndSeconds: self.dayEndSeconds,
@@ -44,7 +47,7 @@ func (self UniversityExamEvent) Model() UniversityExamEventModel {
     }
 }
 func (self UniversityExamEventModel) GetEvent() (UniversityExamEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("universityExam")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return UniversityExamEvent{}, err
     }

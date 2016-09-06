@@ -48,17 +48,19 @@ func TestMongoInsertEvents(t *testing.T) {
     //err := col_events.Find(nil).All(&events)
     
     now := time.Now()
-    startTime := now.Add(time.Duration(-3600) * time.Second)
+    //startTime := now.Add(time.Duration(-3600) * time.Second)
+    //startTime := now.Add(-3600 * time.Second)
+    startTime := now.Add(-2 * time.Hour)
+    
     endTime := now
     
     eventModel := TaskEventModel {
         BaseEventModel: BaseEventModel {
-            Type: "task",
             Id: bson.NewObjectId(),
             Summary: "test task",
             CalType: "jalali",
             TimeZone: "UTC",
-            TimeZoneEnable: true,
+            TimeZoneEnable: false,
             //OwnerId: 0, // default is 0
             NotifyBefore: 0,
         },
@@ -74,6 +76,7 @@ func TestMongoInsertEvents(t *testing.T) {
         t.Error(err2)
     }
     t.Log(event)
+    t.Log("Event Type:", event.Type())
     t.Log("Event Location:", event.Location())
     t.Log("loc==nil:", event.loc == nil)
     /*

@@ -20,6 +20,9 @@ type WeeklyEvent struct {
     dayStartSeconds int
     dayEndSeconds int
 }
+func (self WeeklyEvent) Type() string {
+    return "weekly"
+}
 func (self WeeklyEvent) StartJd() int {
     return self.startJd
 }
@@ -48,7 +51,7 @@ func (self WeeklyEvent) DayEndHMS() scal.HMS {
 
 func (self WeeklyEvent) Model() WeeklyEventModel {
     return WeeklyEventModel{
-        BaseEventModel: self.BaseModel("weekly"),
+        BaseEventModel: self.BaseModel(),
         StartJd: self.startJd,
         EndJd: self.endJd,
         CycleWeeks: self.cycleWeeks,
@@ -57,7 +60,7 @@ func (self WeeklyEvent) Model() WeeklyEventModel {
     }
 }
 func (self WeeklyEventModel) GetEvent() (WeeklyEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("weekly")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return WeeklyEvent{}, err
     }

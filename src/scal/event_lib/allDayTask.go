@@ -16,6 +16,9 @@ type AllDayTaskEvent struct {
     endJd int
     durationEnable bool
 }
+func (self AllDayTaskEvent) Type() string {
+    return "allDayTask"
+}
 func (self AllDayTaskEvent) StartJd() int {
     return self.startJd
 }
@@ -29,14 +32,14 @@ func (self AllDayTaskEvent) DurationEnable() bool {
 
 func (self AllDayTaskEvent) Model() AllDayTaskEventModel {
     return AllDayTaskEventModel{
-        BaseEventModel: self.BaseModel("allDayTask"),
+        BaseEventModel: self.BaseModel(),
         StartJd: self.startJd,
         EndJd: self.endJd,
         DurationEnable: self.durationEnable,
     }
 }
 func (self AllDayTaskEventModel) GetEvent() (AllDayTaskEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("allDayTask")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return AllDayTaskEvent{}, err
     }

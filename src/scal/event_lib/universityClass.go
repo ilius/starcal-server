@@ -25,6 +25,9 @@ type UniversityClassEvent struct {
     weekNumMode string
     weekDayList []int
 }
+func (self UniversityClassEvent) Type() string {
+    return "universityClass"
+}
 func (self UniversityClassEvent) WeekNumMode() string {
     return self.weekNumMode
 }
@@ -36,13 +39,13 @@ func (self UniversityClassEvent) WeekDayList() []int {
 
 func (self UniversityClassEvent) Model() UniversityClassEventModel {
     return UniversityClassEventModel{
-        BaseEventModel: self.BaseModel("universityClass"),
+        BaseEventModel: self.BaseModel(),
         WeekNumMode: self.weekNumMode,
         WeekDayList: self.weekDayList,
     }
 }
 func (self UniversityClassEventModel) GetEvent() (UniversityClassEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("universityClass")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return UniversityClassEvent{}, err
     }

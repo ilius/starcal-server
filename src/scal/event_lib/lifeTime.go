@@ -11,6 +11,9 @@ type LifeTimeEvent struct {
     startJd int
     endJd int
 }
+func (self LifeTimeEvent) Type() string {
+    return "lifeTime"
+}
 func (self LifeTimeEvent) StartJd() int {
     return self.startJd
 }
@@ -21,13 +24,13 @@ func (self LifeTimeEvent) EndJd() int {
 
 func (self LifeTimeEvent) Model() LifeTimeEventModel {
     return LifeTimeEventModel{
-        BaseEventModel: self.BaseModel("lifeTime"),
+        BaseEventModel: self.BaseModel(),
         StartJd: self.startJd,
         EndJd: self.endJd,
     }
 }
 func (self LifeTimeEventModel) GetEvent() (LifeTimeEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("lifeTime")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return LifeTimeEvent{}, err
     }

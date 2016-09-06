@@ -20,6 +20,9 @@ type LargeScaleEvent struct {
     end int64
     durationEnable bool
 }
+func (self LargeScaleEvent) Type() string {
+    return "largeScale"
+}
 func (self LargeScaleEvent) Scale() int64 {
     return self.scale
 }
@@ -59,7 +62,7 @@ func (self LargeScaleEvent) EndJd() int64 {
 
 func (self LargeScaleEvent) Model() LargeScaleEventModel {
     return LargeScaleEventModel{
-        BaseEventModel: self.BaseModel("largeScale"),
+        BaseEventModel: self.BaseModel(),
         Scale: self.scale,
         Start: self.start,
         End: self.end,
@@ -67,7 +70,7 @@ func (self LargeScaleEvent) Model() LargeScaleEventModel {
     }
 }
 func (self LargeScaleEventModel) GetEvent() (LargeScaleEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("largeScale")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return LargeScaleEvent{}, err
     }

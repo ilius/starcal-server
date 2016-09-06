@@ -8,7 +8,6 @@ import "gopkg.in/mgo.v2-unstable/bson"
 import "scal/cal_types"
 
 type BaseEventModel struct {
-    Type string         `bson:"type"`
     Id bson.ObjectId    `bson:"_id,omitempty"`
     OwnerId int         `bson:"ownerId"`
     TimeZone string     `bson:"timeZone,omitempty"`
@@ -21,13 +20,12 @@ type BaseEventModel struct {
     //IsAllDay bool
 }
 func (self BaseEventModel) String() string {
-    return fmt.Sprintf("EventModel(Id=%v, Type=%v, Summary=%v)", self.Id, self.Type, self.Summary)
+    return fmt.Sprintf("EventModel(Id=%v, Summary=%v)", self.Id, self.Summary)
 }
 
 
 
 type BaseEvent struct {
-    _type string
     id string
     ownerId int
     loc *time.Location
@@ -46,9 +44,6 @@ func (self BaseEvent) String() string {
         self.loc,
         self.locEnable,
     )
-}
-func (self BaseEvent) Type() string {
-    return self._type
 }
 func (self BaseEvent) Id() string {
     return self.id
@@ -82,9 +77,8 @@ func (self BaseEvent) NotifyBefore() int {
 
 
 
-func (self BaseEvent) BaseModel(_type string) BaseEventModel {
+func (self BaseEvent) BaseModel() BaseEventModel {
     return BaseEventModel{
-        Type: _type,
         Id: bson.ObjectId(self.id),
         OwnerId: self.ownerId,
         TimeZone: self.loc.String(),
@@ -96,7 +90,7 @@ func (self BaseEvent) BaseModel(_type string) BaseEventModel {
         NotifyBefore: self.notifyBefore,
     }
 }
-func (self BaseEventModel) GetBaseEvent(_type string) (BaseEvent, error) {
+func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
     var loc *time.Location
     var err error
     locEnable := self.TimeZoneEnable
@@ -115,7 +109,6 @@ func (self BaseEventModel) GetBaseEvent(_type string) (BaseEvent, error) {
         return BaseEvent{}, err2
     }
     return BaseEvent{
-        _type: _type,
         id: string(self.Id),
         ownerId: self.OwnerId,
         loc: loc,

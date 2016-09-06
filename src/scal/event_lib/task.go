@@ -25,6 +25,9 @@ type TaskEvent struct {
     endTime time.Time
     durationUnit int
 }
+func (self TaskEvent) Type() string {
+    return "task"
+}
 func (self TaskEvent) StartTime() time.Time {
     if self.locEnable && self.loc != nil {
         return self.startTime.In(self.loc)
@@ -54,14 +57,14 @@ func (self TaskEvent) String() string {
 
 func (self TaskEvent) Model() TaskEventModel {
     return TaskEventModel{
-        BaseEventModel: self.BaseModel("task"),
+        BaseEventModel: self.BaseModel(),
         StartTime: self.startTime,
         EndTime: self.endTime,
         DurationUnit: self.durationUnit,
     }
 }
 func (self TaskEventModel) GetEvent() (TaskEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("task")
+    baseEvent, err := self.BaseEventModel.GetBaseEvent()
     if err != nil {
         return TaskEvent{}, err
     }
