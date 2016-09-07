@@ -1,0 +1,3 @@
+[submodule "src/gopkg.in/mgo.v2-unstable"]
+	path = src/gopkg.in/mgo.v2-unstable
+	url = git@github.com:go-mgo/mgo.git
