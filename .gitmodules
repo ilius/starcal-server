@@ -1,3 +1,9 @@
 [submodule "src/gopkg.in/mgo.v2-unstable"]
 	path = src/gopkg.in/mgo.v2-unstable
 	url = git@github.com:go-mgo/mgo.git
+[submodule "src/github.com/gorilla/context"]
+	path = src/github.com/gorilla/context
+	url = git@github.com:gorilla/context.git
+[submodule "src/github.com/gorilla/mux"]
+	path = src/github.com/gorilla/mux
+	url = git@github.com:gorilla/mux.git
