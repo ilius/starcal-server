@@ -4,24 +4,22 @@ import "time"
 import "fmt"
 //import "errors"
 
-import "gopkg.in/mgo.v2-unstable/bson"
 import "scal/cal_types"
 
 type BaseEventModel struct {
-    Id bson.ObjectId    `bson:"_id,omitempty"`
-    OwnerId int         `bson:"ownerId"`
-    TimeZone string     `bson:"timeZone,omitempty"`
-    TimeZoneEnable bool `bson:"timeZoneEnable"`
-    CalType string      `bson:"calType"`
-    Summary string      `bson:"summary"`
-    Description string  `bson:"description,omitempty"`
-    Icon string         `bson:"icon,omitempty"`
-    NotifyBefore int    `bson:"notifyBefore,omitempty"` // seconds, default 0
+    Sha1 string         `bson:"sha1" json:"sha1"`
+    OwnerId int         `bson:"ownerId" json:"ownerId"`
+    TimeZone string     `bson:"timeZone,omitempty" json:"timeZone"`
+    TimeZoneEnable bool `bson:"timeZoneEnable" json:"timeZoneEnable"`
+    CalType string      `bson:"calType" json:"calType"`
+    Summary string      `bson:"summary" json:"summary"`
+    Description string  `bson:"description,omitempty" json:"description"`
+    Icon string         `bson:"icon,omitempty" json:"icon"`
+    NotifyBefore int    `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
     //IsAllDay bool
 }
-func (self BaseEventModel) String() string {
-    return fmt.Sprintf("EventModel(Id=%v, Summary=%v)", self.Id, self.Summary)
-}
+
+
 
 
 
@@ -79,7 +77,6 @@ func (self BaseEvent) NotifyBefore() int {
 
 func (self BaseEvent) BaseModel() BaseEventModel {
     return BaseEventModel{
-        Id: bson.ObjectId(self.id),
         OwnerId: self.ownerId,
         TimeZone: self.loc.String(),
         TimeZoneEnable: self.locEnable,
@@ -109,7 +106,7 @@ func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
         return BaseEvent{}, err2
     }
     return BaseEvent{
-        id: string(self.Id),
+        //id: self.HexId(),
         ownerId: self.OwnerId,
         loc: loc,
         locEnable: locEnable,
@@ -120,6 +117,5 @@ func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
         notifyBefore: self.NotifyBefore,
     }, nil
 }
-
 
 
