@@ -12,6 +12,12 @@ type LargeScaleEventModel struct {
     End int64               `bson:"end"`
     DurationEnable bool     `bson:"durationEnable"`
 }
+func (self LargeScaleEventModel) Type() string {
+    return "largeScale"
+}
+func (self LargeScaleEventModel) Collection() string {
+    return "events_largeScale"
+}
 
 type LargeScaleEvent struct {
     BaseEvent

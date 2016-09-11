@@ -8,6 +8,12 @@ type AllDayTaskEventModel struct {
     EndJd int       `bson:"endJd"`
     DurationEnable bool     `bson:"durationEnable"`
 }
+func (self AllDayTaskEventModel) Type() string {
+    return "allDayTask"
+}
+func (self AllDayTaskEventModel) Collection() string {
+    return "events_allDayTask"
+}
 
 
 type AllDayTaskEvent struct {

@@ -46,6 +46,13 @@ type CustomEventModel struct {
     BaseEventModel              `bson:",inline"`
     Rules EventRuleModelList    `bson:"rules"`
 }
+func (self CustomEventModel) Type() string {
+    return "custom"
+}
+func (self CustomEventModel) Collection() string {
+    return "events_custom"
+}
+
 
 // Modular mode:
 type EventRule interface {

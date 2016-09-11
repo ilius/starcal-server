@@ -10,6 +10,12 @@ type UniversityExamEventModel struct {
     DayEndSeconds int       `bson:"dayEndSeconds"`
     CourseId int            `bson:"courseId"`
 }
+func (self UniversityExamEventModel) Type() string {
+    return "universityExam"
+}
+func (self UniversityExamEventModel) Collection() string {
+    return "events_universityExam"
+}
 
 
 type UniversityExamEvent struct {

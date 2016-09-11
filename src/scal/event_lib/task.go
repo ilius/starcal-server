@@ -17,6 +17,12 @@ type TaskEventModel struct {
     EndTime time.Time       `bson:"endTime"`
     DurationUnit int        `bson:"durationUnit"`
 }
+func (self TaskEventModel) Type() string {
+    return "task"
+}
+func (self TaskEventModel) Collection() string {
+    return "events_task"
+}
 
 
 type TaskEvent struct {

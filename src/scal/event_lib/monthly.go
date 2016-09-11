@@ -11,6 +11,13 @@ type MonthlyEventModel struct {
     DayStartSeconds int     `bson:"dayStartSeconds"`
     DayEndSeconds   int     `bson:"dayEndSeconds"`
 }
+func (self MonthlyEventModel) Type() string {
+    return "monthly"
+}
+func (self MonthlyEventModel) Collection() string {
+    return "events_monthly"
+}
+
 
 type MonthlyEvent struct {
     BaseEvent

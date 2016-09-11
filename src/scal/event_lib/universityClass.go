@@ -18,6 +18,12 @@ type UniversityClassEventModel struct {
     WeekNumMode string  `bson:"weekNumMode"`
     WeekDayList []int   `bson:"weekDayList"`
 }
+func (self UniversityClassEventModel) Type() string {
+    return "universityClass"
+}
+func (self UniversityClassEventModel) Collection() string {
+    return "events_universityClass"
+}
 
 
 type UniversityClassEvent struct {

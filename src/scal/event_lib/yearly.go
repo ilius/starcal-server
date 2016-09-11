@@ -8,6 +8,13 @@ type YearlyEventModel struct {
     StartYear int   `bson:"startYear"`
     StartYearEnable bool    `bson:"startYearEnable"`
 }
+func (self YearlyEventModel) Type() string {
+    return "yearly"
+}
+func (self YearlyEventModel) Collection() string {
+    return "events_yearly"
+}
+
 
 type YearlyEvent struct {
     BaseEvent

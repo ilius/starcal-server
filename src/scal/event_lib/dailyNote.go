@@ -5,6 +5,12 @@ type DailyNoteEventModel struct {
     BaseEventModel  `bson:",inline"`
     Jd int          `bson:"jd"`
 }
+func (self DailyNoteEventModel) Type() string {
+    return "dailyNote"
+}
+func (self DailyNoteEventModel) Collection() string {
+    return "events_dailyNote"
+}
 
 type DailyNoteEvent struct {
     BaseEvent

@@ -5,6 +5,13 @@ type LifeTimeEventModel struct {
     StartJd int     `bson:"startJd"`
     EndJd int       `bson:"endJd"`
 }
+func (self LifeTimeEventModel) Type() string {
+    return "lifeTime"
+}
+func (self LifeTimeEventModel) Collection() string {
+    return "events_lifeTime"
+}
+
 
 type LifeTimeEvent struct {
     BaseEvent

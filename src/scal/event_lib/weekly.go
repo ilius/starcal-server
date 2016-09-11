@@ -11,6 +11,13 @@ type WeeklyEventModel struct {
     DayStartSeconds int     `bson:"dayStartSeconds"`
     DayEndSeconds int       `bson:"dayEndSeconds"`
 }
+func (self WeeklyEventModel) Type() string {
+    return "weekly"
+}
+func (self WeeklyEventModel) Collection() string {
+    return "events_weekly"
+}
+
 
 type WeeklyEvent struct {
     BaseEvent
