@@ -52,10 +52,11 @@ func (self TaskEvent) DurationUnit() int {
     return self.durationUnit
 }
 func (self TaskEvent) String() string {
+    const time_format = "2006-01-02 15:04:05"
     return fmt.Sprintf(
         "Task: %v - %v",
-        self.StartTime(),
-        self.EndTime(),
+        self.StartTime().Format(time_format),
+        self.EndTime().Format(time_format),
     )
 }
 
