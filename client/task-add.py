@@ -12,6 +12,7 @@ nowEpoch = int(time.time())
 #nowDt = datetime.now()
 
 params = {
+    #"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
     "timeZone": "Asia/Tehran",
     "calType": "jalali",
     "startTime": strftime(timeFormat, gmtime(nowEpoch)),

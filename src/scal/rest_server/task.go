@@ -40,9 +40,14 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
+    if eventModel.Id != "" {
+        SetHttpError(w, http.StatusBadRequest, "you can't specify 'eventId'")
+        return
+    }
     jsonByte, _ := json.Marshal(eventModel)
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
     eventId := bson.NewObjectId()
+    eventModel.Id = eventId
     eventRev := event_lib.EventRevisionModel{
         UserId: userId,
         EventId: eventId,
@@ -116,6 +121,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
+    eventModel.Id = eventId
     json.NewEncoder(w).Encode(eventModel)
 }
 

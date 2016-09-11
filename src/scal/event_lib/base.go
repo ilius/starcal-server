@@ -3,10 +3,12 @@ package event_lib
 import "time"
 import "fmt"
 //import "errors"
+import "gopkg.in/mgo.v2-unstable/bson"
 
 import "scal/cal_types"
 
 type BaseEventModel struct {
+    Id bson.ObjectId    `bson:"-" json:"eventId,omitempty"`
     Sha1 string         `bson:"sha1" json:"-"`
     OwnerId int         `bson:"ownerId" json:"ownerId"`
     TimeZone string     `bson:"timeZone,omitempty" json:"timeZone"`
@@ -77,6 +79,7 @@ func (self BaseEvent) NotifyBefore() int {
 
 func (self BaseEvent) BaseModel() BaseEventModel {
     return BaseEventModel{
+        Id: bson.ObjectId(self.id),
         OwnerId: self.ownerId,
         TimeZone: self.loc.String(),
         TimeZoneEnable: self.locEnable,
@@ -106,7 +109,7 @@ func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
         return BaseEvent{}, err2
     }
     return BaseEvent{
-        //id: self.HexId(),
+        id: string(self.Id),
         ownerId: self.OwnerId,
         loc: loc,
         locEnable: locEnable,
