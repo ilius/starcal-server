@@ -40,7 +40,6 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
-    eventModel.Sha1 = ""
     jsonByte, _ := json.Marshal(eventModel)
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
     eventId := bson.NewObjectId()

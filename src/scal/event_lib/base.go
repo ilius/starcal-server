@@ -7,7 +7,7 @@ import "fmt"
 import "scal/cal_types"
 
 type BaseEventModel struct {
-    Sha1 string         `bson:"sha1" json:"sha1"`
+    Sha1 string         `bson:"sha1" json:"-"`
     OwnerId int         `bson:"ownerId" json:"ownerId"`
     TimeZone string     `bson:"timeZone,omitempty" json:"timeZone"`
     TimeZoneEnable bool `bson:"timeZoneEnable" json:"timeZoneEnable"`
