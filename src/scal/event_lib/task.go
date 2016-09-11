@@ -2,6 +2,8 @@ package event_lib
 
 import "time"
 import "fmt"
+import "errors"
+
 
 // DurationUnit is just a matter of UI
 // DurationUnit=0       ==> shows End datetime in UI
@@ -13,8 +15,8 @@ import "fmt"
 
 type TaskEventModel struct {
     BaseEventModel          `bson:",inline"`
-    StartTime time.Time     `bson:"startTime"`
-    EndTime time.Time       `bson:"endTime"`
+    StartTime *time.Time    `bson:"startTime"`
+    EndTime *time.Time      `bson:"endTime"`
     DurationUnit int        `bson:"durationUnit"`
 }
 func (self TaskEventModel) Type() string {
@@ -62,10 +64,12 @@ func (self TaskEvent) String() string {
 
 
 func (self TaskEvent) Model() TaskEventModel {
+    startTime := self.startTime
+    endTime := self.endTime
     return TaskEventModel{
         BaseEventModel: self.BaseModel(),
-        StartTime: self.startTime,
-        EndTime: self.endTime,
+        StartTime: &startTime,
+        EndTime: &endTime,
         DurationUnit: self.durationUnit,
     }
 }
@@ -74,10 +78,16 @@ func (self TaskEventModel) GetEvent() (TaskEvent, error) {
     if err != nil {
         return TaskEvent{}, err
     }
+    if self.StartTime == nil {
+        return TaskEvent{}, errors.New("missing 'startTime'")
+    }
+    if self.EndTime == nil {
+        return TaskEvent{}, errors.New("missing 'endTime'")
+    }
     return TaskEvent{
         BaseEvent: baseEvent,
-        startTime: self.StartTime,
-        endTime: self.EndTime,
+        startTime: *self.StartTime,
+        endTime: *self.EndTime,
         durationUnit: self.DurationUnit,
     }, nil
 }
