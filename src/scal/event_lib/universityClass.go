@@ -14,9 +14,9 @@ package event_lib
 */
 
 type UniversityClassEventModel struct {
-    BaseEventModel      `bson:",inline"`
-    WeekNumMode string  `bson:"weekNumMode"`
-    WeekDayList []int   `bson:"weekDayList"`
+    BaseEventModel      `bson:",inline" json:",inline"`
+    WeekNumMode string  `bson:"weekNumMode" json:"weekNumMode"`
+    WeekDayList []int   `bson:"weekDayList" json:"weekDayList"`
 }
 func (self UniversityClassEventModel) Type() string {
     return "universityClass"

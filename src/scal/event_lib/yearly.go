@@ -2,11 +2,11 @@ package event_lib
 
 
 type YearlyEventModel struct {
-    BaseEventModel  `bson:",inline"`
-    Month int       `bson:"month"`
-    Day int         `bson:"day"`
-    StartYear int   `bson:"startYear"`
-    StartYearEnable bool    `bson:"startYearEnable"`
+    BaseEventModel          `bson:",inline" json:",inline"`
+    Month int               `bson:"month" json:"month"`
+    Day int                 `bson:"day" json:"day"`
+    StartYear int           `bson:"startYear" json:"startYear"`
+    StartYearEnable bool    `bson:"startYearEnable" json:"startYearEnable"`
 }
 func (self YearlyEventModel) Type() string {
     return "yearly"

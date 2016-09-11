@@ -3,10 +3,10 @@ package event_lib
 // DurationEnable is just a matter of UI
 
 type AllDayTaskEventModel struct {
-    BaseEventModel  `bson:",inline"`
-    StartJd int     `bson:"startJd"`
-    EndJd int       `bson:"endJd"`
-    DurationEnable bool     `bson:"durationEnable"`
+    BaseEventModel  `bson:",inline" json:",inline"`
+    StartJd int     `bson:"startJd" json:"startJd"`
+    EndJd int       `bson:"endJd" json:"endJd`
+    DurationEnable bool     `bson:"durationEnable" json:"durationEnable"`
 }
 func (self AllDayTaskEventModel) Type() string {
     return "allDayTask"

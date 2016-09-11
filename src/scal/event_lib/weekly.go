@@ -4,12 +4,12 @@ import "scal"
 import . "scal/utils"
 
 type WeeklyEventModel struct {
-    BaseEventModel          `bson:",inline"`
-    StartJd int             `bson:"startJd"`
-    EndJd int               `bson:"endJd"`
-    CycleWeeks int          `bson:"cycleWeeks"`
-    DayStartSeconds int     `bson:"dayStartSeconds"`
-    DayEndSeconds int       `bson:"dayEndSeconds"`
+    BaseEventModel          `bson:",inline" json:",inline"`
+    StartJd int             `bson:"startJd" json:"startJd"`
+    EndJd int               `bson:"endJd" json:"endJd"`
+    CycleWeeks int          `bson:"cycleWeeks" json:"cycleWeeks"`
+    DayStartSeconds int     `bson:"dayStartSeconds" json:"dayStartSeconds"`
+    DayEndSeconds int       `bson:"dayEndSeconds" json:"dayEndSeconds"`
 }
 func (self WeeklyEventModel) Type() string {
     return "weekly"

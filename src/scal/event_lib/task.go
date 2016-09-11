@@ -14,10 +14,10 @@ import "errors"
 // DurationUnit=604800  ==> weeks
 
 type TaskEventModel struct {
-    BaseEventModel          `bson:",inline"`
-    StartTime *time.Time    `bson:"startTime"`
-    EndTime *time.Time      `bson:"endTime"`
-    DurationUnit int        `bson:"durationUnit"`
+    BaseEventModel          `bson:",inline" json:",inline"`
+    StartTime *time.Time    `bson:"startTime" json:"startTime"`
+    EndTime *time.Time      `bson:"endTime" json:"endTime"`
+    DurationUnit int        `bson:"durationUnit" json:"durationUnit"`
 }
 func (self TaskEventModel) Type() string {
     return "task"

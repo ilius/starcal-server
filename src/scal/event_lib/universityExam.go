@@ -4,11 +4,11 @@ import "scal"
 import . "scal/utils"
 
 type UniversityExamEventModel struct {
-    BaseEventModel          `bson:",inline"`
-    Jd int                  `bson:"jd"`
-    DayStartSeconds int     `bson:"dayStartSeconds"`
-    DayEndSeconds int       `bson:"dayEndSeconds"`
-    CourseId int            `bson:"courseId"`
+    BaseEventModel          `bson:",inline" json:",inline"`
+    Jd int                  `bson:"jd" json:"jd"`
+    DayStartSeconds int     `bson:"dayStartSeconds" json:"dayStartSeconds"`
+    DayEndSeconds int       `bson:"dayEndSeconds" json:"dayEndSeconds"`
+    CourseId int            `bson:"courseId" json:"courseId"`
 }
 func (self UniversityExamEventModel) Type() string {
     return "universityExam"

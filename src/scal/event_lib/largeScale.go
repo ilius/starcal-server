@@ -6,11 +6,11 @@ endYear := end * scale
 */
 
 type LargeScaleEventModel struct {
-    BaseEventModel          `bson:",inline"`
-    Scale int64             `bson:"scale"`
-    Start int64             `bson:"start"`
-    End int64               `bson:"end"`
-    DurationEnable bool     `bson:"durationEnable"`
+    BaseEventModel          `bson:",inline" json:",inline"`
+    Scale int64             `bson:"scale" json:"scale"`
+    Start int64             `bson:"start" json:"start"`
+    End int64               `bson:"end" json:"end"`
+    DurationEnable bool     `bson:"durationEnable" json:"durationEnable"`
 }
 func (self LargeScaleEventModel) Type() string {
     return "largeScale"

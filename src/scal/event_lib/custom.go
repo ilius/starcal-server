@@ -43,8 +43,8 @@ type EventRuleModel struct {
 type EventRuleModelList []EventRuleModel
 
 type CustomEventModel struct {
-    BaseEventModel              `bson:",inline"`
-    Rules EventRuleModelList    `bson:"rules"`
+    BaseEventModel              `bson:",inline" json:",inline"`
+    Rules EventRuleModelList    `bson:"rules" json:"rules"`
 }
 func (self CustomEventModel) Type() string {
     return "custom"

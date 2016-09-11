@@ -2,8 +2,8 @@ package event_lib
 
 
 type DailyNoteEventModel struct {
-    BaseEventModel  `bson:",inline"`
-    Jd int          `bson:"jd"`
+    BaseEventModel  `bson:",inline" json:",inline"`
+    Jd int          `bson:"jd" json:"jd"`
 }
 func (self DailyNoteEventModel) Type() string {
     return "dailyNote"

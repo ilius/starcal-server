@@ -1,9 +1,9 @@
 package event_lib
 
 type LifeTimeEventModel struct {
-    BaseEventModel  `bson:",inline"`
-    StartJd int     `bson:"startJd"`
-    EndJd int       `bson:"endJd"`
+    BaseEventModel  `bson:",inline" json:",inline"`
+    StartJd int     `bson:"startJd" json:"startJd"`
+    EndJd int       `bson:"endJd" json:"endJd"`
 }
 func (self LifeTimeEventModel) Type() string {
     return "lifeTime"
