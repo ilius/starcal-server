@@ -66,12 +66,12 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
     }
     err = db.C("event_revision").Insert(eventRev)
     if err != nil {
-        SetHttpError(w, http.StatusBadRequest, err.Error())
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
     err = db.C(eventModel.Collection()).Insert(eventModel)
     if err != nil {
-        SetHttpError(w, http.StatusBadRequest, err.Error())
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
 
