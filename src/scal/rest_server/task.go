@@ -78,7 +78,7 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
 
     json.NewEncoder(w).Encode(map[string]string{
         "eventId": eventId.Hex(),
-        //"eventId": string(eventId),
+        "sha1": eventRev.Sha1,
     })
 }
 
