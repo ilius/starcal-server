@@ -104,9 +104,9 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
     }).Sort("-time").One(&eventRev)
     if err != nil {
         if err == mgo.ErrNotFound {
-            SetHttpError(w, http.StatusBadRequest, "event revision not found")
+            SetHttpError(w, http.StatusBadRequest, "event not found")
         } else {
-            SetHttpError(w, http.StatusBadRequest, err.Error())
+            SetHttpError(w, http.StatusInternalServerError, err.Error())
         }
         return
     }
@@ -115,9 +115,9 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
     }).One(&eventModel)
     if err != nil {
         if err == mgo.ErrNotFound {
-            SetHttpError(w, http.StatusBadRequest, "event not found")
+            SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
         } else {
-            SetHttpError(w, http.StatusBadRequest, err.Error())
+            SetHttpError(w, http.StatusInternalServerError, err.Error())
         }
         return
     }
