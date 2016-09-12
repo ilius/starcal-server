@@ -55,7 +55,7 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
         Sha1: eventModel.Sha1,
         Time: time.Now(),
     }
-    err = db.C("event_revisions").Insert(eventRev)
+    err = db.C("event_revision").Insert(eventRev)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
         return
@@ -99,7 +99,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
         return
     }
     eventId := bson.ObjectIdHex(eventIdHex)
-    err = db.C("event_revisions").Find(bson.M{
+    err = db.C("event_revision").Find(bson.M{
         "eventId": eventId,
     }).Sort("-time").One(&eventRev)
     if err != nil {
