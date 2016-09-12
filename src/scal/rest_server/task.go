@@ -144,6 +144,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
+
     err = db.C(eventModel.Collection()).Find(bson.M{
         "sha1": eventRev.Sha1,
     }).One(&eventModel)
@@ -155,13 +156,8 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
+
     eventModel.Id = eventId
     json.NewEncoder(w).Encode(eventModel)
 }
-
-
-
-
-
-
 

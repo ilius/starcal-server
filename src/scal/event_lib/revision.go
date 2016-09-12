@@ -11,7 +11,3 @@ type EventRevisionModel struct {
     //InvitedUserIds []int  `bson:"invitedUserIds" json:"invitedUserIds"`
 }
 
-
-
-
-
