@@ -24,6 +24,11 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 
 func SetHttpError(w http.ResponseWriter, code int, msg string){
+    if code == http.StatusInternalServerError {
+        // log `msg` somewhere
+        // don't expose internal error messages to outsiders
+        msg = "Internal Server Error"
+    }
     jsonByte, _ := json.Marshal(map[string]string{
         "error": msg,
     })
