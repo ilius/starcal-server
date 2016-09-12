@@ -45,6 +45,7 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
         SetHttpError(w, http.StatusBadRequest, "you can't specify 'eventId'")
         return
     }
+    eventModel.Sha1 = ""
     jsonByte, _ := json.Marshal(eventModel)
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
     eventId := bson.NewObjectId()
@@ -231,6 +232,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
     */
 
     eventModel.Id = ""
+    eventModel.Sha1 = ""
     jsonByte, _ := json.Marshal(eventModel)
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 

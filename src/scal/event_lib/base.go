@@ -9,7 +9,7 @@ import "scal/cal_types"
 
 type BaseEventModel struct {
     Id bson.ObjectId    `bson:"-" json:"eventId,omitempty"`
-    Sha1 string         `bson:"sha1" json:"-"`
+    Sha1 string         `bson:"sha1" json:"sha1,omitempty"`
     OwnerId int         `bson:"ownerId" json:"ownerId"`
     TimeZone string     `bson:"timeZone,omitempty" json:"timeZone"`
     TimeZoneEnable bool `bson:"timeZoneEnable" json:"timeZoneEnable"`
