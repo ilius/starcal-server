@@ -36,6 +36,12 @@ var routes = Routes{
         Index,
     },
     Route{
+        "CopyEvent",
+        "POST",
+        "/events/copy/",
+        CopyEvent,
+    },
+    Route{
         "AddTask",
         "POST",
         "/events/task/add/",
