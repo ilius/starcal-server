@@ -25,7 +25,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func SetHttpError(w http.ResponseWriter, code int, msg string){
     if code == http.StatusInternalServerError {
-        // log `msg` somewhere
+        log.Print("Internal Server Error: ", msg)
         // don't expose internal error messages to outsiders
         msg = "Internal Server Error"
     }
