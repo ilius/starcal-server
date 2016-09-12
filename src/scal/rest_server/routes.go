@@ -47,6 +47,12 @@ var routes = Routes{
         "/events/task/get/",
         GetTask,
     },
+    Route{
+        "UpdateTask",
+        "POST",
+        "/events/task/update/",
+        UpdateTask,
+    },
 }
 
 

@@ -5,7 +5,7 @@ import requests
 from pprint import pprint
 from datetime import datetime, timedelta
 import time
-from time import strftime,localtime 
+from time import strftime, gmtime
 
 timeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -13,11 +13,11 @@ nowEpoch = int(time.time())
 #nowDt = datetime.now()
 
 params = {
-    "id": sys.argv[1],
+    "eventId": sys.argv[1],
     "timeZone": "Asia/Tehran",
     "calType": "jalali",
-    "startTime": strftime(timeFormat, localtime(nowEpoch)),
-    "endTime": strftime(timeFormat, localtime(nowEpoch - 3600)),
+    "startTime": strftime(timeFormat, gmtime(nowEpoch)),
+    "endTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
     "summary": "task 1",
     "description": "desc 1",
     "icon": "task.png",
