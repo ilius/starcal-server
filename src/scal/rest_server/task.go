@@ -48,8 +48,17 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
     eventId := bson.NewObjectId()
     eventModel.Id = eventId
+    eventAccess := event_lib.EventAccessModel{
+        EventId: eventId,
+        OwnerId: userId,
+        //AccessUserIds: []int{}
+    }
+    err = db.C("event_access").Insert(eventAccess)
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
     eventRev := event_lib.EventRevisionModel{
-        UserId: userId,
         EventId: eventId,
         EventType: eventModel.Type(),
         Sha1: eventModel.Sha1,
@@ -74,6 +83,8 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
 
 func GetTask(w http.ResponseWriter, r *http.Request) {
     eventModel := event_lib.TaskEventModel{}
+    // -----------------------------------------------
+    userId := 0 // FIXME
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     var ok bool
@@ -92,13 +103,36 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
-    eventRev := event_lib.EventRevisionModel{}
     eventIdHex, ok := byEventId["eventId"]
     if !ok {
         SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
         return
     }
+    if !bson.IsObjectIdHex(eventIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
+        return
+        // to avoid panic!
+    }
     eventId := bson.ObjectIdHex(eventIdHex)
+
+    eventAccess := event_lib.EventAccessModel{}
+    err = db.C("event_access").Find(bson.M{
+        "_id": eventId,
+    }).One(&eventAccess)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpError(w, http.StatusInternalServerError, err.Error())
+        }
+        return
+    }
+    if !eventAccess.UserCanRead(userId) {
+        SetHttpError(w, http.StatusUnauthorized, "you don't have access to this event")
+        return
+    }
+
+    eventRev := event_lib.EventRevisionModel{}
     err = db.C("event_revision").Find(bson.M{
         "eventId": eventId,
     }).Sort("-time").One(&eventRev)
