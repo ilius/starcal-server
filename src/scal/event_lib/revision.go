@@ -8,6 +8,6 @@ type EventRevisionModel struct {
     EventType string        `bson:"eventType" json:"eventType"`
     Sha1 string             `bson:"sha1" json:"sha1"`
     Time time.Time          `bson:"time" json:"time"`
-    //InvitedUserIds []int  `bson:"invitedUserIds" json:"invitedUserIds"`
+    //InvitedEmails []string    `bson:"invitedEmails" json:"invitedEmails"`
 }
 

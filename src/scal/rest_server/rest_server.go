@@ -45,7 +45,7 @@ func SetHttpError(w http.ResponseWriter, code int, msg string){
 
 
 func CopyEvent(w http.ResponseWriter, r *http.Request) {
-    userId := 0 // FIXME
+    email := "" // FIXME
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     var ok bool
@@ -88,7 +88,7 @@ func CopyEvent(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
-    if !eventAccess.UserCanRead(userId) {
+    if !eventAccess.EmailCanRead(email) {
         SetHttpError(w, http.StatusUnauthorized, "you don't have access to this event")
         return
     }
@@ -110,8 +110,8 @@ func CopyEvent(w http.ResponseWriter, r *http.Request) {
 
     newEventAccess := event_lib.EventAccessModel{
         EventId: newEventId,
-        OwnerId: userId,
-        //AccessUserIds: []int{}
+        OwnerEmail: email,
+        //AccessEmails: []string{}
     }
     err = db.C("event_access").Insert(newEventAccess)
     if err != nil {

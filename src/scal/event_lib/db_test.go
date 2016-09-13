@@ -61,7 +61,7 @@ func TestMongoInsertEvents(t *testing.T) {
             CalType: "jalali",
             TimeZone: "UTC",
             TimeZoneEnable: false,
-            //OwnerId: 0, // default is 0
+            //OwnerEmail: "", // default is ""
             NotifyBefore: 0,
         },
         StartTime: startTime,
@@ -86,7 +86,7 @@ func TestMongoInsertEvents(t *testing.T) {
             Summary: "test all-day task",
             CalType: "jalali",
             //TimeZoneEnable: false,
-            //OwnerId: 0, // default is 0
+            //OwnerEmail: "", // default is ""
             NotifyBefore: 0,
         },
         StartJd: todayJd - 3,

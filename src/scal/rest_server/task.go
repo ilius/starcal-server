@@ -21,7 +21,7 @@ import (
 func AddTask(w http.ResponseWriter, r *http.Request) {
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
-    userId := 0 // FIXME
+    email := "" // FIXME
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     body, _ := ioutil.ReadAll(r.Body)
@@ -52,8 +52,8 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
     eventModel.Id = eventId
     eventAccess := event_lib.EventAccessModel{
         EventId: eventId,
-        OwnerId: userId,
-        //AccessUserIds: []int{}
+        OwnerEmail: email,
+        //AccessEmails: []string{}
     }
     err = db.C("event_access").Insert(eventAccess)
     if err != nil {
@@ -86,7 +86,7 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
 func GetTask(w http.ResponseWriter, r *http.Request) {
     eventModel := event_lib.TaskEventModel{}
     // -----------------------------------------------
-    userId := 0 // FIXME
+    email := "" // FIXME
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     var ok bool
@@ -129,7 +129,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
-    if !eventAccess.UserCanRead(userId) {
+    if !eventAccess.EmailCanRead(email) {
         SetHttpError(w, http.StatusUnauthorized, "you don't have access to this event")
         return
     }
@@ -167,7 +167,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
     sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
-    userId := 0 // FIXME
+    email := "" // FIXME
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     body, _ := ioutil.ReadAll(r.Body)
@@ -210,7 +210,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
-    if eventAccess.OwnerId != userId {
+    if eventAccess.OwnerEmail != email {
         SetHttpError(w, http.StatusUnauthorized, "you don't have write access to this event")
         return
     }
