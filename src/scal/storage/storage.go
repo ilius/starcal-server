@@ -13,6 +13,86 @@ const (
     MongoPassword = ""
 )
 
+func init() {
+    db, err := GetDB()
+    if err != nil {
+        panic(err)
+    }
+    /*
+    With DropDups set to true, documents with the
+    same key as a previously indexed one will be dropped rather than an
+    error returned.
+    
+    If Background is true, other connections will be allowed to proceed
+    using the collection without the index while it's being built. Note that
+    the session executing EnsureIndex will be blocked for as long as it
+    takes for the index to be built.
+
+    If Sparse is true, only documents containing the provided Key fields
+    will be included in the index. When using a sparse index for sorting,
+    only indexed documents will be returned.
+    */
+    db.C("users").EnsureIndex(mgo.Index{
+        Key: []string{"email"},
+        Unique: true,
+        DropDups: false,
+        Background: false,
+        Sparse: true,
+    })
+
+    db.C("event_access").EnsureIndex(mgo.Index{
+        Key: []string{"ownerEmail"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: true,
+    })
+    db.C("event_revision").EnsureIndex(mgo.Index{
+        Key: []string{"sha1"},
+        Unique: true,
+        DropDups: false,
+        Background: false,
+        Sparse: true,
+    })
+    db.C("event_revision").EnsureIndex(mgo.Index{
+        Key: []string{"eventId"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: true,
+    })
+    db.C("event_revision").EnsureIndex(mgo.Index{
+        Key: []string{"time"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: true,
+    })
+
+    for _, colName := range []string{
+        "events_allDayTask",
+        "events_custom",
+        "events_dailyNote",
+        "events_largeScale",
+        "events_lifeTime",
+        "events_monthly",
+        "events_task",
+        "events_universityClass",
+        "events_universityExam",
+        "events_weekly",
+        "events_yearly",
+    } {
+        db.C(colName).EnsureIndex(mgo.Index{
+            Key: []string{"sha1"},
+            Unique: true,
+            DropDups: false,
+            Background: false,
+            Sparse: true,
+        })
+    }
+
+}
+
 
 func GetDB() (*mgo.Database, error) {
     mongoDBDialInfo := &mgo.DialInfo{
