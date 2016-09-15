@@ -10,7 +10,6 @@ import "scal/cal_types"
 type BaseEventModel struct {
     Id bson.ObjectId    `bson:"-" json:"eventId,omitempty"`
     Sha1 string         `bson:"sha1" json:"sha1,omitempty"`
-    OwnerEmail string   `bson:"ownerEmail" json:"ownerEmail"`
     TimeZone string     `bson:"timeZone,omitempty" json:"timeZone"`
     TimeZoneEnable bool `bson:"timeZoneEnable" json:"timeZoneEnable"`
     CalType string      `bson:"calType" json:"calType"`
@@ -27,7 +26,7 @@ type BaseEventModel struct {
 
 type BaseEvent struct {
     id string
-    ownerEmail string
+    //ownerEmail string
     loc *time.Location
     locEnable bool
     calType *cal_types.CalType
@@ -48,9 +47,9 @@ func (self BaseEvent) String() string {
 func (self BaseEvent) Id() string {
     return self.id
 }
-func (self BaseEvent) OwnerEmail() string {
-    return self.ownerEmail
-}
+//func (self BaseEvent) OwnerEmail() string {
+//    return self.ownerEmail
+//}
 func (self BaseEvent) Location() *time.Location {
     if self.locEnable && self.loc != nil {
         return self.loc
@@ -80,7 +79,6 @@ func (self BaseEvent) NotifyBefore() int {
 func (self BaseEvent) BaseModel() BaseEventModel {
     return BaseEventModel{
         Id: bson.ObjectId(self.id),
-        OwnerEmail: self.ownerEmail,
         TimeZone: self.loc.String(),
         TimeZoneEnable: self.locEnable,
         CalType: self.calType.Name,
@@ -110,7 +108,7 @@ func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
     }
     return BaseEvent{
         id: string(self.Id),
-        ownerEmail: self.OwnerEmail,
+        //ownerEmail: self.OwnerEmail,
         loc: loc,
         locEnable: locEnable,
         calType: calType,
