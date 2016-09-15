@@ -21,7 +21,7 @@ print(r)
 try:
     data = r.json()
 except:
-    print('data is not json')
+    print("non-json data")
     print(r.text)
 else:
     error = data.get('error', '')
@@ -29,7 +29,3 @@ else:
         print(error)
     else:
         pprint(data, width=80)
-
-
-
-

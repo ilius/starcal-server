@@ -29,7 +29,3 @@ else:
         print(error)
     else:
         pprint(data, width=80)
-
-
-
-

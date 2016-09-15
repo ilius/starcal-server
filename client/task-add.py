@@ -31,24 +31,18 @@ params = {
 
 r = requests.post(
     "http://127.0.0.1:8080/events/task/add/",
+    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
     json=params,
 )
 print(r)
-#print(r.text)
-if r.text.strip():
+try:
     data = r.json()
+except:
+    print("non-json data")
+    print(r.text)
+else:
     error = data.get('error', '')
     if error:
         print(error)
     else:
         pprint(data, width=80)
-
-
-
-
-
-
-
-
-
-

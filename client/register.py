@@ -16,16 +16,14 @@ r = requests.post(
     },
 )
 print(r)
-#print(r.text)
-if r.text.strip():
+try:
     data = r.json()
+except:
+    print("non-json data")
+    print(r.text)
+else:
     error = data.get('error', '')
     if error:
         print(error)
     else:
         pprint(data, width=80)
-
-
-
-
-
