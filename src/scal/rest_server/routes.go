@@ -33,31 +33,37 @@ var routes = Routes{
         "Index",
         "GET",
         "/",
-        Index,
+        authenticator.Wrap(Index),
+    },
+    Route{
+        "RegisterUser",
+        "POST",
+        "/users/register/",
+        RegisterUser,
     },
     Route{
         "CopyEvent",
         "POST",
         "/events/copy/",
-        CopyEvent,
+        authenticator.Wrap(CopyEvent),
     },
     Route{
         "AddTask",
         "POST",
         "/events/task/add/",
-        AddTask,
+        authenticator.Wrap(AddTask),
     },
     Route{
         "GetTask",
         "POST",
         "/events/task/get/",
-        GetTask,
+        authenticator.Wrap(GetTask),
     },
     Route{
         "UpdateTask",
         "POST",
         "/events/task/update/",
-        UpdateTask,
+        authenticator.Wrap(UpdateTask),
     },
 }
 

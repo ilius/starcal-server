@@ -10,18 +10,20 @@ import (
     "encoding/json"
     "crypto/sha1"
 
-    "scal/storage"
-    "scal/event_lib"
-
     "gopkg.in/mgo.v2-unstable"
     "gopkg.in/mgo.v2-unstable/bson"
+
+    "scal/lib/go-http-auth"
+
+    "scal/storage"
+    "scal/event_lib"
 )
 
 
-func AddTask(w http.ResponseWriter, r *http.Request) {
+func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
-    email := "" // FIXME
+    email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     body, _ := ioutil.ReadAll(r.Body)
@@ -83,10 +85,10 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
     })
 }
 
-func GetTask(w http.ResponseWriter, r *http.Request) {
+func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel := event_lib.TaskEventModel{}
     // -----------------------------------------------
-    email := "" // FIXME
+    email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     var ok bool
@@ -163,11 +165,11 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateTask(w http.ResponseWriter, r *http.Request) {
+func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
     sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
-    email := "" // FIXME
+    email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     body, _ := ioutil.ReadAll(r.Body)

@@ -2,7 +2,6 @@ package rest_server
 
 import (
     "fmt"
-    "html"
     "log"
     "net/http"
     "encoding/json"
@@ -12,6 +11,7 @@ import (
     "gopkg.in/mgo.v2-unstable"
     //"github.com/gorilla/mux"
 
+    "scal/lib/go-http-auth"
     "scal/storage"
     "scal/event_lib"
 )
@@ -22,8 +22,8 @@ func StartRestServer() {
     log.Fatal(http.ListenAndServe(":8080", router))
 }
 
-func Index(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+func Index(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    fmt.Fprintf(w, "Hello, %q", r.Username)
 }
 
 
@@ -44,8 +44,8 @@ func SetHttpError(w http.ResponseWriter, code int, msg string){
 }
 
 
-func CopyEvent(w http.ResponseWriter, r *http.Request) {
-    email := "" // FIXME
+func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     var ok bool

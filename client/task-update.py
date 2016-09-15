@@ -1,7 +1,13 @@
 #!/usr/bin/python3
+"""
+argv[1]: email
+argv[2]: password
+argv[3]: eventId
+"""
 
 import sys
 import requests
+from requests.auth import HTTPDigestAuth
 from pprint import pprint
 from datetime import datetime, timedelta
 import time
@@ -13,7 +19,7 @@ nowEpoch = int(time.time())
 #nowDt = datetime.now()
 
 params = {
-    "eventId": sys.argv[1],
+    "eventId": sys.argv[3],
     "timeZone": "Asia/Tehran",
     "calType": "jalali",
     "startTime": strftime(timeFormat, gmtime(nowEpoch)),
@@ -26,6 +32,7 @@ params = {
 
 r = requests.post(
     "http://127.0.0.1:8080/events/task/update/",
+    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
     json=params,
 )
 print(r)

@@ -1,6 +1,12 @@
 #!/usr/bin/python3
+"""
+argv[1]: email
+argv[2]: password
+"""
 
+import sys
 import requests
+from requests.auth import HTTPDigestAuth
 from pprint import pprint
 from datetime import datetime, timedelta
 import time
