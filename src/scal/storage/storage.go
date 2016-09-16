@@ -49,7 +49,7 @@ func init() {
     })
     db.C("event_revision").EnsureIndex(mgo.Index{
         Key: []string{"sha1"},
-        Unique: true,
+        Unique: false,
         DropDups: false,
         Background: false,
         Sparse: true,
