@@ -37,7 +37,7 @@ func init() {
         Unique: true,
         DropDups: false,
         Background: false,
-        Sparse: true,
+        Sparse: false,
     })
 
     db.C("event_access").EnsureIndex(mgo.Index{
@@ -52,21 +52,21 @@ func init() {
         Unique: false,
         DropDups: false,
         Background: false,
-        Sparse: true,
+        Sparse: false,
     })
     db.C("event_revision").EnsureIndex(mgo.Index{
         Key: []string{"eventId"},
         Unique: false,
         DropDups: false,
         Background: false,
-        Sparse: true,
+        Sparse: false,
     })
     db.C("event_revision").EnsureIndex(mgo.Index{
         Key: []string{"time"},
         Unique: false,
         DropDups: false,
         Background: false,
-        Sparse: true,
+        Sparse: false,
     })
 
     for _, colName := range []string{
@@ -87,7 +87,7 @@ func init() {
             Unique: true,
             DropDups: false,
             Background: false,
-            Sparse: true,
+            Sparse: false,
         })
     }
 
