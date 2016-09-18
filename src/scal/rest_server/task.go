@@ -52,9 +52,14 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
     eventId := bson.NewObjectId()
     eventModel.Id = eventId
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpError(w, http.StatusInternalServerError, "CopyEvent: user 'email' not found")
+    }
     eventAccess := event_lib.EventAccessModel{
         EventId: eventId,
         OwnerEmail: email,
+        GroupId: userModel.DefaultGroupId,
         //AccessEmails: []string{}
     }
     err = db.C("event_access").Insert(eventAccess)

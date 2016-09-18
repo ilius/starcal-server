@@ -15,6 +15,7 @@ import (
 
     "scal/lib/go-http-auth"
     "scal/storage"
+    "scal/event_lib"
 )
 
 const REALM = "starcalendar.net"
@@ -36,6 +37,7 @@ type UserModel struct {
     FullName string     `bson:"fullName" json:"fullName"`
     Password string     `bson:"password" json:"password"`
     Locked bool         `bson:"locked" json:"-"`
+    DefaultGroupId bson.ObjectId    `bson:"defaultGroupId" json:"defaultGroupId"`
 }
 
 func UserModelByEmail(email string, db *mgo.Database) *UserModel {
@@ -129,6 +131,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
+    userModel.DefaultGroupId = defaultGroup.Id
     err = db.C("users").Insert(userModel)
     if err != nil {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
@@ -136,6 +139,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     }
     json.NewEncoder(w).Encode(map[string]string{
         "successful": "true",
+        "defaultGroupId": defaultGroup.Id.Hex(),
     })
 }
 
