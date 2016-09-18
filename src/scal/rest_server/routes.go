@@ -42,6 +42,12 @@ var routes = Routes{
         RegisterUser,
     },
     Route{
+        "SetUserFullName",
+        "POST",
+        "/users/set-full-name/",
+        authenticator.Wrap(SetUserFullName),
+    },
+    Route{
         "CopyEvent",
         "POST",
         "/events/copy/",

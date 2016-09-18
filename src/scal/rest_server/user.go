@@ -144,8 +144,78 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func SetUserAttrInput(
+    w http.ResponseWriter,
+    db *mgo.Database,
+    email string,
+    body []byte,
+    attrName string,
+) string {
+    var err error
+    attrMap := map[string]string {
+        attrName: "",
+    }
+    err = json.Unmarshal(body, &attrMap)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return ""
+    }
+    attrValue, ok := attrMap[attrName]
+    if !ok || attrValue=="" {
+        SetHttpError(
+            w,
+            http.StatusBadRequest,
+            fmt.Sprintf("missing '%s'", attrName),
+        )
+        return ""
+    }
+    //fmt.Println("attrValue =", attrValue)
+    return attrValue
+}
 
+func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    const attrName = "fullName"
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
 
+    body, _ := ioutil.ReadAll(r.Body)
+    r.Body.Close()
+
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+
+    attrValue := SetUserAttrInput(
+        w,
+        db,
+        email,
+        body,
+        attrName,
+    )
+    if attrValue == "" {
+        return
+    }
+
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpError(
+            w,
+            http.StatusInternalServerError,
+            "SetUserFullName: user 'email' not found",
+        )
+    }
+
+    userModel.FullName = attrValue
+    db.C("users").UpdateId(userModel.Id, userModel) // no Save method!
+
+    json.NewEncoder(w).Encode(map[string]string{
+        "successful": "true",
+        attrName: attrValue,
+    })
+}
 
 
 
