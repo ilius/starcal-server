@@ -7,7 +7,7 @@ type EventAccessModel struct {
     EventId bson.ObjectId           `bson:"_id"`
     OwnerEmail string               `bson:"ownerEmail"`
     AccessEmails []string           `bson:"accessEmails"`
-    GroupId bson.ObjectId           `bson:"groupId"`
+    GroupId *bson.ObjectId          `bson:"groupId"`
     GroupModel *EventGroupModel     `bson:"-"`
 }
 func (self EventAccessModel) EmailCanRead(email string) bool {
@@ -38,7 +38,7 @@ func LoadEventAccessModel(db *mgo.Database, eventId bson.ObjectId) (*EventAccess
     if err != nil {
         return nil, err
     }
-    if accessModel.GroupId != "" {
+    if accessModel.GroupId != nil {
         groupModel := EventGroupModel{}
         err = db.C("event_group").Find(bson.M{
             "_id": accessModel.GroupId,

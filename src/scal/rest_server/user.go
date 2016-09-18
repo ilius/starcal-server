@@ -37,7 +37,7 @@ type UserModel struct {
     FullName string     `bson:"fullName" json:"fullName"`
     Password string     `bson:"password" json:"password"`
     Locked bool         `bson:"locked" json:"-"`
-    DefaultGroupId bson.ObjectId    `bson:"defaultGroupId" json:"defaultGroupId"`
+    DefaultGroupId *bson.ObjectId    `bson:"defaultGroupId" json:"defaultGroupId"`
 }
 
 func UserModelByEmail(email string, db *mgo.Database) *UserModel {
@@ -131,7 +131,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
-    userModel.DefaultGroupId = defaultGroup.Id
+    userModel.DefaultGroupId = &defaultGroup.Id
     err = db.C("users").Insert(userModel)
     if err != nil {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
@@ -299,7 +299,7 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
         )
     }
 
-    userModel.DefaultGroupId = groupId
+    userModel.DefaultGroupId = &groupId
     db.C("users").UpdateId(userModel.Id, userModel) // no Save method!
 
     json.NewEncoder(w).Encode(map[string]string{

@@ -113,7 +113,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     newGroupId := userModel.DefaultGroupId
     if eventAccess.GroupModel != nil {
         if eventAccess.GroupModel.OwnerEmail == email {
-            newGroupId = eventAccess.GroupModel.Id // == eventAccess.GroupId
+            newGroupId = &eventAccess.GroupModel.Id // == eventAccess.GroupId
         }
     }
 
