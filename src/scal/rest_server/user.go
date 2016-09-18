@@ -309,3 +309,31 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 }
 
 
+func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpError(
+            w,
+            http.StatusInternalServerError,
+            "SetUserDefaultGroupId: user 'email' not found",
+        )
+    }
+
+    userModel.DefaultGroupId = nil
+    db.C("users").UpdateId(userModel.Id, userModel) // no Save method!
+
+    json.NewEncoder(w).Encode(map[string]string{
+        "successful": "true",
+    })
+}
+
