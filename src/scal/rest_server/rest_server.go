@@ -76,10 +76,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     oldEventId := bson.ObjectIdHex(oldEventIdHex)
 
-    eventAccess := event_lib.EventAccessModel{}
-    err = db.C("event_access").Find(bson.M{
-        "_id": oldEventId,
-    }).One(&eventAccess)
+    eventAccess, err := event_lib.LoadEventAccessModel(db, oldEventId)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -108,9 +105,21 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     newEventId := bson.NewObjectId()
 
+    var newGroupId bson.ObjectId
+    if eventAccess.OwnerEmail == email {
+        newGroupId = eventAccess.GroupId
+    } else {
+        userModel := UserModelByEmail(email, db)
+        if userModel == nil {
+            SetHttpError(w, http.StatusInternalServerError, "CopyEvent: user 'email' not found")
+        }
+        newGroupId = userModel.DefaultGroupId
+    }
+
     newEventAccess := event_lib.EventAccessModel{
         EventId: newEventId,
         OwnerEmail: email,
+        GroupId: newGroupId,
         //AccessEmails: []string{}
     }
     err = db.C("event_access").Insert(newEventAccess)

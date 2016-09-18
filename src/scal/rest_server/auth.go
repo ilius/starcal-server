@@ -119,6 +119,16 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
             ),
         ),
     )
+    defaultGroup := event_lib.EventGroupModel{
+        Id: bson.NewObjectId(),
+        Title: userModel.Email,
+        OwnerEmail: userModel.Email,
+    }
+    err = db.C("event_group").Insert(defaultGroup)
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
     err = db.C("users").Insert(userModel)
     if err != nil {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
