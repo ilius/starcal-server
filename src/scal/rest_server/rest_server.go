@@ -105,15 +105,16 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     newEventId := bson.NewObjectId()
 
-    var newGroupId bson.ObjectId
-    if eventAccess.OwnerEmail == email {
-        newGroupId = eventAccess.GroupId
-    } else {
-        userModel := UserModelByEmail(email, db)
-        if userModel == nil {
-            SetHttpError(w, http.StatusInternalServerError, "CopyEvent: user 'email' not found")
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpError(w, http.StatusInternalServerError, "CopyEvent: user 'email' not found")
+    }
+
+    newGroupId := userModel.DefaultGroupId
+    if eventAccess.GroupModel != nil {
+        if eventAccess.GroupModel.OwnerEmail == email {
+            newGroupId = eventAccess.GroupModel.Id // == eventAccess.GroupId
         }
-        newGroupId = userModel.DefaultGroupId
     }
 
     newEventAccess := event_lib.EventAccessModel{
