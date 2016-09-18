@@ -4,9 +4,9 @@ import "gopkg.in/mgo.v2-unstable"
 import "gopkg.in/mgo.v2-unstable/bson"
 
 type EventAccessModel struct {
-    EventId bson.ObjectId   `bson:"_id"`
-    OwnerEmail string       `bson:"ownerEmail"`
-    AccessEmails []string   `bson:"accessEmails"`
+    EventId bson.ObjectId           `bson:"_id"`
+    OwnerEmail string               `bson:"ownerEmail"`
+    AccessEmails []string           `bson:"accessEmails"`
     GroupId bson.ObjectId           `bson:"groupId"`
     GroupModel *EventGroupModel     `bson:"-"`
 }
