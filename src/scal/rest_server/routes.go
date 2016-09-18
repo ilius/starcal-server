@@ -48,6 +48,12 @@ var routes = Routes{
         authenticator.Wrap(SetUserFullName),
     },
     Route{
+        "UnsetUserFullName",
+        "POST",
+        "/user/full-name/unset",
+        authenticator.Wrap(UnsetUserFullName),
+    },
+    Route{
         "CopyEvent",
         "POST",
         "/events/copy/",
