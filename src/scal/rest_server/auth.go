@@ -31,7 +31,7 @@ func init() {
 
 
 type UserModel struct {
-    Id int              `bson:"_id,omitempty" json:"-"`
+    Id bson.ObjectId    `bson:"_id,omitempty" json:"-"`
     Email string        `bson:"email" json:"email"`
     FullName string     `bson:"fullName" json:"fullName"`
     Password string     `bson:"password" json:"password"`
