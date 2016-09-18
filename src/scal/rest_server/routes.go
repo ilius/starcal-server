@@ -44,7 +44,7 @@ var routes = Routes{
     Route{
         "SetUserFullName",
         "POST",
-        "/user/set-full-name/",
+        "/user/full-name/set",
         authenticator.Wrap(SetUserFullName),
     },
     Route{
