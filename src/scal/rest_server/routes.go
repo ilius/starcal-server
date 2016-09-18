@@ -54,6 +54,12 @@ var routes = Routes{
         authenticator.Wrap(UnsetUserFullName),
     },
     Route{
+        "SetUserDefaultGroupId",
+        "POST",
+        "/user/default-group-id/set",
+        authenticator.Wrap(SetUserDefaultGroupId),
+    },
+    Route{
         "CopyEvent",
         "POST",
         "/events/copy/",

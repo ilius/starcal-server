@@ -245,3 +245,67 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 }
 
+func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    const attrName = "defaultGroupId"
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+
+    body, _ := ioutil.ReadAll(r.Body)
+    r.Body.Close()
+
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+
+    attrValue := SetUserAttrInput(
+        w,
+        db,
+        email,
+        body,
+        attrName,
+    )
+    if attrValue == "" {
+        return
+    }
+
+    if !bson.IsObjectIdHex(attrValue) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'defaultGroupId'")
+        return
+        // to avoid panic!
+    }
+    groupId := bson.ObjectIdHex(attrValue)
+    groupModel := event_lib.EventGroupModel{}
+    err = db.C("event_group").Find(bson.M{
+        "_id": groupId,
+    }).One(&groupModel)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'defaultGroupId'")
+        return
+    }
+    if groupModel.OwnerEmail != email {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'defaultGroupId'")
+        return
+    }
+
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpError(
+            w,
+            http.StatusInternalServerError,
+            "SetUserDefaultGroupId: user 'email' not found",
+        )
+    }
+
+    userModel.DefaultGroupId = groupId
+    db.C("users").UpdateId(userModel.Id, userModel) // no Save method!
+
+    json.NewEncoder(w).Encode(map[string]string{
+        "successful": "true",
+        attrName: groupId.Hex(),
+    })
+}
+
+
