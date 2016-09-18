@@ -44,25 +44,25 @@ var routes = Routes{
     Route{
         "SetUserFullName",
         "POST",
-        "/user/full-name/set",
+        "/user/full-name/set/",
         authenticator.Wrap(SetUserFullName),
     },
     Route{
         "UnsetUserFullName",
         "POST",
-        "/user/full-name/unset",
+        "/user/full-name/unset/",
         authenticator.Wrap(UnsetUserFullName),
     },
     Route{
         "SetUserDefaultGroupId",
         "POST",
-        "/user/default-group-id/set",
+        "/user/default-group-id/set/",
         authenticator.Wrap(SetUserDefaultGroupId),
     },
     Route{
         "UnsetUserDefaultGroupId",
         "POST",
-        "/user/default-group-id/unset",
+        "/user/default-group-id/unset/",
         authenticator.Wrap(UnsetUserDefaultGroupId),
     },
     Route{
