@@ -11,7 +11,7 @@ from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
 r = requests.post(
-    "http://127.0.0.1:8080/users/set-full-name/",
+    "http://127.0.0.1:8080/user/set-full-name/",
     auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
     json={
         'fullName': sys.argv[3],

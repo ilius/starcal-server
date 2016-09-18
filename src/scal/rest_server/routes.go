@@ -38,13 +38,13 @@ var routes = Routes{
     Route{
         "RegisterUser",
         "POST",
-        "/users/register/",
+        "/user/register/",
         RegisterUser,
     },
     Route{
         "SetUserFullName",
         "POST",
-        "/users/set-full-name/",
+        "/user/set-full-name/",
         authenticator.Wrap(SetUserFullName),
     },
     Route{
