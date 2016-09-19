@@ -9,8 +9,8 @@ import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
-r = requests.post(
-    "http://127.0.0.1:8080/user/full-name/unset/",
+r = requests.delete(
+    "http://127.0.0.1:8080/user/full-name/",
     auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
 )
 print(r)
