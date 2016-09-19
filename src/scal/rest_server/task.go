@@ -12,7 +12,7 @@ import (
 
     "gopkg.in/mgo.v2-unstable"
     "gopkg.in/mgo.v2-unstable/bson"
-    "github.com/gorilla/mux"
+    //"github.com/gorilla/mux"
 
     "scal/lib/go-http-auth"
 
@@ -95,10 +95,11 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel := event_lib.TaskEventModel{}
     // -----------------------------------------------
     email := r.Username
-    vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-    fmt.Println(vars)
-    fmt.Println(r.URL.Path)
-    eventIdHex := vars["eventId"]
+    //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
+    //eventIdHex := vars["eventId"]
+    parts := SplitURL(r.URL)
+    eventIdHex := parts[len(parts)-1]
+    fmt.Printf("eventIdHex = %v\n", eventIdHex)
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -169,10 +170,10 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
     email := r.Username
-    vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-    fmt.Println(vars)
-    fmt.Println(r.URL.Path)
-    eventIdHex := vars["eventId"]
+    //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
+    //eventIdHex := vars["eventId"]
+    parts := SplitURL(r.URL)
+    eventIdHex := parts[len(parts)-1]
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error

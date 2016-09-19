@@ -2,7 +2,9 @@ package rest_server
 
 import (
     "fmt"
+    "strings"
     "log"
+    "net/url"
     "net/http"
     "encoding/json"
     "io/ioutil"
@@ -16,6 +18,9 @@ import (
     "scal/event_lib"
 )
 
+func SplitURL(u *url.URL) []string {
+    return strings.Split(strings.Trim(u.Path, "/"), "/")
+}
 
 func StartRestServer() {
     router := NewRouter()
