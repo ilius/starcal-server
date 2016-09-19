@@ -74,19 +74,19 @@ var routes = Routes{
     Route{
         "AddTask",
         "POST",
-        "/events/task/add/",
+        "/events/task/",
         authenticator.Wrap(AddTask),
     },
     Route{
         "GetTask",
-        "POST",
-        "/events/task/get/",
+        "GET",
+        "/events/task/{eventId}/",
         authenticator.Wrap(GetTask),
     },
     Route{
         "UpdateTask",
-        "POST",
-        "/events/task/update/",
+        "PUT",
+        "/events/task/{eventId}/",
         authenticator.Wrap(UpdateTask),
     },
 }

@@ -30,7 +30,7 @@ params = {
 }
 
 r = requests.post(
-    "http://127.0.0.1:8080/events/task/add/",
+    "http://127.0.0.1:8080/events/task/",
     auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
     json=params,
 )

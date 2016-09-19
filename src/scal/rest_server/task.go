@@ -12,6 +12,7 @@ import (
 
     "gopkg.in/mgo.v2-unstable"
     "gopkg.in/mgo.v2-unstable/bson"
+    "github.com/gorilla/mux"
 
     "scal/lib/go-http-auth"
 
@@ -94,26 +95,19 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel := event_lib.TaskEventModel{}
     // -----------------------------------------------
     email := r.Username
+    vars := mux.Vars(&r.Request) // vars == map[] // FIXME
+    fmt.Println(vars)
+    fmt.Println(r.URL.Path)
+    eventIdHex := vars["eventId"]
+    // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
-    var ok bool
-    byEventId := map[string]string{
-        "eventId": "" ,
-    }
-    body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
-    err = json.Unmarshal(body, &byEventId)
-    if err != nil {
-        SetHttpError(w, http.StatusBadRequest, err.Error())
-        return
-    }
     db, err := storage.GetDB()
     if err != nil {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
-    eventIdHex, ok := byEventId["eventId"]
-    if !ok {
+    if eventIdHex == "" {
         SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
         return
     }
@@ -175,8 +169,23 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
     email := r.Username
+    vars := mux.Vars(&r.Request) // vars == map[] // FIXME
+    fmt.Println(vars)
+    fmt.Println(r.URL.Path)
+    eventIdHex := vars["eventId"]
+    // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
+    if eventIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
+        return
+    }
+    if !bson.IsObjectIdHex(eventIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
+        return
+        // to avoid panic!
+    }
+    eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
     r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
@@ -198,11 +207,6 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
-    if eventModel.Id == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
-        return
-    }
-    eventId := eventModel.Id
 
     // check if event exists, and has access to
     eventAccess := event_lib.EventAccessModel{}
@@ -238,7 +242,10 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     */
 
-    eventModel.Id = ""
+    if eventModel.Id != "" {
+        SetHttpError(w, http.StatusBadRequest, "'eventId' must not be present in JSON")
+        return
+    }
     eventModel.Sha1 = ""
     jsonByte, _ := json.Marshal(eventModel)
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
