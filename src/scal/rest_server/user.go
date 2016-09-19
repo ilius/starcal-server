@@ -199,17 +199,19 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    userModel := UserModelByEmail(email, db)
-    if userModel == nil {
-        SetHttpError(
-            w,
-            http.StatusInternalServerError,
-            "SetUserFullName: user 'email' not found",
-        )
-    }
-
-    userModel.FullName = attrValue
-    db.C("users").UpdateId(userModel.Id, userModel) // no Save method!
+    _, err = db.C("users").Find(bson.M{
+        "email": email,
+    }).Apply(
+        mgo.Change{
+            Update: bson.M{
+                "$set": bson.M{
+                    "fullName": attrValue,
+                },
+            },
+            ReturnNew: false,
+        },
+        nil,
+    )
 
     json.NewEncoder(w).Encode(map[string]string{
         "successful": "true",
@@ -228,17 +230,19 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    userModel := UserModelByEmail(email, db)
-    if userModel == nil {
-        SetHttpError(
-            w,
-            http.StatusInternalServerError,
-            "SetUserFullName: user 'email' not found",
-        )
-    }
-
-    userModel.FullName = ""
-    db.C("users").UpdateId(userModel.Id, userModel) // no Save method!
+    _, err = db.C("users").Find(bson.M{
+        "email": email,
+    }).Apply(
+        mgo.Change{
+            Update: bson.M{
+                "$set": bson.M{
+                    "fullName": "",
+                },
+            },
+            ReturnNew: false,
+        },
+        nil,
+    )
 
     json.NewEncoder(w).Encode(map[string]string{
         "successful": "true",
@@ -290,17 +294,19 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
         return
     }
 
-    userModel := UserModelByEmail(email, db)
-    if userModel == nil {
-        SetHttpError(
-            w,
-            http.StatusInternalServerError,
-            "SetUserDefaultGroupId: user 'email' not found",
-        )
-    }
-
-    userModel.DefaultGroupId = &groupId
-    db.C("users").UpdateId(userModel.Id, userModel) // no Save method!
+    _, err = db.C("users").Find(bson.M{
+        "email": email,
+    }).Apply(
+        mgo.Change{
+            Update: bson.M{
+                "$set": bson.M{
+                    "defaultGroupId": groupId,
+                },
+            },
+            ReturnNew: false,
+        },
+        nil,
+    )
 
     json.NewEncoder(w).Encode(map[string]string{
         "successful": "true",
@@ -320,17 +326,19 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
         return
     }
 
-    userModel := UserModelByEmail(email, db)
-    if userModel == nil {
-        SetHttpError(
-            w,
-            http.StatusInternalServerError,
-            "SetUserDefaultGroupId: user 'email' not found",
-        )
-    }
-
-    userModel.DefaultGroupId = nil
-    db.C("users").UpdateId(userModel.Id, userModel) // no Save method!
+    _, err = db.C("users").Find(bson.M{
+        "email": email,
+    }).Apply(
+        mgo.Change{
+            Update: bson.M{
+                "$set": bson.M{
+                    "defaultGroupId": nil,
+                },
+            },
+            ReturnNew: false,
+        },
+        nil,
+    )
 
     json.NewEncoder(w).Encode(map[string]string{
         "successful": "true",
