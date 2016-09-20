@@ -47,6 +47,13 @@ func init() {
         Background: false,
         Sparse: true,
     })
+    db.C("event_group").EnsureIndex(mgo.Index{
+        Key: []string{"readAccessEmails"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: true,
+    })
     db.C("event_access").EnsureIndex(mgo.Index{
         Key: []string{"ownerEmail"},
         Unique: false,
