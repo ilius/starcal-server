@@ -12,7 +12,7 @@ import (
 
     "scal/lib/go-http-auth"
     "scal/storage"
-    //"scal/event_lib"
+    "scal/event_lib"
 )
 
 func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -46,4 +46,38 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     json.NewEncoder(w).Encode(bson.M{
         "groups": results,
     })
+}
+
+func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    parts := SplitURL(r.URL)
+    groupIdHex := parts[len(parts)-1]
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+    if groupIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+        // to avoid panic!
+    }
+    groupId := bson.ObjectIdHex(groupIdHex)
+
+    groupModel := event_lib.EventGroupModel{}
+    db.C("event_group").Find(bson.M{
+        "_id": groupId,
+    }).One(&groupModel)
+    if !groupModel.EmailCanRead(email) {
+        SetHttpError(w, http.StatusUnauthorized, "you don't have access to this event group")
+        return
+    }
+    json.NewEncoder(w).Encode(groupModel)
 }
