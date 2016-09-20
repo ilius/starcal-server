@@ -21,7 +21,7 @@
 
 package occurrence
 
-import . "scal/lib/mapset"
+import . "scal-lib/mapset"
 import . "scal/utils"
 import . "scal/interval"
 

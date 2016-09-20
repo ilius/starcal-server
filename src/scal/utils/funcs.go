@@ -10,8 +10,8 @@ import (
     "strconv"
 )
 
+import . "scal-lib/mapset"
 import "scal"
-import . "scal/lib/mapset"
 import "scal/cal_types"
 import "scal/cal_types/gregorian"
 

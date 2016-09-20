@@ -5,7 +5,7 @@ import "time"
 import "fmt"
 import "strings"
 
-import . "scal/lib/mapset"
+import . "scal-lib/mapset"
 import "scal/cal_types/gregorian"
 import . "scal/utils"
 import . "scal/interval"
