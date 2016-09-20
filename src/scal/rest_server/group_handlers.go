@@ -126,7 +126,7 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     if !groupModel.EmailCanRead(email) {
         SetHttpError(
             w,
-            http.StatusUnauthorized,
+            http.StatusForbidden,
             "you don't have access to this event group",
         )
         return
