@@ -94,6 +94,88 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 }
 
+func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    parts := SplitURL(r.URL)
+    groupIdHex := parts[len(parts)-1]
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+    if groupIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+        // to avoid panic!
+    }
+    groupId := bson.ObjectIdHex(groupIdHex)
+
+    newGroupModel := event_lib.EventGroupModel{}
+
+    body, _ := ioutil.ReadAll(r.Body)
+    r.Body.Close()
+    err = json.Unmarshal(body, &newGroupModel)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    if newGroupModel.Id != "" {
+        SetHttpError(
+            w,
+            http.StatusBadRequest,
+            "can not specify 'groupId'",
+        )
+        return
+    }
+    if newGroupModel.OwnerEmail != "" {
+        SetHttpError(
+            w,
+            http.StatusBadRequest,
+            "can not specify 'ownerEmail'",
+        )
+        return
+    }
+    if newGroupModel.Title == "" {
+        SetHttpError(
+            w,
+            http.StatusBadRequest,
+            "missing or empty 'title'",
+        )
+        return
+    }
+
+    var oldGroupModel *event_lib.EventGroupModel
+    db.C("event_group").Find(bson.M{"_id": groupId}).One(&oldGroupModel)
+    if oldGroupModel == nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+    }
+    if oldGroupModel.OwnerEmail != email {
+        SetHttpError(
+            w,
+            http.StatusForbidden,
+            "you don't have write access to this event group",
+        )
+        return
+    }
+    oldGroupModel.Title             = newGroupModel.Title
+    oldGroupModel.AddAccessEmails   = newGroupModel.AddAccessEmails
+    oldGroupModel.ReadAccessEmails  = newGroupModel.ReadAccessEmails
+    db.C("event_group").Update(
+        bson.M{"_id": groupId},
+        oldGroupModel,
+    )
+    json.NewEncoder(w).Encode(bson.M{})
+}
+
 func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     parts := SplitURL(r.URL)
