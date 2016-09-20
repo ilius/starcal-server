@@ -23,6 +23,7 @@ import (
 
 func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
+    sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -80,10 +81,19 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
-    err = db.C(eventModel.Collection()).Insert(eventModel)
-    if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
-        return
+
+    // don't store duplicate eventModel, even if it was added by another user
+    // the (underlying) eventModel does not belong to anyone
+    // like git's blobs and trees
+    err = db.C(eventModel.Collection()).Find(bson.M{
+        "sha1": eventRev.Sha1,
+    }).One(&sameEventModel)
+    if err == mgo.ErrNotFound {
+        err = db.C(eventModel.Collection()).Insert(eventModel)
+        if err != nil {
+            SetHttpError(w, http.StatusBadRequest, err.Error())
+            return
+        }
     }
 
     json.NewEncoder(w).Encode(map[string]string{
