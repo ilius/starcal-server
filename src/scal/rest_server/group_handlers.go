@@ -24,12 +24,12 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpError(w, http.StatusInternalServerError, err.Error())
         return
     }
-    type groupResult struct {    
-        Id bson.ObjectId            `bson:"_id" json:"groupId"`
+    type resultModel struct {
+        GroupId bson.ObjectId       `bson:"_id" json:"groupId"`
         Title string                `bson:"title" json:"title"`
         OwnerEmail string           `bson:"ownerEmail" json:"ownerEmail"`
     }
-    var results []groupResult
+    var results []resultModel
     db.C("event_group").Find(bson.M{
         "$or": []bson.M{
             bson.M{
@@ -41,7 +41,7 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         },
     }).All(&results)
     if results == nil {
-        results = make([]groupResult, 0)
+        results = make([]resultModel, 0)
     }
     json.NewEncoder(w).Encode(bson.M{
         "groups": results,
@@ -72,15 +72,17 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     groupId := bson.ObjectIdHex(groupIdHex)
 
     var groupModel *event_lib.EventGroupModel
-    db.C("event_group").Find(bson.M{
-        "_id": groupId,
-    }).One(&groupModel)
+    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
     }
     if !groupModel.EmailCanRead(email) {
-        SetHttpError(w, http.StatusUnauthorized, "you don't have access to this event group")
+        SetHttpError(
+            w,
+            http.StatusUnauthorized,
+            "you don't have access to this event group",
+        )
         return
     }
     json.NewEncoder(w).Encode(groupModel)
