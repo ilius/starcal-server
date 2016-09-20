@@ -148,3 +148,31 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 
 }
+
+
+func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+
+    type eventModel struct {
+        EventId bson.ObjectId   `bson:"_id" json:"eventId"`
+        EventType string        `bson:"eventType" json:"eventType"`
+    }
+    var events []eventModel
+    err = db.C("event_access").Find(bson.M{
+        "ownerEmail": email,
+        "groupId": nil,
+    }).All(&events)
+    if events == nil {
+        events = make([]eventModel, 0)
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "events": events,
+    })
+}
