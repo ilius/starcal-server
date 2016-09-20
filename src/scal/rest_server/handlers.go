@@ -13,7 +13,7 @@ import (
     "gopkg.in/mgo.v2-unstable"
     //"github.com/gorilla/mux"
 
-    "scal/lib/go-http-auth"
+    "scal-lib/go-http-auth"
     "scal/storage"
     "scal/event_lib"
 )

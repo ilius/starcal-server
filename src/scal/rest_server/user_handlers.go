@@ -13,7 +13,7 @@ import (
     "gopkg.in/mgo.v2-unstable/bson"
     "gopkg.in/mgo.v2-unstable"
 
-    "scal/lib/go-http-auth"
+    "scal-lib/go-http-auth"
     "scal/storage"
     "scal/event_lib"
 )
