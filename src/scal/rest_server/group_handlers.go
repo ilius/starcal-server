@@ -4,7 +4,7 @@ import (
     //"fmt"
     "net/http"
     "encoding/json"
-    //"io/ioutil"
+    "io/ioutil"
 
     "gopkg.in/mgo.v2-unstable/bson"
     //"gopkg.in/mgo.v2-unstable"
@@ -45,6 +45,52 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     json.NewEncoder(w).Encode(bson.M{
         "groups": results,
+    })
+}
+
+func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+
+    groupModel := event_lib.EventGroupModel{}
+
+    body, _ := ioutil.ReadAll(r.Body)
+    r.Body.Close()
+    err = json.Unmarshal(body, &groupModel)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    if groupModel.Id != "" {
+        SetHttpError(
+            w,
+            http.StatusBadRequest,
+            "can not specify 'groupId'",
+        )
+        return
+    }
+    if groupModel.OwnerEmail != "" {
+        SetHttpError(
+            w,
+            http.StatusBadRequest,
+            "can not specify 'ownerEmail'",
+        )
+        return
+    }
+
+    groupId := bson.NewObjectId()
+    groupModel.Id = groupId
+    groupModel.OwnerEmail = email
+    err = db.C("event_group").Insert(groupModel)
+
+    json.NewEncoder(w).Encode(map[string]string{
+        "groupId": groupId.Hex(),
     })
 }
 

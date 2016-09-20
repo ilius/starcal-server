@@ -78,6 +78,12 @@ var routes = Routes{
         authenticator.Wrap(GetGroupList),
     },
     Route{
+        "AddGroup",
+        "POST",
+        "/events/groups/",
+        authenticator.Wrap(AddGroup),
+    },
+    Route{
         "GetGroup",
         "GET",
         "/events/groups/{groupId}/",
