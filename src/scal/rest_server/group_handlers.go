@@ -71,10 +71,14 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     groupId := bson.ObjectIdHex(groupIdHex)
 
-    groupModel := event_lib.EventGroupModel{}
+    var groupModel *event_lib.EventGroupModel
     db.C("event_group").Find(bson.M{
         "_id": groupId,
     }).One(&groupModel)
+    if groupModel == nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+    }
     if !groupModel.EmailCanRead(email) {
         SetHttpError(w, http.StatusUnauthorized, "you don't have access to this event group")
         return
