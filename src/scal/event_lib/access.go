@@ -29,7 +29,11 @@ func (self EventAccessModel) EmailCanRead(email string) bool {
     return false
 }
 
-func LoadEventAccessModel(db *mgo.Database, eventId bson.ObjectId) (*EventAccessModel, error) {
+func LoadEventAccessModel(
+    db *mgo.Database,
+    eventId bson.ObjectId,
+    loadGroup bool,
+) (*EventAccessModel, error) {
     var err error
     accessModel := EventAccessModel{}
     err = db.C("event_access").Find(bson.M{
@@ -38,7 +42,7 @@ func LoadEventAccessModel(db *mgo.Database, eventId bson.ObjectId) (*EventAccess
     if err != nil {
         return nil, err
     }
-    if accessModel.GroupId != nil {
+    if loadGroup && accessModel.GroupId != nil {
         groupModel := EventGroupModel{}
         err = db.C("event_group").Find(bson.M{
             "_id": accessModel.GroupId,

@@ -119,10 +119,7 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
 
-    eventAccess := event_lib.EventAccessModel{}
-    err = db.C("event_access").Find(bson.M{
-        "_id": eventId,
-    }).One(&eventAccess)
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -210,10 +207,7 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     // check if event exists, and has access to
-    eventAccess := event_lib.EventAccessModel{}
-    err = db.C("event_access").Find(bson.M{
-        "_id": eventId,
-    }).One(&eventAccess)
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, false)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")

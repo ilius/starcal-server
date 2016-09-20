@@ -81,7 +81,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     oldEventId := bson.ObjectIdHex(oldEventIdHex)
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, oldEventId)
+    eventAccess, err := event_lib.LoadEventAccessModel(db, oldEventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
