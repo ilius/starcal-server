@@ -59,6 +59,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventAccess := event_lib.EventAccessModel{
         EventId: eventId,
+        EventType: eventModel.Type(),
         OwnerEmail: email,
         GroupId: userModel.DefaultGroupId,
         //AccessEmails: []string{}

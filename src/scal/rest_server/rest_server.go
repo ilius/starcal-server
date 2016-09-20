@@ -124,6 +124,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     newEventAccess := event_lib.EventAccessModel{
         EventId: newEventId,
+        EventType: eventAccess.EventType,
         OwnerEmail: email,
         GroupId: newGroupId,
         //AccessEmails: []string{}
