@@ -85,3 +85,60 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     json.NewEncoder(w).Encode(groupModel)
 }
+
+func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    parts := SplitURL(r.URL)
+    groupIdHex := parts[len(parts)-2]
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+    if groupIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+        // to avoid panic!
+    }
+    groupId := bson.ObjectIdHex(groupIdHex)
+    var groupModel *event_lib.EventGroupModel
+    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    if groupModel == nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+    }
+
+    type resultModel struct {
+        EventId bson.ObjectId       `bson:"_id" json:"eventId"`
+        EventType string            `bson:"eventType" json:"eventType"`
+        //OwnerEmail string         `bson:"ownerEmail" json:"ownerEmail"`
+        //AccessEmails []string     `bson:"accessEmails"`
+        //GroupId *bson.ObjectId    `bson:"groupId" json:"groupId"`
+    }
+    var results []resultModel
+
+    db.C("event_access").Find(bson.M{
+        "groupId": groupId,
+        "$or": [2]bson.M{
+            bson.M{
+                "ownerEmail": email,
+            },
+            bson.M{
+                "accessEmails": email,// works :D
+            },
+        },
+    }).All(&results)
+    if results == nil {
+        results = make([]resultModel, 0)
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "events": results,
+    })
+}
