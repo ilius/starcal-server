@@ -10,7 +10,7 @@ from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
 r = requests.get(
-    "http://127.0.0.1:8080/events/groups/" ,
+    "http://127.0.0.1:8080/event/groups/" ,
     auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
 )
 print(r)

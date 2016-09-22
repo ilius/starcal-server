@@ -2,7 +2,7 @@
 """
 argv[1]: email
 argv[2]: password
-argv[3]: eventId
+argv[3]: groupId
 """
 
 import sys
@@ -11,14 +11,14 @@ from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
 r = requests.get(
-    "http://127.0.0.1:8080/events/task/%s/" % sys.argv[3],
+    "http://127.0.0.1:8080/event/groups/%s/events/" % sys.argv[3],
     auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
 )
 print(r)
 try:
     data = r.json()
 except:
-    print("non-json data")
+    print('data is not json')
     print(r.text)
 else:
     error = data.get('error', '')
