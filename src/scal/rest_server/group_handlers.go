@@ -30,7 +30,7 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         OwnerEmail string           `bson:"ownerEmail" json:"ownerEmail"`
     }
     var results []resultModel
-    db.C("event_group").Find(bson.M{
+    err = db.C("event_group").Find(bson.M{
         "$or": []bson.M{
             bson.M{
                 "ownerEmail": email,
@@ -40,6 +40,10 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             },
         },
     }).All(&results)
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
     if results == nil {
         results = make([]resultModel, 0)
     }
@@ -169,10 +173,14 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     oldGroupModel.Title             = newGroupModel.Title
     oldGroupModel.AddAccessEmails   = newGroupModel.AddAccessEmails
     oldGroupModel.ReadAccessEmails  = newGroupModel.ReadAccessEmails
-    db.C("event_group").Update(
+    err = db.C("event_group").Update(
         bson.M{"_id": groupId},
         oldGroupModel,
     )
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
     json.NewEncoder(w).Encode(bson.M{})
 }
 
@@ -254,7 +262,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     var results []resultModel
 
-    db.C("event_access").Find(bson.M{
+    err = db.C("event_access").Find(bson.M{
         "groupId": groupId,
         "$or": [2]bson.M{
             bson.M{
@@ -265,6 +273,10 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             },
         },
     }).All(&results)
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
     if results == nil {
         results = make([]resultModel, 0)
     }
