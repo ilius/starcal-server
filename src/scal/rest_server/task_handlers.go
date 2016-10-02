@@ -56,7 +56,8 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel.Id = eventId
     userModel := UserModelByEmail(email, db)
     if userModel == nil {
-        SetHttpError(w, http.StatusInternalServerError, "CopyEvent: user 'email' not found")
+        SetHttpErrorUserNotFound(w, email)
+        return
     }
     eventAccess := event_lib.EventAccessModel{
         EventId: eventId,

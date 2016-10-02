@@ -112,7 +112,8 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     userModel := UserModelByEmail(email, db)
     if userModel == nil {
-        SetHttpError(w, http.StatusInternalServerError, "CopyEvent: user 'email' not found")
+        SetHttpErrorUserNotFound(w, email)
+        return
     }
 
     newGroupId := userModel.DefaultGroupId

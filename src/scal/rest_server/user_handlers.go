@@ -54,6 +54,17 @@ func UserModelByEmail(email string, db *mgo.Database) *UserModel {
     return &user
 }
 
+func SetHttpErrorUserNotFound(w http.ResponseWriter, email string) {
+    SetHttpError(
+        w,
+        http.StatusInternalServerError,
+        fmt.Sprintf(
+            "user with email '%s' not found",
+            email,
+        ),
+    )
+}
+
 //type Request http.Request
 /*
 type Request auth.AuthenticatedRequest

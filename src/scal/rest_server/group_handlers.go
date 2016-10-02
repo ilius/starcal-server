@@ -265,6 +265,10 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, email)
+        return
+    }
     if *userModel.DefaultGroupId == groupId {
         if !ALLOW_DELETE_DEFAULT_GROUP {
             SetHttpError(
