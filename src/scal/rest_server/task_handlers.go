@@ -42,7 +42,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if eventModel.Id != "" {
@@ -68,7 +68,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     err = db.C("event_access").Insert(eventAccess)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     eventRev := event_lib.EventRevisionModel{
@@ -79,7 +79,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     err = db.C("event_revision").Insert(eventRev)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 
@@ -117,7 +117,7 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var err error
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if eventIdHex == "" {
@@ -136,7 +136,7 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
         } else {
-            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            SetHttpErrorInternal(w, err)
         }
         return
     }
@@ -153,7 +153,7 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
         } else {
-            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            SetHttpErrorInternal(w, err)
         }
         return
     }
@@ -165,7 +165,7 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
         } else {
-            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            SetHttpErrorInternal(w, err)
         }
         return
     }
@@ -214,7 +214,7 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 
@@ -224,7 +224,7 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
         } else {
-            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            SetHttpErrorInternal(w, err)
         }
         return
     }
@@ -243,7 +243,7 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
         } else {
-            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            SetHttpErrorInternal(w, err)
         }
         return
     }

@@ -111,7 +111,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     }
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     anotherUserModel := UserModelByEmail(userModel.Email, db)
@@ -139,13 +139,13 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     }
     err = db.C("event_group").Insert(defaultGroup)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     userModel.DefaultGroupId = &defaultGroup.Id
     err = db.C("users").Insert(userModel)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     json.NewEncoder(w).Encode(map[string]string{
@@ -195,7 +195,7 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 
@@ -237,7 +237,7 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 
@@ -271,7 +271,7 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 
@@ -333,7 +333,7 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
 
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 

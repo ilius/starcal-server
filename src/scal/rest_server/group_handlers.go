@@ -23,7 +23,7 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var err error
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     type resultModel struct {
@@ -43,7 +43,7 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         },
     }).All(&results)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if results == nil {
@@ -60,7 +60,7 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var err error
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 
@@ -110,7 +110,7 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var err error
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if groupIdHex == "" {
@@ -180,7 +180,7 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         oldGroupModel,
     )
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     json.NewEncoder(w).Encode(bson.M{})
@@ -195,7 +195,7 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var err error
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if groupIdHex == "" {
@@ -235,7 +235,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var err error
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if groupIdHex == "" {
@@ -284,7 +284,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             userModel,
         )
         if err != nil {
-            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            SetHttpErrorInternal(w, err)
             return
         }
     }
@@ -296,7 +296,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "groupId": groupId,
     }).All(&eventAccessModels)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if eventAccessModels != nil {
@@ -314,14 +314,14 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 eventAccessModel,
             )
             if err != nil {
-                SetHttpError(w, http.StatusInternalServerError, err.Error())
+                SetHttpErrorInternal(w, err)
                 return
             }
         }
     }
     err = db.C("event_group").Remove(bson.M{"_id": groupId})
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 }
@@ -335,7 +335,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var err error
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if groupIdHex == "" {
@@ -376,7 +376,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         },
     }).All(&results)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     if results == nil {

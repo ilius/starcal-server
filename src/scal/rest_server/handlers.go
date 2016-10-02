@@ -48,6 +48,9 @@ func SetHttpError(w http.ResponseWriter, code int, msg string){
     )
 }
 
+func SetHttpErrorInternal(w http.ResponseWriter, err error) {
+    SetHttpError(w, http.StatusInternalServerError, err.Error())
+}
 
 func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
@@ -66,7 +69,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     oldEventIdHex, ok := byEventId["eventId"]
@@ -86,7 +89,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
         } else {
-            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            SetHttpErrorInternal(w, err)
         }
         return
     }
@@ -103,7 +106,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
         } else {
-            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            SetHttpErrorInternal(w, err)
         }
         return
     }
@@ -132,13 +135,13 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     err = db.C("event_access").Insert(newEventAccess)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
     eventRev.EventId = newEventId
     err = db.C("event_revision").Insert(eventRev)
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 
@@ -157,7 +160,7 @@ func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var err error
     db, err := storage.GetDB()
     if err != nil {
-        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        SetHttpErrorInternal(w, err)
         return
     }
 
