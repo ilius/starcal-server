@@ -96,6 +96,12 @@ var routes = Routes{
         authenticator.Wrap(GetGroup),
     },
     Route{
+        "DeleteGroup",
+        "DELETE",
+        "/event/groups/{groupId}/",
+        authenticator.Wrap(DeleteGroup),
+    },
+    Route{
         "GetGroupEventList",
         "GET",
         "/event/groups/{groupId}/events/",

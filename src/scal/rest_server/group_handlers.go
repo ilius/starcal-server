@@ -15,6 +15,8 @@ import (
     "scal/event_lib"
 )
 
+const ALLOW_DELETE_DEFAULT_GROUP = true
+
 func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -222,6 +224,102 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     json.NewEncoder(w).Encode(groupModel)
+}
+
+func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    parts := SplitURL(r.URL)
+    groupIdHex := parts[len(parts)-1]
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+    if groupIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+        // to avoid panic!
+    }
+    groupId := bson.ObjectIdHex(groupIdHex)
+
+    var groupModel *event_lib.EventGroupModel
+    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    if groupModel == nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+    }
+    if groupModel.OwnerEmail != email {
+        SetHttpError(
+            w,
+            http.StatusForbidden,
+            "you are not allowed to delete this event group",
+        )
+        return
+    }
+
+    userModel := UserModelByEmail(email, db)
+    if *userModel.DefaultGroupId == groupId {
+        if !ALLOW_DELETE_DEFAULT_GROUP {
+            SetHttpError(
+                w,
+                http.StatusForbidden,
+                "you can not delete your default event group",
+            )
+            return
+        }
+        userModel.DefaultGroupId = nil
+        err = db.C("users").Update(
+            bson.M{"email": email},
+            userModel,
+        )
+        if err != nil {
+            SetHttpError(w, http.StatusInternalServerError, err.Error())
+            return
+        }
+    }
+
+    eventAccessCol := db.C("event_access")
+
+    var eventAccessModels []event_lib.EventAccessModel
+    err = eventAccessCol.Find(bson.M{
+        "groupId": groupId,
+    }).All(&eventAccessModels)
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+    if eventAccessModels != nil {
+        for _, eventAccessModel := range eventAccessModels {
+            if eventAccessModel.OwnerEmail != email {
+                // send an Email to {eventAccessModel.OwnerEmail}
+                // to inform the event owner, and let him move this
+                // (ungrouped) event into his default (or any other) group
+                // FIXME
+            }
+            // insert a new record to "event_access_change_log" // FIXME
+            eventAccessModel.GroupId = nil
+            err = eventAccessCol.Update(
+                bson.M{"_id": eventAccessModel.EventId},
+                eventAccessModel,
+            )
+            if err != nil {
+                SetHttpError(w, http.StatusInternalServerError, err.Error())
+                return
+            }
+        }
+    }
+    err = db.C("event_group").Remove(bson.M{"_id": groupId})
+    if err != nil {
+        SetHttpError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
 }
 
 func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
