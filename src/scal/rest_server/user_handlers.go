@@ -320,3 +320,28 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
     })
 }
 
+
+func GetUserInfo(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, email)
+        return
+    }
+
+    json.NewEncoder(w).Encode(bson.M{
+        "email": userModel.Email,
+        "fullName": userModel.FullName,
+        "defaultGroupId": userModel.DefaultGroupId,
+        //"locked": userModel.Locked,
+    })
+}

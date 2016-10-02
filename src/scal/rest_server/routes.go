@@ -54,6 +54,12 @@ var routes = Routes{
         authenticator.Wrap(UnsetUserFullName),
     },
     Route{
+        "GetUserInfo",
+        "GET",
+        "/user/info/",
+        authenticator.Wrap(GetUserInfo),
+    },
+    Route{
         "SetUserDefaultGroupId",
         "PUT",
         "/user/default-group-id/",
