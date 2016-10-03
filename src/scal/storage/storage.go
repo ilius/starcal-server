@@ -83,7 +83,14 @@ func init() {
         Sparse: false,
     })
 
-    for _, colName := range []string{
+    db.C("event_data").EnsureIndex(mgo.Index{
+        Key: []string{"sha1"},
+        Unique: true,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    /*for _, colName := range []string{
         "events_allDayTask",
         "events_custom",
         "events_dailyNote",
@@ -103,7 +110,7 @@ func init() {
             Background: false,
             Sparse: false,
         })
-    }
+    }*/
 
 }
 

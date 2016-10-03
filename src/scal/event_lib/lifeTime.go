@@ -9,7 +9,8 @@ func (self LifeTimeEventModel) Type() string {
     return "lifeTime"
 }
 func (self LifeTimeEventModel) Collection() string {
-    return "events_lifeTime"
+    return "event_data"
+    //return "events_lifeTime"
 }
 
 

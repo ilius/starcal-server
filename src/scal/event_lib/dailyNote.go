@@ -9,7 +9,8 @@ func (self DailyNoteEventModel) Type() string {
     return "dailyNote"
 }
 func (self DailyNoteEventModel) Collection() string {
-    return "events_dailyNote"
+    return "event_data"
+    //return "events_dailyNote"
 }
 
 type DailyNoteEvent struct {

@@ -50,7 +50,8 @@ func (self CustomEventModel) Type() string {
     return "custom"
 }
 func (self CustomEventModel) Collection() string {
-    return "events_custom"
+    return "event_data"
+    //return "events_custom"
 }
 
 

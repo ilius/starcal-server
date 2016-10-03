@@ -12,7 +12,8 @@ func (self AllDayTaskEventModel) Type() string {
     return "allDayTask"
 }
 func (self AllDayTaskEventModel) Collection() string {
-    return "events_allDayTask"
+    return "event_data"
+    //return "events_allDayTask"
 }
 
 

@@ -14,7 +14,8 @@ func (self UniversityExamEventModel) Type() string {
     return "universityExam"
 }
 func (self UniversityExamEventModel) Collection() string {
-    return "events_universityExam"
+    return "event_data"
+    //return "events_universityExam"
 }
 
 

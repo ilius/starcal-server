@@ -15,7 +15,8 @@ func (self WeeklyEventModel) Type() string {
     return "weekly"
 }
 func (self WeeklyEventModel) Collection() string {
-    return "events_weekly"
+    return "event_data"
+    //return "events_weekly"
 }
 
 

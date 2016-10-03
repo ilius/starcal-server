@@ -12,7 +12,8 @@ func (self YearlyEventModel) Type() string {
     return "yearly"
 }
 func (self YearlyEventModel) Collection() string {
-    return "events_yearly"
+    return "event_data"
+    //return "events_yearly"
 }
 
 

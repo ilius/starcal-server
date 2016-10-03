@@ -15,7 +15,8 @@ func (self MonthlyEventModel) Type() string {
     return "monthly"
 }
 func (self MonthlyEventModel) Collection() string {
-    return "events_monthly"
+    return "event_data"
+    //return "events_monthly"
 }
 
 

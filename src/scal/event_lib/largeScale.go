@@ -16,7 +16,8 @@ func (self LargeScaleEventModel) Type() string {
     return "largeScale"
 }
 func (self LargeScaleEventModel) Collection() string {
-    return "events_largeScale"
+    return "event_data"
+    //return "events_largeScale"
 }
 
 type LargeScaleEvent struct {

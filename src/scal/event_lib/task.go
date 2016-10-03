@@ -23,7 +23,8 @@ func (self TaskEventModel) Type() string {
     return "task"
 }
 func (self TaskEventModel) Collection() string {
-    return "events_task"
+    return "event_data"
+    //return "events_task"
 }
 
 

@@ -22,7 +22,8 @@ func (self UniversityClassEventModel) Type() string {
     return "universityClass"
 }
 func (self UniversityClassEventModel) Collection() string {
-    return "events_universityClass"
+    return "event_data"
+    //return "events_universityClass"
 }
 
 
