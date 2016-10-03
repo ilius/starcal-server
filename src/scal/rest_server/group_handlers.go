@@ -362,19 +362,27 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         //AccessEmails []string     `bson:"accessEmails"`
         //GroupId *bson.ObjectId    `bson:"groupId" json:"groupId"`
     }
-    var results []resultModel
 
-    err = db.C("event_access").Find(bson.M{
-        "groupId": groupId,
-        "$or": [2]bson.M{
-            bson.M{
-                "ownerEmail": email,
+    var results []resultModel
+    var cond bson.M
+    if groupModel.EmailCanRead(email) {
+        cond = bson.M{
+            "groupId": groupId,
+        }
+    } else {
+        cond = bson.M{
+            "groupId": groupId,
+            "$or": [2]bson.M{
+                bson.M{
+                    "ownerEmail": email,
+                },
+                bson.M{
+                    "accessEmails": email,// works :D
+                },
             },
-            bson.M{
-                "accessEmails": email,// works :D
-            },
-        },
-    }).All(&results)
+        }
+    }
+    err = db.C("event_access").Find(cond).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
