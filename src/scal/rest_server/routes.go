@@ -114,6 +114,12 @@ var routes = Routes{
         authenticator.Wrap(GetGroupEventList),
     },
     Route{
+        "GetGroupModifiedEvents",
+        "GET",
+        "/event/groups/{groupId}/modified-events/{sinceDateTime}/",
+        authenticator.Wrap(GetGroupModifiedEvents),
+    },
+    Route{
         "CopyEvent",
         "POST",
         "/event/copy/",

@@ -2,6 +2,7 @@ package rest_server
 
 import (
     //"fmt"
+    "time"
     "net/http"
     "encoding/json"
     "io/ioutil"
@@ -16,6 +17,8 @@ import (
 )
 
 const ALLOW_DELETE_DEFAULT_GROUP = true
+
+// time.RFC3339 == "2006-01-02T15:04:05Z07:00"
 
 func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
@@ -394,3 +397,127 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "events": results,
     })
 }
+
+func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    parts := SplitURL(r.URL)
+    groupIdHex := parts[len(parts)-3]
+    sinceStr := parts[len(parts)-1] // datetime string
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    if groupIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+        // to avoid panic!
+    }
+    groupId := bson.ObjectIdHex(groupIdHex)
+    var groupModel *event_lib.EventGroupModel
+    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    if groupModel == nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+    }
+
+    since, err := time.Parse(time.RFC3339, sinceStr)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    //json.NewEncoder(w).Encode(bson.M{"sinceDateTime": since})
+
+    results := []bson.M{}
+    if groupModel.EmailCanRead(email) {
+        err = db.C("event_access").Pipe([]bson.M{
+            {"$match": bson.M{
+                "groupId": groupId,
+            }},
+            {"$lookup": bson.M{
+                "from": "event_revision",
+                "localField": "_id",
+                "foreignField": "eventId",
+                "as": "revision",
+            }},
+            {"$unwind": "$revision"},
+            {"$match": bson.M{
+                "revision.time": bson.M{
+                    "$gt": since,
+                },
+            }},
+            {"$sort": bson.M{"revision.time": -1}},
+            {"$group": bson.M{
+                "_id": "$_id",
+                "eventType": bson.M{"$first": "$eventType"},
+                "ownerEmail": bson.M{"$first": "$ownerEmail"},
+                "lastModifiedTime": bson.M{"$first": "$revision.time"},
+                "lastSha1": bson.M{"$first": "$revision.sha1"},
+            }},
+            {"$lookup": bson.M{
+                "from": "event_data",
+                "localField": "lastSha1",
+                "foreignField": "sha1",
+                "as": "data",
+            }},
+            {"$unwind": "$data"},
+        }).All(&results)
+    } else {
+        err = db.C("event_access").Pipe([]bson.M{
+            {"$match": bson.M{
+                "groupId": groupId,
+            }},
+            {"$match": bson.M{
+                "$or": []bson.M{
+                    bson.M{"ownerEmail": email},
+                    bson.M{"accessEmails": email},
+                },
+            }},
+            {"$lookup": bson.M{
+                "from": "event_revision",
+                "localField": "_id",
+                "foreignField": "eventId",
+                "as": "revision",
+            }},
+            {"$unwind": "$revision"},
+            {"$match": bson.M{
+                "revision.time": bson.M{
+                    "$gt": since,
+                },
+            }},
+            {"$sort": bson.M{"revision.time": -1}},
+            {"$group": bson.M{
+                "_id": "$_id",
+                "eventType": bson.M{"$first": "$eventType"},
+                "ownerEmail": bson.M{"$first": "$ownerEmail"},
+                "lastModifiedTime": bson.M{"$first": "$revision.time"},
+                "lastSha1": bson.M{"$first": "$revision.sha1"},
+            }},
+            {"$lookup": bson.M{
+                "from": "event_data",
+                "localField": "lastSha1",
+                "foreignField": "sha1",
+                "as": "data",
+            }},
+            {"$unwind": "$data"},
+        }).All(&results)
+    }
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "groupId": groupId,
+        "since_datetime": since,
+        "modified_events": results,
+    })
+
+}
+
