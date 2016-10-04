@@ -398,6 +398,114 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 }
 
+
+func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    parts := SplitURL(r.URL)
+    groupIdHex := parts[len(parts)-2]
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    if groupIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+        // to avoid panic!
+    }
+    groupId := bson.ObjectIdHex(groupIdHex)
+    var groupModel *event_lib.EventGroupModel
+    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    if groupModel == nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+    }
+    var results []bson.M
+    var pipeline []bson.M
+    if groupModel.EmailCanRead(email) {
+        pipeline = []bson.M{
+            {"$match": bson.M{
+                "groupId": groupId,
+            }},
+            {"$lookup": bson.M{
+                "from": "event_revision",
+                "localField": "_id",
+                "foreignField": "eventId",
+                "as": "revision",
+            }},
+            {"$unwind": "$revision"},
+            {"$group": bson.M{
+                "_id": "$_id",
+                "eventType": bson.M{"$first": "$eventType"},
+                "ownerEmail": bson.M{"$first": "$ownerEmail"},
+                "accessEmails": bson.M{"$first": "$accessEmails"},
+                "lastModifiedTime": bson.M{"$first": "$revision.time"},
+                "lastSha1": bson.M{"$first": "$revision.sha1"},
+            }},
+            {"$lookup": bson.M{
+                "from": "event_data",
+                "localField": "lastSha1",
+                "foreignField": "sha1",
+                "as": "data",
+            }},
+            {"$unwind": "$data"},
+        }
+    } else {
+        pipeline = []bson.M{
+            {"$match": bson.M{
+                "groupId": groupId,
+            }},
+            {"$match": bson.M{
+                "$or": []bson.M{
+                    bson.M{"ownerEmail": email},
+                    bson.M{"accessEmails": email},
+                },
+            }},
+            {"$lookup": bson.M{
+                "from": "event_revision",
+                "localField": "_id",
+                "foreignField": "eventId",
+                "as": "revision",
+            }},
+            {"$unwind": "$revision"},
+            {"$group": bson.M{
+                "_id": "$_id",
+                "eventType": bson.M{"$first": "$eventType"},
+                "ownerEmail": bson.M{"$first": "$ownerEmail"},
+                "accessEmails": bson.M{"$first": "$accessEmails"},
+                "lastModifiedTime": bson.M{"$first": "$revision.time"},
+                "lastSha1": bson.M{"$first": "$revision.sha1"},
+            }},
+            {"$lookup": bson.M{
+                "from": "event_data",
+                "localField": "lastSha1",
+                "foreignField": "sha1",
+                "as": "data",
+            }},
+            {"$unwind": "$data"},
+        }
+    }
+    err = db.C("event_access").Pipe(pipeline).All(&results)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    if results == nil {
+        results = make([]bson.M, 0)
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "events": results,
+    })
+}
+
+
 func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     parts := SplitURL(r.URL)
