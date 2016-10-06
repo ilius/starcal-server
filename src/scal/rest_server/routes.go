@@ -7,162 +7,138 @@ import (
 )
 
 type Route struct {
-    Name        string
     Method      string
     Pattern     string
     HandlerFunc http.HandlerFunc
 }
 
-type Routes []Route
+type RouteMap map[string]Route
 
 func NewRouter() *mux.Router {
     router := mux.NewRouter().StrictSlash(true)
-    for _, route := range routes {
+    for name, route := range routeMap {
         router.
             Methods(route.Method).
             Path(route.Pattern).
-            Name(route.Name).
+            Name(name).
             Handler(route.HandlerFunc)
     }
 
     return router
 }
 
-var routes = Routes{
-    Route{
-        "Index",
+var routeMap = RouteMap{
+    "Index": Route{
         "GET",
         "/",
         authenticator.Wrap(Index),
     },
-    Route{
-        "RegisterUser",
+    "RegisterUser": Route{
         "POST",
         "/user/register/",
         RegisterUser,
     },
-    Route{
-        "SetUserFullName",
+    "SetUserFullName": Route{
         "PUT",
         "/user/full-name/",
         authenticator.Wrap(SetUserFullName),
     },
-    Route{
-        "UnsetUserFullName",
+    "UnsetUserFullName": Route{
         "DELETE",
         "/user/full-name/",
         authenticator.Wrap(UnsetUserFullName),
     },
-    Route{
-        "GetUserInfo",
+    "GetUserInfo": Route{
         "GET",
         "/user/info/",
         authenticator.Wrap(GetUserInfo),
     },
-    Route{
-        "SetUserDefaultGroupId",
+    "SetUserDefaultGroupId": Route{
         "PUT",
         "/user/default-group-id/",
         authenticator.Wrap(SetUserDefaultGroupId),
     },
-    Route{
-        "UnsetUserDefaultGroupId",
+    "UnsetUserDefaultGroupId": Route{
         "DELETE",
         "/user/default-group-id/",
         authenticator.Wrap(UnsetUserDefaultGroupId),
     },
-    Route{
-        "GetUngroupedEvents",
+    "GetUngroupedEvents": Route{
         "GET",
         "/event/ungrouped/",
         authenticator.Wrap(GetUngroupedEvents),
     },
-    Route{
-        "GetGroupList",
+    "GetGroupList": Route{
         "GET",
         "/event/groups/",
         authenticator.Wrap(GetGroupList),
     },
-    Route{
-        "AddGroup",
+    "AddGroup": Route{
         "POST",
         "/event/groups/",
         authenticator.Wrap(AddGroup),
     },
-    Route{
-        "UpdateGroup",
+    "UpdateGroup": Route{
         "PUT",
         "/event/groups/{groupId}/",
         authenticator.Wrap(UpdateGroup),
     },
-    Route{
-        "GetGroup",
+    "GetGroup": Route{
         "GET",
         "/event/groups/{groupId}/",
         authenticator.Wrap(GetGroup),
     },
-    Route{
-        "DeleteGroup",
+    "DeleteGroup": Route{
         "DELETE",
         "/event/groups/{groupId}/",
         authenticator.Wrap(DeleteGroup),
     },
-    Route{
-        "GetGroupEventList",
+    "GetGroupEventList": Route{
         "GET",
         "/event/groups/{groupId}/events/",
         authenticator.Wrap(GetGroupEventList),
     },
-    Route{
-        "GetGroupEventsFull",
+    "GetGroupEventsFull": Route{
         "GET",
         "/event/groups/{groupId}/events-full/",
         authenticator.Wrap(GetGroupEventsFull),
     },
-    Route{
-        "GetGroupModifiedEvents",
+    "GetGroupModifiedEvents": Route{
         "GET",
         "/event/groups/{groupId}/modified-events/{sinceDateTime}/",
         authenticator.Wrap(GetGroupModifiedEvents),
     },
-    Route{
-        "GetGroupMovedEvents",
+    "GetGroupMovedEvents": Route{
         "GET",
         "/event/groups/{groupId}/moved-events/{sinceDateTime}/",
         authenticator.Wrap(GetGroupMovedEvents),
     },
-    Route{
-        "DeleteEvent",
+    "DeleteEvent": Route{
         "DELETE",
         "/event/{eventType}/{eventId}/",// we ignore {eventType}
         authenticator.Wrap(DeleteEvent),
     },
-    Route{
-        "CopyEvent",
+    "CopyEvent": Route{
         "POST",
         "/event/copy/",
         authenticator.Wrap(CopyEvent),
     },
-    Route{
-        "SetEventGroupId",
+    "SetEventGroupId": Route{
         "PUT",
         "/event/{eventType}/{eventId}/groupId/",// we ignore {eventType}
         authenticator.Wrap(SetEventGroupId),
     },
-    Route{
-        "AddTask",
+    "AddTask": Route{
         "POST",
         "/event/task/",
         authenticator.Wrap(AddTask),
     },
-    Route{
-        "GetTask",
+    "GetTask": Route{
         "GET",
         "/event/task/{eventId}/",
         authenticator.Wrap(GetTask),
     },
-    Route{
-        "UpdateTask",
+    "UpdateTask": Route{
         "PUT",
         "/event/task/{eventId}/",
         authenticator.Wrap(UpdateTask),
