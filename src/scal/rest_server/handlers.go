@@ -50,6 +50,10 @@ func SetHttpError(w http.ResponseWriter, code int, msg string){
     )
 }
 
+func SetHttpErrorInternalMsg(w http.ResponseWriter, errMsg string) {
+    SetHttpError(w, http.StatusInternalServerError, errMsg)
+}
+
 func SetHttpErrorInternal(w http.ResponseWriter, err error) {
     SetHttpError(w, http.StatusInternalServerError, err.Error())
 }
@@ -184,6 +188,128 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "eventId": newEventId.Hex(),
         "sha1": eventRev.Sha1,
     })
+
+}
+
+func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    var ok bool
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    parts := SplitURL(r.URL)
+    if len(parts) < 2 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    eventIdHex := parts[len(parts)-2]
+    if !bson.IsObjectIdHex(eventIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
+        return
+        // to avoid panic!
+    }
+    eventId := bson.ObjectIdHex(eventIdHex)
+
+    inputMap := map[string]string{
+        "newGroupId": "",
+    }
+    body, _ := ioutil.ReadAll(r.Body)
+    r.Body.Close()
+    err = json.Unmarshal(body, &inputMap)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if eventAccess.OwnerEmail != email {
+        SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
+        return
+    }
+
+    newGroupIdHex, ok := inputMap["newGroupId"]
+    if !ok {
+        SetHttpError(w, http.StatusBadRequest, "missing 'newGroupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(newGroupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'newGroupId'")
+        return
+        // to avoid panic!
+    }
+    newGroupId := bson.ObjectIdHex(newGroupIdHex)
+    newGroupModel := event_lib.EventGroupModel{}
+    err = db.C("event_group").Find(bson.M{
+        "_id": newGroupId,
+    }).One(&newGroupModel)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    if !newGroupModel.EmailCanAdd(email) {
+        SetHttpError(
+            w,
+            http.StatusForbidden,
+            "you don't have write access to this group",
+        )
+        return
+    }
+
+    /*userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, email)
+        return
+    }*/
+    eventAccess.GroupId = &newGroupId
+    err = db.C("event_access").Update(
+        bson.M{"_id": eventId},
+        eventAccess,
+    )
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    now := time.Now()
+    accessChangeLog := bson.M{
+        "time": now,
+        "email": email,
+        "remoteIp": remoteIp,
+        "eventId": eventId,
+        "groupId": []interface{}{
+            nil,
+            newGroupId,
+        },
+    }
+    /*
+    addedAccessEmails := Set(
+        eventAccess.GroupModel.ReadAccessEmails,
+    ).Difference(newGroupModel.ReadAccessEmails)
+    if addedAccessEmails {
+        accessChangeLog["addedAccessEmails"] = addedAccessEmails
+    }
+    */
+    err = db.C("event_access_change_log").Insert(accessChangeLog)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
 
 }
 

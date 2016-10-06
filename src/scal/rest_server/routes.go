@@ -132,6 +132,12 @@ var routes = Routes{
         authenticator.Wrap(CopyEvent),
     },
     Route{
+        "SetEventGroupId",
+        "PUT",
+        "/event/{eventType}/{eventId}/groupId/",
+        authenticator.Wrap(SetEventGroupId),
+    },
+    Route{
         "AddTask",
         "POST",
         "/event/task/",
