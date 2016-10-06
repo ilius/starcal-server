@@ -27,6 +27,7 @@ params = {
 
     "startJd": todayJd,
     "endJd": todayJd + random.randint(1, 5),
+    "durationEnable": False,
 }
 
 r = requests.put(

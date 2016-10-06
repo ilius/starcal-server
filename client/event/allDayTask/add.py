@@ -25,6 +25,7 @@ params = {
 
     "startJd": todayJd - 2,
     "endJd": todayJd + 1,
+    "durationEnable": True,
 }
 
 email, password = sys.argv[1:3]
