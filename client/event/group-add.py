@@ -10,11 +10,13 @@ import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+email, password, groupTitle = sys.argv[1:4]
+
 r = requests.post(
     "http://127.0.0.1:8080/event/groups/" ,
-    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
+    auth=HTTPDigestAuth(email, password),
     json={
-        "title": sys.argv[3],
+        "title": groupTitle,
         #"ownerEmail": "abcde@gmail.com", # must give error
         #"groupId": "57e199d5e576da125d153b70", # must give error
         #"readAccessEmails": "test-1@gmail.com", # must give error

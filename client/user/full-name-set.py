@@ -10,11 +10,13 @@ import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+email, password, fullName = sys.argv[1:4]
+
 r = requests.put(
     "http://127.0.0.1:8080/user/full-name/",
-    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
+    auth=HTTPDigestAuth(email, password),
     json={
-        'fullName': sys.argv[3],
+        'fullName': fullName,
     },
 )
 print(r)

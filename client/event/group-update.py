@@ -11,14 +11,16 @@ import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+email, password, groupId, groupTitle = sys.argv[1:5]
+
 # not passing "readAccessEmails" will remove it if it was set before
 # not passing "addAccessEmails" will remove it if it was set before
 
 r = requests.put(
-    "http://127.0.0.1:8080/event/groups/%s/" % sys.argv[3],
-    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
+    "http://127.0.0.1:8080/event/groups/%s/" % groupId,
+    auth=HTTPDigestAuth(email, password),
     json={
-        "title": sys.argv[4],
+        "title": groupTitle,
         #"title": "", # must give error
         #"title": None, # must give error
         #"title": [], # must give error

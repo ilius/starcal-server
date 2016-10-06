@@ -8,11 +8,13 @@ import sys
 import requests
 from pprint import pprint
 
+email, password = sys.argv[1:3]
+
 r = requests.post(
     "http://127.0.0.1:8080/user/register/",
     json={
-        'email': sys.argv[1],
-        'password': sys.argv[2],
+        'email': email,
+        'password': password,
     },
 )
 print(r)

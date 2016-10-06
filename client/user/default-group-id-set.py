@@ -10,11 +10,13 @@ import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+email, password, defaultGroupId = sys.argv[1:4]
+
 r = requests.put(
     "http://127.0.0.1:8080/user/default-group-id/",
-    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
+    auth=HTTPDigestAuth(email, password),
     json={
-        'defaultGroupId': sys.argv[3],
+        'defaultGroupId': defaultGroupId,
     },
 )
 print(r)

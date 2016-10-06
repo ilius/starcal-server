@@ -13,6 +13,8 @@ from datetime import datetime, timedelta
 import time
 from time import strftime, gmtime
 
+email, password, eventId = sys.argv[1:4]
+
 timeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
 nowEpoch = int(time.time())
@@ -30,8 +32,8 @@ params = {
 }
 
 r = requests.put(
-    "http://127.0.0.1:8080/event/task/%s/" % sys.argv[3],
-    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
+    "http://127.0.0.1:8080/event/task/%s/" % eventId,
+    auth=HTTPDigestAuth(email, password),
     json=params,
 )
 print(r)

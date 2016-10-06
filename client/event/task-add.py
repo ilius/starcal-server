@@ -30,6 +30,8 @@ params = {
     "durationUnit": 0,
 }
 
+email, password = sys.argv[1:3]
+
 try:
     params["groupId"] = sys.argv[3]
 except IndexError:
@@ -37,7 +39,7 @@ except IndexError:
 
 r = requests.post(
     "http://127.0.0.1:8080/event/task/",
-    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
+    auth=HTTPDigestAuth(email, password),
     json=params,
 )
 print(r)

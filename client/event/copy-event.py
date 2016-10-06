@@ -10,11 +10,13 @@ import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+email, password, eventId = sys.argv[1:4]
+
 r = requests.post(
     "http://127.0.0.1:8080/event/copy/",
-    auth=HTTPDigestAuth(sys.argv[1], sys.argv[2]),
+    auth=HTTPDigestAuth(email, password),
     json={
-        'eventId': sys.argv[3],
+        'eventId': eventId,
     },
 )
 print(r)
