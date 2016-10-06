@@ -676,3 +676,106 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 
 }
 
+
+func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    parts := SplitURL(r.URL)
+    if len(parts) < 3 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    groupIdHex := parts[len(parts)-3]
+    sinceStr := parts[len(parts)-1] // datetime string
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    if groupIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+        // to avoid panic!
+    }
+    groupId := bson.ObjectIdHex(groupIdHex)
+    var groupModel *event_lib.EventGroupModel
+    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    if groupModel == nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+    }
+
+    since, err := time.Parse(time.RFC3339, sinceStr)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    //json.NewEncoder(w).Encode(bson.M{"sinceDateTime": since})
+
+    results := []bson.M{}
+    if groupModel.EmailCanRead(email) {
+        err = db.C("event_access_change_log").Pipe([]bson.M{
+            {"$match": bson.M{
+                "groupId": groupId,
+            }},
+            {"$match": bson.M{
+                "time": bson.M{
+                    "$gt": since,
+                },
+            }},
+            {"$sort": bson.M{"time": -1}},
+            {"$group": bson.M{
+                "_id": "$eventId",
+                "time": bson.M{"$first": "$time"},
+                "groupId": bson.M{"$first": "$groupId"},
+            }},
+        }).All(&results)
+    } else {
+        err = db.C("event_access").Pipe([]bson.M{
+            {"$match": bson.M{
+                "groupId": groupId,
+            }},
+            {"$match": bson.M{
+                "time": bson.M{
+                    "$gt": since,
+                },
+            }},
+            {"$sort": bson.M{"time": -1}},
+            {"$lookup": bson.M{
+                "from": "event_access",
+                "localField": "eventId",
+                "foreignField": "_id",
+                "as": "access",
+            }},
+            {"$unwind": "$access"},
+            {"$match": bson.M{
+                "$or": []bson.M{
+                    bson.M{"access.ownerEmail": email},
+                    bson.M{"access.accessEmails": email},
+                },
+            }},
+            {"$group": bson.M{
+                "_id": "$eventId",
+                "time": bson.M{"$first": "$time"},
+                "groupId": bson.M{"$first": "$groupId"},
+            }},
+        }).All(&results)
+    }
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "groupId": groupId,
+        "since_datetime": since,
+        "moved_events": results,
+    })
+
+}
+
