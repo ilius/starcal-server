@@ -58,6 +58,84 @@ func SetHttpErrorInternal(w http.ResponseWriter, err error) {
     SetHttpError(w, http.StatusInternalServerError, err.Error())
 }
 
+func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    parts := SplitURL(r.URL)
+    if len(parts) < 1 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    eventIdHex := parts[len(parts)-1]
+    if !bson.IsObjectIdHex(eventIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
+        return
+        // to avoid panic!
+    }
+    eventId := bson.ObjectIdHex(eventIdHex)
+
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if eventAccess.OwnerEmail != email {
+        SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
+        return
+    }
+    err = db.C("event_access").Remove(
+        bson.M{"_id": eventId},
+    )
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    accessChangeLog := bson.M{
+        "time": time.Now(),
+        "email": email,
+        "remoteIp": remoteIp,
+        "eventId": eventId,
+        "ownerEmail": []interface{}{
+            eventAccess.OwnerEmail,
+            nil,
+        },
+    }
+    if eventAccess.GroupId != nil {
+        accessChangeLog["groupId"] = []interface{}{
+            eventAccess.GroupId,
+            nil,
+        }
+    }
+    if len(eventAccess.AccessEmails) > 0 {
+        accessChangeLog["accessEmails"] = []interface{}{
+            eventAccess.AccessEmails,
+            nil,
+        }
+    }
+    err = db.C("event_access_change_log").Insert(accessChangeLog)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+}
+
 func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")

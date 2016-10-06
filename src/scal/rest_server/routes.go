@@ -132,6 +132,12 @@ var routes = Routes{
         authenticator.Wrap(GetGroupMovedEvents),
     },
     Route{
+        "DeleteEvent",
+        "DELETE",
+        "/event/{eventType}/{eventId}/",// we ignore {eventType}
+        authenticator.Wrap(DeleteEvent),
+    },
+    Route{
         "CopyEvent",
         "POST",
         "/event/copy/",
