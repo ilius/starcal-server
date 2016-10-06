@@ -27,6 +27,19 @@ func NewRouter() *mux.Router {
     return router
 }
 
+func RegisterRoute(
+    name string,
+    method string,
+    pattern string,
+    handler http.HandlerFunc,
+){
+    routeMap[name] = Route{
+        method,
+        pattern,
+        handler,
+    }
+}
+
 var routeMap = RouteMap{
     "Index": Route{
         "GET",
@@ -127,21 +140,6 @@ var routeMap = RouteMap{
         "PUT",
         "/event/{eventType}/{eventId}/groupId/",// we ignore {eventType}
         authenticator.Wrap(SetEventGroupId),
-    },
-    "AddTask": Route{
-        "POST",
-        "/event/task/",
-        authenticator.Wrap(AddTask),
-    },
-    "GetTask": Route{
-        "GET",
-        "/event/task/{eventId}/",
-        authenticator.Wrap(GetTask),
-    },
-    "UpdateTask": Route{
-        "PUT",
-        "/event/task/{eventId}/",
-        authenticator.Wrap(UpdateTask),
     },
 }
 

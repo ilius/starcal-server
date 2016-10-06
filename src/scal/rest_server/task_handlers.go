@@ -21,6 +21,26 @@ import (
     "scal/event_lib"
 )
 
+func init(){
+    RegisterRoute(
+        "AddTask",
+        "POST",
+        "/event/task/",
+        authenticator.Wrap(AddTask),
+    )
+    RegisterRoute(
+        "GetTask",
+        "GET",
+        "/event/task/{eventId}/",
+        authenticator.Wrap(GetTask),
+    )
+    RegisterRoute(
+        "UpdateTask",
+        "PUT",
+        "/event/task/{eventId}/",
+        authenticator.Wrap(UpdateTask),
+    )
+}
 
 func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
