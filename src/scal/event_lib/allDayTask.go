@@ -5,7 +5,7 @@ package event_lib
 type AllDayTaskEventModel struct {
     BaseEventModel  `bson:",inline" json:",inline"`
     StartJd int     `bson:"startJd" json:"startJd"`
-    EndJd int       `bson:"endJd" json:"endJd`
+    EndJd int       `bson:"endJd" json:"endJd"`
     DurationEnable bool     `bson:"durationEnable" json:"durationEnable"`
 }
 func (self AllDayTaskEventModel) Type() string {
