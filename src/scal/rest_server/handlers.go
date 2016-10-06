@@ -106,8 +106,9 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
+    now := time.Now()
     accessChangeLog := bson.M{
-        "time": time.Now(),
+        "time": now,
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
@@ -133,7 +134,16 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-
+    err = db.C("event_revision").Insert(bson.M{
+        "eventId": eventId,
+        "eventType": eventAccess.EventType,
+        "sha1": nil,
+        "time": now,
+    })
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
 }
 
 func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
