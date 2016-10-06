@@ -3,6 +3,7 @@ package rest_server
 import (
     //"fmt"
     "time"
+    "net"
     "net/http"
     "encoding/json"
     "io/ioutil"
@@ -236,6 +237,11 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
     db, err := storage.GetDB()
     if err != nil {
         SetHttpErrorInternal(w, err)
@@ -315,6 +321,23 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             err = eventAccessCol.Update(
                 bson.M{"_id": eventAccessModel.EventId},
                 eventAccessModel,
+            )
+            if err != nil {
+                SetHttpErrorInternal(w, err)
+                return
+            }
+            now := time.Now()
+            err = db.C("event_access_change_log").Insert(
+                bson.M{
+                    "time": now,
+                    "email": email,
+                    "remoteIp": remoteIp,
+                    "eventId": eventAccessModel.EventId,
+                    "groupId": []interface{}{
+                        groupId,
+                        nil,
+                    },
+                },
             )
             if err != nil {
                 SetHttpErrorInternal(w, err)

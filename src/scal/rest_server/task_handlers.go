@@ -6,6 +6,7 @@ import (
     "strings"
     //"log"
     "io/ioutil"
+    "net"
     "net/http"
     "encoding/json"
     "crypto/sha1"
@@ -28,6 +29,11 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
     body, _ := ioutil.ReadAll(r.Body)
     r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
@@ -59,14 +65,42 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorUserNotFound(w, email)
         return
     }
+    groupId := userModel.DefaultGroupId
     eventAccess := event_lib.EventAccessModel{
         EventId: eventId,
         EventType: eventModel.Type(),
         OwnerEmail: email,
-        GroupId: userModel.DefaultGroupId,
+        GroupId: groupId,
         //AccessEmails: []string{}
     }
     err = db.C("event_access").Insert(eventAccess)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    now := time.Now()
+    err = db.C("event_access_change_log").Insert(
+        bson.M{
+            "time": now,
+            "email": email,
+            "remoteIp": remoteIp,
+            "eventId": eventId,
+            "ownerEmail": []interface{}{
+                nil,
+                email,
+            },
+        },
+        bson.M{
+            "time": now,
+            "email": email,
+            "remoteIp": remoteIp,
+            "eventId": eventId,
+            "groupId": []interface{}{
+                nil,
+                groupId,
+            },
+        },
+    )
     if err != nil {
         SetHttpErrorInternal(w, err)
         return

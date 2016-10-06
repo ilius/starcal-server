@@ -2,8 +2,10 @@ package rest_server
 
 import (
     "fmt"
+    "time"
     "strings"
     "log"
+    "net"
     "net/url"
     "net/http"
     "encoding/json"
@@ -57,12 +59,17 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     var ok bool
-    byEventId := map[string]string{
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    inputMap := map[string]string{
         "eventId": "" ,
     }
     body, _ := ioutil.ReadAll(r.Body)
     r.Body.Close()
-    err = json.Unmarshal(body, &byEventId)
+    err = json.Unmarshal(body, &inputMap)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
         return
@@ -72,7 +79,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    oldEventIdHex, ok := byEventId["eventId"]
+    oldEventIdHex, ok := inputMap["eventId"]
     if !ok {
         SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
         return
@@ -134,6 +141,33 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         //AccessEmails: []string{}
     }
     err = db.C("event_access").Insert(newEventAccess)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    now := time.Now()
+    err = db.C("event_access_change_log").Insert(
+        bson.M{
+            "time": now,
+            "email": email,
+            "remoteIp": remoteIp,
+            "eventId": newEventId,
+            "ownerEmail": []interface{}{
+                nil,
+                email,
+            },
+        },
+        bson.M{
+            "time": now,
+            "email": email,
+            "remoteIp": remoteIp,
+            "eventId": newEventId,
+            "groupId": []interface{}{
+                nil,
+                newGroupId,
+            },
+        },
+    )
     if err != nil {
         SetHttpErrorInternal(w, err)
         return

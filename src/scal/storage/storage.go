@@ -61,6 +61,55 @@ func init() {
         Background: false,
         Sparse: false,
     })
+    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+        Key: []string{"time"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+        Key: []string{"email"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+        Key: []string{"eventId"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+        Key: []string{"eventType"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+        Key: []string{"ownerEmail"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+        Key: []string{"groupId"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+        Key: []string{"accessEmails"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
     db.C("event_revision").EnsureIndex(mgo.Index{
         Key: []string{"sha1"},
         Unique: false,
