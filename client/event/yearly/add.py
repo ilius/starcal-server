@@ -20,13 +20,14 @@ params = {
     #"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
     "timeZone": "Asia/Tehran",
     "calType": "gregorian",
+    "summary": "yeary 1",
+    "description": "desc 1",
+    "icon": "borthday.png",
+
     "month": nowDt.month,
     "day": nowDt.day,
     "startYear": nowDt.year - 30,
     "startYearEnable": True,
-    "summary": "yeary 1",
-    "description": "desc 1",
-    "icon": "borthday.png",
 }
 
 email, password = sys.argv[1:3]

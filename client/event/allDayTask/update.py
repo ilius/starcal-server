@@ -21,12 +21,12 @@ todayJd = datetime.now().toordinal() + 1721425
 params = {
     "timeZone": "Asia/Tehran",
     "calType": "jalali",
-    "startJd": todayJd,
-    "endJd": todayJd + random.randint(1, 5),
     "summary": "task 1",
     "description": "desc 1",
     "icon": "task.png",
-    "durationUnit": 0,
+
+    "startJd": todayJd,
+    "endJd": todayJd + random.randint(1, 5),
 }
 
 r = requests.put(

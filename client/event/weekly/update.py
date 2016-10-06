@@ -22,15 +22,15 @@ dayStartSeconds = random.randint(0, 24*3600-1)
 params = {
     "timeZone": "Asia/Tehran",
     "calType": "jalali",
+    "summary": "weekly event 1",
+    "description": "desc 1",
+    "icon": "",
+
     "startJd": todayJd - 365,
     "endJd": todayJd + 2*365,
     "cycleWeeks": random.randint(1, 4),
     "dayStartSeconds": dayStartSeconds,
     "dayEndSeconds": dayStartSeconds + 3600,
-    "summary": "weekly event 1",
-    "description": "desc 1",
-    "icon": "",
-    "durationUnit": 0,
 }
 
 r = requests.put(

@@ -21,15 +21,15 @@ params = {
     #"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
     "timeZone": "Asia/Tehran",
     "calType": "jalali",
+    "summary": "weekly 1",
+    "description": "desc 1",
+    "icon": "",
+
     "startJd": todayJd - 365,
     "endJd": todayJd + 365,
     "cycleWeeks": random.randint(1, 4),
     "dayStartSeconds": dayStartSeconds,
     "dayEndSeconds": dayStartSeconds + 3600,
-    "summary": "daily note 1",
-    "description": "desc 1",
-    "icon": "",
-    "durationUnit": 0,
 }
 
 email, password = sys.argv[1:3]

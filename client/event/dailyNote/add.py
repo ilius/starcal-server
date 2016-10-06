@@ -19,11 +19,11 @@ params = {
     #"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
     "timeZone": "Asia/Tehran",
     "calType": "jalali",
-    "jd": todayJd,
     "summary": "daily note 1",
     "description": "desc 1",
     "icon": "note.png",
-    "durationUnit": 0,
+
+    "jd": todayJd,
 }
 
 email, password = sys.argv[1:3]

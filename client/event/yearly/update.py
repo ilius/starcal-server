@@ -21,13 +21,14 @@ nowDt = datetime.now()
 params = {
     "timeZone": "Asia/Tehran",
     "calType": "gregorian",
+    "summary": "yearly event 1",
+    "description": "desc 1",
+    "icon": "",
+
     "month": nowDt.month,
     "day": nowDt.day,
     "startYear": nowDt.year - 30,
     "startYearEnable": True,
-    "summary": "yearly event 1",
-    "description": "desc 1",
-    "icon": "",
 }
 
 r = requests.put(

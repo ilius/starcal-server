@@ -23,11 +23,12 @@ nowEpoch = int(time.time())
 params = {
     "timeZone": "Asia/Tehran",
     "calType": "jalali",
-    "startTime": strftime(timeFormat, gmtime(nowEpoch)),
-    "endTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
     "summary": "task 1",
     "description": "desc 1",
     "icon": "task.png",
+
+    "startTime": strftime(timeFormat, gmtime(nowEpoch)),
+    "endTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
     "durationUnit": 0,
 }
 
