@@ -168,6 +168,10 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
     //eventIdHex := vars["eventId"]
     parts := SplitURL(r.URL)
+    if len(parts) < 1 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
     eventIdHex := parts[len(parts)-1]
     fmt.Printf("eventIdHex = %v\n", eventIdHex)
     // -----------------------------------------------
@@ -241,6 +245,10 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
     //eventIdHex := vars["eventId"]
     parts := SplitURL(r.URL)
+    if len(parts) < 1 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
     eventIdHex := parts[len(parts)-1]
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")

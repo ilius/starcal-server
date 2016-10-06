@@ -1,7 +1,7 @@
 package rest_server
 
 import (
-    //"fmt"
+    "fmt"
     "time"
     "net"
     "net/http"
@@ -107,6 +107,10 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     parts := SplitURL(r.URL)
+    if len(parts) < 1 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
     groupIdHex := parts[len(parts)-1]
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -193,6 +197,10 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     parts := SplitURL(r.URL)
+    if len(parts) < 1 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
     groupIdHex := parts[len(parts)-1]
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -233,6 +241,10 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     parts := SplitURL(r.URL)
+    if len(parts) < 1 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
     groupIdHex := parts[len(parts)-1]
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -355,6 +367,10 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     parts := SplitURL(r.URL)
+    if len(parts) < 2 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
     groupIdHex := parts[len(parts)-2]
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -425,6 +441,10 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     parts := SplitURL(r.URL)
+    if len(parts) < 2 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
     groupIdHex := parts[len(parts)-2]
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -532,6 +552,10 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     parts := SplitURL(r.URL)
+    if len(parts) < 3 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
     groupIdHex := parts[len(parts)-3]
     sinceStr := parts[len(parts)-1] // datetime string
     // -----------------------------------------------
