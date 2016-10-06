@@ -66,6 +66,30 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     groupId := userModel.DefaultGroupId
+    if eventModel.GroupId != "" {
+        if !bson.IsObjectIdHex(eventModel.GroupId) {
+            SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+            return
+            // to avoid panic!
+        }
+        var groupModel *event_lib.EventGroupModel
+        db.C("event_group").Find(bson.M{
+            "_id": bson.ObjectIdHex(eventModel.GroupId),
+        }).One(&groupModel)
+        if groupModel == nil {
+            SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+            return
+        }
+        if groupModel.OwnerEmail != email {
+            SetHttpError(
+                w,
+                http.StatusForbidden,
+                "you don't have write access this event group",
+            )
+            return
+        }
+        groupId = &groupModel.Id
+    }
     eventAccess := event_lib.EventAccessModel{
         EventId: eventId,
         EventType: eventModel.Type(),
@@ -205,6 +229,7 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     eventModel.Id = eventId
+    eventModel.GroupId = eventAccess.GroupId.Hex()
     json.NewEncoder(w).Encode(eventModel)
 }
 
@@ -285,6 +310,10 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     if eventModel.Id != "" {
         SetHttpError(w, http.StatusBadRequest, "'eventId' must not be present in JSON")
+        return
+    }
+    if eventModel.GroupId != "" {
+        SetHttpError(w, http.StatusBadRequest, "'groupId' must not be present in JSON")
         return
     }
     eventModel.Sha1 = ""

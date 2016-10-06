@@ -18,6 +18,7 @@ type BaseEventModel struct {
     Icon string         `bson:"icon,omitempty" json:"icon"`
     NotifyBefore int    `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
     //IsAllDay bool
+    GroupId string      `bson:"-" json:"groupId"`
 }
 
 

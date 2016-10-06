@@ -2,6 +2,7 @@
 """
 argv[1]: email
 argv[2]: password
+argv[3]: groupId, optional
 """
 
 import sys
@@ -28,6 +29,11 @@ params = {
     "icon": "task.png",
     "durationUnit": 0,
 }
+
+try:
+    params["groupId"] = sys.argv[3]
+except IndexError:
+    pass
 
 r = requests.post(
     "http://127.0.0.1:8080/event/task/",
