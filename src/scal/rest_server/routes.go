@@ -146,7 +146,7 @@ var routes = Routes{
     Route{
         "SetEventGroupId",
         "PUT",
-        "/event/{eventType}/{eventId}/groupId/",
+        "/event/{eventType}/{eventId}/groupId/",// we ignore {eventType}
         authenticator.Wrap(SetEventGroupId),
     },
     Route{
