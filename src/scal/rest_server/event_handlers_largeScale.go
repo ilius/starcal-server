@@ -467,7 +467,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["timeZone"]
         if ok {
             
-            newValue, typeOk := value.(string)
+              newValue, typeOk := value.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -478,7 +478,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.TimeZone = newValue
+              eventModel.TimeZone = newValue
             
             delete(patchMap, "timeZone")
         }
@@ -487,7 +487,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["timeZoneEnable"]
         if ok {
             
-            newValue, typeOk := value.(bool)
+              newValue, typeOk := value.(bool)
             
             if !typeOk {
                 SetHttpError(
@@ -498,7 +498,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.TimeZoneEnable = newValue
+              eventModel.TimeZoneEnable = newValue
             
             delete(patchMap, "timeZoneEnable")
         }
@@ -507,7 +507,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["calType"]
         if ok {
             
-            newValue, typeOk := value.(string)
+              newValue, typeOk := value.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -518,7 +518,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.CalType = newValue
+              eventModel.CalType = newValue
             
             delete(patchMap, "calType")
         }
@@ -527,7 +527,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["summary"]
         if ok {
             
-            newValue, typeOk := value.(string)
+              newValue, typeOk := value.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -538,7 +538,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.Summary = newValue
+              eventModel.Summary = newValue
             
             delete(patchMap, "summary")
         }
@@ -547,7 +547,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["description"]
         if ok {
             
-            newValue, typeOk := value.(string)
+              newValue, typeOk := value.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -558,7 +558,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.Description = newValue
+              eventModel.Description = newValue
             
             delete(patchMap, "description")
         }
@@ -567,7 +567,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["icon"]
         if ok {
             
-            newValue, typeOk := value.(string)
+              newValue, typeOk := value.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -578,7 +578,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.Icon = newValue
+              eventModel.Icon = newValue
             
             delete(patchMap, "icon")
         }
@@ -587,8 +587,8 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["notifyBefore"]
         if ok {
             
-            // json Unmarshal converts int to float64
-            newValue, typeOk := value.(float64)
+              // json Unmarshal converts int to float64
+              newValue, typeOk := value.(float64)
             
             if !typeOk {
                 SetHttpError(
@@ -599,7 +599,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.NotifyBefore = int(newValue)
+              eventModel.NotifyBefore = int(newValue)
             
             delete(patchMap, "notifyBefore")
         }
@@ -608,7 +608,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["scale"]
         if ok {
             
-            newValue, typeOk := value.(int64)
+              newValue, typeOk := value.(int64)
             
             if !typeOk {
                 SetHttpError(
@@ -619,7 +619,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.Scale = newValue
+              eventModel.Scale = newValue
             
             delete(patchMap, "scale")
         }
@@ -628,7 +628,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["start"]
         if ok {
             
-            newValue, typeOk := value.(int64)
+              newValue, typeOk := value.(int64)
             
             if !typeOk {
                 SetHttpError(
@@ -639,7 +639,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.Start = newValue
+              eventModel.Start = newValue
             
             delete(patchMap, "start")
         }
@@ -648,7 +648,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["end"]
         if ok {
             
-            newValue, typeOk := value.(int64)
+              newValue, typeOk := value.(int64)
             
             if !typeOk {
                 SetHttpError(
@@ -659,7 +659,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.End = newValue
+              eventModel.End = newValue
             
             delete(patchMap, "end")
         }
@@ -668,7 +668,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         value, ok := patchMap["durationEnable"]
         if ok {
             
-            newValue, typeOk := value.(bool)
+              newValue, typeOk := value.(bool)
             
             if !typeOk {
                 SetHttpError(
@@ -679,7 +679,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-            eventModel.DurationEnable = newValue
+              eventModel.DurationEnable = newValue
             
             delete(patchMap, "durationEnable")
         }
