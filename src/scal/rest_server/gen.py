@@ -112,6 +112,8 @@ def extractEventBaseParams():
             continue
         if param == 'sha1':
             continue
+        if param == 'groupId':
+            continue
         params.append((param, _type))
     return params
 

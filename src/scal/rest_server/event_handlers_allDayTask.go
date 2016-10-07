@@ -605,26 +605,6 @@ func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
     }
     {
-        value, ok := patchMap["groupId"]
-        if ok {
-            
-            newValue, typeOk := value.(string)
-            
-            if !typeOk {
-                SetHttpError(
-                    w,
-                    http.StatusBadRequest,
-                    "bad type for parameter 'groupId'",
-                )
-                return
-            }
-            
-            eventModel.GroupId = newValue
-            
-            delete(patchMap, "groupId")
-        }
-    }
-    {
         value, ok := patchMap["startJd"]
         if ok {
             
