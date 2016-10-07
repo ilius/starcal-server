@@ -44,16 +44,14 @@ def djangoInit():
 def genEventTypeHandlers():
     djangoInit()
     tpl = loader.get_template('event_handlers.got')
-    baseParams = extractEventBaseParams()
+    basePatchParams = extractEventBasePatchParams()
     for eventType in activeEventTypes:
         eventTypeCap = eventType[0].upper() + eventType[1:]
         typeParams = extractEventTypeParams(eventType)
         goText = tpl.render(Context(dict(
             EVENT_TYPE=eventType,
             EVENT_TYPE_CAP=eventTypeCap, # instead of {{EVENT_TYPE|capfirst}}
-            #EVENT_BASE_PARAMS=baseParams,
-            #EVENT_TYPE_PARAMS=typeParams,
-            EVENT_PARAMS=baseParams + typeParams,
+            EVENT_PATCH_PARAMS=basePatchParams + typeParams,
         )))
         with open(join(
             myDir,
@@ -97,7 +95,7 @@ def extractEventTypeParams(eventType):
     return params
 
 
-def extractEventBaseParams():
+def extractEventBasePatchParams():
     params = []
     with open(join(myParentDir, 'event_lib/base.go')) as goFp:
         text = goFp.read()
@@ -119,7 +117,7 @@ def extractEventBaseParams():
 
 
 def testExtractEventTypeParams():
-    print('---- base:', extractEventBaseParams())
+    print('---- base:', extractEventBasePatchParams())
     for eventType in activeEventTypes:
         print(eventType, extractEventTypeParams(eventType))
 

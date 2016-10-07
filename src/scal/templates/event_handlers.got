@@ -462,7 +462,7 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest
         "sha1": lastEventRev.Sha1,
     }).One(&eventModel)
 
-    {% for PARAM, PARAM_TYPE in EVENT_PARAMS %}
+    {% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
     {
         value, ok := patchMap["{{PARAM}}"]
         if ok {
