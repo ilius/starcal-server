@@ -1,13 +1,33 @@
 #!/usr/bin/python3
 import os
 from os.path import join, dirname, realpath
-import string
+
+import django
+from django.template import Template, loader, Context
+from django.conf import settings
+
 
 myDir = dirname(realpath(__file__))
+myParentDir = dirname(myDir)
+templatesDir = join(myParentDir, 'templates')
+
+
+def djangoInit():
+    settings.configure(
+        TEMPLATES = [
+            {
+                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                'DIRS': [templatesDir],
+                'APP_DIRS': False,
+            }
+        ]
+    )
+    django.setup()
+
 
 def genEventTypeHandlers():
-    with open(join(myDir, "event_handlers.got")) as tplFp:
-        tplText = tplFp.read()
+    djangoInit()
+    tpl = loader.get_template('event_handlers.got')
     for eventType in (
         "allDayTask",
         "dailyNote",
@@ -22,10 +42,10 @@ def genEventTypeHandlers():
         #"custom",
     ):
         eventTypeCap = eventType[0].upper() + eventType[1:]
-        goText = string.Template(tplText).substitute(
+        goText = tpl.render(Context(dict(
             EVENT_TYPE=eventType,
             EVENT_TYPE_CAP=eventTypeCap,
-        )
+        )))
         with open(join(
             myDir,
             "event_handlers_%s.go" % eventType,

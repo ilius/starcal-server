@@ -23,28 +23,28 @@ import (
 
 func init(){
     RegisterRoute(
-        "Add${EVENT_TYPE_CAP}",
+        "Add{{EVENT_TYPE_CAP}}",
         "POST",
-        "/event/${EVENT_TYPE}/",
-        authenticator.Wrap(Add${EVENT_TYPE_CAP}),
+        "/event/{{EVENT_TYPE}}/",
+        authenticator.Wrap(Add{{EVENT_TYPE_CAP}}),
     )
     RegisterRoute(
-        "Get${EVENT_TYPE_CAP}",
+        "Get{{EVENT_TYPE_CAP}}",
         "GET",
-        "/event/${EVENT_TYPE}/{eventId}/",
-        authenticator.Wrap(Get${EVENT_TYPE_CAP}),
+        "/event/{{EVENT_TYPE}}/{eventId}/",
+        authenticator.Wrap(Get{{EVENT_TYPE_CAP}}),
     )
     RegisterRoute(
-        "Update${EVENT_TYPE_CAP}",
+        "Update{{EVENT_TYPE_CAP}}",
         "PUT",
-        "/event/${EVENT_TYPE}/{eventId}/",
-        authenticator.Wrap(Update${EVENT_TYPE_CAP}),
+        "/event/{{EVENT_TYPE}}/{eventId}/",
+        authenticator.Wrap(Update{{EVENT_TYPE_CAP}}),
     )
 }
 
-func Add${EVENT_TYPE_CAP}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
-    eventModel := event_lib.${EVENT_TYPE_CAP}EventModel{} // DYNAMIC
-    sameEventModel := event_lib.${EVENT_TYPE_CAP}EventModel{} // DYNAMIC
+func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
+    sameEventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
     // -----------------------------------------------
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -181,8 +181,8 @@ func Add${EVENT_TYPE_CAP}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 }
 
-func Get${EVENT_TYPE_CAP}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
-    eventModel := event_lib.${EVENT_TYPE_CAP}EventModel{}
+func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{}
     // -----------------------------------------------
     email := r.Username
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -257,9 +257,9 @@ func Get${EVENT_TYPE_CAP}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     json.NewEncoder(w).Encode(eventModel)
 }
 
-func Update${EVENT_TYPE_CAP}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
-    eventModel := event_lib.${EVENT_TYPE_CAP}EventModel{} // DYNAMIC
-    sameEventModel := event_lib.${EVENT_TYPE_CAP}EventModel{} // DYNAMIC
+func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
+    sameEventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
     // -----------------------------------------------
     email := r.Username
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
