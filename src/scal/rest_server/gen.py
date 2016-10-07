@@ -12,6 +12,21 @@ myParentDir = dirname(myDir)
 templatesDir = join(myParentDir, 'templates')
 
 
+activeEventTypes = (
+    "allDayTask",
+    "dailyNote",
+    "largeScale",
+    "lifeTime",
+    "monthly",
+    "task",
+    "universityClass",
+    "universityExam",
+    "weekly",
+    "yearly",
+    #"custom",
+)
+
+
 def djangoInit():
     settings.configure(
         TEMPLATES = [
@@ -28,19 +43,7 @@ def djangoInit():
 def genEventTypeHandlers():
     djangoInit()
     tpl = loader.get_template('event_handlers.got')
-    for eventType in (
-        "allDayTask",
-        "dailyNote",
-        "largeScale",
-        "lifeTime",
-        "monthly",
-        "task",
-        "universityClass",
-        "universityExam",
-        "weekly",
-        "yearly",
-        #"custom",
-    ):
+    for eventType in activeEventTypes:
         eventTypeCap = eventType[0].upper() + eventType[1:]
         goText = tpl.render(Context(dict(
             EVENT_TYPE=eventType,
