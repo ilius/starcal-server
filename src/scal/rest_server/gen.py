@@ -53,6 +53,7 @@ def genEventTypeHandlers():
             EVENT_TYPE_CAP=eventTypeCap, # instead of {{EVENT_TYPE|capfirst}}
             EVENT_PATCH_PARAMS=basePatchParams + typeParams,
         )))
+        goText = re.sub(r'^\s+\n', '', goText, flags=re.M)
         with open(join(
             myDir,
             "event_handlers_%s.go" % eventType,

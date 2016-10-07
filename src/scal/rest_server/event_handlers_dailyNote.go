@@ -383,8 +383,6 @@ func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "sha1": eventRev.Sha1,
     })
 }
-
-
 func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
     sameEventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
@@ -460,14 +458,10 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     err = db.C(eventModel.Collection()).Find(bson.M{
         "sha1": lastEventRev.Sha1,
     }).One(&eventModel)
-
-    
     {
         rawValue, ok := patchMap["timeZone"]
         if ok {
-            
               value, typeOk := rawValue.(string)
-            
             if !typeOk {
                 SetHttpError(
                     w,
@@ -476,18 +470,14 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 )
                 return
             }
-            
               eventModel.TimeZone = value
-            
             delete(patchMap, "timeZone")
         }
     }
     {
         rawValue, ok := patchMap["timeZoneEnable"]
         if ok {
-            
               value, typeOk := rawValue.(bool)
-            
             if !typeOk {
                 SetHttpError(
                     w,
@@ -496,18 +486,14 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 )
                 return
             }
-            
               eventModel.TimeZoneEnable = value
-            
             delete(patchMap, "timeZoneEnable")
         }
     }
     {
         rawValue, ok := patchMap["calType"]
         if ok {
-            
               value, typeOk := rawValue.(string)
-            
             if !typeOk {
                 SetHttpError(
                     w,
@@ -516,18 +502,14 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 )
                 return
             }
-            
               eventModel.CalType = value
-            
             delete(patchMap, "calType")
         }
     }
     {
         rawValue, ok := patchMap["summary"]
         if ok {
-            
               value, typeOk := rawValue.(string)
-            
             if !typeOk {
                 SetHttpError(
                     w,
@@ -536,18 +518,14 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 )
                 return
             }
-            
               eventModel.Summary = value
-            
             delete(patchMap, "summary")
         }
     }
     {
         rawValue, ok := patchMap["description"]
         if ok {
-            
               value, typeOk := rawValue.(string)
-            
             if !typeOk {
                 SetHttpError(
                     w,
@@ -556,18 +534,14 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 )
                 return
             }
-            
               eventModel.Description = value
-            
             delete(patchMap, "description")
         }
     }
     {
         rawValue, ok := patchMap["icon"]
         if ok {
-            
               value, typeOk := rawValue.(string)
-            
             if !typeOk {
                 SetHttpError(
                     w,
@@ -576,19 +550,15 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 )
                 return
             }
-            
               eventModel.Icon = value
-            
             delete(patchMap, "icon")
         }
     }
     {
         rawValue, ok := patchMap["notifyBefore"]
         if ok {
-            
               // json Unmarshal converts int to float64
               value, typeOk := rawValue.(float64)
-            
             if !typeOk {
                 SetHttpError(
                     w,
@@ -597,19 +567,15 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 )
                 return
             }
-            
               eventModel.NotifyBefore = int(value)
-            
             delete(patchMap, "notifyBefore")
         }
     }
     {
         rawValue, ok := patchMap["jd"]
         if ok {
-            
               // json Unmarshal converts int to float64
               value, typeOk := rawValue.(float64)
-            
             if !typeOk {
                 SetHttpError(
                     w,
@@ -618,9 +584,7 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 )
                 return
             }
-            
               eventModel.Jd = int(value)
-            
             delete(patchMap, "jd")
         }
     }
