@@ -464,15 +464,15 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest
 
     {% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
     {
-        value, ok := patchMap["{{PARAM}}"]
+        rawValue, ok := patchMap["{{PARAM}}"]
         if ok {
             {% if PARAM_TYPE == "int" %}
               // json Unmarshal converts int to float64
-              newValue, typeOk := value.(float64)
+              value, typeOk := rawValue.(float64)
             {% elif PARAM_TYPE == "*time.Time" %}
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             {% else %}
-              newValue, typeOk := value.({{PARAM_TYPE}})
+              value, typeOk := rawValue.({{PARAM_TYPE}})
             {% endif %}
             if !typeOk {
                 SetHttpError(
@@ -483,16 +483,16 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest
                 return
             }
             {% if PARAM_TYPE == "int" %}
-              eventModel.{{PARAM|capfirst}} = int(newValue)
+              eventModel.{{PARAM|capfirst}} = int(value)
             {% elif PARAM_TYPE == "*time.Time" %}
-              timeValue, err := time.Parse(time.RFC3339, newValue)
+              timeValue, err := time.Parse(time.RFC3339, value)
               if err != nil {
                   SetHttpError(w, http.StatusBadRequest, err.Error())
                   return
               }
               eventModel.{{PARAM|capfirst}} = &timeValue
             {% else %}
-              eventModel.{{PARAM|capfirst}} = newValue
+              eventModel.{{PARAM|capfirst}} = value
             {% endif %}
             delete(patchMap, "{{PARAM}}")
         }

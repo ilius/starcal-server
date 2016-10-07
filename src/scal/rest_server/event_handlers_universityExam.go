@@ -464,10 +464,10 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     
     {
-        value, ok := patchMap["timeZone"]
+        rawValue, ok := patchMap["timeZone"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -478,16 +478,16 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.TimeZone = newValue
+              eventModel.TimeZone = value
             
             delete(patchMap, "timeZone")
         }
     }
     {
-        value, ok := patchMap["timeZoneEnable"]
+        rawValue, ok := patchMap["timeZoneEnable"]
         if ok {
             
-              newValue, typeOk := value.(bool)
+              value, typeOk := rawValue.(bool)
             
             if !typeOk {
                 SetHttpError(
@@ -498,16 +498,16 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.TimeZoneEnable = newValue
+              eventModel.TimeZoneEnable = value
             
             delete(patchMap, "timeZoneEnable")
         }
     }
     {
-        value, ok := patchMap["calType"]
+        rawValue, ok := patchMap["calType"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -518,16 +518,16 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.CalType = newValue
+              eventModel.CalType = value
             
             delete(patchMap, "calType")
         }
     }
     {
-        value, ok := patchMap["summary"]
+        rawValue, ok := patchMap["summary"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -538,16 +538,16 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.Summary = newValue
+              eventModel.Summary = value
             
             delete(patchMap, "summary")
         }
     }
     {
-        value, ok := patchMap["description"]
+        rawValue, ok := patchMap["description"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -558,16 +558,16 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.Description = newValue
+              eventModel.Description = value
             
             delete(patchMap, "description")
         }
     }
     {
-        value, ok := patchMap["icon"]
+        rawValue, ok := patchMap["icon"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -578,17 +578,17 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.Icon = newValue
+              eventModel.Icon = value
             
             delete(patchMap, "icon")
         }
     }
     {
-        value, ok := patchMap["notifyBefore"]
+        rawValue, ok := patchMap["notifyBefore"]
         if ok {
             
               // json Unmarshal converts int to float64
-              newValue, typeOk := value.(float64)
+              value, typeOk := rawValue.(float64)
             
             if !typeOk {
                 SetHttpError(
@@ -599,17 +599,17 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.NotifyBefore = int(newValue)
+              eventModel.NotifyBefore = int(value)
             
             delete(patchMap, "notifyBefore")
         }
     }
     {
-        value, ok := patchMap["jd"]
+        rawValue, ok := patchMap["jd"]
         if ok {
             
               // json Unmarshal converts int to float64
-              newValue, typeOk := value.(float64)
+              value, typeOk := rawValue.(float64)
             
             if !typeOk {
                 SetHttpError(
@@ -620,17 +620,17 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.Jd = int(newValue)
+              eventModel.Jd = int(value)
             
             delete(patchMap, "jd")
         }
     }
     {
-        value, ok := patchMap["dayStartSeconds"]
+        rawValue, ok := patchMap["dayStartSeconds"]
         if ok {
             
               // json Unmarshal converts int to float64
-              newValue, typeOk := value.(float64)
+              value, typeOk := rawValue.(float64)
             
             if !typeOk {
                 SetHttpError(
@@ -641,17 +641,17 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.DayStartSeconds = int(newValue)
+              eventModel.DayStartSeconds = int(value)
             
             delete(patchMap, "dayStartSeconds")
         }
     }
     {
-        value, ok := patchMap["dayEndSeconds"]
+        rawValue, ok := patchMap["dayEndSeconds"]
         if ok {
             
               // json Unmarshal converts int to float64
-              newValue, typeOk := value.(float64)
+              value, typeOk := rawValue.(float64)
             
             if !typeOk {
                 SetHttpError(
@@ -662,17 +662,17 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.DayEndSeconds = int(newValue)
+              eventModel.DayEndSeconds = int(value)
             
             delete(patchMap, "dayEndSeconds")
         }
     }
     {
-        value, ok := patchMap["courseId"]
+        rawValue, ok := patchMap["courseId"]
         if ok {
             
               // json Unmarshal converts int to float64
-              newValue, typeOk := value.(float64)
+              value, typeOk := rawValue.(float64)
             
             if !typeOk {
                 SetHttpError(
@@ -683,7 +683,7 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.CourseId = int(newValue)
+              eventModel.CourseId = int(value)
             
             delete(patchMap, "courseId")
         }

@@ -464,10 +464,10 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     
     {
-        value, ok := patchMap["timeZone"]
+        rawValue, ok := patchMap["timeZone"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -478,16 +478,16 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.TimeZone = newValue
+              eventModel.TimeZone = value
             
             delete(patchMap, "timeZone")
         }
     }
     {
-        value, ok := patchMap["timeZoneEnable"]
+        rawValue, ok := patchMap["timeZoneEnable"]
         if ok {
             
-              newValue, typeOk := value.(bool)
+              value, typeOk := rawValue.(bool)
             
             if !typeOk {
                 SetHttpError(
@@ -498,16 +498,16 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.TimeZoneEnable = newValue
+              eventModel.TimeZoneEnable = value
             
             delete(patchMap, "timeZoneEnable")
         }
     }
     {
-        value, ok := patchMap["calType"]
+        rawValue, ok := patchMap["calType"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -518,16 +518,16 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.CalType = newValue
+              eventModel.CalType = value
             
             delete(patchMap, "calType")
         }
     }
     {
-        value, ok := patchMap["summary"]
+        rawValue, ok := patchMap["summary"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -538,16 +538,16 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.Summary = newValue
+              eventModel.Summary = value
             
             delete(patchMap, "summary")
         }
     }
     {
-        value, ok := patchMap["description"]
+        rawValue, ok := patchMap["description"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -558,16 +558,16 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.Description = newValue
+              eventModel.Description = value
             
             delete(patchMap, "description")
         }
     }
     {
-        value, ok := patchMap["icon"]
+        rawValue, ok := patchMap["icon"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -578,17 +578,17 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.Icon = newValue
+              eventModel.Icon = value
             
             delete(patchMap, "icon")
         }
     }
     {
-        value, ok := patchMap["notifyBefore"]
+        rawValue, ok := patchMap["notifyBefore"]
         if ok {
             
               // json Unmarshal converts int to float64
-              newValue, typeOk := value.(float64)
+              value, typeOk := rawValue.(float64)
             
             if !typeOk {
                 SetHttpError(
@@ -599,16 +599,16 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.NotifyBefore = int(newValue)
+              eventModel.NotifyBefore = int(value)
             
             delete(patchMap, "notifyBefore")
         }
     }
     {
-        value, ok := patchMap["startTime"]
+        rawValue, ok := patchMap["startTime"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -619,7 +619,7 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              timeValue, err := time.Parse(time.RFC3339, newValue)
+              timeValue, err := time.Parse(time.RFC3339, value)
               if err != nil {
                   SetHttpError(w, http.StatusBadRequest, err.Error())
                   return
@@ -630,10 +630,10 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
     }
     {
-        value, ok := patchMap["endTime"]
+        rawValue, ok := patchMap["endTime"]
         if ok {
             
-              newValue, typeOk := value.(string)
+              value, typeOk := rawValue.(string)
             
             if !typeOk {
                 SetHttpError(
@@ -644,7 +644,7 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              timeValue, err := time.Parse(time.RFC3339, newValue)
+              timeValue, err := time.Parse(time.RFC3339, value)
               if err != nil {
                   SetHttpError(w, http.StatusBadRequest, err.Error())
                   return
@@ -655,11 +655,11 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
     }
     {
-        value, ok := patchMap["durationUnit"]
+        rawValue, ok := patchMap["durationUnit"]
         if ok {
             
               // json Unmarshal converts int to float64
-              newValue, typeOk := value.(float64)
+              value, typeOk := rawValue.(float64)
             
             if !typeOk {
                 SetHttpError(
@@ -670,7 +670,7 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 return
             }
             
-              eventModel.DurationUnit = int(newValue)
+              eventModel.DurationUnit = int(value)
             
             delete(patchMap, "durationUnit")
         }
