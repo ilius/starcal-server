@@ -198,7 +198,6 @@ func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     eventIdHex := parts[len(parts)-1]
-    fmt.Printf("eventIdHex = %v\n", eventIdHex)
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
