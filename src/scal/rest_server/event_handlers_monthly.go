@@ -1,3 +1,5 @@
+// if this is a *.go file, don't modify it, it's auto-generated
+// from a Django template file named `*.got` inside "templates" directory
 package rest_server
 
 import (
