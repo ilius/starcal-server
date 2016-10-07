@@ -40,7 +40,12 @@ func init(){
         "/event/dailyNote/{eventId}/",
         authenticator.Wrap(UpdateDailyNote),
     )
-    
+    RegisterRoute(
+        "PatchDailyNote",
+        "PATCH",
+        "/event/dailyNote/{eventId}/",
+        authenticator.Wrap(PatchDailyNote),
+    )
 }
 
 func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -379,4 +384,313 @@ func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 
+func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
+    sameEventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
+    // -----------------------------------------------
+    email := r.Username
+    //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
+    //eventIdHex := vars["eventId"]
+    parts := SplitURL(r.URL)
+    if len(parts) < 1 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    eventIdHex := parts[len(parts)-1]
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    if eventIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
+        return
+    }
+    if !bson.IsObjectIdHex(eventIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
+        return
+        // to avoid panic!
+    }
+    eventId := bson.ObjectIdHex(eventIdHex)
+    body, _ := ioutil.ReadAll(r.Body)
+    r.Body.Close()
+    patchMap := bson.M{}
+    err = json.Unmarshal(body, &patchMap)
+    if err != nil {
+        msg := err.Error()
+        if strings.Contains(msg, "invalid ObjectId in JSON") {
+            msg = "invalid 'eventId'"
+        }
+        SetHttpError(w, http.StatusBadRequest, msg)
+        return
+    }
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
 
+    // check if event exists, and has access to
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, false)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if eventAccess.OwnerEmail != email {
+        SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
+        return
+    }
+
+    // do we need the last revision? to compare or what?
+    lastEventRev := event_lib.EventRevisionModel{}
+    err = db.C("event_revision").Find(bson.M{
+        "eventId": eventId,
+    }).Sort("-time").One(&lastEventRev)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    err = db.C(eventModel.Collection()).Find(bson.M{
+        "sha1": lastEventRev.Sha1,
+    }).One(&eventModel)
+
+    
+    {
+        value, ok := patchMap["timeZone"]
+        if ok {
+            
+            newValue, typeOk := value.(string)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'timeZone'",
+                )
+                return
+            }
+            
+            eventModel.TimeZone = newValue
+            
+            delete(patchMap, "timeZone")
+        }
+    }
+    {
+        value, ok := patchMap["timeZoneEnable"]
+        if ok {
+            
+            newValue, typeOk := value.(bool)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'timeZoneEnable'",
+                )
+                return
+            }
+            
+            eventModel.TimeZoneEnable = newValue
+            
+            delete(patchMap, "timeZoneEnable")
+        }
+    }
+    {
+        value, ok := patchMap["calType"]
+        if ok {
+            
+            newValue, typeOk := value.(string)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'calType'",
+                )
+                return
+            }
+            
+            eventModel.CalType = newValue
+            
+            delete(patchMap, "calType")
+        }
+    }
+    {
+        value, ok := patchMap["summary"]
+        if ok {
+            
+            newValue, typeOk := value.(string)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'summary'",
+                )
+                return
+            }
+            
+            eventModel.Summary = newValue
+            
+            delete(patchMap, "summary")
+        }
+    }
+    {
+        value, ok := patchMap["description"]
+        if ok {
+            
+            newValue, typeOk := value.(string)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'description'",
+                )
+                return
+            }
+            
+            eventModel.Description = newValue
+            
+            delete(patchMap, "description")
+        }
+    }
+    {
+        value, ok := patchMap["icon"]
+        if ok {
+            
+            newValue, typeOk := value.(string)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'icon'",
+                )
+                return
+            }
+            
+            eventModel.Icon = newValue
+            
+            delete(patchMap, "icon")
+        }
+    }
+    {
+        value, ok := patchMap["notifyBefore"]
+        if ok {
+            
+            // json Unmarshal converts int to float64
+            newValue, typeOk := value.(float64)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'notifyBefore'",
+                )
+                return
+            }
+            
+            eventModel.NotifyBefore = int(newValue)
+            
+            delete(patchMap, "notifyBefore")
+        }
+    }
+    {
+        value, ok := patchMap["groupId"]
+        if ok {
+            
+            newValue, typeOk := value.(string)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'groupId'",
+                )
+                return
+            }
+            
+            eventModel.GroupId = newValue
+            
+            delete(patchMap, "groupId")
+        }
+    }
+    {
+        value, ok := patchMap["jd"]
+        if ok {
+            
+            // json Unmarshal converts int to float64
+            newValue, typeOk := value.(float64)
+            
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter 'jd'",
+                )
+                return
+            }
+            
+            eventModel.Jd = int(newValue)
+            
+            delete(patchMap, "jd")
+        }
+    }
+    if len(patchMap) > 0 {
+        for param, _ := range patchMap {
+            SetHttpError(
+                w,
+                http.StatusBadRequest,
+                fmt.Sprintf(
+                    "extra parameter '%s'",
+                    param,
+                ),
+            )
+        }
+        return
+    }
+    _, err = eventModel.GetEvent() // (event, err), for validation
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+
+    eventModel.Sha1 = ""
+    jsonByte, _ := json.Marshal(eventModel)
+    eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
+
+    err = db.C("event_revision").Insert(event_lib.EventRevisionModel{
+        EventId: eventId,
+        EventType: eventModel.Type(),
+        Sha1: eventModel.Sha1,
+        Time: time.Now(),
+    })
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    // don't store duplicate eventModel, even if it was added by another user
+    // the (underlying) eventModel does not belong to anyone
+    // like git's blobs and trees
+    err = db.C(eventModel.Collection()).Find(bson.M{
+        "sha1": eventModel.Sha1,
+    }).One(&sameEventModel)
+    if err == mgo.ErrNotFound {
+        err = db.C(eventModel.Collection()).Insert(eventModel)
+        if err != nil {
+            SetHttpError(w, http.StatusBadRequest, err.Error())
+            return
+        }
+    }
+    json.NewEncoder(w).Encode(map[string]string{
+        "eventId": eventId.Hex(),
+        "sha1": eventModel.Sha1,
+    })
+}

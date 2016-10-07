@@ -40,6 +40,12 @@ func init(){
         "/event/{{EVENT_TYPE}}/{eventId}/",
         authenticator.Wrap(Update{{EVENT_TYPE_CAP}}),
     )
+    RegisterRoute(
+        "Patch{{EVENT_TYPE_CAP}}",
+        "PATCH",
+        "/event/{{EVENT_TYPE}}/{eventId}/",
+        authenticator.Wrap(Patch{{EVENT_TYPE_CAP}}),
+    )
 }
 
 func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -377,3 +383,157 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedReques
     })
 }
 
+
+func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
+    sameEventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
+    // -----------------------------------------------
+    email := r.Username
+    //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
+    //eventIdHex := vars["eventId"]
+    parts := SplitURL(r.URL)
+    if len(parts) < 1 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    eventIdHex := parts[len(parts)-1]
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    if eventIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
+        return
+    }
+    if !bson.IsObjectIdHex(eventIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
+        return
+        // to avoid panic!
+    }
+    eventId := bson.ObjectIdHex(eventIdHex)
+    body, _ := ioutil.ReadAll(r.Body)
+    r.Body.Close()
+    patchMap := bson.M{}
+    err = json.Unmarshal(body, &patchMap)
+    if err != nil {
+        msg := err.Error()
+        if strings.Contains(msg, "invalid ObjectId in JSON") {
+            msg = "invalid 'eventId'"
+        }
+        SetHttpError(w, http.StatusBadRequest, msg)
+        return
+    }
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    // check if event exists, and has access to
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, false)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if eventAccess.OwnerEmail != email {
+        SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
+        return
+    }
+
+    // do we need the last revision? to compare or what?
+    lastEventRev := event_lib.EventRevisionModel{}
+    err = db.C("event_revision").Find(bson.M{
+        "eventId": eventId,
+    }).Sort("-time").One(&lastEventRev)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    err = db.C(eventModel.Collection()).Find(bson.M{
+        "sha1": lastEventRev.Sha1,
+    }).One(&eventModel)
+
+    {% for PARAM, PARAM_TYPE in EVENT_PARAMS %}
+    {
+        value, ok := patchMap["{{PARAM}}"]
+        if ok {
+            {% if PARAM_TYPE == "int" %}
+            // json Unmarshal converts int to float64
+            newValue, typeOk := value.(float64)
+            {% else %}
+            newValue, typeOk := value.({{PARAM_TYPE}})
+            {% endif %}
+            if !typeOk {
+                SetHttpError(
+                    w,
+                    http.StatusBadRequest,
+                    "bad type for parameter '{{PARAM}}'",
+                )
+                return
+            }
+            {% if PARAM_TYPE == "int" %}
+            eventModel.{{PARAM|capfirst}} = int(newValue)
+            {% else %}
+            eventModel.{{PARAM|capfirst}} = newValue
+            {% endif %}
+            delete(patchMap, "{{PARAM}}")
+        }
+    }{% endfor %}
+    if len(patchMap) > 0 {
+        for param, _ := range patchMap {
+            SetHttpError(
+                w,
+                http.StatusBadRequest,
+                fmt.Sprintf(
+                    "extra parameter '%s'",
+                    param,
+                ),
+            )
+        }
+        return
+    }
+    _, err = eventModel.GetEvent() // (event, err), for validation
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+
+    eventModel.Sha1 = ""
+    jsonByte, _ := json.Marshal(eventModel)
+    eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
+
+    err = db.C("event_revision").Insert(event_lib.EventRevisionModel{
+        EventId: eventId,
+        EventType: eventModel.Type(),
+        Sha1: eventModel.Sha1,
+        Time: time.Now(),
+    })
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    // don't store duplicate eventModel, even if it was added by another user
+    // the (underlying) eventModel does not belong to anyone
+    // like git's blobs and trees
+    err = db.C(eventModel.Collection()).Find(bson.M{
+        "sha1": eventModel.Sha1,
+    }).One(&sameEventModel)
+    if err == mgo.ErrNotFound {
+        err = db.C(eventModel.Collection()).Insert(eventModel)
+        if err != nil {
+            SetHttpError(w, http.StatusBadRequest, err.Error())
+            return
+        }
+    }
+    json.NewEncoder(w).Encode(map[string]string{
+        "eventId": eventId.Hex(),
+        "sha1": eventModel.Sha1,
+    })
+}
