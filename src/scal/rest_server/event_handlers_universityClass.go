@@ -40,6 +40,7 @@ func init(){
         "/event/universityClass/{eventId}/",
         authenticator.Wrap(UpdateUniversityClass),
     )
+    
 }
 
 func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -149,23 +150,21 @@ func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    eventRev := event_lib.EventRevisionModel{
+    err = db.C("event_revision").Insert(event_lib.EventRevisionModel{
         EventId: eventId,
         EventType: eventModel.Type(),
         Sha1: eventModel.Sha1,
         Time: time.Now(),
-    }
-    err = db.C("event_revision").Insert(eventRev)
+    })
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
-
     // don't store duplicate eventModel, even if it was added by another user
     // the (underlying) eventModel does not belong to anyone
     // like git's blobs and trees
     err = db.C(eventModel.Collection()).Find(bson.M{
-        "sha1": eventRev.Sha1,
+        "sha1": eventModel.Sha1,
     }).One(&sameEventModel)
     if err == mgo.ErrNotFound {
         err = db.C(eventModel.Collection()).Insert(eventModel)
@@ -174,10 +173,9 @@ func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             return
         }
     }
-
     json.NewEncoder(w).Encode(map[string]string{
         "eventId": eventId.Hex(),
-        "sha1": eventRev.Sha1,
+        "sha1": eventModel.Sha1,
     })
 }
 
@@ -379,4 +377,6 @@ func UpdateUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
         "sha1": eventRev.Sha1,
     })
 }
+
+
 
