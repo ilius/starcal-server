@@ -46,36 +46,6 @@ var routeMap = RouteMap{
         "/",
         authenticator.Wrap(Index),
     },
-    "RegisterUser": Route{
-        "POST",
-        "/user/register/",
-        RegisterUser,
-    },
-    "SetUserFullName": Route{
-        "PUT",
-        "/user/full-name/",
-        authenticator.Wrap(SetUserFullName),
-    },
-    "UnsetUserFullName": Route{
-        "DELETE",
-        "/user/full-name/",
-        authenticator.Wrap(UnsetUserFullName),
-    },
-    "GetUserInfo": Route{
-        "GET",
-        "/user/info/",
-        authenticator.Wrap(GetUserInfo),
-    },
-    "SetUserDefaultGroupId": Route{
-        "PUT",
-        "/user/default-group-id/",
-        authenticator.Wrap(SetUserDefaultGroupId),
-    },
-    "UnsetUserDefaultGroupId": Route{
-        "DELETE",
-        "/user/default-group-id/",
-        authenticator.Wrap(UnsetUserDefaultGroupId),
-    },
     "GetUngroupedEvents": Route{
         "GET",
         "/event/ungrouped/",

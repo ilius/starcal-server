@@ -25,6 +25,42 @@ func init() {
     if globalDbErr != nil {
         panic(globalDbErr)
     }
+    RegisterRoute(
+        "RegisterUser",
+        "POST",
+        "/user/register/",
+        RegisterUser,
+    )
+    RegisterRoute(
+        "SetUserFullName",
+        "PUT",
+        "/user/full-name/",
+        authenticator.Wrap(SetUserFullName),
+    )
+    RegisterRoute(
+        "UnsetUserFullName",
+        "DELETE",
+        "/user/full-name/",
+        authenticator.Wrap(UnsetUserFullName),
+    )
+    RegisterRoute(
+        "GetUserInfo",
+        "GET",
+        "/user/info/",
+        authenticator.Wrap(GetUserInfo),
+    )
+    RegisterRoute(
+        "SetUserDefaultGroupId",
+        "PUT",
+        "/user/default-group-id/",
+        authenticator.Wrap(SetUserDefaultGroupId),
+    )
+    RegisterRoute(
+        "UnsetUserDefaultGroupId",
+        "DELETE",
+        "/user/default-group-id/",
+        authenticator.Wrap(UnsetUserDefaultGroupId),
+    )
 }
 
 
