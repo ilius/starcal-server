@@ -20,6 +20,39 @@ import (
     "scal/event_lib"
 )
 
+func init() {
+    RegisterRoute(
+        "Index",
+        "GET",
+        "/",
+        authenticator.Wrap(Index),
+    )
+    RegisterRoute(
+        "DeleteEvent",
+        "DELETE",
+        "/event/{eventType}/{eventId}/",// we ignore {eventType}
+        authenticator.Wrap(DeleteEvent),
+    )
+    RegisterRoute(
+        "CopyEvent",
+        "POST",
+        "/event/copy/",
+        authenticator.Wrap(CopyEvent),
+    )
+    RegisterRoute(
+        "SetEventGroupId",
+        "PUT",
+        "/event/{eventType}/{eventId}/groupId/",// we ignore {eventType}
+        authenticator.Wrap(SetEventGroupId),
+    )
+    RegisterRoute(
+        "GetUngroupedEvents",
+        "GET",
+        "/event/ungrouped/",
+        authenticator.Wrap(GetUngroupedEvents),
+    )
+}
+
 func SplitURL(u *url.URL) []string {
     return strings.Split(strings.Trim(u.Path, "/"), "/")
 }
