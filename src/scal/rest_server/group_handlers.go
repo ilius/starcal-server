@@ -21,6 +21,63 @@ const ALLOW_DELETE_DEFAULT_GROUP = true
 
 // time.RFC3339 == "2006-01-02T15:04:05Z07:00"
 
+func init() {
+    RegisterRoute(
+        "GetGroupList",
+        "GET",
+        "/event/groups/",
+        authenticator.Wrap(GetGroupList),
+    )
+    RegisterRoute(
+        "AddGroup",
+        "POST",
+        "/event/groups/",
+        authenticator.Wrap(AddGroup),
+    )
+    RegisterRoute(
+        "UpdateGroup",
+        "PUT",
+        "/event/groups/{groupId}/",
+        authenticator.Wrap(UpdateGroup),
+    )
+    RegisterRoute(
+        "GetGroup",
+        "GET",
+        "/event/groups/{groupId}/",
+        authenticator.Wrap(GetGroup),
+    )
+    RegisterRoute(
+        "DeleteGroup",
+        "DELETE",
+        "/event/groups/{groupId}/",
+        authenticator.Wrap(DeleteGroup),
+    )
+    RegisterRoute(
+        "GetGroupEventList",
+        "GET",
+        "/event/groups/{groupId}/events/",
+        authenticator.Wrap(GetGroupEventList),
+    )
+    RegisterRoute(
+        "GetGroupEventsFull",
+        "GET",
+        "/event/groups/{groupId}/events-full/",
+        authenticator.Wrap(GetGroupEventsFull),
+    )
+    RegisterRoute(
+        "GetGroupModifiedEvents",
+        "GET",
+        "/event/groups/{groupId}/modified-events/{sinceDateTime}/",
+        authenticator.Wrap(GetGroupModifiedEvents),
+    )
+    RegisterRoute(
+        "GetGroupMovedEvents",
+        "GET",
+        "/event/groups/{groupId}/moved-events/{sinceDateTime}/",
+        authenticator.Wrap(GetGroupMovedEvents),
+    )
+}
+
 func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")

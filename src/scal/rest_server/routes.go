@@ -51,51 +51,6 @@ var routeMap = RouteMap{
         "/event/ungrouped/",
         authenticator.Wrap(GetUngroupedEvents),
     },
-    "GetGroupList": Route{
-        "GET",
-        "/event/groups/",
-        authenticator.Wrap(GetGroupList),
-    },
-    "AddGroup": Route{
-        "POST",
-        "/event/groups/",
-        authenticator.Wrap(AddGroup),
-    },
-    "UpdateGroup": Route{
-        "PUT",
-        "/event/groups/{groupId}/",
-        authenticator.Wrap(UpdateGroup),
-    },
-    "GetGroup": Route{
-        "GET",
-        "/event/groups/{groupId}/",
-        authenticator.Wrap(GetGroup),
-    },
-    "DeleteGroup": Route{
-        "DELETE",
-        "/event/groups/{groupId}/",
-        authenticator.Wrap(DeleteGroup),
-    },
-    "GetGroupEventList": Route{
-        "GET",
-        "/event/groups/{groupId}/events/",
-        authenticator.Wrap(GetGroupEventList),
-    },
-    "GetGroupEventsFull": Route{
-        "GET",
-        "/event/groups/{groupId}/events-full/",
-        authenticator.Wrap(GetGroupEventsFull),
-    },
-    "GetGroupModifiedEvents": Route{
-        "GET",
-        "/event/groups/{groupId}/modified-events/{sinceDateTime}/",
-        authenticator.Wrap(GetGroupModifiedEvents),
-    },
-    "GetGroupMovedEvents": Route{
-        "GET",
-        "/event/groups/{groupId}/moved-events/{sinceDateTime}/",
-        authenticator.Wrap(GetGroupMovedEvents),
-    },
     "DeleteEvent": Route{
         "DELETE",
         "/event/{eventType}/{eventId}/",// we ignore {eventType}
