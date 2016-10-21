@@ -51,6 +51,7 @@ func init(){
 }
 
 func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
     sameEventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -63,7 +64,6 @@ func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -187,6 +187,7 @@ func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func GetAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.AllDayTaskEventModel{}
     // -----------------------------------------------
     email := r.Username
@@ -262,6 +263,7 @@ func GetAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func UpdateAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
     sameEventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -288,7 +290,6 @@ func UpdateAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         msg := err.Error()
@@ -384,6 +385,7 @@ func UpdateAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 }
 func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
     sameEventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -410,7 +412,6 @@ func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     patchMap := bson.M{}
     err = json.Unmarshal(body, &patchMap)
     if err != nil {

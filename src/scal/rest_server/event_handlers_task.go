@@ -51,6 +51,7 @@ func init(){
 }
 
 func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
     sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -63,7 +64,6 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -187,6 +187,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.TaskEventModel{}
     // -----------------------------------------------
     email := r.Username
@@ -262,6 +263,7 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
     sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -288,7 +290,6 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         msg := err.Error()
@@ -384,6 +385,7 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 }
 func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
     sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -410,7 +412,6 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     patchMap := bson.M{}
     err = json.Unmarshal(body, &patchMap)
     if err != nil {

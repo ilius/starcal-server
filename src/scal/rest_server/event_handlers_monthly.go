@@ -51,6 +51,7 @@ func init(){
 }
 
 func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.MonthlyEventModel{} // DYNAMIC
     sameEventModel := event_lib.MonthlyEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -63,7 +64,6 @@ func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -187,6 +187,7 @@ func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.MonthlyEventModel{}
     // -----------------------------------------------
     email := r.Username
@@ -262,6 +263,7 @@ func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.MonthlyEventModel{} // DYNAMIC
     sameEventModel := event_lib.MonthlyEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -288,7 +290,6 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         msg := err.Error()
@@ -384,6 +385,7 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 }
 func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.MonthlyEventModel{} // DYNAMIC
     sameEventModel := event_lib.MonthlyEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -410,7 +412,6 @@ func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     patchMap := bson.M{}
     err = json.Unmarshal(body, &patchMap)
     if err != nil {

@@ -51,6 +51,7 @@ func init(){
 }
 
 func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
     sameEventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -63,7 +64,6 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -187,6 +187,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.DailyNoteEventModel{}
     // -----------------------------------------------
     email := r.Username
@@ -262,6 +263,7 @@ func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
     sameEventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -288,7 +290,6 @@ func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         msg := err.Error()
@@ -384,6 +385,7 @@ func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     })
 }
 func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
     sameEventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -410,7 +412,6 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     patchMap := bson.M{}
     err = json.Unmarshal(body, &patchMap)
     if err != nil {

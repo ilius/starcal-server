@@ -92,6 +92,7 @@ func SetHttpErrorInternal(w http.ResponseWriter, err error) {
 }
 
 func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -180,6 +181,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -193,7 +195,6 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "eventId": "" ,
     }
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &inputMap)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -313,6 +314,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -339,7 +341,6 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "newGroupId": "",
     }
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &inputMap)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -436,6 +437,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 
 func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error

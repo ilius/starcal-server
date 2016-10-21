@@ -87,11 +87,11 @@ func Secret(email string, realm string) string {
 
 
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
+    defer r.Body.Close()
     userModel := UserModel{}
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &userModel)
     if err != nil {
         msg := err.Error()
@@ -185,13 +185,13 @@ func SetUserAttrInput(
 }
 
 func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     const attrName = "fullName"
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
 
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
 
     db, err := storage.GetDB()
     if err != nil {
@@ -231,6 +231,7 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -261,13 +262,13 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     const attrName = "defaultGroupId"
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
 
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
 
     db, err := storage.GetDB()
     if err != nil {
@@ -327,6 +328,7 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 
 
 func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -358,6 +360,7 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
 
 
 func GetUserInfo(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error

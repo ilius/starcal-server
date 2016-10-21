@@ -79,6 +79,7 @@ func init() {
 }
 
 func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -116,6 +117,7 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -128,7 +130,6 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     groupModel := event_lib.EventGroupModel{}
 
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &groupModel)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -162,6 +163,7 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     parts := SplitURL(r.URL)
     if len(parts) < 1 {
@@ -192,7 +194,6 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     newGroupModel := event_lib.EventGroupModel{}
 
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &newGroupModel)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -252,6 +253,7 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     parts := SplitURL(r.URL)
     if len(parts) < 1 {
@@ -296,6 +298,7 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     parts := SplitURL(r.URL)
     if len(parts) < 1 {
@@ -422,6 +425,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     parts := SplitURL(r.URL)
     if len(parts) < 2 {
@@ -496,6 +500,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 
 func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     parts := SplitURL(r.URL)
     if len(parts) < 2 {
@@ -607,6 +612,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 
 func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     parts := SplitURL(r.URL)
     if len(parts) < 3 {
@@ -735,6 +741,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 
 
 func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     email := r.Username
     parts := SplitURL(r.URL)
     if len(parts) < 3 {

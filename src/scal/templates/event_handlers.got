@@ -51,6 +51,7 @@ func init(){
 }
 
 func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
     sameEventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -63,7 +64,6 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
         return
     }
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -187,6 +187,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 }
 
 func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{}
     // -----------------------------------------------
     email := r.Username
@@ -262,6 +263,7 @@ func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 }
 
 func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
     sameEventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -288,7 +290,6 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedReques
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
         msg := err.Error()
@@ -386,6 +387,7 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedReques
 
 
 func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
     eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
     sameEventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
     // -----------------------------------------------
@@ -412,7 +414,6 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest
     }
     eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
-    r.Body.Close()
     patchMap := bson.M{}
     err = json.Unmarshal(body, &patchMap)
     if err != nil {
