@@ -46,6 +46,18 @@ func init() {
         authenticator.Wrap(SetEventGroupId),
     )
     RegisterRoute(
+        "GetEventOwner",
+        "GET",
+        "/event/{eventType}/{eventId}/owner/",// we ignore {eventType}
+        authenticator.Wrap(GetEventOwner),
+    )
+    RegisterRoute(
+        "SetEventOwner",
+        "PUT",
+        "/event/{eventType}/{eventId}/owner/",// we ignore {eventType}
+        authenticator.Wrap(SetEventOwner),
+    )
+    RegisterRoute(
         "GetUngroupedEvents",
         "GET",
         "/event/ungrouped/",
@@ -429,6 +441,143 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
+}
+
+func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    parts := SplitURL(r.URL)
+    if len(parts) < 2 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    eventIdHex := parts[len(parts)-2]
+    if !bson.IsObjectIdHex(eventIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
+        return
+        // to avoid panic!
+    }
+    eventId := bson.ObjectIdHex(eventIdHex)
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if !eventAccess.EmailCanRead(email) {
+        SetHttpError(
+            w,
+            http.StatusForbidden,
+            "you don't have access to this event",
+        )
+        return
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        //"eventId": eventIdHex,
+        "ownerEmail": eventAccess.OwnerEmail,
+    })
+}
+
+func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    var ok bool
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    parts := SplitURL(r.URL)
+    if len(parts) < 2 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    eventIdHex := parts[len(parts)-2]
+    if !bson.IsObjectIdHex(eventIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
+        return
+        // to avoid panic!
+    }
+    eventId := bson.ObjectIdHex(eventIdHex)
+
+    inputMap := map[string]string{
+        "newOwnerEmail": "",
+    }
+    body, _ := ioutil.ReadAll(r.Body)
+    err = json.Unmarshal(body, &inputMap)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if eventAccess.OwnerEmail != email {
+        SetHttpError(w, http.StatusForbidden, "you don't own this event")
+        return
+    }
+
+    newOwnerEmail, ok := inputMap["newOwnerEmail"]
+    if !ok {
+        SetHttpError(w, http.StatusBadRequest, "missing 'newOwnerEmail'")
+        return
+    }
+    // should check if user with `newOwnerEmail` exists?
+    userModel := UserModelByEmail(newOwnerEmail, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, newOwnerEmail)
+        return
+    }
+    now := time.Now()
+    accessChangeLog := bson.M{
+        "time": now,
+        "email": email,
+        "remoteIp": remoteIp,
+        "eventId": eventId,
+        "ownerEmail": []interface{}{
+            eventAccess.OwnerEmail,
+            newOwnerEmail,
+        },
+    }
+    err = db.C("event_access_change_log").Insert(accessChangeLog)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    eventAccess.OwnerEmail = newOwnerEmail
+    err = db.C("event_access").Update(
+        bson.M{"_id": eventId},
+        eventAccess,
+    )
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    // send an E-Mail to `newOwnerEmail` FIXME
 }
 
 
