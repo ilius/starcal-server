@@ -125,11 +125,6 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         GroupId: groupId,
         //AccessEmails: []string{}
     }
-    err = db.C("event_access").Insert(eventAccess)
-    if err != nil {
-        SetHttpErrorInternal(w, err)
-        return
-    }
     now := time.Now()
     err = db.C("event_access_change_log").Insert(
         bson.M{
@@ -179,6 +174,11 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             SetHttpError(w, http.StatusBadRequest, err.Error())
             return
         }
+    }
+    err = db.C("event_access").Insert(eventAccess)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
     }
     json.NewEncoder(w).Encode(map[string]string{
         "eventId": eventId.Hex(),

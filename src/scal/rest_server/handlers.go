@@ -141,13 +141,6 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
         return
     }
-    err = db.C("event_access").Remove(
-        bson.M{"_id": eventId},
-    )
-    if err != nil {
-        SetHttpErrorInternal(w, err)
-        return
-    }
     now := time.Now()
     accessChangeLog := bson.M{
         "time": now,
@@ -183,7 +176,14 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "time": now,
     })
     if err != nil {
-        SetHttpError(w, http.StatusBadRequest, err.Error())
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    err = db.C("event_access").Remove(
+        bson.M{"_id": eventId},
+    )
+    if err != nil {
+        SetHttpErrorInternal(w, err)
         return
     }
 }
@@ -267,18 +267,6 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
     }
 
-    newEventAccess := event_lib.EventAccessModel{
-        EventId: newEventId,
-        EventType: eventAccess.EventType,
-        OwnerEmail: email,
-        GroupId: newGroupId,
-        //AccessEmails: []string{}
-    }
-    err = db.C("event_access").Insert(newEventAccess)
-    if err != nil {
-        SetHttpErrorInternal(w, err)
-        return
-    }
     now := time.Now()
     err = db.C("event_access_change_log").Insert(
         bson.M{
@@ -306,6 +294,20 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
+
+    newEventAccess := event_lib.EventAccessModel{
+        EventId: newEventId,
+        EventType: eventAccess.EventType,
+        OwnerEmail: email,
+        GroupId: newGroupId,
+        //AccessEmails: []string{}
+    }
+    err = db.C("event_access").Insert(newEventAccess)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
     eventRev.EventId = newEventId
     err = db.C("event_revision").Insert(eventRev)
     if err != nil {
@@ -402,20 +404,6 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    /*userModel := UserModelByEmail(email, db)
-    if userModel == nil {
-        SetHttpErrorUserNotFound(w, email)
-        return
-    }*/
-    eventAccess.GroupId = &newGroupId
-    err = db.C("event_access").Update(
-        bson.M{"_id": eventId},
-        eventAccess,
-    )
-    if err != nil {
-        SetHttpErrorInternal(w, err)
-        return
-    }
     now := time.Now()
     accessChangeLog := bson.M{
         "time": now,
@@ -423,7 +411,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "remoteIp": remoteIp,
         "eventId": eventId,
         "groupId": []interface{}{
-            nil,
+            eventAccess.GroupId,
             newGroupId,
         },
     }
@@ -441,6 +429,20 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
+    /*userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, email)
+        return
+    }*/
+    eventAccess.GroupId = &newGroupId
+    err = db.C("event_access").Update(
+        bson.M{"_id": eventId},
+        eventAccess,
+    )
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
 }
 
 func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
