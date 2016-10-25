@@ -57,10 +57,6 @@ func SplitURL(u *url.URL) []string {
     return strings.Split(strings.Trim(u.Path, "/"), "/")
 }
 
-func StartRestServer() {
-    router := NewRouter()
-    log.Fatal(http.ListenAndServe(":8080", router))
-}
 
 func Index(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     fmt.Fprintf(w, "Hello, %q", r.Username)
