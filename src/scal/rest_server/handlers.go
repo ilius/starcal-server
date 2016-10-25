@@ -19,12 +19,6 @@ import (
 
 func init() {
     RegisterRoute(
-        "Index",
-        "GET",
-        "/",
-        authenticator.Wrap(Index),
-    )
-    RegisterRoute(
         "DeleteEvent",
         "DELETE",
         "/event/{eventType}/{eventId}/",// we ignore {eventType}
@@ -62,10 +56,6 @@ func init() {
     )
 }
 
-
-func Index(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
-    fmt.Fprintf(w, "Hello, %q", r.Username)
-}
 
 
 func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
