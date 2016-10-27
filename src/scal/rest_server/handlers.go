@@ -510,7 +510,14 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // should check if user with `newOwnerEmail` exists?
     userModel := UserModelByEmail(newOwnerEmail, db)
     if userModel == nil {
-        SetHttpErrorUserNotFound(w, newOwnerEmail)
+        SetHttpError(
+            w,
+            http.StatusBadRequest,
+            fmt.Sprintf(
+                "user with email '%s' does not exist",
+                newOwnerEmail,
+            ),
+        )
         return
     }
     now := time.Now()
