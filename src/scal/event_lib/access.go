@@ -32,7 +32,7 @@ func (self EventAccessModel) EmailCanRead(email string) bool {
 
 func LoadEventAccessModel(
     db *mgo.Database,
-    eventId bson.ObjectId,
+    eventId *bson.ObjectId,
     loadGroup bool,
 ) (*EventAccessModel, error) {
     var err error

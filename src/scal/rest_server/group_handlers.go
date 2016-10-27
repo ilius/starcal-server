@@ -165,31 +165,16 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     email := r.Username
-    parts := SplitURL(r.URL)
-    if len(parts) < 1 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    groupIdHex := parts[len(parts)-1]
+    groupId := ObjectIdFromURL(w, r, "groupId", 0)
+    if groupId==nil { return }
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-
     var err error
     db, err := storage.GetDB()
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
-    if groupIdHex == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
-        return
-    }
-    if !bson.IsObjectIdHex(groupIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-        return
-        // to avoid panic!
-    }
-    groupId := bson.ObjectIdHex(groupIdHex)
 
     newGroupModel := event_lib.EventGroupModel{}
 
@@ -255,12 +240,8 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     email := r.Username
-    parts := SplitURL(r.URL)
-    if len(parts) < 1 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    groupIdHex := parts[len(parts)-1]
+    groupId := ObjectIdFromURL(w, r, "groupId", 0)
+    if groupId==nil { return }
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -269,17 +250,6 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    if groupIdHex == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
-        return
-    }
-    if !bson.IsObjectIdHex(groupIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-        return
-        // to avoid panic!
-    }
-    groupId := bson.ObjectIdHex(groupIdHex)
-
     var groupModel *event_lib.EventGroupModel
     db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
@@ -300,12 +270,8 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     email := r.Username
-    parts := SplitURL(r.URL)
-    if len(parts) < 1 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    groupIdHex := parts[len(parts)-1]
+    groupId := ObjectIdFromURL(w, r, "groupId", 0)
+    if groupId==nil { return }
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -319,17 +285,6 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    if groupIdHex == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
-        return
-    }
-    if !bson.IsObjectIdHex(groupIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-        return
-        // to avoid panic!
-    }
-    groupId := bson.ObjectIdHex(groupIdHex)
-
     var groupModel *event_lib.EventGroupModel
     db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
@@ -350,7 +305,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorUserNotFound(w, email)
         return
     }
-    if *userModel.DefaultGroupId == groupId {
+    if *userModel.DefaultGroupId == *groupId {
         if !ALLOW_DELETE_DEFAULT_GROUP {
             SetHttpError(
                 w,
@@ -427,12 +382,8 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     email := r.Username
-    parts := SplitURL(r.URL)
-    if len(parts) < 2 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    groupIdHex := parts[len(parts)-2]
+    groupId := ObjectIdFromURL(w, r, "groupId", 1)
+    if groupId==nil { return }
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -441,16 +392,6 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    if groupIdHex == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
-        return
-    }
-    if !bson.IsObjectIdHex(groupIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-        return
-        // to avoid panic!
-    }
-    groupId := bson.ObjectIdHex(groupIdHex)
     var groupModel *event_lib.EventGroupModel
     db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
@@ -502,12 +443,8 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     email := r.Username
-    parts := SplitURL(r.URL)
-    if len(parts) < 2 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    groupIdHex := parts[len(parts)-2]
+    groupId := ObjectIdFromURL(w, r, "groupId", 1)
+    if groupId==nil { return }
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -516,16 +453,6 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    if groupIdHex == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
-        return
-    }
-    if !bson.IsObjectIdHex(groupIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-        return
-        // to avoid panic!
-    }
-    groupId := bson.ObjectIdHex(groupIdHex)
     var groupModel *event_lib.EventGroupModel
     db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
@@ -614,6 +541,8 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     email := r.Username
+    //groupId := ObjectIdFromURL(w, r, "groupId", 2)
+    //if groupId==nil { return }
     parts := SplitURL(r.URL)
     if len(parts) < 3 {
         SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
@@ -743,6 +672,8 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     email := r.Username
+    //groupId := ObjectIdFromURL(w, r, "groupId", 2)
+    //if groupId==nil { return }
     parts := SplitURL(r.URL)
     if len(parts) < 3 {
         SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))

@@ -192,13 +192,8 @@ func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // -----------------------------------------------
     email := r.Username
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-    //eventIdHex := vars["eventId"]
-    parts := SplitURL(r.URL)
-    if len(parts) < 1 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    eventIdHex := parts[len(parts)-1]
+    eventId := ObjectIdFromURL(w, r, "eventId", 0)
+    if eventId==nil { return }
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
@@ -207,16 +202,6 @@ func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    if eventIdHex == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
-        return
-    }
-    if !bson.IsObjectIdHex(eventIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
-        return
-        // to avoid panic!
-    }
-    eventId := bson.ObjectIdHex(eventIdHex)
 
     eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
     if err != nil {
@@ -257,7 +242,7 @@ func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventModel.Id = eventId
+    eventModel.Id = *eventId
     eventModel.GroupId = eventAccess.GroupId.Hex()
     json.NewEncoder(w).Encode(eventModel)
 }
@@ -269,26 +254,11 @@ func UpdateLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // -----------------------------------------------
     email := r.Username
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-    //eventIdHex := vars["eventId"]
-    parts := SplitURL(r.URL)
-    if len(parts) < 1 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    eventIdHex := parts[len(parts)-1]
+    eventId := ObjectIdFromURL(w, r, "eventId", 0)
+    if eventId==nil { return }
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
-    if eventIdHex == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
-        return
-    }
-    if !bson.IsObjectIdHex(eventIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
-        return
-        // to avoid panic!
-    }
-    eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
     err = json.Unmarshal(body, &eventModel)
     if err != nil {
@@ -354,7 +324,7 @@ func UpdateLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 
     eventRev := event_lib.EventRevisionModel{
-        EventId: eventId,
+        EventId: *eventId,
         EventType: eventModel.Type(),
         Sha1: eventModel.Sha1,
         Time: time.Now(),
@@ -391,26 +361,11 @@ func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // -----------------------------------------------
     email := r.Username
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-    //eventIdHex := vars["eventId"]
-    parts := SplitURL(r.URL)
-    if len(parts) < 1 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    eventIdHex := parts[len(parts)-1]
+    eventId := ObjectIdFromURL(w, r, "eventId", 0)
+    if eventId==nil { return }
     // -----------------------------------------------
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
-    if eventIdHex == "" {
-        SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
-        return
-    }
-    if !bson.IsObjectIdHex(eventIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
-        return
-        // to avoid panic!
-    }
-    eventId := bson.ObjectIdHex(eventIdHex)
     body, _ := ioutil.ReadAll(r.Body)
     patchMap := bson.M{}
     err = json.Unmarshal(body, &patchMap)
@@ -630,7 +585,7 @@ func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 
     err = db.C("event_revision").Insert(event_lib.EventRevisionModel{
-        EventId: eventId,
+        EventId: *eventId,
         EventType: eventModel.Type(),
         Sha1: eventModel.Sha1,
         Time: time.Now(),

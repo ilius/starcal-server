@@ -1,11 +1,15 @@
 package rest_server
 
 import (
+    "fmt"
     "strings"
     "log"
     "net/url"
     "net/http"
     "encoding/json"
+
+    "gopkg.in/mgo.v2-unstable/bson"
+    "scal-lib/go-http-auth"
 )
 
 func SplitURL(u *url.URL) []string {
@@ -36,4 +40,35 @@ func SetHttpErrorInternal(w http.ResponseWriter, err error) {
     SetHttpError(w, http.StatusInternalServerError, err.Error())
 }
 
-
+func ObjectIdFromURL(
+    w http.ResponseWriter,
+    r *auth.AuthenticatedRequest,
+    name string,
+    indexFromEnd int,
+) *bson.ObjectId {
+    parts := SplitURL(r.URL)
+    if len(parts) < 2 {
+        SetHttpErrorInternalMsg(
+            w,
+            fmt.Sprintf(
+                "Unexpected URL: %s",
+                r.URL,
+            ),
+        )
+        return nil
+    }
+    objIdHex := parts[len(parts)-1-indexFromEnd]
+    if !bson.IsObjectIdHex(objIdHex) {// to avoid panic!
+        SetHttpError(
+            w,
+            http.StatusBadRequest,
+            fmt.Sprintf(
+                "invalid '%s'",
+                name,
+            ),
+        )
+        return nil
+    }
+    objId := bson.ObjectIdHex(objIdHex)
+    return &objId
+}

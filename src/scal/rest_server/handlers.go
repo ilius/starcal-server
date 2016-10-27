@@ -68,18 +68,8 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    parts := SplitURL(r.URL)
-    if len(parts) < 1 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    eventIdHex := parts[len(parts)-1]
-    if !bson.IsObjectIdHex(eventIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
-        return
-        // to avoid panic!
-    }
-    eventId := bson.ObjectIdHex(eventIdHex)
+    eventId := ObjectIdFromURL(w, r, "eventId", 0)
+    if eventId==nil { return }
 
     db, err := storage.GetDB()
     if err != nil {
@@ -184,7 +174,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     oldEventId := bson.ObjectIdHex(oldEventIdHex)
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, oldEventId, true)
+    eventAccess, err := event_lib.LoadEventAccessModel(db, &oldEventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -293,18 +283,8 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    parts := SplitURL(r.URL)
-    if len(parts) < 2 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    eventIdHex := parts[len(parts)-2]
-    if !bson.IsObjectIdHex(eventIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
-        return
-        // to avoid panic!
-    }
-    eventId := bson.ObjectIdHex(eventIdHex)
+    eventId := ObjectIdFromURL(w, r, "eventId", 1)
+    if eventId==nil { return }
 
     inputMap := map[string]string{
         "newGroupId": "",
@@ -404,23 +384,14 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 }
 
+
 func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
-    parts := SplitURL(r.URL)
-    if len(parts) < 2 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    eventIdHex := parts[len(parts)-2]
-    if !bson.IsObjectIdHex(eventIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
-        return
-        // to avoid panic!
-    }
-    eventId := bson.ObjectIdHex(eventIdHex)
+    eventId := ObjectIdFromURL(w, r, "eventId", 1)
+    if eventId==nil { return }
     db, err := storage.GetDB()
     if err != nil {
         SetHttpErrorInternal(w, err)
@@ -444,7 +415,7 @@ func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     json.NewEncoder(w).Encode(bson.M{
-        //"eventId": eventIdHex,
+        //"eventId": eventId.Hex(),
         "ownerEmail": eventAccess.OwnerEmail,
     })
 }
@@ -460,18 +431,8 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    parts := SplitURL(r.URL)
-    if len(parts) < 2 {
-        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-        return
-    }
-    eventIdHex := parts[len(parts)-2]
-    if !bson.IsObjectIdHex(eventIdHex) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
-        return
-        // to avoid panic!
-    }
-    eventId := bson.ObjectIdHex(eventIdHex)
+    eventId := ObjectIdFromURL(w, r, "eventId", 1)
+    if eventId==nil { return }
 
     inputMap := map[string]string{
         "newOwnerEmail": "",
