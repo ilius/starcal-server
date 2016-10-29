@@ -48,6 +48,35 @@ func init(){
         "/event/allDayTask/{eventId}/",
         authenticator.Wrap(PatchAllDayTask),
     )
+    // functions of following 4 operations are defined in handlers.go
+    // because their definition does not depend on event type
+    // but their URL still contains eventType for sake of compatibilty
+    // so we will have to register their routes for each event type
+    // we don't use eventType in these functions
+    RegisterRoute(
+        "DeleteEvent_allDayTask",
+        "DELETE",
+        "/event/allDayTask/{eventId}/",
+        authenticator.Wrap(DeleteEvent),
+    )
+    RegisterRoute(
+        "SetEventGroupId_allDayTask",
+        "PUT",
+        "/event/allDayTask/{eventId}/groupId/",
+        authenticator.Wrap(SetEventGroupId),
+    )
+    RegisterRoute(
+        "GetEventOwner_allDayTask",
+        "GET",
+        "/event/allDayTask/{eventId}/owner/",
+        authenticator.Wrap(GetEventOwner),
+    )
+    RegisterRoute(
+        "SetEventOwner_allDayTask",
+        "PUT",
+        "/event/allDayTask/{eventId}/owner/",
+        authenticator.Wrap(SetEventOwner),
+    )
 }
 
 func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {

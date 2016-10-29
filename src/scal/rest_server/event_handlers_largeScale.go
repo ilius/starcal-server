@@ -48,6 +48,35 @@ func init(){
         "/event/largeScale/{eventId}/",
         authenticator.Wrap(PatchLargeScale),
     )
+    // functions of following 4 operations are defined in handlers.go
+    // because their definition does not depend on event type
+    // but their URL still contains eventType for sake of compatibilty
+    // so we will have to register their routes for each event type
+    // we don't use eventType in these functions
+    RegisterRoute(
+        "DeleteEvent_largeScale",
+        "DELETE",
+        "/event/largeScale/{eventId}/",
+        authenticator.Wrap(DeleteEvent),
+    )
+    RegisterRoute(
+        "SetEventGroupId_largeScale",
+        "PUT",
+        "/event/largeScale/{eventId}/groupId/",
+        authenticator.Wrap(SetEventGroupId),
+    )
+    RegisterRoute(
+        "GetEventOwner_largeScale",
+        "GET",
+        "/event/largeScale/{eventId}/owner/",
+        authenticator.Wrap(GetEventOwner),
+    )
+    RegisterRoute(
+        "SetEventOwner_largeScale",
+        "PUT",
+        "/event/largeScale/{eventId}/owner/",
+        authenticator.Wrap(SetEventOwner),
+    )
 }
 
 func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {

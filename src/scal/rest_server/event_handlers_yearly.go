@@ -48,6 +48,35 @@ func init(){
         "/event/yearly/{eventId}/",
         authenticator.Wrap(PatchYearly),
     )
+    // functions of following 4 operations are defined in handlers.go
+    // because their definition does not depend on event type
+    // but their URL still contains eventType for sake of compatibilty
+    // so we will have to register their routes for each event type
+    // we don't use eventType in these functions
+    RegisterRoute(
+        "DeleteEvent_yearly",
+        "DELETE",
+        "/event/yearly/{eventId}/",
+        authenticator.Wrap(DeleteEvent),
+    )
+    RegisterRoute(
+        "SetEventGroupId_yearly",
+        "PUT",
+        "/event/yearly/{eventId}/groupId/",
+        authenticator.Wrap(SetEventGroupId),
+    )
+    RegisterRoute(
+        "GetEventOwner_yearly",
+        "GET",
+        "/event/yearly/{eventId}/owner/",
+        authenticator.Wrap(GetEventOwner),
+    )
+    RegisterRoute(
+        "SetEventOwner_yearly",
+        "PUT",
+        "/event/yearly/{eventId}/owner/",
+        authenticator.Wrap(SetEventOwner),
+    )
 }
 
 func AddYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {

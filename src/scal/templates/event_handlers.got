@@ -48,6 +48,35 @@ func init(){
         "/event/{{EVENT_TYPE}}/{eventId}/",
         authenticator.Wrap(Patch{{EVENT_TYPE_CAP}}),
     )
+    // functions of following 4 operations are defined in handlers.go
+    // because their definition does not depend on event type
+    // but their URL still contains eventType for sake of compatibilty
+    // so we will have to register their routes for each event type
+    // we don't use eventType in these functions
+    RegisterRoute(
+        "DeleteEvent_{{EVENT_TYPE}}",
+        "DELETE",
+        "/event/{{EVENT_TYPE}}/{eventId}/",
+        authenticator.Wrap(DeleteEvent),
+    )
+    RegisterRoute(
+        "SetEventGroupId_{{EVENT_TYPE}}",
+        "PUT",
+        "/event/{{EVENT_TYPE}}/{eventId}/groupId/",
+        authenticator.Wrap(SetEventGroupId),
+    )
+    RegisterRoute(
+        "GetEventOwner_{{EVENT_TYPE}}",
+        "GET",
+        "/event/{{EVENT_TYPE}}/{eventId}/owner/",
+        authenticator.Wrap(GetEventOwner),
+    )
+    RegisterRoute(
+        "SetEventOwner_{{EVENT_TYPE}}",
+        "PUT",
+        "/event/{{EVENT_TYPE}}/{eventId}/owner/",
+        authenticator.Wrap(SetEventOwner),
+    )
 }
 
 func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) {

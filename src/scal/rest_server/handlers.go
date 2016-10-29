@@ -19,34 +19,10 @@ import (
 
 func init() {
     RegisterRoute(
-        "DeleteEvent",
-        "DELETE",
-        "/event/{eventType}/{eventId}/",// we ignore {eventType}
-        authenticator.Wrap(DeleteEvent),
-    )
-    RegisterRoute(
         "CopyEvent",
         "POST",
         "/event/copy/",
         authenticator.Wrap(CopyEvent),
-    )
-    RegisterRoute(
-        "SetEventGroupId",
-        "PUT",
-        "/event/{eventType}/{eventId}/groupId/",// we ignore {eventType}
-        authenticator.Wrap(SetEventGroupId),
-    )
-    RegisterRoute(
-        "GetEventOwner",
-        "GET",
-        "/event/{eventType}/{eventId}/owner/",// we ignore {eventType}
-        authenticator.Wrap(GetEventOwner),
-    )
-    RegisterRoute(
-        "SetEventOwner",
-        "PUT",
-        "/event/{eventType}/{eventId}/owner/",// we ignore {eventType}
-        authenticator.Wrap(SetEventOwner),
     )
     RegisterRoute(
         "GetUngroupedEvents",

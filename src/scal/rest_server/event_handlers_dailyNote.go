@@ -48,6 +48,35 @@ func init(){
         "/event/dailyNote/{eventId}/",
         authenticator.Wrap(PatchDailyNote),
     )
+    // functions of following 4 operations are defined in handlers.go
+    // because their definition does not depend on event type
+    // but their URL still contains eventType for sake of compatibilty
+    // so we will have to register their routes for each event type
+    // we don't use eventType in these functions
+    RegisterRoute(
+        "DeleteEvent_dailyNote",
+        "DELETE",
+        "/event/dailyNote/{eventId}/",
+        authenticator.Wrap(DeleteEvent),
+    )
+    RegisterRoute(
+        "SetEventGroupId_dailyNote",
+        "PUT",
+        "/event/dailyNote/{eventId}/groupId/",
+        authenticator.Wrap(SetEventGroupId),
+    )
+    RegisterRoute(
+        "GetEventOwner_dailyNote",
+        "GET",
+        "/event/dailyNote/{eventId}/owner/",
+        authenticator.Wrap(GetEventOwner),
+    )
+    RegisterRoute(
+        "SetEventOwner_dailyNote",
+        "PUT",
+        "/event/dailyNote/{eventId}/owner/",
+        authenticator.Wrap(SetEventOwner),
+    )
 }
 
 func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
