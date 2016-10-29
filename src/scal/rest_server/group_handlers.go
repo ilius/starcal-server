@@ -335,41 +335,39 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    if eventAccessModels != nil {
-        for _, eventAccessModel := range eventAccessModels {
-            if eventAccessModel.OwnerEmail != email {
-                // send an Email to {eventAccessModel.OwnerEmail}
-                // to inform the event owner, and let him move this
-                // (ungrouped) event into his default (or any other) group
-                // FIXME
-            }
-            // insert a new record to "event_access_change_log" // FIXME
-            eventAccessModel.GroupId = nil
-            err = eventAccessCol.Update(
-                bson.M{"_id": eventAccessModel.EventId},
-                eventAccessModel,
-            )
-            if err != nil {
-                SetHttpErrorInternal(w, err)
-                return
-            }
-            now := time.Now()
-            err = db.C("event_access_change_log").Insert(
-                bson.M{
-                    "time": now,
-                    "email": email,
-                    "remoteIp": remoteIp,
-                    "eventId": eventAccessModel.EventId,
-                    "groupId": []interface{}{
-                        groupId,
-                        nil,
-                    },
+    for _, eventAccessModel := range eventAccessModels {
+        if eventAccessModel.OwnerEmail != email {
+            // send an Email to {eventAccessModel.OwnerEmail}
+            // to inform the event owner, and let him move this
+            // (ungrouped) event into his default (or any other) group
+            // FIXME
+        }
+        // insert a new record to "event_access_change_log" // FIXME
+        eventAccessModel.GroupId = nil
+        err = eventAccessCol.Update(
+            bson.M{"_id": eventAccessModel.EventId},
+            eventAccessModel,
+        )
+        if err != nil {
+            SetHttpErrorInternal(w, err)
+            return
+        }
+        now := time.Now()
+        err = db.C("event_access_change_log").Insert(
+            bson.M{
+                "time": now,
+                "email": email,
+                "remoteIp": remoteIp,
+                "eventId": eventAccessModel.EventId,
+                "groupId": []interface{}{
+                    groupId,
+                    nil,
                 },
-            )
-            if err != nil {
-                SetHttpErrorInternal(w, err)
-                return
-            }
+            },
+        )
+        if err != nil {
+            SetHttpErrorInternal(w, err)
+            return
         }
     }
     err = db.C("event_group").Remove(bson.M{"_id": groupId})
