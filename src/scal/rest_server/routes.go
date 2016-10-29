@@ -33,6 +33,9 @@ func RegisterRoute(
     pattern string,
     handler http.HandlerFunc,
 ){
+    if _, ok := routeMap[name]; ok {
+        panic("Duplicate route name: " + name)
+    }
     routeMap[name] = Route{
         method,
         pattern,
