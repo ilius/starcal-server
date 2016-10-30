@@ -5,7 +5,7 @@ import "net/http"
 import _ "scal/init/cal_types_init"
 
 func StartEventRestServer() {
-    router := CreateEventRouter()
+    router := GetEventRouter()
     log.Fatal(http.ListenAndServe(":8080", router))
 }
 
