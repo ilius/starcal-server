@@ -14,7 +14,7 @@ type Route struct {
 
 type RouteMap map[string]Route
 
-func CreateEventRouter() *mux.Router {
+func CreateEventRouter() http.Handler {
     router := mux.NewRouter().StrictSlash(true)
     for name, route := range routeMap {
         router.
