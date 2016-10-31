@@ -137,13 +137,13 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         Title: userModel.Email,
         OwnerEmail: userModel.Email,
     }
-    err = db.C("event_group").Insert(defaultGroup)
+    err = storage.Insert(db, defaultGroup)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
     userModel.DefaultGroupId = &defaultGroup.Id
-    err = db.C("users").Insert(userModel)
+    err = storage.Insert(db, userModel)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -210,7 +210,7 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    _, err = db.C("users").Find(bson.M{
+    _, err = db.C(storage.C_user).Find(bson.M{
         "email": email,
     }).Apply(
         mgo.Change{
@@ -242,7 +242,7 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    _, err = db.C("users").Find(bson.M{
+    _, err = db.C(storage.C_user).Find(bson.M{
         "email": email,
     }).Apply(
         mgo.Change{
@@ -294,7 +294,7 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
     }
     groupId := bson.ObjectIdHex(attrValue)
     groupModel := event_lib.EventGroupModel{}
-    err = db.C("event_group").Find(bson.M{
+    err = db.C(storage.C_group).Find(bson.M{
         "_id": groupId,
     }).One(&groupModel)
     if err != nil {
@@ -306,7 +306,7 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
         return
     }
 
-    _, err = db.C("users").Find(bson.M{
+    _, err = db.C(storage.C_user).Find(bson.M{
         "email": email,
     }).Apply(
         mgo.Change{
@@ -339,7 +339,7 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
         return
     }
 
-    _, err = db.C("users").Find(bson.M{
+    _, err = db.C(storage.C_user).Find(bson.M{
         "email": email,
     }).Apply(
         mgo.Change{

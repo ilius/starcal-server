@@ -4,6 +4,7 @@ import "time"
 import "fmt"
 import "errors"
 
+import "scal/storage"
 
 // DurationUnit is just a matter of UI
 // DurationUnit=0       ==> shows End datetime in UI
@@ -23,7 +24,7 @@ func (self TaskEventModel) Type() string {
     return "task"
 }
 func (self TaskEventModel) Collection() string {
-    return "event_data"
+    return storage.C_eventData
     //return "events_task"
 }
 

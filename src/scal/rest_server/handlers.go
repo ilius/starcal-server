@@ -89,24 +89,22 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             nil,
         }
     }
-    err = db.C("event_access_change_log").Insert(accessChangeLog)
+    err = db.C(storage.C_accessChangeLog).Insert(accessChangeLog)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
-    err = db.C("event_revision").Insert(bson.M{
-        "eventId": eventId,
-        "eventType": eventAccess.EventType,
-        "sha1": nil,
-        "time": now,
+    err = storage.Insert(db, event_lib.EventRevisionModel{
+        EventId: *eventId,
+        EventType: eventAccess.EventType,
+        Sha1: "",
+        Time: now,
     })
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
-    err = db.C("event_access").Remove(
-        bson.M{"_id": eventId},
-    )
+    err = storage.Remove(db, eventAccess)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -165,7 +163,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     eventRev := event_lib.EventRevisionModel{}
-    err = db.C("event_revision").Find(bson.M{
+    err = db.C(storage.C_revision).Find(bson.M{
         "eventId": oldEventId,
     }).Sort("-time").One(&eventRev)
     if err != nil {
@@ -193,7 +191,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     now := time.Now()
-    err = db.C("event_access_change_log").Insert(
+    err = db.C(storage.C_accessChangeLog).Insert(
         bson.M{
             "time": now,
             "email": email,
@@ -220,21 +218,20 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    newEventAccess := event_lib.EventAccessModel{
+    err = storage.Insert(db, event_lib.EventAccessModel{
         EventId: newEventId,
         EventType: eventAccess.EventType,
         OwnerEmail: email,
         GroupId: newGroupId,
         //AccessEmails: []string{}
-    }
-    err = db.C("event_access").Insert(newEventAccess)
+    })
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
 
     eventRev.EventId = newEventId
-    err = db.C("event_revision").Insert(eventRev)
+    err = storage.Insert(db, eventRev)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -303,7 +300,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     newGroupId := bson.ObjectIdHex(newGroupIdHex)
     newGroupModel := event_lib.EventGroupModel{}
-    err = db.C("event_group").Find(bson.M{
+    err = db.C(storage.C_group).Find(bson.M{
         "_id": newGroupId,
     }).One(&newGroupModel)
     if err != nil {
@@ -338,7 +335,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         accessChangeLog["addedAccessEmails"] = addedAccessEmails
     }
     */
-    err = db.C("event_access_change_log").Insert(accessChangeLog)
+    err = db.C(storage.C_accessChangeLog).Insert(accessChangeLog)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -350,10 +347,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }*/
     eventAccess.GroupId = &newGroupId
-    err = db.C("event_access").Update(
-        bson.M{"_id": eventId},
-        eventAccess,
-    )
+    err = storage.Update(db, eventAccess)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -458,7 +452,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     now := time.Now()
-    accessChangeLog := bson.M{
+    err = db.C(storage.C_accessChangeLog).Insert(bson.M{
         "time": now,
         "email": email,
         "remoteIp": remoteIp,
@@ -467,17 +461,13 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             eventAccess.OwnerEmail,
             newOwnerEmail,
         },
-    }
-    err = db.C("event_access_change_log").Insert(accessChangeLog)
+    })
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
     eventAccess.OwnerEmail = newOwnerEmail
-    err = db.C("event_access").Update(
-        bson.M{"_id": eventId},
-        eventAccess,
-    )
+    err = storage.Update(db, eventAccess)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -502,7 +492,7 @@ func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         EventType string        `bson:"eventType" json:"eventType"`
     }
     var events []eventModel
-    err = db.C("event_access").Find(bson.M{
+    err = db.C(storage.C_access).Find(bson.M{
         "ownerEmail": email,
         "groupId": nil,
     }).All(&events)

@@ -3,6 +3,8 @@ package event_lib
 import (
     "gopkg.in/mgo.v2"
     "gopkg.in/mgo.v2/bson"
+
+    "scal/storage"
 )
 
 type EventAccessModel struct {
@@ -12,6 +14,14 @@ type EventAccessModel struct {
     AccessEmails []string           `bson:"accessEmails"`
     GroupId *bson.ObjectId          `bson:"groupId"`
     GroupModel *EventGroupModel     `bson:"-"`
+}
+func (self EventAccessModel) UniqueM() bson.M {
+    return bson.M{
+        "_id": self.EventId,
+    }
+}
+func (self EventAccessModel) Collection() string {
+    return storage.C_access
 }
 func (self EventAccessModel) EmailCanRead(email string) bool {
     if email == self.OwnerEmail {
@@ -39,7 +49,7 @@ func LoadEventAccessModel(
 ) (*EventAccessModel, error) {
     var err error
     accessModel := EventAccessModel{}
-    err = db.C("event_access").Find(bson.M{
+    err = db.C(storage.C_access).Find(bson.M{
         "_id": eventId,
     }).One(&accessModel)
     if err != nil {
@@ -47,7 +57,7 @@ func LoadEventAccessModel(
     }
     if loadGroup && accessModel.GroupId != nil {
         groupModel := EventGroupModel{}
-        err = db.C("event_group").Find(bson.M{
+        err = db.C(storage.C_group).Find(bson.M{
             "_id": accessModel.GroupId,
         }).One(&groupModel)
         if err != nil {

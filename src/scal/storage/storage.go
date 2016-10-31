@@ -13,6 +13,17 @@ const (
     MongoPassword = ""
 )
 
+// MongoDB Collection Names:
+const (
+    C_user = "users"
+    C_group = "event_group"
+    C_access = "event_access"
+    C_accessChangeLog = "event_access_change_log"
+    C_revision = "event_revision"
+    C_eventData = "event_data"
+)
+
+
 func init() {
     db, err := GetDB()
     if err != nil {
@@ -32,7 +43,7 @@ func init() {
     will be included in the index. When using a sparse index for sorting,
     only indexed documents will be returned.
     */
-    db.C("users").EnsureIndex(mgo.Index{
+    db.C(C_user).EnsureIndex(mgo.Index{
         Key: []string{"email"},
         Unique: true,
         DropDups: false,
@@ -40,91 +51,91 @@ func init() {
         Sparse: false,
     })
 
-    db.C("event_group").EnsureIndex(mgo.Index{
+    db.C(C_group).EnsureIndex(mgo.Index{
         Key: []string{"ownerEmail"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: true,
     })
-    db.C("event_group").EnsureIndex(mgo.Index{
+    db.C(C_group).EnsureIndex(mgo.Index{
         Key: []string{"readAccessEmails"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: true,
     })
-    db.C("event_access").EnsureIndex(mgo.Index{
+    db.C(C_access).EnsureIndex(mgo.Index{
         Key: []string{"ownerEmail"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+    db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"time"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+    db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"email"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+    db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"eventId"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+    db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"eventType"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+    db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"ownerEmail"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+    db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"groupId"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_access_change_log").EnsureIndex(mgo.Index{
+    db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"accessEmails"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_revision").EnsureIndex(mgo.Index{
+    db.C(C_revision).EnsureIndex(mgo.Index{
         Key: []string{"sha1"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_revision").EnsureIndex(mgo.Index{
+    db.C(C_revision).EnsureIndex(mgo.Index{
         Key: []string{"eventId"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })
-    db.C("event_revision").EnsureIndex(mgo.Index{
+    db.C(C_revision).EnsureIndex(mgo.Index{
         Key: []string{"time"},
         Unique: false,
         DropDups: false,
@@ -132,7 +143,7 @@ func init() {
         Sparse: false,
     })
 
-    db.C("event_data").EnsureIndex(mgo.Index{
+    db.C(C_eventData).EnsureIndex(mgo.Index{
         Key: []string{"sha1"},
         Unique: true,
         DropDups: false,

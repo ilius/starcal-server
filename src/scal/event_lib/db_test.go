@@ -6,6 +6,8 @@ import "time"
 import _ "scal/cal_types/gregorian"
 import _ "scal/cal_types/jalali"
 
+import "scal/storage"
+
 //import "mgo"
 import "gopkg.in/mgo.v2"
 import "gopkg.in/mgo.v2/bson"
@@ -43,7 +45,7 @@ func TestMongoInsertEvents(t *testing.T) {
     mongoSession.SetMode(mgo.Monotonic, true)
 
     db := mongoSession.DB(MongoDbName)
-	col_events := db.C("events")
+	col_events := db.C(storage.C_eventData)
 
     //err := col_events.Find(nil).All(&events)
     

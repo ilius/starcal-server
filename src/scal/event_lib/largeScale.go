@@ -1,5 +1,7 @@
 package event_lib
 
+import "scal/storage"
+
 /*
 startYear := start * scale
 endYear := end * scale
@@ -16,7 +18,7 @@ func (self LargeScaleEventModel) Type() string {
     return "largeScale"
 }
 func (self LargeScaleEventModel) Collection() string {
-    return "event_data"
+    return storage.C_eventData
     //return "events_largeScale"
 }
 

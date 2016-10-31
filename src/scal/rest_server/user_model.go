@@ -7,20 +7,30 @@ import (
 
     "gopkg.in/mgo.v2/bson"
     "gopkg.in/mgo.v2"
+
+    "scal/storage"
 )
 
 type UserModel struct {
-    Id bson.ObjectId    `bson:"_id,omitempty" json:"-"`
+    Id bson.ObjectId    `bson:"_id,omitempty" json:"-"` // FIXME
     Email string        `bson:"email" json:"email"`
     FullName string     `bson:"fullName" json:"fullName"`
     Password string     `bson:"password" json:"password"`
     Locked bool         `bson:"locked" json:"-"`
     DefaultGroupId *bson.ObjectId    `bson:"defaultGroupId" json:"defaultGroupId"`
 }
+func (self UserModel) UniqueM() bson.M {
+    return bson.M{
+        "email": self.Email,
+    }
+}
+func (self UserModel) Collection() string {
+    return storage.C_user
+}
 
 func UserModelByEmail(email string, db *mgo.Database) *UserModel {
     user := UserModel{}
-    err := db.C("users").Find(bson.M{
+    err := db.C(user.Collection()).Find(bson.M{
         "email": email,
     }).One(&user)
     if err != nil {

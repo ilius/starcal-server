@@ -1,5 +1,7 @@
 package event_lib
 
+import "scal/storage"
+
 // WeekNumMode: "any" | "odd" | "even"
 /*
     WeekDayList: a slice of integers,
@@ -22,7 +24,7 @@ func (self UniversityClassEventModel) Type() string {
     return "universityClass"
 }
 func (self UniversityClassEventModel) Collection() string {
-    return "event_data"
+    return storage.C_eventData
     //return "events_universityClass"
 }
 

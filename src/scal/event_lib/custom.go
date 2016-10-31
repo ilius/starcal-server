@@ -1,5 +1,7 @@
 package event_lib
 
+import "scal/storage"
+
 /*
 bson/bson.go:
     type M map[string]interface{}
@@ -50,7 +52,7 @@ func (self CustomEventModel) Type() string {
     return "custom"
 }
 func (self CustomEventModel) Collection() string {
-    return "event_data"
+    return storage.C_eventData
     //return "events_custom"
 }
 

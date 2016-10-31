@@ -1,6 +1,7 @@
 package event_lib
 
 import "scal"
+import "scal/storage"
 import . "scal/utils"
 
 type UniversityExamEventModel struct {
@@ -14,7 +15,7 @@ func (self UniversityExamEventModel) Type() string {
     return "universityExam"
 }
 func (self UniversityExamEventModel) Collection() string {
-    return "event_data"
+    return storage.C_eventData
     //return "events_universityExam"
 }
 

@@ -130,7 +130,7 @@ func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             // to avoid panic!
         }
         var groupModel *event_lib.EventGroupModel
-        db.C("event_group").Find(bson.M{
+        db.C(storage.C_group).Find(bson.M{
             "_id": bson.ObjectIdHex(eventModel.GroupId),
         }).One(&groupModel)
         if groupModel == nil {
@@ -155,7 +155,7 @@ func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         //AccessEmails: []string{}
     }
     now := time.Now()
-    err = db.C("event_access_change_log").Insert(
+    err = db.C(storage.C_accessChangeLog).Insert(
         bson.M{
             "time": now,
             "email": email,
@@ -181,7 +181,7 @@ func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    err = db.C("event_revision").Insert(event_lib.EventRevisionModel{
+    err = storage.Insert(db, event_lib.EventRevisionModel{
         EventId: eventId,
         EventType: eventModel.Type(),
         Sha1: eventModel.Sha1,
@@ -198,13 +198,13 @@ func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "sha1": eventModel.Sha1,
     }).One(&sameEventModel)
     if err == mgo.ErrNotFound {
-        err = db.C(eventModel.Collection()).Insert(eventModel)
+        err = storage.Insert(db, eventModel)
         if err != nil {
             SetHttpError(w, http.StatusBadRequest, err.Error())
             return
         }
     }
-    err = db.C("event_access").Insert(eventAccess)
+    err = storage.Insert(db, eventAccess)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -247,7 +247,7 @@ func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     eventRev := event_lib.EventRevisionModel{}
-    err = db.C("event_revision").Find(bson.M{
+    err = db.C(storage.C_revision).Find(bson.M{
         "eventId": eventId,
     }).Sort("-time").One(&eventRev)
     if err != nil {
@@ -327,7 +327,7 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     /*
     // do we need the last revision? to compare or what?
     lastEventRev := event_lib.EventRevisionModel{}
-    err = db.C("event_revision").Find(bson.M{
+    err = db.C(storage.C_revision).Find(bson.M{
         "eventId": eventId,
     }).Sort("-time").One(&lastEventRev)
     if err != nil {
@@ -358,7 +358,7 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         Sha1: eventModel.Sha1,
         Time: time.Now(),
     }
-    err = db.C("event_revision").Insert(eventRev)
+    err = storage.Insert(db, eventRev)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
         return
@@ -371,7 +371,7 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "sha1": eventRev.Sha1,
     }).One(&sameEventModel)
     if err == mgo.ErrNotFound {
-        err = db.C(eventModel.Collection()).Insert(eventModel)
+        err = storage.Insert(db, eventModel)
         if err != nil {
             SetHttpError(w, http.StatusBadRequest, err.Error())
             return
@@ -429,7 +429,7 @@ func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     // do we need the last revision? to compare or what?
     lastEventRev := event_lib.EventRevisionModel{}
-    err = db.C("event_revision").Find(bson.M{
+    err = db.C(storage.C_revision).Find(bson.M{
         "eventId": eventId,
     }).Sort("-time").One(&lastEventRev)
     if err != nil {
@@ -664,7 +664,7 @@ func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     jsonByte, _ := json.Marshal(eventModel)
     eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 
-    err = db.C("event_revision").Insert(event_lib.EventRevisionModel{
+    err = storage.Insert(db, event_lib.EventRevisionModel{
         EventId: *eventId,
         EventType: eventModel.Type(),
         Sha1: eventModel.Sha1,
@@ -681,7 +681,7 @@ func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "sha1": eventModel.Sha1,
     }).One(&sameEventModel)
     if err == mgo.ErrNotFound {
-        err = db.C(eventModel.Collection()).Insert(eventModel)
+        err = storage.Insert(db, eventModel)
         if err != nil {
             SetHttpError(w, http.StatusBadRequest, err.Error())
             return

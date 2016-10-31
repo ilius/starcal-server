@@ -3,6 +3,8 @@ package event_lib
 import "time"
 import "gopkg.in/mgo.v2/bson"
 
+import "scal/storage"
+
 type EventRevisionModel struct {
     EventId bson.ObjectId   `bson:"eventId" json:"eventId"`
     EventType string        `bson:"eventType" json:"eventType"`
@@ -10,4 +12,6 @@ type EventRevisionModel struct {
     Time time.Time          `bson:"time" json:"time"`
     //InvitedEmails []string    `bson:"invitedEmails" json:"invitedEmails"`
 }
-
+func (self EventRevisionModel) Collection() string {
+    return storage.C_revision
+}

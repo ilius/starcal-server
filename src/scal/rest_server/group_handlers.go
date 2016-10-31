@@ -94,7 +94,7 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         OwnerEmail string           `bson:"ownerEmail" json:"ownerEmail"`
     }
     var results []resultModel
-    err = db.C("event_group").Find(bson.M{
+    err = db.C(storage.C_group).Find(bson.M{
         "$or": []bson.M{
             bson.M{
                 "ownerEmail": email,
@@ -155,7 +155,7 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     groupId := bson.NewObjectId()
     groupModel.Id = groupId
     groupModel.OwnerEmail = email
-    err = db.C("event_group").Insert(groupModel)
+    err = storage.Insert(db, groupModel)
 
     json.NewEncoder(w).Encode(map[string]string{
         "groupId": groupId.Hex(),
@@ -210,7 +210,7 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     var oldGroupModel *event_lib.EventGroupModel
-    db.C("event_group").Find(bson.M{"_id": groupId}).One(&oldGroupModel)
+    db.C(storage.C_group).Find(bson.M{"_id": groupId}).One(&oldGroupModel)
     if oldGroupModel == nil {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
@@ -226,10 +226,7 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     oldGroupModel.Title             = newGroupModel.Title
     oldGroupModel.AddAccessEmails   = newGroupModel.AddAccessEmails
     oldGroupModel.ReadAccessEmails  = newGroupModel.ReadAccessEmails
-    err = db.C("event_group").Update(
-        bson.M{"_id": groupId},
-        oldGroupModel,
-    )
+    err = storage.Update(db, oldGroupModel)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -251,7 +248,7 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     var groupModel *event_lib.EventGroupModel
-    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    db.C(storage.C_group).Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
@@ -286,7 +283,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     var groupModel *event_lib.EventGroupModel
-    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    db.C(storage.C_group).Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
@@ -315,17 +312,14 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             return
         }
         userModel.DefaultGroupId = nil
-        err = db.C("users").Update(
-            bson.M{"email": email},
-            userModel,
-        )
+        err = storage.Update(db, userModel)
         if err != nil {
             SetHttpErrorInternal(w, err)
             return
         }
     }
 
-    eventAccessCol := db.C("event_access")
+    eventAccessCol := db.C(storage.C_access)
 
     var eventAccessModels []event_lib.EventAccessModel
     err = eventAccessCol.Find(bson.M{
@@ -342,7 +336,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             // (ungrouped) event into his default (or any other) group
             // FIXME
         }
-        // insert a new record to "event_access_change_log" // FIXME
+        // insert a new record to storage.C_accessChangeLog // FIXME
         eventAccessModel.GroupId = nil
         err = eventAccessCol.Update(
             bson.M{"_id": eventAccessModel.EventId},
@@ -353,7 +347,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             return
         }
         now := time.Now()
-        err = db.C("event_access_change_log").Insert(
+        err = db.C(storage.C_accessChangeLog).Insert(
             bson.M{
                 "time": now,
                 "email": email,
@@ -370,7 +364,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             return
         }
     }
-    err = db.C("event_group").Remove(bson.M{"_id": groupId})
+    err = storage.Remove(db, groupModel)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -391,7 +385,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     var groupModel *event_lib.EventGroupModel
-    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    db.C(storage.C_group).Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
@@ -424,7 +418,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             },
         }
     }
-    err = db.C("event_access").Find(cond).All(&results)
+    err = db.C(storage.C_access).Find(cond).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -452,7 +446,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     var groupModel *event_lib.EventGroupModel
-    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    db.C(storage.C_group).Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
@@ -522,7 +516,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             {"$unwind": "$data"},
         }
     }
-    err = db.C("event_access").Pipe(pipeline).All(&results)
+    err = db.C(storage.C_access).Pipe(pipeline).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -567,7 +561,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
     }
     groupId := bson.ObjectIdHex(groupIdHex)
     var groupModel *event_lib.EventGroupModel
-    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    db.C(storage.C_group).Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
@@ -582,7 +576,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 
     results := []bson.M{}
     if groupModel.EmailCanRead(email) {
-        err = db.C("event_access").Pipe([]bson.M{
+        err = db.C(storage.C_access).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
             }},
@@ -615,7 +609,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
             {"$unwind": "$data"},
         }).All(&results)
     } else {
-        err = db.C("event_access").Pipe([]bson.M{
+        err = db.C(storage.C_access).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
             }},
@@ -698,7 +692,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     groupId := bson.ObjectIdHex(groupIdHex)
     var groupModel *event_lib.EventGroupModel
-    db.C("event_group").Find(bson.M{"_id": groupId}).One(&groupModel)
+    db.C(storage.C_group).Find(bson.M{"_id": groupId}).One(&groupModel)
     if groupModel == nil {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
@@ -713,7 +707,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     results := []bson.M{}
     if groupModel.EmailCanRead(email) {
-        err = db.C("event_access_change_log").Pipe([]bson.M{
+        err = db.C(storage.C_accessChangeLog).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
             }},
@@ -730,7 +724,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             }},
         }).All(&results)
     } else {
-        err = db.C("event_access").Pipe([]bson.M{
+        err = db.C(storage.C_access).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
             }},

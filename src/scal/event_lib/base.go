@@ -20,7 +20,11 @@ type BaseEventModel struct {
     //IsAllDay bool
     GroupId string      `bson:"-" json:"groupId"`
 }
-
+func (self BaseEventModel) UniqueM() bson.M {
+    return bson.M{
+        "_id": self.Id,
+    }
+}
 
 
 

@@ -1,5 +1,6 @@
 package event_lib
 
+import "scal/storage"
 
 type DailyNoteEventModel struct {
     BaseEventModel  `bson:",inline" json:",inline"`
@@ -9,7 +10,7 @@ func (self DailyNoteEventModel) Type() string {
     return "dailyNote"
 }
 func (self DailyNoteEventModel) Collection() string {
-    return "event_data"
+    return storage.C_eventData
     //return "events_dailyNote"
 }
 
