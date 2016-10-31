@@ -13,8 +13,8 @@ import (
     "encoding/json"
     "crypto/sha1"
 
-    "gopkg.in/mgo.v2-unstable"
-    "gopkg.in/mgo.v2-unstable/bson"
+    "gopkg.in/mgo.v2"
+    "gopkg.in/mgo.v2/bson"
     //"github.com/gorilla/mux"
 
     "scal-lib/go-http-auth"

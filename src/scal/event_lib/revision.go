@@ -1,7 +1,7 @@
 package event_lib
 
 import "time"
-import "gopkg.in/mgo.v2-unstable/bson"
+import "gopkg.in/mgo.v2/bson"
 
 type EventRevisionModel struct {
     EventId bson.ObjectId   `bson:"eventId" json:"eventId"`

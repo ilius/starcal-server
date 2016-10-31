@@ -1,6 +1,6 @@
 package event_lib
 
-import "gopkg.in/mgo.v2-unstable/bson"
+import "gopkg.in/mgo.v2/bson"
 
 
 type EventGroupModel struct {

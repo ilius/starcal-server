@@ -3,8 +3,8 @@ package storage
 import "time"
 
 //import "mgo"
-import "gopkg.in/mgo.v2-unstable"
-//import "gopkg.in/mgo.v2-unstable/bson"
+import "gopkg.in/mgo.v2"
+//import "gopkg.in/mgo.v2/bson"
 
 const (
     MongoHost = "127.0.0.1:27017"

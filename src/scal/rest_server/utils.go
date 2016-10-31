@@ -8,7 +8,7 @@ import (
     "net/http"
     "encoding/json"
 
-    "gopkg.in/mgo.v2-unstable/bson"
+    "gopkg.in/mgo.v2/bson"
     "scal-lib/go-http-auth"
 )
 

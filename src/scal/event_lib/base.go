@@ -3,7 +3,7 @@ package event_lib
 import "time"
 import "fmt"
 //import "errors"
-import "gopkg.in/mgo.v2-unstable/bson"
+import "gopkg.in/mgo.v2/bson"
 
 import "scal/cal_types"
 

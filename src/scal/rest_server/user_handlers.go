@@ -7,8 +7,8 @@ import (
     "io/ioutil"
     "crypto/md5"
 
-    "gopkg.in/mgo.v2-unstable/bson"
-    "gopkg.in/mgo.v2-unstable"
+    "gopkg.in/mgo.v2/bson"
+    "gopkg.in/mgo.v2"
 
     "scal-lib/go-http-auth"
     "scal/storage"

@@ -8,8 +8,8 @@ import (
     "encoding/json"
     "io/ioutil"
 
-    "gopkg.in/mgo.v2-unstable/bson"
-    "gopkg.in/mgo.v2-unstable"
+    "gopkg.in/mgo.v2/bson"
+    "gopkg.in/mgo.v2"
     //"github.com/gorilla/mux"
 
     "scal-lib/go-http-auth"
