@@ -475,6 +475,184 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // send an E-Mail to `newOwnerEmail` FIXME
 }
 
+func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    eventId := ObjectIdFromURL(w, r, "eventId", 1)
+    if eventId==nil { return }
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if !eventAccess.EmailCanRead(email) {
+        SetHttpError(
+            w,
+            http.StatusForbidden,
+            "you don't have access to this event",
+        )
+        return
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        //"eventId": eventId.Hex(),
+        "accessEmails": eventAccess.AccessEmails,
+    })
+}
+
+func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    var ok bool
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    eventId := ObjectIdFromURL(w, r, "eventId", 1)
+    if eventId==nil { return }
+
+    inputMap := map[string][]string{
+        "accessEmails": []string{},
+    }
+    body, _ := ioutil.ReadAll(r.Body)
+    err = json.Unmarshal(body, &inputMap)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if eventAccess.OwnerEmail != email {
+        SetHttpError(w, http.StatusForbidden, "you don't own this event")
+        return
+    }
+
+    newAccessEmails, ok := inputMap["accessEmails"]
+    if !ok {
+        SetHttpError(w, http.StatusBadRequest, "missing 'accessEmails'")
+        return
+    }
+    now := time.Now()
+    err = db.C(storage.C_accessChangeLog).Insert(bson.M{
+        "time": now,
+        "email": email,
+        "remoteIp": remoteIp,
+        "eventId": eventId,
+        "accessEmails": []interface{}{
+            eventAccess.AccessEmails,
+            newAccessEmails,
+        },
+    })
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    eventAccess.AccessEmails = newAccessEmails
+    err = storage.Update(db, eventAccess)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+}
+
+func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    var ok bool
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    eventId := ObjectIdFromURL(w, r, "eventId", 1)
+    if eventId==nil { return }
+
+    inputMap := map[string]string{
+        "toAddEmail": "",
+    }
+    body, _ := ioutil.ReadAll(r.Body)
+    err = json.Unmarshal(body, &inputMap)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, err.Error())
+        return
+    }
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            SetHttpError(w, http.StatusBadRequest, "event not found")
+        } else {
+            SetHttpErrorInternal(w, err)
+        }
+        return
+    }
+    if eventAccess.OwnerEmail != email {
+        SetHttpError(w, http.StatusForbidden, "you don't own this event")
+        return
+    }
+
+    toAddEmail, ok := inputMap["toAddEmail"]
+    if !ok {
+        SetHttpError(w, http.StatusBadRequest, "missing 'toAddEmail'")
+        return
+    }
+    newAccessEmails := append(eventAccess.AccessEmails, toAddEmail)
+    now := time.Now()
+    err = db.C(storage.C_accessChangeLog).Insert(bson.M{
+        "time": now,
+        "email": email,
+        "remoteIp": remoteIp,
+        "eventId": eventId,
+        "accessEmails": []interface{}{
+            eventAccess.AccessEmails,
+            newAccessEmails,
+        },
+    })
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    eventAccess.AccessEmails = newAccessEmails
+    err = storage.Update(db, eventAccess)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+}
+
 
 func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()

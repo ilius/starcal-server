@@ -48,7 +48,7 @@ func init(){
         "/event/task/{eventId}/",
         authenticator.Wrap(PatchTask),
     )
-    // functions of following 4 operations are defined in handlers.go
+    // functions of following operations are defined in handlers.go
     // because their definition does not depend on event type
     // but their URL still contains eventType for sake of compatibilty
     // so we will have to register their routes for each event type
@@ -77,6 +77,25 @@ func init(){
         "/event/task/{eventId}/owner/",
         authenticator.Wrap(SetEventOwner),
     )
+    RegisterRoute(
+        "GetEventAccess_task",
+        "GET",
+        "/event/task/{eventId}/access/",
+        authenticator.Wrap(GetEventAccess),
+    )
+    RegisterRoute(
+        "SetEventAccess_task",
+        "PUT",
+        "/event/task/{eventId}/access/",
+        authenticator.Wrap(SetEventAccess),
+    )
+    RegisterRoute(
+        "AppendEventAccess_task",
+        "POST",
+        "/event/task/{eventId}/access/",
+        authenticator.Wrap(AppendEventAccess),
+    )
+
 }
 
 func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {

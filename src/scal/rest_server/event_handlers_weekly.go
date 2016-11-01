@@ -48,7 +48,7 @@ func init(){
         "/event/weekly/{eventId}/",
         authenticator.Wrap(PatchWeekly),
     )
-    // functions of following 4 operations are defined in handlers.go
+    // functions of following operations are defined in handlers.go
     // because their definition does not depend on event type
     // but their URL still contains eventType for sake of compatibilty
     // so we will have to register their routes for each event type
@@ -77,6 +77,25 @@ func init(){
         "/event/weekly/{eventId}/owner/",
         authenticator.Wrap(SetEventOwner),
     )
+    RegisterRoute(
+        "GetEventAccess_weekly",
+        "GET",
+        "/event/weekly/{eventId}/access/",
+        authenticator.Wrap(GetEventAccess),
+    )
+    RegisterRoute(
+        "SetEventAccess_weekly",
+        "PUT",
+        "/event/weekly/{eventId}/access/",
+        authenticator.Wrap(SetEventAccess),
+    )
+    RegisterRoute(
+        "AppendEventAccess_weekly",
+        "POST",
+        "/event/weekly/{eventId}/access/",
+        authenticator.Wrap(AppendEventAccess),
+    )
+
 }
 
 func AddWeekly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
