@@ -180,6 +180,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddTask",
             "ownerEmail": []interface{}{
                 nil,
                 email,
@@ -190,6 +191,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddTask",
             "groupId": []interface{}{
                 nil,
                 groupId,

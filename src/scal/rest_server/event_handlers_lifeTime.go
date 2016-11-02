@@ -180,6 +180,7 @@ func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddLifeTime",
             "ownerEmail": []interface{}{
                 nil,
                 email,
@@ -190,6 +191,7 @@ func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddLifeTime",
             "groupId": []interface{}{
                 nil,
                 groupId,

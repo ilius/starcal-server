@@ -180,6 +180,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddDailyNote",
             "ownerEmail": []interface{}{
                 nil,
                 email,
@@ -190,6 +191,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddDailyNote",
             "groupId": []interface{}{
                 nil,
                 groupId,

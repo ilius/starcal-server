@@ -353,6 +353,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 "email": email,
                 "remoteIp": remoteIp,
                 "eventId": eventAccessModel.EventId,
+                "funcName": "DeleteGroup",
                 "groupId": []interface{}{
                     groupId,
                     nil,

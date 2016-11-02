@@ -72,6 +72,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
+        "funcName": "DeleteEvent",
         "ownerEmail": []interface{}{
             eventAccess.OwnerEmail,
             nil,
@@ -197,6 +198,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": newEventId,
+            "funcName": "CopyEvent",
             "ownerEmail": []interface{}{
                 nil,
                 email,
@@ -207,6 +209,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": newEventId,
+            "funcName": "CopyEvent",
             "groupId": []interface{}{
                 nil,
                 newGroupId,
@@ -322,6 +325,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
+        "funcName": "SetEventGroupId",
         "groupId": []interface{}{
             eventAccess.GroupId,
             newGroupId,
@@ -457,6 +461,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
+        "funcName": "SetEventOwner",
         "ownerEmail": []interface{}{
             eventAccess.OwnerEmail,
             newOwnerEmail,
@@ -564,6 +569,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
+        "funcName": "SetEventAccess",
         "accessEmails": []interface{}{
             eventAccess.AccessEmails,
             newAccessEmails,
@@ -636,6 +642,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
+        "funcName": "AppendEventAccess",
         "accessEmails": []interface{}{
             eventAccess.AccessEmails,
             newAccessEmails,

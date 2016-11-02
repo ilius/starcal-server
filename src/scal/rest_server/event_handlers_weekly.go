@@ -180,6 +180,7 @@ func AddWeekly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddWeekly",
             "ownerEmail": []interface{}{
                 nil,
                 email,
@@ -190,6 +191,7 @@ func AddWeekly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddWeekly",
             "groupId": []interface{}{
                 nil,
                 groupId,

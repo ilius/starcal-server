@@ -180,6 +180,7 @@ func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddUniversityExam",
             "ownerEmail": []interface{}{
                 nil,
                 email,
@@ -190,6 +191,7 @@ func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "AddUniversityExam",
             "groupId": []interface{}{
                 nil,
                 groupId,

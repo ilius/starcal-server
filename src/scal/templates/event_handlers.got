@@ -180,6 +180,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "Add{{EVENT_TYPE_CAP}}",
             "ownerEmail": []interface{}{
                 nil,
                 email,
@@ -190,6 +191,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
             "email": email,
             "remoteIp": remoteIp,
             "eventId": eventId,
+            "funcName": "Add{{EVENT_TYPE_CAP}}",
             "groupId": []interface{}{
                 nil,
                 groupId,
