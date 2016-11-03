@@ -123,9 +123,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    inputMap := map[string]string{
-        "eventId": "" ,
-    }
+    inputMap := map[string]string{}
     body, _ := ioutil.ReadAll(r.Body)
     err = json.Unmarshal(body, &inputMap)
     if err != nil {
@@ -262,9 +260,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventId := ObjectIdFromURL(w, r, "eventId", 1)
     if eventId==nil { return }
 
-    inputMap := map[string]string{
-        "newGroupId": "",
-    }
+    inputMap := map[string]string{}
     body, _ := ioutil.ReadAll(r.Body)
     err = json.Unmarshal(body, &inputMap)
     if err != nil {
@@ -408,9 +404,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventId := ObjectIdFromURL(w, r, "eventId", 1)
     if eventId==nil { return }
 
-    inputMap := map[string]string{
-        "newOwnerEmail": "",
-    }
+    inputMap := map[string]string{}
     body, _ := ioutil.ReadAll(r.Body)
     err = json.Unmarshal(body, &inputMap)
     if err != nil {
@@ -529,9 +523,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventId := ObjectIdFromURL(w, r, "eventId", 1)
     if eventId==nil { return }
 
-    inputMap := map[string][]string{
-        "accessEmails": []string{},
-    }
+    inputMap := map[string][]string{}
     body, _ := ioutil.ReadAll(r.Body)
     err = json.Unmarshal(body, &inputMap)
     if err != nil {
@@ -601,9 +593,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventId := ObjectIdFromURL(w, r, "eventId", 1)
     if eventId==nil { return }
 
-    inputMap := map[string]string{
-        "toAddEmail": "",
-    }
+    inputMap := map[string]string{}
     body, _ := ioutil.ReadAll(r.Body)
     err = json.Unmarshal(body, &inputMap)
     if err != nil {
