@@ -156,7 +156,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if !eventAccess.EmailCanRead(email) {
+    if !eventAccess.CanRead(email) {
         SetHttpError(w, http.StatusForbidden, "you don't have access to this event")
         return
     }
@@ -376,7 +376,7 @@ func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if !eventAccess.EmailCanRead(email) {
+    if !eventAccess.CanRead(email) {
         SetHttpError(
             w,
             http.StatusForbidden,
@@ -495,7 +495,7 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if !eventAccess.EmailCanRead(email) {
+    if !eventAccess.CanRead(email) {
         SetHttpError(
             w,
             http.StatusForbidden,

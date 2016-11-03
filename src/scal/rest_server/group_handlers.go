@@ -253,7 +253,7 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
         return
     }
-    if !groupModel.EmailCanRead(email) {
+    if !groupModel.CanRead(email) {
         SetHttpError(
             w,
             http.StatusForbidden,
@@ -402,7 +402,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     var results []resultModel
     var cond bson.M
-    if groupModel.EmailCanRead(email) {
+    if groupModel.CanRead(email) {
         cond = bson.M{
             "groupId": groupId,
         }
@@ -454,7 +454,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     var results []bson.M
     var pipeline []bson.M
-    if groupModel.EmailCanRead(email) {
+    if groupModel.CanRead(email) {
         pipeline = []bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
@@ -576,7 +576,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
     //json.NewEncoder(w).Encode(bson.M{"sinceDateTime": since})
 
     results := []bson.M{}
-    if groupModel.EmailCanRead(email) {
+    if groupModel.CanRead(email) {
         err = db.C(storage.C_access).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
@@ -707,7 +707,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     //json.NewEncoder(w).Encode(bson.M{"sinceDateTime": since})
 
     results := []bson.M{}
-    if groupModel.EmailCanRead(email) {
+    if groupModel.CanRead(email) {
         err = db.C(storage.C_accessChangeLog).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,

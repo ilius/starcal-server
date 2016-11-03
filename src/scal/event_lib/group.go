@@ -30,7 +30,7 @@ func (self EventGroupModel) EmailCanAdd(email string) bool {
     }
     return false
 }
-func (self EventGroupModel) EmailCanRead(email string) bool {
+func (self EventGroupModel) CanRead(email string) bool {
     if email == self.OwnerEmail {
         return true
     }
