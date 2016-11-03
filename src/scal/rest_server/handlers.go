@@ -514,7 +514,6 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
-    var ok bool
     remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
     if err != nil {
         SetHttpErrorInternal(w, err)
@@ -523,9 +522,14 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventId := ObjectIdFromURL(w, r, "eventId", 1)
     if eventId==nil { return }
 
-    inputMap := map[string][]string{}
+    inputStruct := struct {
+        AccessEmails *[]string
+    }{
+        nil,
+    }
+
     body, _ := ioutil.ReadAll(r.Body)
-    err = json.Unmarshal(body, &inputMap)
+    err = json.Unmarshal(body, &inputStruct)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
         return
@@ -550,11 +554,12 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    newAccessEmails, ok := inputMap["accessEmails"]
-    if !ok {
+    newAccessEmails := inputStruct.AccessEmails
+    if newAccessEmails==nil {
         SetHttpError(w, http.StatusBadRequest, "missing 'accessEmails'")
         return
     }
+
     now := time.Now()
     err = db.C(storage.C_accessChangeLog).Insert(bson.M{
         "time": now,
@@ -564,14 +569,14 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "funcName": "SetEventAccess",
         "accessEmails": []interface{}{
             eventAccess.AccessEmails,
-            newAccessEmails,
+            *newAccessEmails,
         },
     })
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
-    eventAccess.AccessEmails = newAccessEmails
+    eventAccess.AccessEmails = *newAccessEmails
     err = storage.Update(db, eventAccess)
     if err != nil {
         SetHttpErrorInternal(w, err)
