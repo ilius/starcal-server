@@ -23,7 +23,7 @@ func (self EventAccessModel) UniqueM() bson.M {
 func (self EventAccessModel) Collection() string {
     return storage.C_access
 }
-func (self EventAccessModel) CanRead(email string) bool {
+func (self *EventAccessModel) CanRead(email string) bool {
     if email == self.OwnerEmail {
         return true
     }
