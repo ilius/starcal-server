@@ -22,7 +22,10 @@ r = requests.put(
     ),
     auth=HTTPDigestAuth(email, password),
     json={
+        'isPublic': False,
         'accessEmails': accessEmails,
+        #'publicJoinOpen': False,
+        #'maxAttendees': 0,
     },
 )
 print(r)

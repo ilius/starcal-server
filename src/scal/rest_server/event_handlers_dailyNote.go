@@ -95,6 +95,18 @@ func init(){
         "/event/dailyNote/{eventId}/access/",
         authenticator.Wrap(AppendEventAccess),
     )
+    RegisterRoute(
+        "JoinEvent_dailyNote",
+        "GET",
+        "/event/dailyNote/{eventId}/join/",
+        authenticator.Wrap(JoinEvent),
+    )
+    RegisterRoute(
+        "LeaveEvent_dailyNote",
+        "GET",
+        "/event/dailyNote/{eventId}/leave/",
+        authenticator.Wrap(LeaveEvent),
+    )
 
 }
 

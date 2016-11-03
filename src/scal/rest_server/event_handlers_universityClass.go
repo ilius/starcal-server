@@ -95,6 +95,18 @@ func init(){
         "/event/universityClass/{eventId}/access/",
         authenticator.Wrap(AppendEventAccess),
     )
+    RegisterRoute(
+        "JoinEvent_universityClass",
+        "GET",
+        "/event/universityClass/{eventId}/join/",
+        authenticator.Wrap(JoinEvent),
+    )
+    RegisterRoute(
+        "LeaveEvent_universityClass",
+        "GET",
+        "/event/universityClass/{eventId}/leave/",
+        authenticator.Wrap(LeaveEvent),
+    )
 
 }
 

@@ -95,6 +95,18 @@ func init(){
         "/event/largeScale/{eventId}/access/",
         authenticator.Wrap(AppendEventAccess),
     )
+    RegisterRoute(
+        "JoinEvent_largeScale",
+        "GET",
+        "/event/largeScale/{eventId}/join/",
+        authenticator.Wrap(JoinEvent),
+    )
+    RegisterRoute(
+        "LeaveEvent_largeScale",
+        "GET",
+        "/event/largeScale/{eventId}/leave/",
+        authenticator.Wrap(LeaveEvent),
+    )
 
 }
 

@@ -95,6 +95,18 @@ func init(){
         "/event/lifeTime/{eventId}/access/",
         authenticator.Wrap(AppendEventAccess),
     )
+    RegisterRoute(
+        "JoinEvent_lifeTime",
+        "GET",
+        "/event/lifeTime/{eventId}/join/",
+        authenticator.Wrap(JoinEvent),
+    )
+    RegisterRoute(
+        "LeaveEvent_lifeTime",
+        "GET",
+        "/event/lifeTime/{eventId}/leave/",
+        authenticator.Wrap(LeaveEvent),
+    )
 
 }
 
