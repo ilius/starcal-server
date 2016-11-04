@@ -110,6 +110,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
+    json.NewEncoder(w).Encode(bson.M{})
 }
 
 func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -352,6 +353,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
+    json.NewEncoder(w).Encode(bson.M{})
 }
 
 
@@ -472,6 +474,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     // send an E-Mail to `newOwnerEmail` FIXME
+    json.NewEncoder(w).Encode(bson.M{})
 }
 
 func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -582,6 +585,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
+    json.NewEncoder(w).Encode(bson.M{})
 }
 
 func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -653,6 +657,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
+    json.NewEncoder(w).Encode(bson.M{})
 }
 
 

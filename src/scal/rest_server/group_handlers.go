@@ -370,6 +370,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
+    json.NewEncoder(w).Encode(bson.M{})
 }
 
 func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
