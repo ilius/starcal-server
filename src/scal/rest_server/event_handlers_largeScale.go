@@ -305,7 +305,7 @@ func GetLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     eventModel.Id = *eventId
-    eventModel.GroupId = eventAccess.GroupId.Hex()
+    eventModel.GroupId = eventAccess.GroupIdHex()
     json.NewEncoder(w).Encode(eventModel)
 }
 

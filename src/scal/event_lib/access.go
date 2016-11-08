@@ -41,6 +41,12 @@ func (self EventAccessModel) UniqueM() bson.M {
 func (self EventAccessModel) Collection() string {
     return storage.C_access
 }
+func (self EventAccessModel) GroupIdHex() string {
+    if self.GroupId != nil {
+        return self.GroupId.Hex()
+    }
+    return ""
+}
 func (self *EventAccessModel) CanReadFull(email string) bool {
     if email == self.OwnerEmail {
         return true
