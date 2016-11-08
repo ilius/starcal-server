@@ -16,6 +16,7 @@ const (
 // MongoDB Collection Names:
 const (
     C_user = "users"
+    C_userChangeLog = "user_change_log"
     C_group = "event_group"
     C_access = "event_access"
     C_accessChangeLog = "event_access_change_log"

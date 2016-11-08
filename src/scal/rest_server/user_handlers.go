@@ -2,6 +2,8 @@ package rest_server
 
 import (
     "fmt"
+    "time"
+    "net"
     "net/http"
     "encoding/json"
     "io/ioutil"
@@ -91,6 +93,12 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     userModel := UserModel{}
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
     body, _ := ioutil.ReadAll(r.Body)
     err = json.Unmarshal(body, &userModel)
     if err != nil {
@@ -143,6 +151,28 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         return
     }
     userModel.DefaultGroupId = &defaultGroup.Id
+    err = db.C(storage.C_userChangeLog).Insert(bson.M{
+        "time": time.Now(),
+        "remoteIp": remoteIp,
+        "funcName": "RegisterUser",
+        "email": []interface{}{
+            nil,
+            userModel.Email,
+        },
+        "defaultGroupId": []interface{}{
+            nil,
+            userModel.DefaultGroupId,
+        },
+        //"fullName": []interface{}{
+        //    nil
+        //    userModel.FullName,
+        //},
+    })
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
     err = storage.Insert(db, userModel)
     if err != nil {
         SetHttpErrorInternal(w, err)
@@ -190,6 +220,11 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
 
     body, _ := ioutil.ReadAll(r.Body)
 
@@ -207,6 +242,26 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         attrName,
     )
     if attrValue == "" {
+        return
+    }
+
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, email)
+        return
+    }
+    err = db.C(storage.C_userChangeLog).Insert(bson.M{
+        "time": time.Now(),
+        "email": email,
+        "remoteIp": remoteIp,
+        "funcName": "SetUserFullName",
+        "fullName": []interface{}{
+            userModel.FullName,
+            attrValue,
+        },
+    })
+    if err != nil {
+        SetHttpErrorInternal(w, err)
         return
     }
 
@@ -235,8 +290,33 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
 
     db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, email)
+        return
+    }
+    err = db.C(storage.C_userChangeLog).Insert(bson.M{
+        "time": time.Now(),
+        "email": email,
+        "remoteIp": remoteIp,
+        "funcName": "UnsetUserFullName",
+        "fullName": []interface{}{
+            userModel.FullName,
+            nil,
+        },
+    })
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -267,6 +347,11 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
 
     body, _ := ioutil.ReadAll(r.Body)
 
@@ -306,6 +391,26 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
         return
     }
 
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, email)
+        return
+    }
+    err = db.C(storage.C_userChangeLog).Insert(bson.M{
+        "time": time.Now(),
+        "email": email,
+        "remoteIp": remoteIp,
+        "funcName": "SetUserDefaultGroupId",
+        "defaultGroupId": []interface{}{
+            userModel.DefaultGroupId,
+            groupId,
+        },
+    })
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
     _, err = db.C(storage.C_user).Find(bson.M{
         "email": email,
     }).Apply(
@@ -332,8 +437,33 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
+    remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
 
     db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    userModel := UserModelByEmail(email, db)
+    if userModel == nil {
+        SetHttpErrorUserNotFound(w, email)
+        return
+    }
+    err = db.C(storage.C_userChangeLog).Insert(bson.M{
+        "time": time.Now(),
+        "email": email,
+        "remoteIp": remoteIp,
+        "funcName": "UnsetUserDefaultGroupId",
+        "defaultGroupId": []interface{}{
+            userModel.DefaultGroupId,
+            nil,
+        },
+    })
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
