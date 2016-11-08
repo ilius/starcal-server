@@ -7,14 +7,17 @@ argv[4]: eventId
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password, eventType, eventId = sys.argv[1:6]
 
 r = requests.get(
-    "http://127.0.0.1:8080/event/%s/%s/owner/" % (
+    "http://%s:8080/event/%s/%s/owner/" % (
+        host,
         eventType,
         eventId,
     ),

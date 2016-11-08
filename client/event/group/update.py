@@ -7,17 +7,19 @@ argv[4]: groupTitle
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password, groupId, groupTitle = sys.argv[1:5]
 
 # not passing "readAccessEmails" will remove it if it was set before
 # not passing "addAccessEmails" will remove it if it was set before
 
 r = requests.put(
-    "http://127.0.0.1:8080/event/groups/%s/" % groupId,
+    "http://%s:8080/event/groups/%s/" % (host, groupId),
     auth=HTTPDigestAuth(email, password),
     json={
         "title": groupTitle,

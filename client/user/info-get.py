@@ -5,14 +5,16 @@ argv[2]: password
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password = sys.argv[1:3]
 
 r = requests.get(
-    "http://127.0.0.1:8080/user/info/",
+    "http://%s:8080/user/info/" % host,
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

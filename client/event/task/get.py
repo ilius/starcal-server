@@ -6,14 +6,16 @@ argv[3]: eventId
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password, eventId = sys.argv[1:4]
 
 r = requests.get(
-    "http://127.0.0.1:8080/event/task/%s/" % eventId,
+    "http://%s:8080/event/task/%s/" % (host, eventId),
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

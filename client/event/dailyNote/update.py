@@ -6,6 +6,7 @@ argv[3]: eventId
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
@@ -13,6 +14,7 @@ from datetime import datetime, timedelta
 import time
 from time import strftime, gmtime
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password, eventId = sys.argv[1:4]
 
 todayJd = datetime.now().toordinal() + 1721425
@@ -28,7 +30,7 @@ params = {
 }
 
 r = requests.put(
-    "http://127.0.0.1:8080/event/dailyNote/%s/" % eventId,
+    "http://%s:8080/event/dailyNote/%s/" % (host, eventId),
     auth=HTTPDigestAuth(email, password),
     json=params,
 )

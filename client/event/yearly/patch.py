@@ -6,6 +6,7 @@ argv[3]: eventId
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
@@ -14,6 +15,7 @@ import time
 from time import strftime, gmtime
 import random
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password, eventId = sys.argv[1:4]
 
 nowDt = datetime.now()
@@ -32,7 +34,7 @@ params = {
 }
 
 r = requests.put(
-    "http://127.0.0.1:8080/event/yearly/%s/" % eventId,
+    "http://%s:8080/event/yearly/%s/" % (host, eventId),
     auth=HTTPDigestAuth(email, password),
     json=params,
 )

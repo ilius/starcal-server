@@ -7,14 +7,17 @@ argv[4]: sinceDateTime
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password, groupId, sinceDateTime = sys.argv[1:5]
 
 r = requests.get(
-    "http://127.0.0.1:8080/event/groups/%s/modified-events/%s/" % (
+    "http://%s:8080/event/groups/%s/modified-events/%s/" % (
+        host,
         groupId,
         sinceDateTime,
     ),

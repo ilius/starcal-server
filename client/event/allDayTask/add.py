@@ -6,6 +6,7 @@ argv[3]: groupId, optional
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
@@ -28,6 +29,7 @@ params = {
     "durationEnable": True,
 }
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password = sys.argv[1:3]
 
 try:
@@ -36,7 +38,7 @@ except IndexError:
     pass
 
 r = requests.post(
-    "http://127.0.0.1:8080/event/allDayTask/",
+    "http://%s:8080/event/allDayTask/" % host,
     auth=HTTPDigestAuth(email, password),
     json=params,
 )

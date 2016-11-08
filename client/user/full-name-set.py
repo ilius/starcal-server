@@ -6,14 +6,16 @@ argv[3]: fullName
 """
 
 import sys
+import os
 import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password, fullName = sys.argv[1:4]
 
 r = requests.put(
-    "http://127.0.0.1:8080/user/full-name/",
+    "http://%s:8080/user/full-name/" % host,
     auth=HTTPDigestAuth(email, password),
     json={
         'fullName': fullName,

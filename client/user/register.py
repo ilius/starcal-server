@@ -5,13 +5,15 @@ argv[2]: password
 """
 
 import sys
+import os
 import requests
 from pprint import pprint
 
+host = os.getenv("starcal_host", "127.0.0.1")
 email, password = sys.argv[1:3]
 
 r = requests.post(
-    "http://127.0.0.1:8080/user/register/",
+    "http://%s:8080/user/register/" % host,
     json={
         'email': email,
         'password': password,
