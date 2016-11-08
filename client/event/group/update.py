@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 """
-argv[1]: email
-argv[2]: password
-argv[3]: groupId
-argv[4]: groupTitle
+argv[1]: groupId
+argv[2]: groupTitle
 """
 
 import sys
@@ -13,7 +11,9 @@ from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
 host = os.getenv("starcal_host", "127.0.0.1")
-email, password, groupId, groupTitle = sys.argv[1:5]
+email = os.getenv("starcal_email")
+password = os.getenv("starcal_password")
+groupId, groupTitle = sys.argv[1:3]
 
 # not passing "readAccessEmails" will remove it if it was set before
 # not passing "addAccessEmails" will remove it if it was set before

@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 """
-argv[1]: email
-argv[2]: password
-argv[3]: groupId, optional
+argv[1]: groupId, optional
 """
 
 import sys
@@ -28,10 +26,11 @@ params = {
 }
 
 host = os.getenv("starcal_host", "127.0.0.1")
-email, password = sys.argv[1:3]
+email = os.getenv("starcal_email")
+password = os.getenv("starcal_password")
 
 try:
-    params["groupId"] = sys.argv[3]
+    params["groupId"] = sys.argv[1]
 except IndexError:
     pass
 

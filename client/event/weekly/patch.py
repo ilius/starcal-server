@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 """
-argv[1]: email
-argv[2]: password
-argv[3]: eventId
+argv[1]: eventId
 """
 
 import sys
@@ -16,7 +14,9 @@ from time import strftime, gmtime
 import random
 
 host = os.getenv("starcal_host", "127.0.0.1")
-email, password, eventId = sys.argv[1:4]
+email = os.getenv("starcal_email")
+password = os.getenv("starcal_password")
+eventId = sys.argv[1]
 
 todayJd = datetime.now().toordinal() + 1721425
 dayStartSeconds = random.randint(0, 24*3600-1)

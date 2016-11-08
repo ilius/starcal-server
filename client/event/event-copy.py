@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 """
-argv[1]: email
-argv[2]: password
-argv[3]: eventId
+argv[1]: eventId
 """
 
 import sys
@@ -12,7 +10,9 @@ from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
 host = os.getenv("starcal_host", "127.0.0.1")
-email, password, eventId = sys.argv[1:4]
+email = os.getenv("starcal_email")
+password = os.getenv("starcal_password")
+eventId = sys.argv[1]
 
 r = requests.post(
     "http://%s:8080/event/copy/" % host,

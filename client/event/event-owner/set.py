@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 """
-argv[1]: email
-argv[2]: password
-argv[3]: eventType
-argv[4]: eventId
-argv[5]: newOwnerEmail
+argv[1]: eventType
+argv[2]: eventId
+argv[3]: newOwnerEmail
 """
 
 import sys
@@ -14,7 +12,9 @@ from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
 host = os.getenv("starcal_host", "127.0.0.1")
-email, password, eventType, eventId, newOwnerEmail = sys.argv[1:6]
+email = os.getenv("starcal_email")
+password = os.getenv("starcal_password")
+eventType, eventId, newOwnerEmail = sys.argv[1:4]
 
 r = requests.put(
     "http://%s:8080/event/%s/%s/owner/" % (

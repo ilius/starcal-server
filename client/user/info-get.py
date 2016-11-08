@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 """
-argv[1]: email
-argv[2]: password
 """
 
 import sys
@@ -11,7 +9,8 @@ from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
 host = os.getenv("starcal_host", "127.0.0.1")
-email, password = sys.argv[1:3]
+email = os.getenv("starcal_email")
+password = os.getenv("starcal_password")
 
 r = requests.get(
     "http://%s:8080/user/info/" % host,
