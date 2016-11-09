@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Installing mongodb-org 3.2" ; sudo apt-get install 'mongodb-org=3.2.*'
 
 echo "Building" ; ./build.sh      || exit 1
 sudo service starcal stop
