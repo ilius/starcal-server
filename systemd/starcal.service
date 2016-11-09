@@ -1,0 +1,12 @@
+[Unit]
+Description=StarCalendar Event Server
+
+[Service]
+Restart=always
+PIDFile=/run/starcal-server.pid
+ExecStart=/etc/init.d/starcal start
+ExecStop=/etc/init.d/starcal stop
+
+[Install]
+WantedBy=multi-user.target
+
