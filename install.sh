@@ -1,5 +1,6 @@
 #!/bin/bash
 echo "Installing mongodb-org 3.2" ; sudo apt-get install 'mongodb-org=3.2.*'
+echo "Installing daemontools" ; sudo apt-get install daemontools
 
 echo "Building" ; ./build.sh      || exit 1
 sudo service starcal stop
@@ -10,3 +11,4 @@ echo "Enabling systemd service" ; sudo systemctl enable starcal
 echo "Reloading systemctl" ; sudo systemctl daemon-reload
 echo "Restarting service" ; sudo service starcal restart
 
+#tail -f /var/log/starcal-server/current | tai64nlocal

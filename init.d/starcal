@@ -15,6 +15,15 @@ DAEMON=/usr/local/sbin/starcal-server
 NAME=starcal
 DESC='StarCakendar Server'
 
+LOG_DIR=/var/log/starcal-server/
+LOG_MAX_SIZE=102400
+LOG_MAX_FILES=10
+
+START_CMD="exec $DAEMON $DAEMON_ARGS 2>&1 | multilog t s$LOG_MAX_SIZE n$LOG_MAX_FILES '!tai64nlocal' $LOG_DIR"
+
+
+mkdir -p $LOG_DIR
+
 test -x $DAEMON || exit 0
 
 . /lib/init/vars.sh
@@ -31,11 +40,8 @@ do_start()
 	#   0 if daemon has been started
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
-	start-stop-daemon --start --quiet --pidfile $PID --exec $DAEMON --test > /dev/null \
-		|| return 1
-	start-stop-daemon --start --quiet --pidfile $PID --exec $DAEMON -- \
-		$DAEMON_OPTS 2>/dev/null \
-		|| return 2
+	start-stop-daemon --start --quiet --pidfile $PID --startas /bin/bash -- -c "$START_CMD" --test > /dev/null || return 1
+	start-stop-daemon --start --quiet --pidfile $PID --startas /bin/bash -- -c "$START_CMD" || return 2
 }
 
 #
