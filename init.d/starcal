@@ -13,7 +13,7 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/local/sbin/starcal-server
 NAME=starcal
-DESC=StarCakendar Server
+DESC='StarCakendar Server'
 
 test -x $DAEMON || exit 0
 
