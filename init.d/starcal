@@ -61,22 +61,6 @@ do_stop()
 	return "$RETVAL"
 }
 
-#
-# Function that sends a SIGHUP to the daemon/service
-#
-do_reload() {
-	start-stop-daemon --stop --signal HUP --quiet --pidfile $PID --name $NAME
-	return 0
-}
-
-#
-# Rotate log files
-#
-do_rotate() {
-	start-stop-daemon --stop --signal USR1 --quiet --pidfile $PID --name $NAME
-	return 0
-}
-
 
 case "$1" in
 	start)
