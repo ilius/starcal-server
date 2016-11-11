@@ -31,8 +31,8 @@ params = {
 }
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
-email = os.getenv("starcal_email")
-password = os.getenv("starcal_password")
+email = os.getenv("STARCAL_EMAIL")
+password = os.getenv("STARCAL_PASSWORD")
 
 try:
     params["groupId"] = sys.argv[1]
