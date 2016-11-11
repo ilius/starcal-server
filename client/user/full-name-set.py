@@ -9,7 +9,7 @@ import requests
 from requests.auth import HTTPDigestAuth
 from pprint import pprint
 
-host = os.getenv("starcal_host", "127.0.0.1")
+host = os.getenv("STARCAL_HOST", "127.0.0.1")
 email = os.getenv("starcal_email")
 password = os.getenv("starcal_password")
 fullName = sys.argv[1]

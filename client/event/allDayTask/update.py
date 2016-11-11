@@ -13,7 +13,7 @@ import time
 from time import strftime, gmtime
 import random
 
-host = os.getenv("starcal_host", "127.0.0.1")
+host = os.getenv("STARCAL_HOST", "127.0.0.1")
 email = os.getenv("starcal_email")
 password = os.getenv("starcal_password")
 eventId = sys.argv[1]
