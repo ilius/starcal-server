@@ -1,0 +1,2 @@
+By running `build.sh` script inside project's root directory, a file
+named `settings.go` will be generated inside this directory.

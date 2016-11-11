@@ -1,4 +1,5 @@
 pkg
-server
-server.bz2
+server-*
+settings/hosts/*
+src/scal/settings/settings.go
 

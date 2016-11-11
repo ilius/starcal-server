@@ -1,0 +1,4 @@
+Create file(s) with name like `YOUR-DOMAIN.COM.py`, where `YOUR-DOMAIN.COM`
+points to the server you are running this software. It's a Python script
+where you can change settings (and override default settings) for each server
+at compile time, and create a custom binary for each server.

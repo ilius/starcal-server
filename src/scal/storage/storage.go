@@ -6,12 +6,7 @@ import "time"
 import "gopkg.in/mgo.v2"
 //import "gopkg.in/mgo.v2/bson"
 
-const (
-    MongoHost = "127.0.0.1:27017"
-    MongoDbName = "starcal"
-    MongoUsername = ""
-    MongoPassword = ""
-)
+import "scal/settings"
 
 // MongoDB Collection Names:
 const (
@@ -178,11 +173,11 @@ func init() {
 
 func GetDB() (*mgo.Database, error) {
     mongoDBDialInfo := &mgo.DialInfo{
-        Addrs:    []string{MongoHost},
+        Addrs:    []string{settings.MONGO_HOST},
         Timeout:  2 * time.Second,
-        Database: MongoDbName,
-        Username: MongoUsername,
-        Password: MongoPassword,
+        Database: settings.MONGO_DB_NAME,
+        Username: settings.MONGO_USERNAME,
+        Password: settings.MONGO_PASSWORD,
     }
 
 
@@ -200,7 +195,7 @@ func GetDB() (*mgo.Database, error) {
     // http://godoc.org/labix.org/v2/mgo#Session.SetMode
     mongoSession.SetMode(mgo.Monotonic, true)
 
-    return mongoSession.DB(MongoDbName), nil
+    return mongoSession.DB(settings.MONGO_DB_NAME), nil
 }
 
 
