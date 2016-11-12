@@ -2,6 +2,8 @@ package event_lib
 
 import (
     "errors"
+    "log"
+    "time"
 
     "gopkg.in/mgo.v2"
     "gopkg.in/mgo.v2/bson"
@@ -27,8 +29,6 @@ type EventAccessModel struct {
     GroupId *bson.ObjectId          `bson:"groupId"`
     GroupModel *EventGroupModel     `bson:"-"`
 
-    AttendingEmails []string        `bson:"attendingEmails"`
-    NotAttendingEmails []string     `bson:"notAttendingEmails"`
     //PublicJoinPolicy string         `bson:"publicJoinPolicy"` // not indexed
     PublicJoinOpen bool             `bson:"publicJoinOpen"`
     MaxAttendees int                `bson:"maxAttendees"`
@@ -71,50 +71,41 @@ func (self *EventAccessModel) CanRead(email string) bool {
     }
     return self.CanReadFull(email)
 }
-func (self *EventAccessModel) IsAttending(email string) bool {
-    for _, aEmail := range self.AttendingEmails {
-        if email == aEmail {
-            return true
-        }
-    }
-    return false
+func (self *EventAccessModel) GetAttending(
+    db *mgo.Database,
+    email string,
+) string {
+    // returns YES, NO, or MAYBE
+    attendingModel, _ := LoadEventAttendingModel(db, self.EventId, email)
+    return attendingModel.Attending
 }
-func (self *EventAccessModel) IsNotAttending(email string) bool {
-    for _, aEmail := range self.NotAttendingEmails {
-        if email == aEmail {
-            return true
-        }
+func (self *EventAccessModel) SetAttending(
+    db *mgo.Database,
+    email string,
+    attending string,
+) error {
+    // attending: YES, NO, or MAYBE
+    attendingModel, err := LoadEventAttendingModel(db, self.EventId, email)
+    if err != nil {
+        return err
     }
-    return false
+    attendingModel.Attending = attending
+    attendingModel.ModifiedTime = time.Now()
+    err = attendingModel.Save(db)
+    return err
 }
-func (self *EventAccessModel) RemoveAttending(email string) bool {
-    // return true if found and removed, false if not found
-    for index, aEmail := range self.AttendingEmails {
-        if email == aEmail {
-            self.AttendingEmails = append(
-                self.AttendingEmails[:index],
-                self.AttendingEmails[index+1:]...
-            )
-            return true
-        }
-    }
-    return false
+func (self *EventAccessModel) AttendingStatusCount(
+    db *mgo.Database,
+    attending string,
+) (int, error) {
+    return db.C(storage.C_attending).Find(bson.M{
+        "eventId": self.EventId,
+        "attending": attending,
+    }).Count()
 }
-func (self *EventAccessModel) RemoveNotAttending(email string) bool {
-    // return true if found and removed, false if not found
-    for index, aEmail := range self.NotAttendingEmails {
-        if email == aEmail {
-            self.NotAttendingEmails = append(
-                self.NotAttendingEmails[:index],
-                self.NotAttendingEmails[index+1:]...
-            )
-            return true
-        }
-    }
-    return false
-}
-func (self *EventAccessModel) Join(email string) error {
-    if self.IsAttending(email) {
+func (self *EventAccessModel) Join(db *mgo.Database, email string) error {
+    // does not make any changes on self
+    if self.GetAttending(db, email) == YES {
         return errors.New("you have already joined this event")
     }
     if !self.CanReadFull(email) {
@@ -126,21 +117,60 @@ func (self *EventAccessModel) Join(email string) error {
             return errors.New("no access, no join")
         }
     }
-    if self.MaxAttendees > 0 && len(self.AttendingEmails) >= self.MaxAttendees {
-        return errors.New("maximum attendees exceeded, can not join event")
+    if self.MaxAttendees > 0 {
+        attendingCount, err := self.AttendingStatusCount(db, YES)
+        if err != nil {
+            return err
+        }
+        if attendingCount >= self.MaxAttendees {
+            return errors.New("maximum attendees exceeded, can not join event")
+        }
     }
-    self.RemoveNotAttending(email)
-    self.AttendingEmails = append(self.AttendingEmails, email)
+    self.SetAttending(db, email, YES)
     return nil
 }
-func (self *EventAccessModel) Leave(email string) error {
-    if !self.RemoveAttending(email) {
+func (self *EventAccessModel) Leave(db *mgo.Database, email string) error {
+    // does not make any changes on self
+    if self.GetAttending(db, email) == NO {
         if self.CanReadFull(email) {
             return errors.New("you are not attending for this event")
         }
     }
-    self.NotAttendingEmails = append(self.NotAttendingEmails, email)
+    self.SetAttending(db, email, NO)
     return nil
+}
+func (self *EventAccessModel) GetEmailsByAttendingStatus(
+    db *mgo.Database,
+    attending string,
+) []string {
+    emailStructs := [] struct {
+        Email string    `bson:"email"`
+    }{}
+    err := db.C(storage.C_attending).Find(bson.M{
+        "eventId": self.EventId,
+        "attending": attending,
+    }).All(&emailStructs)
+    if err != nil {
+        log.Printf(
+            "Internal Error: GetAttendingEmails: eventId=%v: %s\n",
+            self.EventId,
+            err.Error(),
+        )
+    }
+    emails := make([]string, len(emailStructs))
+    for i, m := range emailStructs {
+        emails[i] = m.Email
+    }
+    return emails
+}
+func (self *EventAccessModel) GetAttendingEmails(db *mgo.Database) []string {
+    return self.GetEmailsByAttendingStatus(db, YES)
+}
+func (self *EventAccessModel) GetNotAttendingEmails(db *mgo.Database) []string {
+    return self.GetEmailsByAttendingStatus(db, NO)
+}
+func (self *EventAccessModel) GetMaybeAttendingEmails(db *mgo.Database) []string {
+    return self.GetEmailsByAttendingStatus(db, MAYBE)
 }
 
 

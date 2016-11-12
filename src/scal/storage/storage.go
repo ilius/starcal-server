@@ -14,6 +14,7 @@ const (
     C_userChangeLog = "user_change_log"
     C_group = "event_group"
     C_access = "event_access"
+    C_attending = "event_attending"
     C_accessChangeLog = "event_access_change_log"
     C_revision = "event_revision"
     C_eventData = "event_data"
@@ -63,6 +64,20 @@ func init() {
     })
     db.C(C_access).EnsureIndex(mgo.Index{
         Key: []string{"ownerEmail"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    db.C(C_attending).EnsureIndex(mgo.Index{
+        Key: []string{"eventId", "email"},
+        Unique: true,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
+    db.C(C_attending).EnsureIndex(mgo.Index{
+        Key: []string{"eventId", "attending"},
         Unique: false,
         DropDups: false,
         Background: false,

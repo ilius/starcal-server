@@ -25,6 +25,14 @@ func Update(db *mgo.Database, model hasCollectionUniqueM) error {
     )
 }
 
+func Upsert(db *mgo.Database, model hasCollectionUniqueM) error {
+    _, err := db.C(model.Collection()).Upsert(
+        model.UniqueM(),
+        model,
+    )
+    return err
+}
+
 func Remove(db *mgo.Database, model hasCollectionUniqueM) error {
     return db.C(model.Collection()).Remove(
         model.UniqueM(),
