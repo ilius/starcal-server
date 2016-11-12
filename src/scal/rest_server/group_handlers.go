@@ -319,40 +319,40 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
     }
 
-    eventAccessCol := db.C(storage.C_access)
+    eventMetaCol := db.C(storage.C_eventMeta)
 
-    var eventAccessModels []event_lib.EventAccessModel
-    err = eventAccessCol.Find(bson.M{
+    var eventMetaModels []event_lib.EventMetaModel
+    err = eventMetaCol.Find(bson.M{
         "groupId": groupId,
-    }).All(&eventAccessModels)
+    }).All(&eventMetaModels)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
-    for _, eventAccessModel := range eventAccessModels {
-        if eventAccessModel.OwnerEmail != email {
-            // send an Email to {eventAccessModel.OwnerEmail}
+    for _, eventMetaModel := range eventMetaModels {
+        if eventMetaModel.OwnerEmail != email {
+            // send an Email to {eventMetaModel.OwnerEmail}
             // to inform the event owner, and let him move this
             // (ungrouped) event into his default (or any other) group
             // FIXME
         }
-        // insert a new record to storage.C_accessChangeLog // FIXME
-        eventAccessModel.GroupId = nil
-        err = eventAccessCol.Update(
-            bson.M{"_id": eventAccessModel.EventId},
-            eventAccessModel,
+        // insert a new record to storage.C_eventMetaChangeLog // FIXME
+        eventMetaModel.GroupId = nil
+        err = eventMetaCol.Update(
+            bson.M{"_id": eventMetaModel.EventId},
+            eventMetaModel,
         )
         if err != nil {
             SetHttpErrorInternal(w, err)
             return
         }
         now := time.Now()
-        err = db.C(storage.C_accessChangeLog).Insert(
+        err = db.C(storage.C_eventMetaChangeLog).Insert(
             bson.M{
                 "time": now,
                 "email": email,
                 "remoteIp": remoteIp,
-                "eventId": eventAccessModel.EventId,
+                "eventId": eventMetaModel.EventId,
                 "funcName": "DeleteGroup",
                 "groupId": []interface{}{
                     groupId,
@@ -420,7 +420,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             },
         }
     }
-    err = db.C(storage.C_access).Find(cond).All(&results)
+    err = db.C(storage.C_eventMeta).Find(cond).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -518,7 +518,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             {"$unwind": "$data"},
         }
     }
-    err = db.C(storage.C_access).Pipe(pipeline).All(&results)
+    err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -578,7 +578,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 
     results := []bson.M{}
     if groupModel.CanRead(email) {
-        err = db.C(storage.C_access).Pipe([]bson.M{
+        err = db.C(storage.C_eventMeta).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
             }},
@@ -611,7 +611,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
             {"$unwind": "$data"},
         }).All(&results)
     } else {
-        err = db.C(storage.C_access).Pipe([]bson.M{
+        err = db.C(storage.C_eventMeta).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
             }},
@@ -709,7 +709,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     results := []bson.M{}
     if groupModel.CanRead(email) {
-        err = db.C(storage.C_accessChangeLog).Pipe([]bson.M{
+        err = db.C(storage.C_eventMetaChangeLog).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
             }},
@@ -726,7 +726,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             }},
         }).All(&results)
     } else {
-        err = db.C(storage.C_access).Pipe([]bson.M{
+        err = db.C(storage.C_eventMeta).Pipe([]bson.M{
             {"$match": bson.M{
                 "groupId": groupId,
             }},
@@ -737,16 +737,16 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             }},
             {"$sort": bson.M{"time": -1}},
             {"$lookup": bson.M{
-                "from": "event_access",
+                "from": storage.C_eventMeta,
                 "localField": "eventId",
                 "foreignField": "_id",
-                "as": "access",
+                "as": "meta",
             }},
-            {"$unwind": "$access"},
+            {"$unwind": "$meta"},
             {"$match": bson.M{
                 "$or": []bson.M{
-                    bson.M{"access.ownerEmail": email},
-                    bson.M{"access.accessEmails": email},
+                    bson.M{"meta.ownerEmail": email},
+                    bson.M{"meta.accessEmails": email},
                 },
             }},
             {"$group": bson.M{

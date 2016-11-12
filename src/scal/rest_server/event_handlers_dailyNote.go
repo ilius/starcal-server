@@ -178,7 +178,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         groupId = &groupModel.Id
     }
-    eventAccess := event_lib.EventAccessModel{
+    eventMeta := event_lib.EventMetaModel{
         EventId: eventId,
         EventType: eventModel.Type(),
         OwnerEmail: email,
@@ -186,7 +186,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         //AccessEmails: []string{}
     }
     now := time.Now()
-    err = db.C(storage.C_accessChangeLog).Insert(
+    err = db.C(storage.C_eventMetaChangeLog).Insert(
         bson.M{
             "time": now,
             "email": email,
@@ -237,7 +237,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             return
         }
     }
-    err = storage.Insert(db, eventAccess)
+    err = storage.Insert(db, eventMeta)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -265,7 +265,7 @@ func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -274,7 +274,7 @@ func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if !eventAccess.CanRead(email) {
+    if !eventMeta.CanRead(email) {
         SetHttpError(w, http.StatusForbidden, "you don't have access to this event")
         return
     }
@@ -305,7 +305,7 @@ func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     eventModel.Id = *eventId
-    eventModel.GroupId = eventAccess.GroupIdHex()
+    eventModel.GroupId = eventMeta.GroupIdHex()
     json.NewEncoder(w).Encode(eventModel)
 }
 
@@ -343,7 +343,7 @@ func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     // check if event exists, and has access to
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, false)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -352,7 +352,7 @@ func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if eventAccess.OwnerEmail != email {
+    if eventMeta.OwnerEmail != email {
         SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
         return
     }
@@ -446,7 +446,7 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     // check if event exists, and has access to
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, false)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -455,7 +455,7 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if eventAccess.OwnerEmail != email {
+    if eventMeta.OwnerEmail != email {
         SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
         return
     }

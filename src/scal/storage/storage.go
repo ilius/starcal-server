@@ -13,9 +13,9 @@ const (
     C_user = "users"
     C_userChangeLog = "user_change_log"
     C_group = "event_group"
-    C_access = "event_access"
+    C_eventMeta = "event_meta"
     C_attending = "event_attending"
-    C_accessChangeLog = "event_access_change_log"
+    C_eventMetaChangeLog = "event_meta_change_log"
     C_revision = "event_revision"
     C_eventData = "event_data"
 )
@@ -62,7 +62,7 @@ func init() {
         Background: false,
         Sparse: true,
     })
-    db.C(C_access).EnsureIndex(mgo.Index{
+    db.C(C_eventMeta).EnsureIndex(mgo.Index{
         Key: []string{"ownerEmail"},
         Unique: false,
         DropDups: false,
@@ -83,49 +83,49 @@ func init() {
         Background: false,
         Sparse: false,
     })
-    /*db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
+    /*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"time"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })*/
-    /*db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
+    /*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"email"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })*/
-    /*db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
+    /*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"eventId"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })*/
-    /*db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
+    /*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"eventType"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })*/
-    /*db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
+    /*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"ownerEmail"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })*/
-    /*db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
+    /*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"groupId"},
         Unique: false,
         DropDups: false,
         Background: false,
         Sparse: false,
     })*/
-    /*db.C(C_accessChangeLog).EnsureIndex(mgo.Index{
+    /*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"accessEmails"},
         Unique: false,
         DropDups: false,

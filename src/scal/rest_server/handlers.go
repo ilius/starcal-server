@@ -54,7 +54,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -63,42 +63,42 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if eventAccess.OwnerEmail != email {
+    if eventMeta.OwnerEmail != email {
         SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
         return
     }
     now := time.Now()
-    accessChangeLog := bson.M{
+    metaChangeLog := bson.M{
         "time": now,
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
         "funcName": "DeleteEvent",
         "ownerEmail": []interface{}{
-            eventAccess.OwnerEmail,
+            eventMeta.OwnerEmail,
             nil,
         },
     }
-    if eventAccess.GroupId != nil {
-        accessChangeLog["groupId"] = []interface{}{
-            eventAccess.GroupId,
+    if eventMeta.GroupId != nil {
+        metaChangeLog["groupId"] = []interface{}{
+            eventMeta.GroupId,
             nil,
         }
     }
-    if len(eventAccess.AccessEmails) > 0 {
-        accessChangeLog["accessEmails"] = []interface{}{
-            eventAccess.AccessEmails,
+    if len(eventMeta.AccessEmails) > 0 {
+        metaChangeLog["accessEmails"] = []interface{}{
+            eventMeta.AccessEmails,
             nil,
         }
     }
-    err = db.C(storage.C_accessChangeLog).Insert(accessChangeLog)
+    err = db.C(storage.C_eventMetaChangeLog).Insert(metaChangeLog)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
     err = storage.Insert(db, event_lib.EventRevisionModel{
         EventId: *eventId,
-        EventType: eventAccess.EventType,
+        EventType: eventMeta.EventType,
         Sha1: "",
         Time: now,
     })
@@ -106,7 +106,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    err = storage.Remove(db, eventAccess)
+    err = storage.Remove(db, eventMeta)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -149,7 +149,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     oldEventId := bson.ObjectIdHex(oldEventIdHex)
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, &oldEventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, &oldEventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -158,7 +158,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if !eventAccess.CanRead(email) {
+    if !eventMeta.CanRead(email) {
         SetHttpError(w, http.StatusForbidden, "you don't have access to this event")
         return
     }
@@ -185,14 +185,14 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     newGroupId := userModel.DefaultGroupId
-    if eventAccess.GroupModel != nil {
-        if eventAccess.GroupModel.OwnerEmail == email {
-            newGroupId = &eventAccess.GroupModel.Id // == eventAccess.GroupId
+    if eventMeta.GroupModel != nil {
+        if eventMeta.GroupModel.OwnerEmail == email {
+            newGroupId = &eventMeta.GroupModel.Id // == eventMeta.GroupId
         }
     }
 
     now := time.Now()
-    err = db.C(storage.C_accessChangeLog).Insert(
+    err = db.C(storage.C_eventMetaChangeLog).Insert(
         bson.M{
             "time": now,
             "email": email,
@@ -221,9 +221,9 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    err = storage.Insert(db, event_lib.EventAccessModel{
+    err = storage.Insert(db, event_lib.EventMetaModel{
         EventId: newEventId,
-        EventType: eventAccess.EventType,
+        EventType: eventMeta.EventType,
         OwnerEmail: email,
         GroupId: newGroupId,
         //AccessEmails: []string{}// must not copy AccessEmails
@@ -275,7 +275,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -284,7 +284,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if eventAccess.OwnerEmail != email {
+    if eventMeta.OwnerEmail != email {
         SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
         return
     }
@@ -318,26 +318,26 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     now := time.Now()
-    accessChangeLog := bson.M{
+    metaChangeLog := bson.M{
         "time": now,
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
         "funcName": "SetEventGroupId",
         "groupId": []interface{}{
-            eventAccess.GroupId,
+            eventMeta.GroupId,
             newGroupId,
         },
     }
     /*
     addedAccessEmails := Set(
-        eventAccess.GroupModel.ReadAccessEmails,
+        eventMeta.GroupModel.ReadAccessEmails,
     ).Difference(newGroupModel.ReadAccessEmails)
     if addedAccessEmails {
-        accessChangeLog["addedAccessEmails"] = addedAccessEmails
+        metaChangeLog["addedAccessEmails"] = addedAccessEmails
     }
     */
-    err = db.C(storage.C_accessChangeLog).Insert(accessChangeLog)
+    err = db.C(storage.C_eventMetaChangeLog).Insert(metaChangeLog)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -348,8 +348,8 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorUserNotFound(w, email)
         return
     }*/
-    eventAccess.GroupId = &newGroupId
-    err = storage.Update(db, eventAccess)
+    eventMeta.GroupId = &newGroupId
+    err = storage.Update(db, eventMeta)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -370,7 +370,7 @@ func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -379,7 +379,7 @@ func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if !eventAccess.CanRead(email) {
+    if !eventMeta.CanRead(email) {
         SetHttpError(
             w,
             http.StatusForbidden,
@@ -389,7 +389,7 @@ func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     json.NewEncoder(w).Encode(bson.M{
         //"eventId": eventId.Hex(),
-        "ownerEmail": eventAccess.OwnerEmail,
+        "ownerEmail": eventMeta.OwnerEmail,
     })
 }
 
@@ -420,7 +420,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -429,7 +429,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if eventAccess.OwnerEmail != email {
+    if eventMeta.OwnerEmail != email {
         SetHttpError(w, http.StatusForbidden, "you don't own this event")
         return
     }
@@ -453,14 +453,14 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
     now := time.Now()
-    err = db.C(storage.C_accessChangeLog).Insert(bson.M{
+    err = db.C(storage.C_eventMetaChangeLog).Insert(bson.M{
         "time": now,
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
         "funcName": "SetEventOwner",
         "ownerEmail": []interface{}{
-            eventAccess.OwnerEmail,
+            eventMeta.OwnerEmail,
             newOwnerEmail,
         },
     })
@@ -468,8 +468,8 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    eventAccess.OwnerEmail = newOwnerEmail
-    err = storage.Update(db, eventAccess)
+    eventMeta.OwnerEmail = newOwnerEmail
+    err = storage.Update(db, eventMeta)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -490,7 +490,7 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -499,7 +499,7 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if !eventAccess.CanReadFull(email) {
+    if !eventMeta.CanReadFull(email) {
         SetHttpError(
             w,
             http.StatusForbidden,
@@ -509,13 +509,13 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     json.NewEncoder(w).Encode(bson.M{
         //"eventId": eventId.Hex(),
-        "isPublic": eventAccess.IsPublic,
-        "accessEmails": eventAccess.AccessEmails,
-        "publicJoinOpen": eventAccess.PublicJoinOpen,
-        "maxAttendees": eventAccess.MaxAttendees,
-        "attendingEmails": eventAccess.GetAttendingEmails(db),
-        "notAttendingEmails": eventAccess.GetNotAttendingEmails(db),
-        "maybeAttendingEmails": eventAccess.GetMaybeAttendingEmails(db),
+        "isPublic": eventMeta.IsPublic,
+        "accessEmails": eventMeta.AccessEmails,
+        "publicJoinOpen": eventMeta.PublicJoinOpen,
+        "maxAttendees": eventMeta.MaxAttendees,
+        "attendingEmails": eventMeta.GetAttendingEmails(db),
+        "notAttendingEmails": eventMeta.GetNotAttendingEmails(db),
+        "maybeAttendingEmails": eventMeta.GetMaybeAttendingEmails(db),
     })
 }
 
@@ -554,7 +554,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -563,7 +563,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if eventAccess.OwnerEmail != email {
+    if eventMeta.OwnerEmail != email {
         SetHttpError(w, http.StatusForbidden, "you don't own this event")
         return
     }
@@ -580,33 +580,33 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     now := time.Now()
-    accessChangeLog := bson.M{
+    metaChangeLog := bson.M{
         "time": now,
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
         "funcName": "SetEventAccess",
     }
-    if *newIsPublic != eventAccess.IsPublic {
-        accessChangeLog["isPublic"] = []interface{}{
-            eventAccess.IsPublic,
+    if *newIsPublic != eventMeta.IsPublic {
+        metaChangeLog["isPublic"] = []interface{}{
+            eventMeta.IsPublic,
             newIsPublic,
         }
-        eventAccess.IsPublic = *newIsPublic
+        eventMeta.IsPublic = *newIsPublic
     }
-    if !reflect.DeepEqual(*newAccessEmails, eventAccess.AccessEmails) {
-        accessChangeLog["accessEmails"] = []interface{}{
-            eventAccess.AccessEmails,
+    if !reflect.DeepEqual(*newAccessEmails, eventMeta.AccessEmails) {
+        metaChangeLog["accessEmails"] = []interface{}{
+            eventMeta.AccessEmails,
             newAccessEmails,
         }
-        eventAccess.AccessEmails = *newAccessEmails
+        eventMeta.AccessEmails = *newAccessEmails
     }
-    err = db.C(storage.C_accessChangeLog).Insert(accessChangeLog)
+    err = db.C(storage.C_eventMetaChangeLog).Insert(metaChangeLog)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
     }
-    err = storage.Update(db, eventAccess)
+    err = storage.Update(db, eventMeta)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -641,7 +641,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -650,7 +650,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    if eventAccess.OwnerEmail != email {
+    if eventMeta.OwnerEmail != email {
         SetHttpError(w, http.StatusForbidden, "you don't own this event")
         return
     }
@@ -660,16 +660,16 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpError(w, http.StatusBadRequest, "missing 'toAddEmail'")
         return
     }
-    newAccessEmails := append(eventAccess.AccessEmails, toAddEmail)
+    newAccessEmails := append(eventMeta.AccessEmails, toAddEmail)
     now := time.Now()
-    err = db.C(storage.C_accessChangeLog).Insert(bson.M{
+    err = db.C(storage.C_eventMetaChangeLog).Insert(bson.M{
         "time": now,
         "email": email,
         "remoteIp": remoteIp,
         "eventId": eventId,
         "funcName": "AppendEventAccess",
         "accessEmails": []interface{}{
-            eventAccess.AccessEmails,
+            eventMeta.AccessEmails,
             newAccessEmails,
         },
     })
@@ -677,8 +677,8 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    eventAccess.AccessEmails = newAccessEmails
-    err = storage.Update(db, eventAccess)
+    eventMeta.AccessEmails = newAccessEmails
+    err = storage.Update(db, eventMeta)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -704,7 +704,7 @@ func JoinEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -713,7 +713,7 @@ func JoinEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    err = eventAccess.Join(db, email)
+    err = eventMeta.Join(db, email)
     if err != nil {
         SetHttpError(w, http.StatusForbidden, err.Error())
         return
@@ -739,7 +739,7 @@ func LeaveEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpErrorInternal(w, err)
         return
     }
-    eventAccess, err := event_lib.LoadEventAccessModel(db, eventId, true)
+    eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -748,7 +748,7 @@ func LeaveEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    err = eventAccess.Leave(db, email)
+    err = eventMeta.Leave(db, email)
     if err != nil {
         SetHttpError(w, http.StatusForbidden, err.Error())
         return
@@ -774,7 +774,7 @@ func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         EventType string        `bson:"eventType" json:"eventType"`
     }
     var events []eventModel
-    err = db.C(storage.C_access).Find(bson.M{
+    err = db.C(storage.C_eventMeta).Find(bson.M{
         "ownerEmail": email,
         "groupId": nil,
     }).All(&events)

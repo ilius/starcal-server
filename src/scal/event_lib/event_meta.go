@@ -20,7 +20,7 @@ const (
 )
 */
 
-type EventAccessModel struct {
+type EventMetaModel struct {
     EventId bson.ObjectId           `bson:"_id"`
     EventType string                `bson:"eventType"`
     OwnerEmail string               `bson:"ownerEmail"`
@@ -33,21 +33,21 @@ type EventAccessModel struct {
     PublicJoinOpen bool             `bson:"publicJoinOpen"`
     MaxAttendees int                `bson:"maxAttendees"`
 }
-func (self EventAccessModel) UniqueM() bson.M {
+func (self EventMetaModel) UniqueM() bson.M {
     return bson.M{
         "_id": self.EventId,
     }
 }
-func (self EventAccessModel) Collection() string {
-    return storage.C_access
+func (self EventMetaModel) Collection() string {
+    return storage.C_eventMeta
 }
-func (self EventAccessModel) GroupIdHex() string {
+func (self EventMetaModel) GroupIdHex() string {
     if self.GroupId != nil {
         return self.GroupId.Hex()
     }
     return ""
 }
-func (self *EventAccessModel) CanReadFull(email string) bool {
+func (self *EventMetaModel) CanReadFull(email string) bool {
     if email == self.OwnerEmail {
         return true
     }
@@ -65,13 +65,13 @@ func (self *EventAccessModel) CanReadFull(email string) bool {
     }
     return false
 }
-func (self *EventAccessModel) CanRead(email string) bool {
+func (self *EventMetaModel) CanRead(email string) bool {
     if self.IsPublic {
         return true
     }
     return self.CanReadFull(email)
 }
-func (self *EventAccessModel) GetAttending(
+func (self *EventMetaModel) GetAttending(
     db *mgo.Database,
     email string,
 ) string {
@@ -79,7 +79,7 @@ func (self *EventAccessModel) GetAttending(
     attendingModel, _ := LoadEventAttendingModel(db, self.EventId, email)
     return attendingModel.Attending
 }
-func (self *EventAccessModel) SetAttending(
+func (self *EventMetaModel) SetAttending(
     db *mgo.Database,
     email string,
     attending string,
@@ -94,7 +94,7 @@ func (self *EventAccessModel) SetAttending(
     err = attendingModel.Save(db)
     return err
 }
-func (self *EventAccessModel) AttendingStatusCount(
+func (self *EventMetaModel) AttendingStatusCount(
     db *mgo.Database,
     attending string,
 ) (int, error) {
@@ -103,7 +103,7 @@ func (self *EventAccessModel) AttendingStatusCount(
         "attending": attending,
     }).Count()
 }
-func (self *EventAccessModel) Join(db *mgo.Database, email string) error {
+func (self *EventMetaModel) Join(db *mgo.Database, email string) error {
     // does not make any changes on self
     if self.GetAttending(db, email) == YES {
         return errors.New("you have already joined this event")
@@ -129,7 +129,7 @@ func (self *EventAccessModel) Join(db *mgo.Database, email string) error {
     self.SetAttending(db, email, YES)
     return nil
 }
-func (self *EventAccessModel) Leave(db *mgo.Database, email string) error {
+func (self *EventMetaModel) Leave(db *mgo.Database, email string) error {
     // does not make any changes on self
     if self.GetAttending(db, email) == NO {
         if self.CanReadFull(email) {
@@ -139,7 +139,7 @@ func (self *EventAccessModel) Leave(db *mgo.Database, email string) error {
     self.SetAttending(db, email, NO)
     return nil
 }
-func (self *EventAccessModel) GetEmailsByAttendingStatus(
+func (self *EventMetaModel) GetEmailsByAttendingStatus(
     db *mgo.Database,
     attending string,
 ) []string {
@@ -163,41 +163,41 @@ func (self *EventAccessModel) GetEmailsByAttendingStatus(
     }
     return emails
 }
-func (self *EventAccessModel) GetAttendingEmails(db *mgo.Database) []string {
+func (self *EventMetaModel) GetAttendingEmails(db *mgo.Database) []string {
     return self.GetEmailsByAttendingStatus(db, YES)
 }
-func (self *EventAccessModel) GetNotAttendingEmails(db *mgo.Database) []string {
+func (self *EventMetaModel) GetNotAttendingEmails(db *mgo.Database) []string {
     return self.GetEmailsByAttendingStatus(db, NO)
 }
-func (self *EventAccessModel) GetMaybeAttendingEmails(db *mgo.Database) []string {
+func (self *EventMetaModel) GetMaybeAttendingEmails(db *mgo.Database) []string {
     return self.GetEmailsByAttendingStatus(db, MAYBE)
 }
 
 
 
-func LoadEventAccessModel(
+func LoadEventMetaModel(
     db *mgo.Database,
     eventId *bson.ObjectId,
     loadGroup bool,
-) (*EventAccessModel, error) {
+) (*EventMetaModel, error) {
     var err error
-    accessModel := EventAccessModel{}
-    err = db.C(storage.C_access).Find(bson.M{
+    eventMeta := EventMetaModel{}
+    err = db.C(storage.C_eventMeta).Find(bson.M{
         "_id": eventId,
-    }).One(&accessModel)
+    }).One(&eventMeta)
     if err != nil {
         return nil, err
     }
-    if loadGroup && accessModel.GroupId != nil {
+    if loadGroup && eventMeta.GroupId != nil {
         groupModel := EventGroupModel{}
         err = db.C(storage.C_group).Find(bson.M{
-            "_id": accessModel.GroupId,
+            "_id": eventMeta.GroupId,
         }).One(&groupModel)
         if err != nil {
             return nil, err
         }
     }
-    return &accessModel, nil
+    return &eventMeta, nil
 }
 
 
