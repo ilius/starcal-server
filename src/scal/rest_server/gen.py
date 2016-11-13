@@ -82,7 +82,7 @@ def parseModelVarLine(line):
 def extractEventTypeParams(eventType):
     params = []
     eventTypeCap = eventType[0].upper() + eventType[1:]
-    with open(join(myParentDir, 'event_lib/%s.go' % eventType)) as goFp:
+    with open(join(myParentDir, 'event_lib/t_%s.go' % eventType)) as goFp:
         text = goFp.read()
     for line in re.findall(
         'type %sEventModel.*?{.*?}' % eventTypeCap,
