@@ -1,15 +1,16 @@
 package occurrence
 
-import "testing"
-import "time"
-import "fmt"
-import "strings"
+import (
+    "testing"
+    "time"
+    "fmt"
+    "strings"
 
-import . "scal-lib/mapset"
-import "scal/cal_types/gregorian"
-import . "scal/utils"
-import . "scal/interval"
-
+    . "scal-lib/mapset"
+    "scal/cal_types/gregorian"
+    . "scal/utils"
+    . "scal/interval"
+)
 
 //var time_format = "2006-01-02 15:04:05";
 var time_format = "2006-01-02 15:04";

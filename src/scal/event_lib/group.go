@@ -1,11 +1,13 @@
 package event_lib
 
-import "errors"
+import (
+    "errors"
 
-import "gopkg.in/mgo.v2"
-import "gopkg.in/mgo.v2/bson"
+    "gopkg.in/mgo.v2"
+    "gopkg.in/mgo.v2/bson"
 
-import "scal/storage"
+    "scal/storage"
+)
 
 type EventGroupModel struct {
     Id bson.ObjectId            `bson:"_id" json:"groupId"`

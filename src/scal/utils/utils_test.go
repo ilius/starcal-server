@@ -1,11 +1,13 @@
 package utils
 
-import "testing"
-import "time"
-import "math/rand"
+import (
+    "testing"
+    "time"
+    "math/rand"
 
-import "scal"
-import "scal/cal_types/gregorian"
+    "scal"
+    "scal/cal_types/gregorian"
+)
 
 func TestTimeZone(t *testing.T) {
     //t := time.Now()// .In(loc)

@@ -1,16 +1,17 @@
 package event_lib
 
-import "testing"
-import "time"
+import (
+    "testing"
+    "time"
 
-import _ "scal/cal_types/gregorian"
-import _ "scal/cal_types/jalali"
+    _ "scal/cal_types/gregorian"
+    _ "scal/cal_types/jalali"
 
-import "scal/storage"
+    "scal/storage"
 
-//import "mgo"
-import "gopkg.in/mgo.v2"
-import "gopkg.in/mgo.v2/bson"
+    "gopkg.in/mgo.v2"
+    "gopkg.in/mgo.v2/bson"
+)
 
 const (
     MongoHost = "127.0.0.1:27017"

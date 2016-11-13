@@ -1,10 +1,12 @@
 package interval
 
-import "testing"
-import "time"
-import "os"
-//import "strings"
-import "math/rand"
+import (
+    "testing"
+    "time"
+    "os"
+    //"strings"
+    "math/rand"
+)
 
 func ShuffleIntervals(a []Interval) {
     rand.Seed(time.Now().UnixNano())

@@ -17,11 +17,11 @@
 
 package gregorian
 
-//import "fmt"
-import "time"
-
-import "scal"
-import "scal/cal_types"
+import (
+    "time"
+    "scal"
+    "scal/cal_types"
+)
 
 // ###### Common Globals #######
 

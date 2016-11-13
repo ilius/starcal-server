@@ -1,11 +1,13 @@
 package event_lib
 
-import "time"
-import "fmt"
-import "gopkg.in/mgo.v2/bson"
+import (
+    "time"
+    "fmt"
+    "gopkg.in/mgo.v2/bson"
 
-import "scal/cal_types"
-import "scal/storage"
+    "scal/cal_types"
+    "scal/storage"
+)
 
 
 type BaseEventModel struct {

@@ -1,9 +1,11 @@
 package scal
 
-import "fmt"
-import "strings"
-import "strconv" 
-import "errors"
+import (
+    "fmt"
+    "strings"
+    "strconv" 
+    "errors"
+)
 
 type HMS struct {
    Hour int

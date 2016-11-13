@@ -1,12 +1,12 @@
 package storage
 
-import "time"
+import (
+    "time"
 
-//import "mgo"
-import "gopkg.in/mgo.v2"
-//import "gopkg.in/mgo.v2/bson"
+    "gopkg.in/mgo.v2"
 
-import "scal/settings"
+    "scal/settings"
+)
 
 // MongoDB Collection Names:
 const (

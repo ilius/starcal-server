@@ -1,10 +1,12 @@
 package event_lib
 
-import "time"
-import "fmt"
-import "errors"
-import "gopkg.in/mgo.v2"
-import "scal/storage"
+import (
+    "time"
+    "fmt"
+    "errors"
+    "gopkg.in/mgo.v2"
+    "scal/storage"
+)
 
 
 // DurationUnit is just a matter of UI
