@@ -181,6 +181,7 @@ func AddWeekly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     eventMeta := event_lib.EventMetaModel{
         EventId: eventId,
         EventType: eventModel.Type(),
+        CreationTime: time.Now(),
         OwnerEmail: email,
         GroupId: groupId,
         //AccessEmails: []string{}

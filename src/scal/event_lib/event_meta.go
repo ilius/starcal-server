@@ -23,6 +23,7 @@ const (
 type EventMetaModel struct {
     EventId bson.ObjectId           `bson:"_id"`
     EventType string                `bson:"eventType"`
+    CreationTime time.Time          `bson:"creationTime"`
     OwnerEmail string               `bson:"ownerEmail"`
     IsPublic bool                   `bson:"isPublic"`
     AccessEmails []string           `bson:"accessEmails"`

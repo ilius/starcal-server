@@ -224,6 +224,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     err = storage.Insert(db, event_lib.EventMetaModel{
         EventId: newEventId,
         EventType: eventMeta.EventType,
+        CreationTime: time.Now(),
         OwnerEmail: email,
         GroupId: newGroupId,
         //AccessEmails: []string{}// must not copy AccessEmails
@@ -516,6 +517,7 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "attendingEmails": eventMeta.GetAttendingEmails(db),
         "notAttendingEmails": eventMeta.GetNotAttendingEmails(db),
         "maybeAttendingEmails": eventMeta.GetMaybeAttendingEmails(db),
+        "creationTime": eventMeta.CreationTime,// FIXME
     })
 }
 
