@@ -479,17 +479,20 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     json.NewEncoder(w).Encode(bson.M{})
 }
 
-func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetEventMetaModelFromRequest(
+    w http.ResponseWriter,
+    r *auth.AuthenticatedRequest,
+) *event_lib.EventMetaModel {
     defer r.Body.Close()
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     var err error
     eventId := ObjectIdFromURL(w, r, "eventId", 1)
-    if eventId==nil { return }
+    if eventId==nil { return nil }
     db, err := storage.GetDB()
     if err != nil {
         SetHttpErrorInternal(w, err)
-        return
+        return nil
     }
     eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
     if err != nil {
@@ -498,18 +501,35 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         } else {
             SetHttpErrorInternal(w, err)
         }
-        return
+        return nil
     }
     if !eventMeta.CanReadFull(email) {
         SetHttpError(
             w,
             http.StatusForbidden,
-            "you can't see access list of this event",
+            "you can't meta information of this event",
         )
+        return nil
+    }
+    return eventMeta
+}
+
+func GetEventMeta(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    // includes owner, creation time, groupId, access info, attendings info
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    eventMeta := GetEventMetaModelFromRequest(w, r)
+    if eventMeta == nil {
         return
     }
     json.NewEncoder(w).Encode(bson.M{
-        //"eventId": eventId.Hex(),
+        //"eventId": eventMeta.EventId.Hex(),
+        "ownerEmail": eventMeta.OwnerEmail,
+        "creationTime": eventMeta.CreationTime,
+        "groupId": eventMeta.GroupIdHex(),
         "isPublic": eventMeta.IsPublic,
         "accessEmails": eventMeta.AccessEmails,
         "publicJoinOpen": eventMeta.PublicJoinOpen,
@@ -517,7 +537,20 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "attendingEmails": eventMeta.GetAttendingEmails(db),
         "notAttendingEmails": eventMeta.GetNotAttendingEmails(db),
         "maybeAttendingEmails": eventMeta.GetMaybeAttendingEmails(db),
-        "creationTime": eventMeta.CreationTime,// FIXME
+    })
+}
+
+func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    eventMeta := GetEventMetaModelFromRequest(w, r)
+    if eventMeta == nil {
+        return
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        //"eventId": eventMeta.EventId.Hex(),
+        "isPublic": eventMeta.IsPublic,
+        "accessEmails": eventMeta.AccessEmails,
+        "publicJoinOpen": eventMeta.PublicJoinOpen,
+        "maxAttendees": eventMeta.MaxAttendees,
     })
 }
 

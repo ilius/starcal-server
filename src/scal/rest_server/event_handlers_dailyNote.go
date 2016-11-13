@@ -78,6 +78,12 @@ func init(){
         authenticator.Wrap(SetEventOwner),
     )
     RegisterRoute(
+        "GetEventMeta_dailyNote",
+        "GET",
+        "/event/dailyNote/{eventId}/meta/",
+        authenticator.Wrap(GetEventMeta),
+    )
+    RegisterRoute(
         "GetEventAccess_dailyNote",
         "GET",
         "/event/dailyNote/{eventId}/access/",

@@ -78,6 +78,12 @@ func init(){
         authenticator.Wrap(SetEventOwner),
     )
     RegisterRoute(
+        "GetEventMeta_largeScale",
+        "GET",
+        "/event/largeScale/{eventId}/meta/",
+        authenticator.Wrap(GetEventMeta),
+    )
+    RegisterRoute(
         "GetEventAccess_largeScale",
         "GET",
         "/event/largeScale/{eventId}/access/",

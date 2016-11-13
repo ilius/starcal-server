@@ -78,6 +78,12 @@ func init(){
         authenticator.Wrap(SetEventOwner),
     )
     RegisterRoute(
+        "GetEventMeta_lifeTime",
+        "GET",
+        "/event/lifeTime/{eventId}/meta/",
+        authenticator.Wrap(GetEventMeta),
+    )
+    RegisterRoute(
         "GetEventAccess_lifeTime",
         "GET",
         "/event/lifeTime/{eventId}/access/",
