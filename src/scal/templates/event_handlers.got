@@ -312,7 +312,10 @@ func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
     }
 
     eventModel.Id = *eventId
-    eventModel.GroupId = eventMeta.GroupIdHex()
+    eventModel.GroupId = eventMeta.GroupIdHex() // FIXME
+    if eventMeta.CanReadFull(email) {
+        eventModel.Meta = eventMeta.JsonM()
+    }
     json.NewEncoder(w).Encode(eventModel)
 }
 
@@ -386,6 +389,10 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedReques
     }
     if eventModel.GroupId != "" {
         SetHttpError(w, http.StatusBadRequest, "'groupId' must not be present in JSON")
+        return
+    }
+    if len(eventModel.Meta) != 0 {
+        SetHttpError(w, http.StatusBadRequest, "'meta' must not be present in JSON")
         return
     }
     eventModel.Sha1 = ""

@@ -111,7 +111,10 @@ def extractEventBasePatchParams():
             continue
         if param == 'sha1':
             continue
-        if param == 'groupId':
+        if param in (
+            'groupId',
+            'meta',
+        ):
             continue
         params.append((param, _type))
     return params

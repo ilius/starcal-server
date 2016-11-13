@@ -18,7 +18,8 @@ type BaseEventModel struct {
     Icon string         `bson:"icon,omitempty" json:"icon"`
     NotifyBefore int    `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
     //IsAllDay bool
-    GroupId string      `bson:"-" json:"groupId"`
+    GroupId string      `bson:"-" json:"groupId"` // FIXME
+    Meta bson.M         `bson:"-" json:"meta"`
 }
 func (self BaseEventModel) UniqueM() bson.M {
     return bson.M{

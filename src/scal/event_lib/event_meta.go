@@ -48,6 +48,17 @@ func (self EventMetaModel) GroupIdHex() string {
     }
     return ""
 }
+func (self EventMetaModel) JsonM() bson.M {
+    return bson.M{
+        "creationTime": self.CreationTime,
+        "ownerEmail": self.OwnerEmail,
+        "isPublic": self.IsPublic,
+        "accessEmails": self.AccessEmails,
+        "groupId": self.GroupIdHex(),
+        "publicJoinOpen": self.PublicJoinOpen,
+        "maxAttendees": self.MaxAttendees,
+    }
+}
 func (self *EventMetaModel) CanReadFull(email string) bool {
     if email == self.OwnerEmail {
         return true
