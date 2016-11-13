@@ -570,9 +570,11 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     inputStruct := struct {
         IsPublic *bool                   `json:"isPublic"`
         AccessEmails *[]string           `json:"accessEmails"`
-        //PublicJoinOpen *bool             `json:"publicJoinOpen"`
-        //MaxAttendees *int                `json:"maxAttendees"`
+        PublicJoinOpen *bool             `json:"publicJoinOpen"`
+        MaxAttendees *int                `json:"maxAttendees"`
     }{
+        nil,
+        nil,
         nil,
         nil,
     }
@@ -613,6 +615,16 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         SetHttpError(w, http.StatusBadRequest, "missing 'accessEmails'")
         return
     }
+    newPublicJoinOpen := inputStruct.PublicJoinOpen
+    if newPublicJoinOpen == nil {
+        SetHttpError(w, http.StatusBadRequest, "missing 'publicJoinOpen'")
+        return
+    }
+    newMaxAttendees := inputStruct.MaxAttendees
+    if newMaxAttendees == nil {
+        SetHttpError(w, http.StatusBadRequest, "missing 'maxAttendees'")
+        return
+    }
 
     now := time.Now()
     metaChangeLog := bson.M{
@@ -635,6 +647,21 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             newAccessEmails,
         }
         eventMeta.AccessEmails = *newAccessEmails
+    }
+    if *newPublicJoinOpen != eventMeta.PublicJoinOpen {
+        metaChangeLog["publicJoinOpen"] = []interface{}{
+            eventMeta.PublicJoinOpen,
+            newPublicJoinOpen,
+        }
+        eventMeta.PublicJoinOpen = *newPublicJoinOpen
+
+    }
+    if *newMaxAttendees != eventMeta.MaxAttendees {
+        metaChangeLog["maxAttendees"] = []interface{}{
+            eventMeta.MaxAttendees,
+            newMaxAttendees,
+        }
+        eventMeta.MaxAttendees = *newMaxAttendees
     }
     err = db.C(storage.C_eventMetaChangeLog).Insert(metaChangeLog)
     if err != nil {
