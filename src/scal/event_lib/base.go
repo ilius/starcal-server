@@ -6,6 +6,8 @@ import "fmt"
 import "gopkg.in/mgo.v2/bson"
 
 import "scal/cal_types"
+import "scal/storage"
+
 
 type BaseEventModel struct {
     Id bson.ObjectId    `bson:"-" json:"eventId,omitempty"`
@@ -20,6 +22,9 @@ type BaseEventModel struct {
     //IsAllDay bool
     GroupId string      `bson:"-" json:"groupId"` // FIXME
     Meta bson.M         `bson:"-" json:"meta"`
+}
+func (self BaseEventModel) Collection() string {
+    return storage.C_eventData
 }
 func (self BaseEventModel) UniqueM() bson.M {
     return bson.M{

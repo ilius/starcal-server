@@ -1,6 +1,5 @@
 package event_lib
 
-import "scal/storage"
 
 /*
 bson/bson.go:
@@ -50,10 +49,6 @@ type CustomEventModel struct {
 }
 func (self CustomEventModel) Type() string {
     return "custom"
-}
-func (self CustomEventModel) Collection() string {
-    return storage.C_eventData
-    //return "events_custom"
 }
 
 

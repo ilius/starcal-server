@@ -1,6 +1,5 @@
 package event_lib
 
-import "scal/storage"
 
 /*
 startYear := start * scale
@@ -16,10 +15,6 @@ type LargeScaleEventModel struct {
 }
 func (self LargeScaleEventModel) Type() string {
     return "largeScale"
-}
-func (self LargeScaleEventModel) Collection() string {
-    return storage.C_eventData
-    //return "events_largeScale"
 }
 
 type LargeScaleEvent struct {

@@ -1,6 +1,5 @@
 package event_lib
 
-import "scal/storage"
 
 // WeekNumMode: "any" | "odd" | "even"
 /*
@@ -22,10 +21,6 @@ type UniversityClassEventModel struct {
 }
 func (self UniversityClassEventModel) Type() string {
     return "universityClass"
-}
-func (self UniversityClassEventModel) Collection() string {
-    return storage.C_eventData
-    //return "events_universityClass"
 }
 
 

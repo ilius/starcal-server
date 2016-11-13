@@ -1,7 +1,6 @@
 package event_lib
 
 import "scal"
-import "scal/storage"
 import . "scal/utils"
 
 type MonthlyEventModel struct {
@@ -14,10 +13,6 @@ type MonthlyEventModel struct {
 }
 func (self MonthlyEventModel) Type() string {
     return "monthly"
-}
-func (self MonthlyEventModel) Collection() string {
-    return storage.C_eventData
-    //return "events_monthly"
 }
 
 

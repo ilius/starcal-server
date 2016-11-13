@@ -1,6 +1,5 @@
 package event_lib
 
-import "scal/storage"
 
 type LifeTimeEventModel struct {
     BaseEventModel  `bson:",inline" json:",inline"`
@@ -9,10 +8,6 @@ type LifeTimeEventModel struct {
 }
 func (self LifeTimeEventModel) Type() string {
     return "lifeTime"
-}
-func (self LifeTimeEventModel) Collection() string {
-    return storage.C_eventData
-    //return "events_lifeTime"
 }
 
 
