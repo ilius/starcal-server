@@ -119,7 +119,6 @@ func init(){
 func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
-    sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
     email := r.Username
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -166,12 +165,17 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             return
             // to avoid panic!
         }
-        var groupModel *event_lib.EventGroupModel
-        db.C(storage.C_group).Find(bson.M{
-            "_id": bson.ObjectIdHex(eventModel.GroupId),
-        }).One(&groupModel)
-        if groupModel == nil {
-            SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        groupModel, err, internalErr := event_lib.LoadGroupModelByIdHex(
+            "groupId",
+            db,
+            eventModel.GroupId,
+        )
+        if err != nil {
+            if internalErr {
+                SetHttpErrorInternal(w, err)
+            } else {
+                SetHttpError(w, http.StatusBadRequest, err.Error())
+            }
             return
         }
         if groupModel.OwnerEmail != email {
@@ -234,13 +238,19 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // don't store duplicate eventModel, even if it was added by another user
     // the (underlying) eventModel does not belong to anyone
     // like git's blobs and trees
-    err = db.C(eventModel.Collection()).Find(bson.M{
-        "sha1": eventModel.Sha1,
-    }).One(&sameEventModel)
-    if err == mgo.ErrNotFound {
-        err = storage.Insert(db, eventModel)
-        if err != nil {
-            SetHttpError(w, http.StatusBadRequest, err.Error())
+    _, err = event_lib.LoadTaskEventModel(
+        db,
+        eventModel.Sha1,
+    )
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            err = storage.Insert(db, eventModel)
+            if err != nil {
+                SetHttpError(w, http.StatusBadRequest, err.Error())
+                return
+            }
+        } else {
+            SetHttpErrorInternal(w, err)
             return
         }
     }
@@ -257,7 +267,6 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
-    eventModel := event_lib.TaskEventModel{}
     // -----------------------------------------------
     email := r.Username
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -299,9 +308,10 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    err = db.C(eventModel.Collection()).Find(bson.M{
-        "sha1": eventRev.Sha1,
-    }).One(&eventModel)
+    eventModel, err := event_lib.LoadTaskEventModel(
+        db,
+        eventRev.Sha1,
+    )
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
@@ -322,7 +332,6 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
     eventModel := event_lib.TaskEventModel{} // DYNAMIC
-    sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
     email := r.Username
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -414,14 +423,20 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // don't store duplicate eventModel, even if it was added by another user
     // the (underlying) eventModel does not belong to anyone
     // like git's blobs and trees
-    err = db.C(eventModel.Collection()).Find(bson.M{
-        "sha1": eventRev.Sha1,
-    }).One(&sameEventModel)
-    if err == mgo.ErrNotFound {
-        err = storage.Insert(db, eventModel)
-        if err != nil {
-            SetHttpError(w, http.StatusBadRequest, err.Error())
-            return
+    _, err = event_lib.LoadTaskEventModel(
+        db,
+        eventRev.Sha1,
+    )
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            err = storage.Insert(db, eventModel)
+            if err != nil {
+                SetHttpError(w, http.StatusBadRequest, err.Error())
+                return
+            }
+        } else {
+            SetHttpErrorInternal(w, err)
+            return 
         }
     }
 
@@ -432,8 +447,6 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     defer r.Body.Close()
-    eventModel := event_lib.TaskEventModel{} // DYNAMIC
-    sameEventModel := event_lib.TaskEventModel{} // DYNAMIC
     // -----------------------------------------------
     email := r.Username
     //vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -487,9 +500,14 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
         return
     }
-    err = db.C(eventModel.Collection()).Find(bson.M{
-        "sha1": lastEventRev.Sha1,
-    }).One(&eventModel)
+    eventModel, err := event_lib.LoadTaskEventModel(
+        db,
+        lastEventRev.Sha1,
+    )
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return 
+    }
     {
         rawValue, ok := patchMap["timeZone"]
         if ok {
@@ -698,13 +716,19 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     // don't store duplicate eventModel, even if it was added by another user
     // the (underlying) eventModel does not belong to anyone
     // like git's blobs and trees
-    err = db.C(eventModel.Collection()).Find(bson.M{
-        "sha1": eventModel.Sha1,
-    }).One(&sameEventModel)
-    if err == mgo.ErrNotFound {
-        err = storage.Insert(db, eventModel)
-        if err != nil {
-            SetHttpError(w, http.StatusBadRequest, err.Error())
+    _, err = event_lib.LoadTaskEventModel(
+        db,
+        eventModel.Sha1,
+    )
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            err = storage.Insert(db, eventModel)
+            if err != nil {
+                SetHttpError(w, http.StatusBadRequest, err.Error())
+                return
+            }
+        } else {
+            SetHttpErrorInternal(w, err)
             return
         }
     }

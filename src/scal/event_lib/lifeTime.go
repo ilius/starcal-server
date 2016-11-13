@@ -1,5 +1,7 @@
 package event_lib
 
+import "gopkg.in/mgo.v2"
+import "scal/storage"
 
 type LifeTimeEventModel struct {
     BaseEventModel  `bson:",inline" json:",inline"`
@@ -8,6 +10,16 @@ type LifeTimeEventModel struct {
 }
 func (self LifeTimeEventModel) Type() string {
     return "lifeTime"
+}
+
+func LoadLifeTimeEventModel(db *mgo.Database, sha1 string) (
+    *LifeTimeEventModel,
+    error,
+) {
+    model := LifeTimeEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
 }
 
 

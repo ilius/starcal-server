@@ -1,5 +1,8 @@
 package event_lib
 
+import "gopkg.in/mgo.v2"
+import "scal/storage"
+
 
 // DurationEnable is just a matter of UI
 
@@ -11,6 +14,16 @@ type AllDayTaskEventModel struct {
 }
 func (self AllDayTaskEventModel) Type() string {
     return "allDayTask"
+}
+
+func LoadAllDayTaskEventModel(db *mgo.Database, sha1 string) (
+    *AllDayTaskEventModel,
+    error,
+) {
+    model := AllDayTaskEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
 }
 
 

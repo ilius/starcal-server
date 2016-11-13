@@ -1,7 +1,9 @@
 package event_lib
 
+import "gopkg.in/mgo.v2"
 import "scal"
 import . "scal/utils"
+import "scal/storage"
 
 type MonthlyEventModel struct {
     BaseEventModel          `bson:",inline" json:",inline"`
@@ -13,6 +15,16 @@ type MonthlyEventModel struct {
 }
 func (self MonthlyEventModel) Type() string {
     return "monthly"
+}
+
+func LoadMonthlyEventModel(db *mgo.Database, sha1 string) (
+    *MonthlyEventModel,
+    error,
+) {
+    model := MonthlyEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
 }
 
 

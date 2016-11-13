@@ -193,21 +193,24 @@ func LoadEventMetaModel(
     loadGroup bool,
 ) (*EventMetaModel, error) {
     var err error
-    eventMeta := EventMetaModel{}
-    err = db.C(storage.C_eventMeta).Find(bson.M{
-        "_id": eventId,
-    }).One(&eventMeta)
+    eventMeta := EventMetaModel{
+        EventId: *eventId,
+    }
+    err = storage.Get(db, &eventMeta)
     if err != nil {
         return nil, err
     }
     if loadGroup && eventMeta.GroupId != nil {
-        groupModel := EventGroupModel{}
-        err = db.C(storage.C_group).Find(bson.M{
-            "_id": eventMeta.GroupId,
-        }).One(&groupModel)
+        // groupModel, err, internalErr
+        groupModel, err, _ := LoadGroupModelById(
+            "groupId",
+            db,
+            eventMeta.GroupId,
+        )
         if err != nil {
             return nil, err
         }
+        eventMeta.GroupModel = groupModel
     }
     return &eventMeta, nil
 }

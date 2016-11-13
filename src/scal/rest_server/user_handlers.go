@@ -372,20 +372,20 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
         return
     }
 
-    if !bson.IsObjectIdHex(attrValue) {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'defaultGroupId'")
-        return
-        // to avoid panic!
-    }
-    groupId := bson.ObjectIdHex(attrValue)
-    groupModel := event_lib.EventGroupModel{}
-    err = db.C(storage.C_group).Find(bson.M{
-        "_id": groupId,
-    }).One(&groupModel)
+    groupModel, err, internalErr := event_lib.LoadGroupModelByIdHex(
+        "defaultGroupId",
+        db,
+        attrValue,
+    )
     if err != nil {
-        SetHttpError(w, http.StatusBadRequest, "invalid 'defaultGroupId'")
-        return
+        if internalErr {
+            SetHttpErrorInternal(w, err)
+        } else {
+            SetHttpError(w, http.StatusBadRequest, err.Error())
+        }
     }
+    groupId := groupModel.Id
+
     if groupModel.OwnerEmail != email {
         SetHttpError(w, http.StatusBadRequest, "invalid 'defaultGroupId'")
         return

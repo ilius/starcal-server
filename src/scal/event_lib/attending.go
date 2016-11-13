@@ -44,16 +44,14 @@ func LoadEventAttendingModel(
     eventId bson.ObjectId,
     email string,
 ) (EventAttendingModel, error) {
-    attendingModel := EventAttendingModel{}
-    err := db.C(storage.C_attending).Find(bson.M{
-        "eventId": eventId,
-        "email": email,
-    }).One(&attendingModel)
+    attendingModel := EventAttendingModel{
+        EventId: eventId,
+        Email: email,
+    }
+    err := storage.Get(db, &attendingModel)
     if err == mgo.ErrNotFound {
-        attendingModel.EventId = eventId
-        attendingModel.Email = email
         attendingModel.Attending = UNKNOWN
-        //attendingModel.ModifiedTime = time.Now()
+        attendingModel.ModifiedTime = time.Now()
         err = nil
     }
     if err != nil {

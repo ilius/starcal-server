@@ -1,7 +1,9 @@
 package event_lib
 
+import "gopkg.in/mgo.v2"
 import "scal"
 import . "scal/utils"
+import "scal/storage"
 
 type UniversityExamEventModel struct {
     BaseEventModel          `bson:",inline" json:",inline"`
@@ -12,6 +14,16 @@ type UniversityExamEventModel struct {
 }
 func (self UniversityExamEventModel) Type() string {
     return "universityExam"
+}
+
+func LoadUniversityExamEventModel(db *mgo.Database, sha1 string) (
+    *UniversityExamEventModel,
+    error,
+) {
+    model := UniversityExamEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
 }
 
 

@@ -1,5 +1,7 @@
 package event_lib
 
+import "gopkg.in/mgo.v2"
+import "scal/storage"
 
 /*
 bson/bson.go:
@@ -51,6 +53,16 @@ func (self CustomEventModel) Type() string {
     return "custom"
 }
 
+
+func LoadCustomEventModel(db *mgo.Database, sha1 string) (
+    *CustomEventModel,
+    error,
+) {
+    model := CustomEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
+}
 
 // Modular mode:
 type EventRule interface {

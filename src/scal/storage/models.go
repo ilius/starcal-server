@@ -1,6 +1,8 @@
 package storage
 
 import (
+    //"log"
+
     "gopkg.in/mgo.v2"
     "gopkg.in/mgo.v2/bson"
 )
@@ -40,4 +42,9 @@ func Remove(db *mgo.Database, model hasCollectionUniqueM) error {
 }
 
 
+func Get(db *mgo.Database, model hasCollectionUniqueM) error {
+    return db.C(model.Collection()).Find(
+        model.UniqueM(),
+    ).One(model)
+}
 

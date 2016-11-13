@@ -1,5 +1,8 @@
 package event_lib
 
+import "errors"
+
+import "gopkg.in/mgo.v2"
 import "gopkg.in/mgo.v2/bson"
 
 import "scal/storage"
@@ -40,5 +43,57 @@ func (self EventGroupModel) CanRead(email string) bool {
         }
     }
     return false
+}
+
+
+func LoadGroupModelById(
+    attrName string,
+    db *mgo.Database,
+    groupId *bson.ObjectId,
+) (
+    groupModel *EventGroupModel,
+    err error,
+    internalErr bool,
+) {
+    if groupId == nil {
+        err = errors.New("invalid '" + attrName + "'")
+        return
+    }
+    groupModel = &EventGroupModel{
+        Id: *groupId,
+    }
+    err = storage.Get(db, groupModel)
+    if err != nil {
+        if err == mgo.ErrNotFound {
+            err = errors.New("invalid '" + attrName + "'")
+        } else {
+            internalErr = true
+        }
+    }
+    return
+}
+
+func LoadGroupModelByIdHex(
+    attrName string,
+    db *mgo.Database,
+    groupIdHex string,
+) (
+    groupModel *EventGroupModel,
+    err error,
+    internalErr bool,
+) {
+    if groupIdHex == "" {
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {// to avoid panic!
+        err = errors.New("invalid '" + attrName + "'")
+        return
+    }
+    groupId := bson.ObjectIdHex(groupIdHex)
+    return LoadGroupModelById(
+        attrName,
+        db,
+        &groupId,
+    )
 }
 

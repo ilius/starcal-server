@@ -1,5 +1,7 @@
 package event_lib
 
+import "gopkg.in/mgo.v2"
+import "scal/storage"
 
 // WeekNumMode: "any" | "odd" | "even"
 /*
@@ -21,6 +23,16 @@ type UniversityClassEventModel struct {
 }
 func (self UniversityClassEventModel) Type() string {
     return "universityClass"
+}
+
+func LoadUniversityClassEventModel(db *mgo.Database, sha1 string) (
+    *UniversityClassEventModel,
+    error,
+) {
+    model := UniversityClassEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
 }
 
 

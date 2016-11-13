@@ -2,7 +2,6 @@ package event_lib
 
 import "time"
 import "fmt"
-//import "errors"
 import "gopkg.in/mgo.v2/bson"
 
 import "scal/cal_types"
@@ -28,10 +27,9 @@ func (self BaseEventModel) Collection() string {
 }
 func (self BaseEventModel) UniqueM() bson.M {
     return bson.M{
-        "_id": self.Id,
+        "sha1": self.Sha1,
     }
 }
-
 
 
 

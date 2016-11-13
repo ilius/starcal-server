@@ -1,5 +1,7 @@
 package event_lib
 
+import "gopkg.in/mgo.v2"
+import "scal/storage"
 
 type DailyNoteEventModel struct {
     BaseEventModel  `bson:",inline" json:",inline"`
@@ -8,6 +10,17 @@ type DailyNoteEventModel struct {
 func (self DailyNoteEventModel) Type() string {
     return "dailyNote"
 }
+
+func LoadDailyNoteEventModel(db *mgo.Database, sha1 string) (
+    *DailyNoteEventModel,
+    error,
+) {
+    model := DailyNoteEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
+}
+
 
 type DailyNoteEvent struct {
     BaseEvent
@@ -19,7 +32,6 @@ func (self DailyNoteEvent) Type() string {
 func (self DailyNoteEvent) Jd() int {
     return self.jd
 }
-
 
 
 func (self DailyNoteEvent) Model() DailyNoteEventModel {

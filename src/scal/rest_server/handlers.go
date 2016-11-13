@@ -301,10 +301,10 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         // to avoid panic!
     }
     newGroupId := bson.ObjectIdHex(newGroupIdHex)
-    newGroupModel := event_lib.EventGroupModel{}
-    err = db.C(storage.C_group).Find(bson.M{
-        "_id": newGroupId,
-    }).One(&newGroupModel)
+    newGroupModel := event_lib.EventGroupModel{
+        Id: newGroupId,
+    }
+    err = storage.Get(db, &newGroupModel)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return

@@ -1,5 +1,7 @@
 package event_lib
 
+import "gopkg.in/mgo.v2"
+import "scal/storage"
 
 /*
 startYear := start * scale
@@ -15,6 +17,16 @@ type LargeScaleEventModel struct {
 }
 func (self LargeScaleEventModel) Type() string {
     return "largeScale"
+}
+
+func LoadLargeScaleEventModel(db *mgo.Database, sha1 string) (
+    *LargeScaleEventModel,
+    error,
+) {
+    model := LargeScaleEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
 }
 
 type LargeScaleEvent struct {

@@ -3,6 +3,8 @@ package event_lib
 import "time"
 import "fmt"
 import "errors"
+import "gopkg.in/mgo.v2"
+import "scal/storage"
 
 
 // DurationUnit is just a matter of UI
@@ -21,6 +23,16 @@ type TaskEventModel struct {
 }
 func (self TaskEventModel) Type() string {
     return "task"
+}
+
+func LoadTaskEventModel(db *mgo.Database, sha1 string) (
+    *TaskEventModel,
+    error,
+) {
+    model := TaskEventModel{}
+    model.Sha1 = sha1
+    err := storage.Get(db, &model)
+    return &model, err
 }
 
 
