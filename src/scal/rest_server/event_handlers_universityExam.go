@@ -295,10 +295,7 @@ func GetUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventRev := event_lib.EventRevisionModel{}
-    err = db.C(storage.C_revision).Find(bson.M{
-        "eventId": eventId,
-    }).Sort("-time").One(&eventRev)
+    eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -378,10 +375,7 @@ func UpdateUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
     /*
     // do we need the last revision? to compare or what?
-    lastEventRev := event_lib.EventRevisionModel{}
-    err = db.C(storage.C_revision).Find(bson.M{
-        "eventId": eventId,
-    }).Sort("-time").One(&lastEventRev)
+    lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -488,10 +482,7 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
 
     // do we need the last revision? to compare or what?
-    lastEventRev := event_lib.EventRevisionModel{}
-    err = db.C(storage.C_revision).Find(bson.M{
-        "eventId": eventId,
-    }).Sort("-time").One(&lastEventRev)
+    lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")

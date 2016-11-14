@@ -163,10 +163,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         return
     }
 
-    eventRev := event_lib.EventRevisionModel{}
-    err = db.C(storage.C_revision).Find(bson.M{
-        "eventId": oldEventId,
-    }).Sort("-time").One(&eventRev)
+    eventRev, err := event_lib.LoadLastRevisionModel(db, &oldEventId)
     if err != nil {
         if err == mgo.ErrNotFound {
             SetHttpError(w, http.StatusBadRequest, "event not found")
