@@ -83,6 +83,13 @@ func init() {
         Background: false,
         Sparse: false,
     })
+    db.C(C_attending).EnsureIndex(mgo.Index{
+        Key: []string{"eventId"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
     /*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
         Key: []string{"time"},
         Unique: false,
