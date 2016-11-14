@@ -434,9 +434,12 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     } else {
         cond = bson.M{
             "groupId": groupId,
-            "$or": [2]bson.M{
+            "$or": []bson.M{
                 bson.M{
                     "ownerEmail": email,
+                },
+                bson.M{
+                    "isPublic": true,
                 },
                 bson.M{
                     "accessEmails": email,// works :D
@@ -502,6 +505,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 "_id": "$_id",
                 "eventType": bson.M{"$first": "$eventType"},
                 "ownerEmail": bson.M{"$first": "$ownerEmail"},
+                "isPublic": bson.M{"$first": "$isPublic"},
                 "accessEmails": bson.M{"$first": "$accessEmails"},
                 "lastModifiedTime": bson.M{"$first": "$revision.time"},
                 "lastSha1": bson.M{"$first": "$revision.sha1"},
@@ -522,6 +526,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             {"$match": bson.M{
                 "$or": []bson.M{
                     bson.M{"ownerEmail": email},
+                    bson.M{"isPublic": true},
                     bson.M{"accessEmails": email},
                 },
             }},
@@ -536,6 +541,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
                 "_id": "$_id",
                 "eventType": bson.M{"$first": "$eventType"},
                 "ownerEmail": bson.M{"$first": "$ownerEmail"},
+                "isPublic": bson.M{"$first": "$isPublic"},
                 "accessEmails": bson.M{"$first": "$accessEmails"},
                 "lastModifiedTime": bson.M{"$first": "$revision.time"},
                 "lastSha1": bson.M{"$first": "$revision.sha1"},
@@ -654,6 +660,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
             {"$match": bson.M{
                 "$or": []bson.M{
                     bson.M{"ownerEmail": email},
+                    bson.M{"isPublic": true},
                     bson.M{"accessEmails": email},
                 },
             }},
@@ -788,6 +795,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             {"$match": bson.M{
                 "$or": []bson.M{
                     bson.M{"meta.ownerEmail": email},
+                    bson.M{"meta.isPublic": true},
                     bson.M{"meta.accessEmails": email},
                 },
             }},
