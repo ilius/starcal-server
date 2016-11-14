@@ -69,6 +69,13 @@ func init() {
         Background: false,
         Sparse: false,
     })
+    db.C(C_eventMeta).EnsureIndex(mgo.Index{
+        Key: []string{"groupId"},
+        Unique: false,
+        DropDups: false,
+        Background: false,
+        Sparse: false,
+    })
     db.C(C_attending).EnsureIndex(mgo.Index{
         Key: []string{"eventId", "email"},
         Unique: true,
