@@ -47,6 +47,44 @@ func (self EventGroupModel) CanRead(email string) bool {
     return false
 }
 
+func (self *EventGroupModel) GetAccessCond(email string) bson.M {
+    if self.CanRead(email) {
+        return bson.M{}
+    } else {
+       return bson.M{
+            "$or": []bson.M{
+                bson.M{"ownerEmail": email},
+                bson.M{"isPublic": true},
+                bson.M{"accessEmails": email},
+            },
+        }
+    }
+}
+func (self *EventGroupModel) GetLookupMetaAccessPipeline(
+    email string,
+    localField string,
+) []bson.M {
+    if self.CanRead(email) {
+        return []bson.M{}
+    } else {
+        return []bson.M{
+            {"$lookup": bson.M{
+                "from": storage.C_eventMeta,
+                "localField": localField,
+                "foreignField": "_id",
+                "as": "meta",
+            }},
+            {"$unwind": "$meta"},
+            {"$match": bson.M{
+                "$or": []bson.M{
+                    bson.M{"meta.ownerEmail": email},
+                    bson.M{"meta.isPublic": true},
+                    bson.M{"meta.accessEmails": email},
+                },
+            }},
+        }
+    }
+}
 
 func LoadGroupModelById(
     attrName string,

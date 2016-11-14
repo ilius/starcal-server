@@ -421,22 +421,9 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         //GroupId *bson.ObjectId    `bson:"groupId" json:"groupId"`
     }
 
+    cond := groupModel.GetAccessCond(email)
+    cond["groupId"] = groupId
     var results []resultModel
-    var cond bson.M
-    if groupModel.CanRead(email) {
-        cond = bson.M{
-            "groupId": groupId,
-        }
-    } else {
-        cond = bson.M{
-            "groupId": groupId,
-            "$or": []bson.M{
-                bson.M{"ownerEmail": email},
-                bson.M{"isPublic": true},
-                bson.M{"accessEmails": email},
-            },
-        }
-    }
     err = db.C(storage.C_eventMeta).Find(cond).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
@@ -477,74 +464,40 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         }
     }
 
-    var results []bson.M
-    var pipeline []bson.M
-    if groupModel.CanRead(email) {
-        pipeline = []bson.M{
-            {"$match": bson.M{
-                "groupId": groupId,
-            }},
-            {"$lookup": bson.M{
-                "from": "event_revision",
-                "localField": "_id",
-                "foreignField": "eventId",
-                "as": "revision",
-            }},
-            {"$unwind": "$revision"},
-            {"$group": bson.M{
-                "_id": "$_id",
-                "eventType": bson.M{"$first": "$eventType"},
-                "ownerEmail": bson.M{"$first": "$ownerEmail"},
-                "isPublic": bson.M{"$first": "$isPublic"},
-                "accessEmails": bson.M{"$first": "$accessEmails"},
-                "lastModifiedTime": bson.M{"$first": "$revision.time"},
-                "lastSha1": bson.M{"$first": "$revision.sha1"},
-            }},
-            {"$lookup": bson.M{
-                "from": "event_data",
-                "localField": "lastSha1",
-                "foreignField": "sha1",
-                "as": "data",
-            }},
-            {"$unwind": "$data"},
-        }
-    } else {
-        pipeline = []bson.M{
-            {"$match": bson.M{
-                "groupId": groupId,
-            }},
-            {"$match": bson.M{
-                "$or": []bson.M{
-                    bson.M{"ownerEmail": email},
-                    bson.M{"isPublic": true},
-                    bson.M{"accessEmails": email},
-                },
-            }},
-            {"$lookup": bson.M{
-                "from": "event_revision",
-                "localField": "_id",
-                "foreignField": "eventId",
-                "as": "revision",
-            }},
-            {"$unwind": "$revision"},
-            {"$group": bson.M{
-                "_id": "$_id",
-                "eventType": bson.M{"$first": "$eventType"},
-                "ownerEmail": bson.M{"$first": "$ownerEmail"},
-                "isPublic": bson.M{"$first": "$isPublic"},
-                "accessEmails": bson.M{"$first": "$accessEmails"},
-                "lastModifiedTime": bson.M{"$first": "$revision.time"},
-                "lastSha1": bson.M{"$first": "$revision.sha1"},
-            }},
-            {"$lookup": bson.M{
-                "from": "event_data",
-                "localField": "lastSha1",
-                "foreignField": "sha1",
-                "as": "data",
-            }},
-            {"$unwind": "$data"},
-        }
+    pipeline := []bson.M{
+        {"$match": bson.M{
+            "groupId": groupId,
+        }},
     }
+    aCond := groupModel.GetAccessCond(email)
+    if len(aCond) > 0 {
+        pipeline = append(pipeline, bson.M{"$match": aCond})
+    }
+    pipeline = append(pipeline, []bson.M{
+        {"$lookup": bson.M{
+            "from": "event_revision",
+            "localField": "_id",
+            "foreignField": "eventId",
+            "as": "revision",
+        }},
+        {"$unwind": "$revision"},
+        {"$group": bson.M{
+            "_id": "$_id",
+            "eventType": bson.M{"$first": "$eventType"},
+            "ownerEmail": bson.M{"$first": "$ownerEmail"},
+            "isPublic": bson.M{"$first": "$isPublic"},
+            "lastModifiedTime": bson.M{"$first": "$revision.time"},
+            "lastSha1": bson.M{"$first": "$revision.sha1"},
+        }},
+        {"$lookup": bson.M{
+            "from": "event_data",
+            "localField": "lastSha1",
+            "foreignField": "sha1",
+            "as": "data",
+        }},
+        {"$unwind": "$data"},
+    }...)
+    var results []bson.M
     err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
@@ -600,6 +553,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
             SetHttpError(w, http.StatusBadRequest, err.Error())
         }
     }
+    groupId := groupModel.Id
 
     since, err := time.Parse(time.RFC3339, sinceStr)
     if err != nil {
@@ -608,81 +562,48 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
     }
     //json.NewEncoder(w).Encode(bson.M{"sinceDateTime": since})
 
-    results := []bson.M{}
-    if groupModel.CanRead(email) {
-        err = db.C(storage.C_eventMeta).Pipe([]bson.M{
-            {"$match": bson.M{
-                "groupId": groupModel.Id,
-            }},
-            {"$lookup": bson.M{
-                "from": "event_revision",
-                "localField": "_id",
-                "foreignField": "eventId",
-                "as": "revision",
-            }},
-            {"$unwind": "$revision"},
-            {"$match": bson.M{
-                "revision.time": bson.M{
-                    "$gt": since,
-                },
-            }},
-            {"$sort": bson.M{"revision.time": -1}},
-            {"$group": bson.M{
-                "_id": "$_id",
-                "eventType": bson.M{"$first": "$eventType"},
-                "ownerEmail": bson.M{"$first": "$ownerEmail"},
-                "lastModifiedTime": bson.M{"$first": "$revision.time"},
-                "lastSha1": bson.M{"$first": "$revision.sha1"},
-            }},
-            {"$lookup": bson.M{
-                "from": "event_data",
-                "localField": "lastSha1",
-                "foreignField": "sha1",
-                "as": "data",
-            }},
-            {"$unwind": "$data"},
-        }).All(&results)
-    } else {
-        err = db.C(storage.C_eventMeta).Pipe([]bson.M{
-            {"$match": bson.M{
-                "groupId": groupModel.Id,
-            }},
-            {"$match": bson.M{
-                "$or": []bson.M{
-                    bson.M{"ownerEmail": email},
-                    bson.M{"isPublic": true},
-                    bson.M{"accessEmails": email},
-                },
-            }},
-            {"$lookup": bson.M{
-                "from": "event_revision",
-                "localField": "_id",
-                "foreignField": "eventId",
-                "as": "revision",
-            }},
-            {"$unwind": "$revision"},
-            {"$match": bson.M{
-                "revision.time": bson.M{
-                    "$gt": since,
-                },
-            }},
-            {"$sort": bson.M{"revision.time": -1}},
-            {"$group": bson.M{
-                "_id": "$_id",
-                "eventType": bson.M{"$first": "$eventType"},
-                "ownerEmail": bson.M{"$first": "$ownerEmail"},
-                "lastModifiedTime": bson.M{"$first": "$revision.time"},
-                "lastSha1": bson.M{"$first": "$revision.sha1"},
-            }},
-            {"$lookup": bson.M{
-                "from": "event_data",
-                "localField": "lastSha1",
-                "foreignField": "sha1",
-                "as": "data",
-            }},
-            {"$unwind": "$data"},
-        }).All(&results)
+    pipeline := []bson.M{
+        {"$match": bson.M{
+            "groupId": groupId,
+        }},
     }
+    aCond := groupModel.GetAccessCond(email)
+    if len(aCond) > 0 {
+        pipeline = append(pipeline, bson.M{"$match": aCond})
+    }
+    pipeline = append(pipeline, []bson.M{
+        {"$lookup": bson.M{
+            "from": "event_revision",
+            "localField": "_id",
+            "foreignField": "eventId",
+            "as": "revision",
+        }},
+        {"$unwind": "$revision"},
+        {"$match": bson.M{
+            "revision.time": bson.M{
+                "$gt": since,
+            },
+        }},
+        {"$sort": bson.M{"revision.time": -1}},
+        {"$group": bson.M{
+            "_id": "$_id",
+            "eventType": bson.M{"$first": "$eventType"},
+            "ownerEmail": bson.M{"$first": "$ownerEmail"},
+            "isPublic": bson.M{"$first": "$isPublic"},
+            "lastModifiedTime": bson.M{"$first": "$revision.time"},
+            "lastSha1": bson.M{"$first": "$revision.sha1"},
+        }},
+        {"$lookup": bson.M{
+            "from": "event_data",
+            "localField": "lastSha1",
+            "foreignField": "sha1",
+            "as": "data",
+        }},
+        {"$unwind": "$data"},
+    }...)
+
+    results := []bson.M{}
+    err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
@@ -738,64 +659,42 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             SetHttpError(w, http.StatusBadRequest, err.Error())
         }
     }
+    groupId := groupModel.Id
 
     since, err := time.Parse(time.RFC3339, sinceStr)
     if err != nil {
         SetHttpError(w, http.StatusBadRequest, err.Error())
         return
     }
-    //json.NewEncoder(w).Encode(bson.M{"sinceDateTime": since})
+
+    pipeline := []bson.M{
+        {"$match": bson.M{
+            "groupId": groupId,
+        }},
+        {"$match": bson.M{
+            "time": bson.M{
+                "$gt": since,
+            },
+        }},
+        {"$sort": bson.M{"time": -1}},
+    }
+    accessPl := groupModel.GetLookupMetaAccessPipeline(
+        email,
+        "eventId",// localField for storage.C_eventMetaChangeLog
+    )
+    if len(accessPl) > 0 {
+        pipeline = append(pipeline, accessPl...)
+    }
+    pipeline = append(pipeline, bson.M{
+        "$group": bson.M{
+            "_id": "$eventId",
+            "time": bson.M{"$first": "$time"},
+            "groupId": bson.M{"$first": "$groupId"},
+        },
+    })
 
     results := []bson.M{}
-    if groupModel.CanRead(email) {
-        err = db.C(storage.C_eventMetaChangeLog).Pipe([]bson.M{
-            {"$match": bson.M{
-                "groupId": groupModel.Id,
-            }},
-            {"$match": bson.M{
-                "time": bson.M{
-                    "$gt": since,
-                },
-            }},
-            {"$sort": bson.M{"time": -1}},
-            {"$group": bson.M{
-                "_id": "$eventId",
-                "time": bson.M{"$first": "$time"},
-                "groupId": bson.M{"$first": "$groupId"},
-            }},
-        }).All(&results)
-    } else {
-        err = db.C(storage.C_eventMeta).Pipe([]bson.M{
-            {"$match": bson.M{
-                "groupId": groupModel.Id,
-            }},
-            {"$match": bson.M{
-                "time": bson.M{
-                    "$gt": since,
-                },
-            }},
-            {"$sort": bson.M{"time": -1}},
-            {"$lookup": bson.M{
-                "from": storage.C_eventMeta,
-                "localField": "eventId",
-                "foreignField": "_id",
-                "as": "meta",
-            }},
-            {"$unwind": "$meta"},
-            {"$match": bson.M{
-                "$or": []bson.M{
-                    bson.M{"meta.ownerEmail": email},
-                    bson.M{"meta.isPublic": true},
-                    bson.M{"meta.accessEmails": email},
-                },
-            }},
-            {"$group": bson.M{
-                "_id": "$eventId",
-                "time": bson.M{"$first": "$time"},
-                "groupId": bson.M{"$first": "$groupId"},
-            }},
-        }).All(&results)
-    }
+    err = db.C(storage.C_eventMetaChangeLog).Pipe(pipeline).All(&results)
     if err != nil {
         SetHttpErrorInternal(w, err)
         return
