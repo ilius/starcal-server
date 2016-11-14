@@ -96,12 +96,8 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     var results []resultModel
     err = db.C(storage.C_group).Find(bson.M{
         "$or": []bson.M{
-            bson.M{
-                "ownerEmail": email,
-            },
-            bson.M{
-                "readAccessEmails": email,// works :D
-            },
+            bson.M{"ownerEmail": email},
+            bson.M{"readAccessEmails": email},
         },
     }).All(&results)
     if err != nil {
