@@ -435,15 +435,9 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         cond = bson.M{
             "groupId": groupId,
             "$or": []bson.M{
-                bson.M{
-                    "ownerEmail": email,
-                },
-                bson.M{
-                    "isPublic": true,
-                },
-                bson.M{
-                    "accessEmails": email,// works :D
-                },
+                bson.M{"ownerEmail": email},
+                bson.M{"isPublic": true},
+                bson.M{"accessEmails": email},
             },
         }
     }
