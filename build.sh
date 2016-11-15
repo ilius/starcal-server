@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 if [ -z $STARCAL_HOST ] ; then
     echo 'Set (and export) environment varibale `STARCAL_HOST` before running this script'
     echo 'For example: export STARCAL_HOST=localhost'
@@ -15,4 +14,4 @@ GOPATH=$PWD go install scal-lib/go-http-auth
 
 ./settings/gen.py
 GOPATH=$PWD go build -o server-$STARCAL_HOST server.go
-#GOPATH=$PWD go install scal
+rm src/scal/settings/settings.go
