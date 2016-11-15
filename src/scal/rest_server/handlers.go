@@ -31,6 +31,12 @@ func init() {
         "/event/ungrouped/",
         authenticator.Wrap(GetUngroupedEvents),
     )
+    RegisterRoute(
+        "GetMyEventList",
+        "GET",
+        "/event/my/events/",
+        authenticator.Wrap(GetMyEventList),
+    )
 }
 
 
@@ -842,5 +848,39 @@ func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     json.NewEncoder(w).Encode(bson.M{
         "events": events,
+    })
+}
+
+func GetMyEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    type resultModel struct {
+        EventId bson.ObjectId       `bson:"_id" json:"eventId"`
+        EventType string            `bson:"eventType" json:"eventType"`
+        //GroupId *bson.ObjectId    `bson:"groupId" json:"groupId"`
+    }
+
+    var results []resultModel
+    err = db.C(storage.C_eventMeta).Find(bson.M{
+        "ownerEmail": email,
+    }).All(&results)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    if results == nil {
+        results = make([]resultModel, 0)
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "events": results,
     })
 }
