@@ -424,7 +424,6 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         EventId bson.ObjectId       `bson:"_id" json:"eventId"`
         EventType string            `bson:"eventType" json:"eventType"`
         //OwnerEmail string         `bson:"ownerEmail" json:"ownerEmail"`
-        //AccessEmails []string     `bson:"accessEmails"`
         //GroupId *bson.ObjectId    `bson:"groupId" json:"groupId"`
     }
 
