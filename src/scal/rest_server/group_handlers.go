@@ -3,6 +3,7 @@ package rest_server
 import (
     "fmt"
     "time"
+    "strconv"
     "net"
     "net/http"
     "encoding/json"
@@ -75,6 +76,12 @@ func init() {
         "GET",
         "/event/groups/{groupId}/moved-events/{sinceDateTime}/",
         authenticator.Wrap(GetGroupMovedEvents),
+    )
+    RegisterRoute(
+        "GetGroupLastCreatedEvents",
+        "GET",
+        "/event/groups/{groupId}/last-created-events/{count}/",
+        authenticator.Wrap(GetGroupLastCreatedEvents),
     )
 }
 
@@ -703,6 +710,107 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "groupId": groupModel.Id,
         "since_datetime": since,
         "moved_events": results,
+    })
+
+}
+
+func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    //groupId := ObjectIdFromURL(w, r, "groupId", 2)
+    //if groupId==nil { return }
+    parts := SplitURL(r.URL)
+    if len(parts) < 3 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    groupIdHex := parts[len(parts)-3]
+    countStr := parts[len(parts)-1] // int string
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    if groupIdHex == "" {
+        SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
+        return
+    }
+    if !bson.IsObjectIdHex(groupIdHex) {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
+        return
+        // to avoid panic!
+    }
+    groupModel, err, internalErr := event_lib.LoadGroupModelByIdHex(
+        "groupId",
+        db,
+        groupIdHex,
+    )
+    if err != nil {
+        if internalErr {
+            SetHttpErrorInternal(w, err)
+        } else {
+            SetHttpError(w, http.StatusBadRequest, err.Error())
+        }
+    }
+    groupId := groupModel.Id
+
+    count, err := strconv.ParseInt(countStr, 10, 0)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'count', must be integer")
+        return
+    }
+
+    pipeline := []bson.M{
+        {"$match": bson.M{
+            "groupId": groupId,
+        }},
+    }
+    aCond := groupModel.GetAccessCond(email)
+    if len(aCond) > 0 {
+        pipeline = append(pipeline, bson.M{"$match": aCond})
+    }
+    pipeline = append(pipeline, []bson.M{
+        {"$sort": bson.M{"creationTime": -1}},
+        {"$limit": count},
+        {"$lookup": bson.M{
+            "from": storage.C_revision,
+            "localField": "_id",
+            "foreignField": "eventId",
+            "as": "revision",
+        }},
+        {"$unwind": "$revision"},
+        {"$group": bson.M{
+            "_id": "$_id",
+            "eventType": bson.M{"$first": "$eventType"},
+            "ownerEmail": bson.M{"$first": "$ownerEmail"},
+            "isPublic": bson.M{"$first": "$isPublic"},
+            "creationTime": bson.M{"$first": "$creationTime"},
+            "lastModifiedTime": bson.M{"$first": "$revision.time"},
+            "lastSha1": bson.M{"$first": "$revision.sha1"},
+        }},
+        {"$lookup": bson.M{
+            "from": storage.C_eventData,
+            "localField": "lastSha1",
+            "foreignField": "sha1",
+            "as": "data",
+        }},
+        {"$unwind": "$data"},
+        {"$sort": bson.M{"creationTime": -1}},
+    }...)
+
+    results := []bson.M{}
+    err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "groupId": groupModel.Id,
+        "max_count": count,
+        "last_created_events": results,
     })
 
 }
