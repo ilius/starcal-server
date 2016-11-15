@@ -3,6 +3,7 @@ package rest_server
 import (
     "reflect"
     "fmt"
+    "strconv"
     "time"
     "net"
     "net/http"
@@ -42,6 +43,12 @@ func init() {
         "GET",
         "/event/my/events-full/",
         authenticator.Wrap(GetMyEventsFull),
+    )
+    RegisterRoute(
+        "GetMyLastCreatedEvents",
+        "GET",
+        "/event/my/last-created-events/{count}/",
+        authenticator.Wrap(GetMyLastCreatedEvents),
     )
 }
 
@@ -952,3 +959,78 @@ func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 
+func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    parts := SplitURL(r.URL)
+    if len(parts) < 2 {
+        SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
+        return
+    }
+    countStr := parts[len(parts)-1] // int string
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    count, err := strconv.ParseInt(countStr, 10, 0)
+    if err != nil {
+        SetHttpError(w, http.StatusBadRequest, "invalid 'count', must be integer")
+        return
+    }
+
+    pipeline := []bson.M{
+        {"$match": bson.M{
+            "ownerEmail": email,
+        }},
+        {"$sort": bson.M{"creationTime": -1}},
+        {"$limit": count},
+        {"$lookup": bson.M{
+            "from": storage.C_revision,
+            "localField": "_id",
+            "foreignField": "eventId",
+            "as": "revision",
+        }},
+        {"$unwind": "$revision"},
+        {"$group": bson.M{
+            "_id": "$_id",
+            "eventType": bson.M{"$first": "$eventType"},
+            "groupId": bson.M{"$first": "$groupId"},
+            "meta": bson.M{
+                "$first": bson.M{
+                    "ownerEmail": "$ownerEmail",
+                    "isPublic": "$isPublic",
+                    "creationTime": "$creationTime",
+                    "accessEmails": "$accessEmails",
+                    "publicJoinOpen": "$publicJoinOpen",
+                    "maxAttendees": "$maxAttendees",
+                },
+            },
+            "lastModifiedTime": bson.M{"$first": "$revision.time"},
+            "lastSha1": bson.M{"$first": "$revision.sha1"},
+        }},
+        {"$lookup": bson.M{
+            "from": storage.C_eventData,
+            "localField": "lastSha1",
+            "foreignField": "sha1",
+            "as": "data",
+        }},
+        {"$unwind": "$data"},
+        {"$sort": bson.M{"meta.creationTime": -1}},
+    }
+
+    results := []bson.M{}
+    err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "max_count": count,
+        "last_created_events": results,
+    })
+}
