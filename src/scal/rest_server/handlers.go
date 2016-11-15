@@ -37,6 +37,12 @@ func init() {
         "/event/my/events/",
         authenticator.Wrap(GetMyEventList),
     )
+    RegisterRoute(
+        "GetMyEventsFull",
+        "GET",
+        "/event/my/events-full/",
+        authenticator.Wrap(GetMyEventsFull),
+    )
 }
 
 
@@ -884,3 +890,65 @@ func GetMyEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         "events": results,
     })
 }
+
+func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+    defer r.Body.Close()
+    email := r.Username
+    // -----------------------------------------------
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var err error
+    db, err := storage.GetDB()
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+
+    pipeline := []bson.M{
+        {"$match": bson.M{
+            "ownerEmail": email,
+        }},
+        {"$lookup": bson.M{
+            "from": storage.C_revision,
+            "localField": "_id",
+            "foreignField": "eventId",
+            "as": "revision",
+        }},
+        {"$unwind": "$revision"},
+        {"$group": bson.M{
+            "_id": "$_id",
+            "eventType": bson.M{"$first": "$eventType"},
+            "groupId": bson.M{"$first": "$groupId"},
+            "meta": bson.M{
+                "$first": bson.M{
+                    "ownerEmail": "$ownerEmail",
+                    "isPublic": "$isPublic",
+                    "creationTime": "$creationTime",
+                    "accessEmails": "$accessEmails",
+                    "publicJoinOpen": "$publicJoinOpen",
+                    "maxAttendees": "$maxAttendees",
+                },
+            },
+            "lastModifiedTime": bson.M{"$first": "$revision.time"},
+            "lastSha1": bson.M{"$first": "$revision.sha1"},
+        }},
+        {"$lookup": bson.M{
+            "from": storage.C_eventData,
+            "localField": "lastSha1",
+            "foreignField": "sha1",
+            "as": "data",
+        }},
+        {"$unwind": "$data"},
+    }
+
+    results := []bson.M{}
+    err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
+    if err != nil {
+        SetHttpErrorInternal(w, err)
+        return
+    }
+    json.NewEncoder(w).Encode(bson.M{
+        "events_full": results,
+    })
+}
+
+
