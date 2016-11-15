@@ -491,8 +491,13 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
         {"$group": bson.M{
             "_id": "$_id",
             "eventType": bson.M{"$first": "$eventType"},
-            "ownerEmail": bson.M{"$first": "$ownerEmail"},
-            "isPublic": bson.M{"$first": "$isPublic"},
+            "meta": bson.M{
+                "$first": bson.M{
+                    "ownerEmail": "$ownerEmail",
+                    "isPublic": "$isPublic",
+                    "creationTime": "$creationTime",
+                },
+            },
             "lastModifiedTime": bson.M{"$first": "$revision.time"},
             "lastSha1": bson.M{"$first": "$revision.sha1"},
         }},
@@ -595,8 +600,13 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
         {"$group": bson.M{
             "_id": "$_id",
             "eventType": bson.M{"$first": "$eventType"},
-            "ownerEmail": bson.M{"$first": "$ownerEmail"},
-            "isPublic": bson.M{"$first": "$isPublic"},
+            "meta": bson.M{
+                "$first": bson.M{
+                    "ownerEmail": "$ownerEmail",
+                    "isPublic": "$isPublic",
+                    "creationTime": "$creationTime",
+                },
+            },
             "lastModifiedTime": bson.M{"$first": "$revision.time"},
             "lastSha1": bson.M{"$first": "$revision.sha1"},
         }},
@@ -785,9 +795,13 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
         {"$group": bson.M{
             "_id": "$_id",
             "eventType": bson.M{"$first": "$eventType"},
-            "ownerEmail": bson.M{"$first": "$ownerEmail"},
-            "isPublic": bson.M{"$first": "$isPublic"},
-            "creationTime": bson.M{"$first": "$creationTime"},
+            "meta": bson.M{
+                "$first": bson.M{
+                    "ownerEmail": "$ownerEmail",
+                    "isPublic": "$isPublic",
+                    "creationTime": "$creationTime",
+                },
+            },
             "lastModifiedTime": bson.M{"$first": "$revision.time"},
             "lastSha1": bson.M{"$first": "$revision.sha1"},
         }},
@@ -798,7 +812,7 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
             "as": "data",
         }},
         {"$unwind": "$data"},
-        {"$sort": bson.M{"creationTime": -1}},
+        {"$sort": bson.M{"meta.creationTime": -1}},
     }...)
 
     results := []bson.M{}
