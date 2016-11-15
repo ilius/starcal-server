@@ -482,7 +482,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
     }
     pipeline = append(pipeline, []bson.M{
         {"$lookup": bson.M{
-            "from": "event_revision",
+            "from": storage.C_revision,
             "localField": "_id",
             "foreignField": "eventId",
             "as": "revision",
@@ -497,7 +497,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
             "lastSha1": bson.M{"$first": "$revision.sha1"},
         }},
         {"$lookup": bson.M{
-            "from": "event_data",
+            "from": storage.C_eventData,
             "localField": "lastSha1",
             "foreignField": "sha1",
             "as": "data",
@@ -580,7 +580,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
     }
     pipeline = append(pipeline, []bson.M{
         {"$lookup": bson.M{
-            "from": "event_revision",
+            "from": storage.C_revision,
             "localField": "_id",
             "foreignField": "eventId",
             "as": "revision",
@@ -601,7 +601,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
             "lastSha1": bson.M{"$first": "$revision.sha1"},
         }},
         {"$lookup": bson.M{
-            "from": "event_data",
+            "from": storage.C_eventData,
             "localField": "lastSha1",
             "foreignField": "sha1",
             "as": "data",
