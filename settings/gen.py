@@ -84,7 +84,10 @@ goSettingsFile = join(goSettingsDir, "settings.go")
 if not isdir(goSettingsDir):
     os.mkdir(goSettingsDir)
 with open(goSettingsFile, "w") as goFp:
-    goFp.write("package settings\n%s" % varCode)
+    goFp.write("""// This is an auto-generated code. DO NOT MODIFY
+package settings
+
+%s""" % varCode)
 
 
 
