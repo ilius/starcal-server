@@ -16,11 +16,12 @@ srcDir = join(rootDir, "src")
 
 hostName = os.getenv("STARCAL_HOST")
 print("Generating settings based on: STARCAL_HOST = %r" % hostName)
-#if not hostName:
-#    raise ValueError(
-#        "Set (and export) environment varibale `STARCAL_HOST` " +
-#        "before running this script"
-#    )
+if not hostName:
+    raise ValueError(
+        "Set (and export) environment varibale `STARCAL_HOST` " +
+        "before running this script\n" +
+        "For example: export STARCAL_HOST=localhost",
+    )
 
 defaultsDict = {
     key: value for key, value in
@@ -30,34 +31,33 @@ defaultsDict = {
 
 settingsDict = defaultsDict.copy()
 
-if hostName:
-    hostModulePath = join(myDir, "hosts", hostName + ".py")
-    if isfile(hostModulePath):
-        with open(hostModulePath, encoding="utf-8") as hostFp:
-            hostModuleCode = hostFp.read()
-        hostGlobals = {}
-        exec(hostModuleCode, hostGlobals)
-        # exec(object[, globals[, locals]])
-        # If only globals is given, locals defaults to it
-        for param, value in hostGlobals.items():
-            if param.startswith("_"):
-                continue
-            if param.upper() != param:
-                print("skipping non-uppercase parameter %r" % param)
-                continue
-            if param not in defaultsDict:
-                print("skipping unknown parameter %r" % param)
-                continue
-            valueType = type(defaultsDict[param])
-            if type(value) != valueType:
-                raise ValueError(
-                    "invalid type for parameter %r, " % param +
-                    "must be %s, " % valueType.__name__ +
-                    "not %s" % type(value).__name__
-                )
-        settingsDict[param] = value
-    else:
-        print('No settings file found for host %r' % hostName)
+hostModulePath = join(myDir, "hosts", hostName + ".py")
+if isfile(hostModulePath):
+    with open(hostModulePath, encoding="utf-8") as hostFp:
+        hostModuleCode = hostFp.read()
+    hostGlobals = {}
+    exec(hostModuleCode, hostGlobals)
+    # exec(object[, globals[, locals]])
+    # If only globals is given, locals defaults to it
+    for param, value in hostGlobals.items():
+        if param.startswith("_"):
+            continue
+        if param.upper() != param:
+            print("skipping non-uppercase parameter %r" % param)
+            continue
+        if param not in defaultsDict:
+            print("skipping unknown parameter %r" % param)
+            continue
+        valueType = type(defaultsDict[param])
+        if type(value) != valueType:
+            raise ValueError(
+                "invalid type for parameter %r, " % param +
+                "must be %s, " % valueType.__name__ +
+                "not %s" % type(value).__name__
+            )
+    settingsDict[param] = value
+else:
+    print('No settings file found for host %r' % hostName)
 
 
 hostOS = settingsDict.pop("OS")
