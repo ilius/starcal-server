@@ -12,6 +12,5 @@ GOPATH=$PWD go install golang.org/x/crypto/bcrypt
 GOPATH=$PWD go install golang.org/x/net/context
 GOPATH=$PWD go install scal-lib/go-http-auth
 
-./settings/gen.py
-GOPATH=$PWD go build -o server-$STARCAL_HOST server.go
-rm src/scal/settings/settings.go
+./settings/build.py
+

@@ -4,6 +4,7 @@
 import os
 from os.path import join, isfile, isdir, dirname, abspath
 import json
+import subprocess
 from pprint import pprint
 
 import defaults
@@ -58,6 +59,10 @@ if hostName:
     else:
         print('No settings file found for host %r' % hostName)
 
+
+hostOS = settingsDict.pop("OS")
+hostArch = settingsDict.pop("ARCH")
+
 #pprint(settingsDict)
 
 lines = ["const ("]
@@ -76,8 +81,6 @@ varCode = "\n".join(lines)
 
 #print(varCode)
 
-isdir
-
 goSettingsDir = join(srcDir, "scal", "settings")
 goSettingsFile = join(goSettingsDir, "settings.go")
 
@@ -90,6 +93,19 @@ package settings
 %s""" % varCode)
 
 
+if hostOS:
+    os.putenv("GOOS", hostOS)
+if hostArch:
+    os.putenv("GOARCH", hostArch)
 
+os.putenv("GOPATH", rootDir)
+subprocess.call([
+    "go",
+    "build",
+    "-o", "server-%s" % hostName,
+    "server.go",
+])
+
+os.remove(goSettingsFile)
 
 
