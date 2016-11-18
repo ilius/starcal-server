@@ -4,72 +4,70 @@ import "gopkg.in/mgo.v2"
 import "scal/storage"
 
 type YearlyEventModel struct {
-    BaseEventModel          `bson:",inline" json:",inline"`
-    Month int               `bson:"month" json:"month"`
-    Day int                 `bson:"day" json:"day"`
-    StartYear int           `bson:"startYear" json:"startYear"`
-    StartYearEnable bool    `bson:"startYearEnable" json:"startYearEnable"`
+	BaseEventModel  `bson:",inline" json:",inline"`
+	Month           int  `bson:"month" json:"month"`
+	Day             int  `bson:"day" json:"day"`
+	StartYear       int  `bson:"startYear" json:"startYear"`
+	StartYearEnable bool `bson:"startYearEnable" json:"startYearEnable"`
 }
+
 func (self YearlyEventModel) Type() string {
-    return "yearly"
+	return "yearly"
 }
 
 func LoadYearlyEventModel(db *mgo.Database, sha1 string) (
-    *YearlyEventModel,
-    error,
+	*YearlyEventModel,
+	error,
 ) {
-    model := YearlyEventModel{}
-    model.Sha1 = sha1
-    err := storage.Get(db, &model)
-    return &model, err
+	model := YearlyEventModel{}
+	model.Sha1 = sha1
+	err := storage.Get(db, &model)
+	return &model, err
 }
-
 
 type YearlyEvent struct {
-    BaseEvent
-    month int
-    day int
-    startYear int
-    startYearEnable bool
+	BaseEvent
+	month           int
+	day             int
+	startYear       int
+	startYearEnable bool
 }
+
 func (self YearlyEvent) Type() string {
-    return "yearly"
+	return "yearly"
 }
 func (self YearlyEvent) Month() int {
-    return self.month
+	return self.month
 }
 func (self YearlyEvent) Day() int {
-    return self.day
+	return self.day
 }
 func (self YearlyEvent) StartYear() int {
-    return self.startYear
+	return self.startYear
 }
 func (self YearlyEvent) StartYearEnable() bool {
-    return self.startYearEnable
+	return self.startYearEnable
 }
-
 
 func (self YearlyEvent) Model() YearlyEventModel {
-    return YearlyEventModel{
-        BaseEventModel: self.BaseModel(),
-        Month: self.month,
-        Day: self.day,
-        StartYear: self.startYear,
-        StartYearEnable: self.startYearEnable,
-    }
+	return YearlyEventModel{
+		BaseEventModel:  self.BaseModel(),
+		Month:           self.month,
+		Day:             self.day,
+		StartYear:       self.startYear,
+		StartYearEnable: self.startYearEnable,
+	}
 }
 func (self YearlyEventModel) GetEvent() (YearlyEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent()
-    if err != nil {
-        return YearlyEvent{}, err
-    }
-    return YearlyEvent{
-        BaseEvent: baseEvent,
-        month: self.Month,
-        day: self.Day,
-        startYear: self.StartYear,
-        startYearEnable: self.StartYearEnable,
-    }, nil
+	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+	if err != nil {
+		return YearlyEvent{}, err
+	}
+	return YearlyEvent{
+		BaseEvent:       baseEvent,
+		month:           self.Month,
+		day:             self.Day,
+		startYear:       self.StartYear,
+		startYearEnable: self.StartYearEnable,
+	}, nil
 }
-
-

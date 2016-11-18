@@ -37,46 +37,44 @@ cycleLen        map                 keys: days(int), extraTime(HMS)
 
 */
 
-
 type EventRuleModel struct {
-    Name string
-    Value string
+	Name  string
+	Value string
 }
 
 type EventRuleModelList []EventRuleModel
 
 type CustomEventModel struct {
-    BaseEventModel              `bson:",inline" json:",inline"`
-    Rules EventRuleModelList    `bson:"rules" json:"rules"`
-}
-func (self CustomEventModel) Type() string {
-    return "custom"
+	BaseEventModel `bson:",inline" json:",inline"`
+	Rules          EventRuleModelList `bson:"rules" json:"rules"`
 }
 
+func (self CustomEventModel) Type() string {
+	return "custom"
+}
 
 func LoadCustomEventModel(db *mgo.Database, sha1 string) (
-    *CustomEventModel,
-    error,
+	*CustomEventModel,
+	error,
 ) {
-    model := CustomEventModel{}
-    model.Sha1 = sha1
-    err := storage.Get(db, &model)
-    return &model, err
+	model := CustomEventModel{}
+	model.Sha1 = sha1
+	err := storage.Get(db, &model)
+	return &model, err
 }
 
 // Modular mode:
 type EventRule interface {
-    Name() string
-    Value() interface{}
-    ValueString() string
-    Model() EventRuleModel
+	Name() string
+	Value() interface{}
+	ValueString() string
+	Model() EventRuleModel
 }
 
 type EventRuleList []EventRule
+
 //func (rules EventRuleList) Model() EventRuleModelList {
 //}
-
-
 
 /*
 

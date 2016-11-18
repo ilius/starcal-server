@@ -6,91 +6,83 @@ import . "scal/utils"
 import "scal/storage"
 
 type WeeklyEventModel struct {
-    BaseEventModel          `bson:",inline" json:",inline"`
-    StartJd int             `bson:"startJd" json:"startJd"`
-    EndJd int               `bson:"endJd" json:"endJd"`
-    CycleWeeks int          `bson:"cycleWeeks" json:"cycleWeeks"`
-    DayStartSeconds int     `bson:"dayStartSeconds" json:"dayStartSeconds"`
-    DayEndSeconds int       `bson:"dayEndSeconds" json:"dayEndSeconds"`
+	BaseEventModel  `bson:",inline" json:",inline"`
+	StartJd         int `bson:"startJd" json:"startJd"`
+	EndJd           int `bson:"endJd" json:"endJd"`
+	CycleWeeks      int `bson:"cycleWeeks" json:"cycleWeeks"`
+	DayStartSeconds int `bson:"dayStartSeconds" json:"dayStartSeconds"`
+	DayEndSeconds   int `bson:"dayEndSeconds" json:"dayEndSeconds"`
 }
+
 func (self WeeklyEventModel) Type() string {
-    return "weekly"
+	return "weekly"
 }
 
 func LoadWeeklyEventModel(db *mgo.Database, sha1 string) (
-    *WeeklyEventModel,
-    error,
+	*WeeklyEventModel,
+	error,
 ) {
-    model := WeeklyEventModel{}
-    model.Sha1 = sha1
-    err := storage.Get(db, &model)
-    return &model, err
+	model := WeeklyEventModel{}
+	model.Sha1 = sha1
+	err := storage.Get(db, &model)
+	return &model, err
 }
-
 
 type WeeklyEvent struct {
-    BaseEvent
-    startJd int
-    endJd int
-    cycleWeeks int
-    dayStartSeconds int
-    dayEndSeconds int
+	BaseEvent
+	startJd         int
+	endJd           int
+	cycleWeeks      int
+	dayStartSeconds int
+	dayEndSeconds   int
 }
+
 func (self WeeklyEvent) Type() string {
-    return "weekly"
+	return "weekly"
 }
 func (self WeeklyEvent) StartJd() int {
-    return self.startJd
+	return self.startJd
 }
 func (self WeeklyEvent) EndJd() int {
-    return self.endJd
+	return self.endJd
 }
 func (self WeeklyEvent) CycleWeeks() int {
-    return self.cycleWeeks
+	return self.cycleWeeks
 }
 func (self WeeklyEvent) DayStartSeconds() int {
-    return self.dayStartSeconds
+	return self.dayStartSeconds
 }
 func (self WeeklyEvent) DayEndSeconds() int {
-    return self.dayEndSeconds
+	return self.dayEndSeconds
 }
 func (self WeeklyEvent) DayStartHMS() scal.HMS {
-    return GetHmsBySeconds(self.dayStartSeconds)
+	return GetHmsBySeconds(self.dayStartSeconds)
 }
 func (self WeeklyEvent) DayEndHMS() scal.HMS {
-    return GetHmsBySeconds(self.dayEndSeconds)
+	return GetHmsBySeconds(self.dayEndSeconds)
 }
-
-
-
-
 
 func (self WeeklyEvent) Model() WeeklyEventModel {
-    return WeeklyEventModel{
-        BaseEventModel: self.BaseModel(),
-        StartJd: self.startJd,
-        EndJd: self.endJd,
-        CycleWeeks: self.cycleWeeks,
-        DayStartSeconds: self.dayStartSeconds,
-        DayEndSeconds: self.dayEndSeconds,
-    }
+	return WeeklyEventModel{
+		BaseEventModel:  self.BaseModel(),
+		StartJd:         self.startJd,
+		EndJd:           self.endJd,
+		CycleWeeks:      self.cycleWeeks,
+		DayStartSeconds: self.dayStartSeconds,
+		DayEndSeconds:   self.dayEndSeconds,
+	}
 }
 func (self WeeklyEventModel) GetEvent() (WeeklyEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent()
-    if err != nil {
-        return WeeklyEvent{}, err
-    }
-    return WeeklyEvent{
-        BaseEvent: baseEvent,
-        startJd: self.StartJd,
-        endJd: self.EndJd,
-        cycleWeeks: self.CycleWeeks,
-        dayStartSeconds: self.DayStartSeconds,
-        dayEndSeconds: self.DayEndSeconds,
-    }, nil
+	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+	if err != nil {
+		return WeeklyEvent{}, err
+	}
+	return WeeklyEvent{
+		BaseEvent:       baseEvent,
+		startJd:         self.StartJd,
+		endJd:           self.EndJd,
+		cycleWeeks:      self.CycleWeeks,
+		dayStartSeconds: self.DayStartSeconds,
+		dayEndSeconds:   self.DayEndSeconds,
+	}, nil
 }
-
-
-
-
-

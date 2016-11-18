@@ -1,50 +1,48 @@
 package storage
 
 import (
-    //"log"
+	//"log"
 
-    "gopkg.in/mgo.v2"
-    "gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type hasCollection interface {
-    Collection() string
+	Collection() string
 }
 
 type hasCollectionUniqueM interface {
-    Collection() string
-    UniqueM() bson.M
+	Collection() string
+	UniqueM() bson.M
 }
 
 func Insert(db *mgo.Database, model hasCollection) error {
-    return db.C(model.Collection()).Insert(model)
+	return db.C(model.Collection()).Insert(model)
 }
 
 func Update(db *mgo.Database, model hasCollectionUniqueM) error {
-    return db.C(model.Collection()).Update(
-        model.UniqueM(),
-        model,
-    )
+	return db.C(model.Collection()).Update(
+		model.UniqueM(),
+		model,
+	)
 }
 
 func Upsert(db *mgo.Database, model hasCollectionUniqueM) error {
-    _, err := db.C(model.Collection()).Upsert(
-        model.UniqueM(),
-        model,
-    )
-    return err
+	_, err := db.C(model.Collection()).Upsert(
+		model.UniqueM(),
+		model,
+	)
+	return err
 }
 
 func Remove(db *mgo.Database, model hasCollectionUniqueM) error {
-    return db.C(model.Collection()).Remove(
-        model.UniqueM(),
-    )
+	return db.C(model.Collection()).Remove(
+		model.UniqueM(),
+	)
 }
-
 
 func Get(db *mgo.Database, model hasCollectionUniqueM) error {
-    return db.C(model.Collection()).Find(
-        model.UniqueM(),
-    ).One(model)
+	return db.C(model.Collection()).Find(
+		model.UniqueM(),
+	).One(model)
 }
-
