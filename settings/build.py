@@ -74,7 +74,7 @@ for param, value in sorted(settingsDict.items()):
         # FIXME
         print("unknown value type %s, not sure how to encode" % valueType)
         valueRepr = str(value)
-    lines.append("    %s = %s" % (param, valueRepr))
+    lines.append("\t%s = %s" % (param, valueRepr))
 lines.append(")")
 
 varCode = "\n".join(lines)
