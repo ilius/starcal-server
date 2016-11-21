@@ -94,17 +94,11 @@ func JdTo(jd int) scal.Date {
 }
 
 func GetMonthLen(year int, month int) int {
-	if month == 12 {
-		if IsLeap(year) {
-			return 30
-		} else {
-			return 29
-		}
-	} else {
-		if month % 2 == 1 {
-			return 30
-		} else {
-			return 29
-		}
+	if month%2 == 1 {
+		return 30
 	}
+	if month == 12 && IsLeap(year) {
+		return 30
+	}
+	return 29
 }
