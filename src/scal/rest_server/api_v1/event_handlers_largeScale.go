@@ -1,6 +1,6 @@
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
-package rest_server
+package api_v1
 
 import (
 	"fmt"
@@ -25,28 +25,28 @@ import (
 
 func init() {
 	RegisterRoute(
-		"AddDailyNote",
+		"AddLargeScale",
 		"POST",
-		"/event/dailyNote/",
-		authenticator.Wrap(AddDailyNote),
+		"/event/largeScale/",
+		authenticator.Wrap(AddLargeScale),
 	)
 	RegisterRoute(
-		"GetDailyNote",
+		"GetLargeScale",
 		"GET",
-		"/event/dailyNote/{eventId}/",
-		authenticator.Wrap(GetDailyNote),
+		"/event/largeScale/{eventId}/",
+		authenticator.Wrap(GetLargeScale),
 	)
 	RegisterRoute(
-		"UpdateDailyNote",
+		"UpdateLargeScale",
 		"PUT",
-		"/event/dailyNote/{eventId}/",
-		authenticator.Wrap(UpdateDailyNote),
+		"/event/largeScale/{eventId}/",
+		authenticator.Wrap(UpdateLargeScale),
 	)
 	RegisterRoute(
-		"PatchDailyNote",
+		"PatchLargeScale",
 		"PATCH",
-		"/event/dailyNote/{eventId}/",
-		authenticator.Wrap(PatchDailyNote),
+		"/event/largeScale/{eventId}/",
+		authenticator.Wrap(PatchLargeScale),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -54,71 +54,71 @@ func init() {
 	// so we will have to register their routes for each event type
 	// we don't use eventType in these functions
 	RegisterRoute(
-		"DeleteEvent_dailyNote",
+		"DeleteEvent_largeScale",
 		"DELETE",
-		"/event/dailyNote/{eventId}/",
+		"/event/largeScale/{eventId}/",
 		authenticator.Wrap(DeleteEvent),
 	)
 	RegisterRoute(
-		"SetEventGroupId_dailyNote",
+		"SetEventGroupId_largeScale",
 		"PUT",
-		"/event/dailyNote/{eventId}/groupId/",
+		"/event/largeScale/{eventId}/groupId/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
-		"GetEventOwner_dailyNote",
+		"GetEventOwner_largeScale",
 		"GET",
-		"/event/dailyNote/{eventId}/owner/",
+		"/event/largeScale/{eventId}/owner/",
 		authenticator.Wrap(GetEventOwner),
 	)
 	RegisterRoute(
-		"SetEventOwner_dailyNote",
+		"SetEventOwner_largeScale",
 		"PUT",
-		"/event/dailyNote/{eventId}/owner/",
+		"/event/largeScale/{eventId}/owner/",
 		authenticator.Wrap(SetEventOwner),
 	)
 	RegisterRoute(
-		"GetEventMeta_dailyNote",
+		"GetEventMeta_largeScale",
 		"GET",
-		"/event/dailyNote/{eventId}/meta/",
+		"/event/largeScale/{eventId}/meta/",
 		authenticator.Wrap(GetEventMeta),
 	)
 	RegisterRoute(
-		"GetEventAccess_dailyNote",
+		"GetEventAccess_largeScale",
 		"GET",
-		"/event/dailyNote/{eventId}/access/",
+		"/event/largeScale/{eventId}/access/",
 		authenticator.Wrap(GetEventAccess),
 	)
 	RegisterRoute(
-		"SetEventAccess_dailyNote",
+		"SetEventAccess_largeScale",
 		"PUT",
-		"/event/dailyNote/{eventId}/access/",
+		"/event/largeScale/{eventId}/access/",
 		authenticator.Wrap(SetEventAccess),
 	)
 	RegisterRoute(
-		"AppendEventAccess_dailyNote",
+		"AppendEventAccess_largeScale",
 		"POST",
-		"/event/dailyNote/{eventId}/access/",
+		"/event/largeScale/{eventId}/access/",
 		authenticator.Wrap(AppendEventAccess),
 	)
 	RegisterRoute(
-		"JoinEvent_dailyNote",
+		"JoinEvent_largeScale",
 		"GET",
-		"/event/dailyNote/{eventId}/join/",
+		"/event/largeScale/{eventId}/join/",
 		authenticator.Wrap(JoinEvent),
 	)
 	RegisterRoute(
-		"LeaveEvent_dailyNote",
+		"LeaveEvent_largeScale",
 		"GET",
-		"/event/dailyNote/{eventId}/leave/",
+		"/event/largeScale/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
 
 }
 
-func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
+	eventModel := event_lib.LargeScaleEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -203,7 +203,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddDailyNote",
+			"funcName": "AddLargeScale",
 			"ownerEmail": []interface{}{
 				nil,
 				email,
@@ -214,7 +214,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddDailyNote",
+			"funcName": "AddLargeScale",
 			"groupId": []interface{}{
 				nil,
 				groupId,
@@ -238,7 +238,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadDailyNoteEventModel(
+	_, err = event_lib.LoadLargeScaleEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -265,7 +265,7 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -307,7 +307,7 @@ func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventModel, err := event_lib.LoadDailyNoteEventModel(
+	eventModel, err := event_lib.LoadLargeScaleEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -328,9 +328,9 @@ func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
+	eventModel := event_lib.LargeScaleEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -421,7 +421,7 @@ func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadDailyNoteEventModel(
+	_, err = event_lib.LoadLargeScaleEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -443,7 +443,7 @@ func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -497,7 +497,7 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		return
 	}
-	eventModel, err := event_lib.LoadDailyNoteEventModel(
+	eventModel, err := event_lib.LoadLargeScaleEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -619,20 +619,67 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 	{
-		rawValue, ok := patchMap["jd"]
+		rawValue, ok := patchMap["scale"]
 		if ok {
-			// json Unmarshal converts int to float64
-			value, typeOk := rawValue.(float64)
+			value, typeOk := rawValue.(int64)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'jd'",
+					"bad type for parameter 'scale'",
 				)
 				return
 			}
-			eventModel.Jd = int(value)
-			delete(patchMap, "jd")
+			eventModel.Scale = value
+			delete(patchMap, "scale")
+		}
+	}
+	{
+		rawValue, ok := patchMap["start"]
+		if ok {
+			value, typeOk := rawValue.(int64)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'start'",
+				)
+				return
+			}
+			eventModel.Start = value
+			delete(patchMap, "start")
+		}
+	}
+	{
+		rawValue, ok := patchMap["end"]
+		if ok {
+			value, typeOk := rawValue.(int64)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'end'",
+				)
+				return
+			}
+			eventModel.End = value
+			delete(patchMap, "end")
+		}
+	}
+	{
+		rawValue, ok := patchMap["durationEnable"]
+		if ok {
+			value, typeOk := rawValue.(bool)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'durationEnable'",
+				)
+				return
+			}
+			eventModel.DurationEnable = value
+			delete(patchMap, "durationEnable")
 		}
 	}
 	if len(patchMap) > 0 {
@@ -671,7 +718,7 @@ func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadDailyNoteEventModel(
+	_, err = event_lib.LoadLargeScaleEventModel(
 		db,
 		eventModel.Sha1,
 	)

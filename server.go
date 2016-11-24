@@ -1,7 +1,7 @@
 package main
 
-import "scal/rest_server"
+import "scal/rest_server/api_v1"
 
 func main() {
-	rest_server.StartEventRestServer()
+	api_v1.StartEventRestServer()
 }

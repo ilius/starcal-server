@@ -1,6 +1,6 @@
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
-package rest_server
+package api_v1
 
 import (
 	"fmt"
@@ -25,28 +25,28 @@ import (
 
 func init() {
 	RegisterRoute(
-		"AddYearly",
+		"AddTask",
 		"POST",
-		"/event/yearly/",
-		authenticator.Wrap(AddYearly),
+		"/event/task/",
+		authenticator.Wrap(AddTask),
 	)
 	RegisterRoute(
-		"GetYearly",
+		"GetTask",
 		"GET",
-		"/event/yearly/{eventId}/",
-		authenticator.Wrap(GetYearly),
+		"/event/task/{eventId}/",
+		authenticator.Wrap(GetTask),
 	)
 	RegisterRoute(
-		"UpdateYearly",
+		"UpdateTask",
 		"PUT",
-		"/event/yearly/{eventId}/",
-		authenticator.Wrap(UpdateYearly),
+		"/event/task/{eventId}/",
+		authenticator.Wrap(UpdateTask),
 	)
 	RegisterRoute(
-		"PatchYearly",
+		"PatchTask",
 		"PATCH",
-		"/event/yearly/{eventId}/",
-		authenticator.Wrap(PatchYearly),
+		"/event/task/{eventId}/",
+		authenticator.Wrap(PatchTask),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -54,71 +54,71 @@ func init() {
 	// so we will have to register their routes for each event type
 	// we don't use eventType in these functions
 	RegisterRoute(
-		"DeleteEvent_yearly",
+		"DeleteEvent_task",
 		"DELETE",
-		"/event/yearly/{eventId}/",
+		"/event/task/{eventId}/",
 		authenticator.Wrap(DeleteEvent),
 	)
 	RegisterRoute(
-		"SetEventGroupId_yearly",
+		"SetEventGroupId_task",
 		"PUT",
-		"/event/yearly/{eventId}/groupId/",
+		"/event/task/{eventId}/groupId/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
-		"GetEventOwner_yearly",
+		"GetEventOwner_task",
 		"GET",
-		"/event/yearly/{eventId}/owner/",
+		"/event/task/{eventId}/owner/",
 		authenticator.Wrap(GetEventOwner),
 	)
 	RegisterRoute(
-		"SetEventOwner_yearly",
+		"SetEventOwner_task",
 		"PUT",
-		"/event/yearly/{eventId}/owner/",
+		"/event/task/{eventId}/owner/",
 		authenticator.Wrap(SetEventOwner),
 	)
 	RegisterRoute(
-		"GetEventMeta_yearly",
+		"GetEventMeta_task",
 		"GET",
-		"/event/yearly/{eventId}/meta/",
+		"/event/task/{eventId}/meta/",
 		authenticator.Wrap(GetEventMeta),
 	)
 	RegisterRoute(
-		"GetEventAccess_yearly",
+		"GetEventAccess_task",
 		"GET",
-		"/event/yearly/{eventId}/access/",
+		"/event/task/{eventId}/access/",
 		authenticator.Wrap(GetEventAccess),
 	)
 	RegisterRoute(
-		"SetEventAccess_yearly",
+		"SetEventAccess_task",
 		"PUT",
-		"/event/yearly/{eventId}/access/",
+		"/event/task/{eventId}/access/",
 		authenticator.Wrap(SetEventAccess),
 	)
 	RegisterRoute(
-		"AppendEventAccess_yearly",
+		"AppendEventAccess_task",
 		"POST",
-		"/event/yearly/{eventId}/access/",
+		"/event/task/{eventId}/access/",
 		authenticator.Wrap(AppendEventAccess),
 	)
 	RegisterRoute(
-		"JoinEvent_yearly",
+		"JoinEvent_task",
 		"GET",
-		"/event/yearly/{eventId}/join/",
+		"/event/task/{eventId}/join/",
 		authenticator.Wrap(JoinEvent),
 	)
 	RegisterRoute(
-		"LeaveEvent_yearly",
+		"LeaveEvent_task",
 		"GET",
-		"/event/yearly/{eventId}/leave/",
+		"/event/task/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
 
 }
 
-func AddYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.YearlyEventModel{} // DYNAMIC
+	eventModel := event_lib.TaskEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -203,7 +203,7 @@ func AddYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddYearly",
+			"funcName": "AddTask",
 			"ownerEmail": []interface{}{
 				nil,
 				email,
@@ -214,7 +214,7 @@ func AddYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddYearly",
+			"funcName": "AddTask",
 			"groupId": []interface{}{
 				nil,
 				groupId,
@@ -238,7 +238,7 @@ func AddYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadYearlyEventModel(
+	_, err = event_lib.LoadTaskEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -265,7 +265,7 @@ func AddYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -307,7 +307,7 @@ func GetYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventModel, err := event_lib.LoadYearlyEventModel(
+	eventModel, err := event_lib.LoadTaskEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -328,9 +328,9 @@ func GetYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.YearlyEventModel{} // DYNAMIC
+	eventModel := event_lib.TaskEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -421,7 +421,7 @@ func UpdateYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadYearlyEventModel(
+	_, err = event_lib.LoadTaskEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -443,7 +443,7 @@ func UpdateYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -497,7 +497,7 @@ func PatchYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		return
 	}
-	eventModel, err := event_lib.LoadYearlyEventModel(
+	eventModel, err := event_lib.LoadTaskEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -619,7 +619,49 @@ func PatchYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 	{
-		rawValue, ok := patchMap["month"]
+		rawValue, ok := patchMap["startTime"]
+		if ok {
+			value, typeOk := rawValue.(string)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'startTime'",
+				)
+				return
+			}
+			timeValue, err := time.Parse(time.RFC3339, value)
+			if err != nil {
+				SetHttpError(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			eventModel.StartTime = &timeValue
+			delete(patchMap, "startTime")
+		}
+	}
+	{
+		rawValue, ok := patchMap["endTime"]
+		if ok {
+			value, typeOk := rawValue.(string)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'endTime'",
+				)
+				return
+			}
+			timeValue, err := time.Parse(time.RFC3339, value)
+			if err != nil {
+				SetHttpError(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			eventModel.EndTime = &timeValue
+			delete(patchMap, "endTime")
+		}
+	}
+	{
+		rawValue, ok := patchMap["durationUnit"]
 		if ok {
 			// json Unmarshal converts int to float64
 			value, typeOk := rawValue.(float64)
@@ -627,62 +669,12 @@ func PatchYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'month'",
+					"bad type for parameter 'durationUnit'",
 				)
 				return
 			}
-			eventModel.Month = int(value)
-			delete(patchMap, "month")
-		}
-	}
-	{
-		rawValue, ok := patchMap["day"]
-		if ok {
-			// json Unmarshal converts int to float64
-			value, typeOk := rawValue.(float64)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'day'",
-				)
-				return
-			}
-			eventModel.Day = int(value)
-			delete(patchMap, "day")
-		}
-	}
-	{
-		rawValue, ok := patchMap["startYear"]
-		if ok {
-			// json Unmarshal converts int to float64
-			value, typeOk := rawValue.(float64)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'startYear'",
-				)
-				return
-			}
-			eventModel.StartYear = int(value)
-			delete(patchMap, "startYear")
-		}
-	}
-	{
-		rawValue, ok := patchMap["startYearEnable"]
-		if ok {
-			value, typeOk := rawValue.(bool)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'startYearEnable'",
-				)
-				return
-			}
-			eventModel.StartYearEnable = value
-			delete(patchMap, "startYearEnable")
+			eventModel.DurationUnit = int(value)
+			delete(patchMap, "durationUnit")
 		}
 	}
 	if len(patchMap) > 0 {
@@ -721,7 +713,7 @@ func PatchYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadYearlyEventModel(
+	_, err = event_lib.LoadTaskEventModel(
 		db,
 		eventModel.Sha1,
 	)

@@ -1,6 +1,6 @@
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
-package rest_server
+package api_v1
 
 import (
 	"fmt"
@@ -25,28 +25,28 @@ import (
 
 func init() {
 	RegisterRoute(
-		"AddUniversityExam",
+		"AddUniversityClass",
 		"POST",
-		"/event/universityExam/",
-		authenticator.Wrap(AddUniversityExam),
+		"/event/universityClass/",
+		authenticator.Wrap(AddUniversityClass),
 	)
 	RegisterRoute(
-		"GetUniversityExam",
+		"GetUniversityClass",
 		"GET",
-		"/event/universityExam/{eventId}/",
-		authenticator.Wrap(GetUniversityExam),
+		"/event/universityClass/{eventId}/",
+		authenticator.Wrap(GetUniversityClass),
 	)
 	RegisterRoute(
-		"UpdateUniversityExam",
+		"UpdateUniversityClass",
 		"PUT",
-		"/event/universityExam/{eventId}/",
-		authenticator.Wrap(UpdateUniversityExam),
+		"/event/universityClass/{eventId}/",
+		authenticator.Wrap(UpdateUniversityClass),
 	)
 	RegisterRoute(
-		"PatchUniversityExam",
+		"PatchUniversityClass",
 		"PATCH",
-		"/event/universityExam/{eventId}/",
-		authenticator.Wrap(PatchUniversityExam),
+		"/event/universityClass/{eventId}/",
+		authenticator.Wrap(PatchUniversityClass),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -54,71 +54,71 @@ func init() {
 	// so we will have to register their routes for each event type
 	// we don't use eventType in these functions
 	RegisterRoute(
-		"DeleteEvent_universityExam",
+		"DeleteEvent_universityClass",
 		"DELETE",
-		"/event/universityExam/{eventId}/",
+		"/event/universityClass/{eventId}/",
 		authenticator.Wrap(DeleteEvent),
 	)
 	RegisterRoute(
-		"SetEventGroupId_universityExam",
+		"SetEventGroupId_universityClass",
 		"PUT",
-		"/event/universityExam/{eventId}/groupId/",
+		"/event/universityClass/{eventId}/groupId/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
-		"GetEventOwner_universityExam",
+		"GetEventOwner_universityClass",
 		"GET",
-		"/event/universityExam/{eventId}/owner/",
+		"/event/universityClass/{eventId}/owner/",
 		authenticator.Wrap(GetEventOwner),
 	)
 	RegisterRoute(
-		"SetEventOwner_universityExam",
+		"SetEventOwner_universityClass",
 		"PUT",
-		"/event/universityExam/{eventId}/owner/",
+		"/event/universityClass/{eventId}/owner/",
 		authenticator.Wrap(SetEventOwner),
 	)
 	RegisterRoute(
-		"GetEventMeta_universityExam",
+		"GetEventMeta_universityClass",
 		"GET",
-		"/event/universityExam/{eventId}/meta/",
+		"/event/universityClass/{eventId}/meta/",
 		authenticator.Wrap(GetEventMeta),
 	)
 	RegisterRoute(
-		"GetEventAccess_universityExam",
+		"GetEventAccess_universityClass",
 		"GET",
-		"/event/universityExam/{eventId}/access/",
+		"/event/universityClass/{eventId}/access/",
 		authenticator.Wrap(GetEventAccess),
 	)
 	RegisterRoute(
-		"SetEventAccess_universityExam",
+		"SetEventAccess_universityClass",
 		"PUT",
-		"/event/universityExam/{eventId}/access/",
+		"/event/universityClass/{eventId}/access/",
 		authenticator.Wrap(SetEventAccess),
 	)
 	RegisterRoute(
-		"AppendEventAccess_universityExam",
+		"AppendEventAccess_universityClass",
 		"POST",
-		"/event/universityExam/{eventId}/access/",
+		"/event/universityClass/{eventId}/access/",
 		authenticator.Wrap(AppendEventAccess),
 	)
 	RegisterRoute(
-		"JoinEvent_universityExam",
+		"JoinEvent_universityClass",
 		"GET",
-		"/event/universityExam/{eventId}/join/",
+		"/event/universityClass/{eventId}/join/",
 		authenticator.Wrap(JoinEvent),
 	)
 	RegisterRoute(
-		"LeaveEvent_universityExam",
+		"LeaveEvent_universityClass",
 		"GET",
-		"/event/universityExam/{eventId}/leave/",
+		"/event/universityClass/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
 
 }
 
-func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.UniversityExamEventModel{} // DYNAMIC
+	eventModel := event_lib.UniversityClassEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -203,7 +203,7 @@ func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddUniversityExam",
+			"funcName": "AddUniversityClass",
 			"ownerEmail": []interface{}{
 				nil,
 				email,
@@ -214,7 +214,7 @@ func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddUniversityExam",
+			"funcName": "AddUniversityClass",
 			"groupId": []interface{}{
 				nil,
 				groupId,
@@ -238,7 +238,7 @@ func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadUniversityExamEventModel(
+	_, err = event_lib.LoadUniversityClassEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -265,7 +265,7 @@ func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -307,7 +307,7 @@ func GetUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventModel, err := event_lib.LoadUniversityExamEventModel(
+	eventModel, err := event_lib.LoadUniversityClassEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -328,9 +328,9 @@ func GetUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.UniversityExamEventModel{} // DYNAMIC
+	eventModel := event_lib.UniversityClassEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -421,7 +421,7 @@ func UpdateUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadUniversityExamEventModel(
+	_, err = event_lib.LoadUniversityClassEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -443,7 +443,7 @@ func UpdateUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -497,7 +497,7 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		return
 	}
-	eventModel, err := event_lib.LoadUniversityExamEventModel(
+	eventModel, err := event_lib.LoadUniversityClassEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -619,71 +619,35 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 	{
-		rawValue, ok := patchMap["jd"]
+		rawValue, ok := patchMap["weekNumMode"]
 		if ok {
-			// json Unmarshal converts int to float64
-			value, typeOk := rawValue.(float64)
+			value, typeOk := rawValue.(string)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'jd'",
+					"bad type for parameter 'weekNumMode'",
 				)
 				return
 			}
-			eventModel.Jd = int(value)
-			delete(patchMap, "jd")
+			eventModel.WeekNumMode = value
+			delete(patchMap, "weekNumMode")
 		}
 	}
 	{
-		rawValue, ok := patchMap["dayStartSeconds"]
+		rawValue, ok := patchMap["weekDayList"]
 		if ok {
-			// json Unmarshal converts int to float64
-			value, typeOk := rawValue.(float64)
+			value, typeOk := rawValue.([]int)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'dayStartSeconds'",
+					"bad type for parameter 'weekDayList'",
 				)
 				return
 			}
-			eventModel.DayStartSeconds = int(value)
-			delete(patchMap, "dayStartSeconds")
-		}
-	}
-	{
-		rawValue, ok := patchMap["dayEndSeconds"]
-		if ok {
-			// json Unmarshal converts int to float64
-			value, typeOk := rawValue.(float64)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'dayEndSeconds'",
-				)
-				return
-			}
-			eventModel.DayEndSeconds = int(value)
-			delete(patchMap, "dayEndSeconds")
-		}
-	}
-	{
-		rawValue, ok := patchMap["courseId"]
-		if ok {
-			// json Unmarshal converts int to float64
-			value, typeOk := rawValue.(float64)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'courseId'",
-				)
-				return
-			}
-			eventModel.CourseId = int(value)
-			delete(patchMap, "courseId")
+			eventModel.WeekDayList = value
+			delete(patchMap, "weekDayList")
 		}
 	}
 	if len(patchMap) > 0 {
@@ -722,7 +686,7 @@ func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadUniversityExamEventModel(
+	_, err = event_lib.LoadUniversityClassEventModel(
 		db,
 		eventModel.Sha1,
 	)

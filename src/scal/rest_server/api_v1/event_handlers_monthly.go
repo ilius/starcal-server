@@ -1,6 +1,6 @@
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
-package rest_server
+package api_v1
 
 import (
 	"fmt"
@@ -25,28 +25,28 @@ import (
 
 func init() {
 	RegisterRoute(
-		"AddLargeScale",
+		"AddMonthly",
 		"POST",
-		"/event/largeScale/",
-		authenticator.Wrap(AddLargeScale),
+		"/event/monthly/",
+		authenticator.Wrap(AddMonthly),
 	)
 	RegisterRoute(
-		"GetLargeScale",
+		"GetMonthly",
 		"GET",
-		"/event/largeScale/{eventId}/",
-		authenticator.Wrap(GetLargeScale),
+		"/event/monthly/{eventId}/",
+		authenticator.Wrap(GetMonthly),
 	)
 	RegisterRoute(
-		"UpdateLargeScale",
+		"UpdateMonthly",
 		"PUT",
-		"/event/largeScale/{eventId}/",
-		authenticator.Wrap(UpdateLargeScale),
+		"/event/monthly/{eventId}/",
+		authenticator.Wrap(UpdateMonthly),
 	)
 	RegisterRoute(
-		"PatchLargeScale",
+		"PatchMonthly",
 		"PATCH",
-		"/event/largeScale/{eventId}/",
-		authenticator.Wrap(PatchLargeScale),
+		"/event/monthly/{eventId}/",
+		authenticator.Wrap(PatchMonthly),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -54,71 +54,71 @@ func init() {
 	// so we will have to register their routes for each event type
 	// we don't use eventType in these functions
 	RegisterRoute(
-		"DeleteEvent_largeScale",
+		"DeleteEvent_monthly",
 		"DELETE",
-		"/event/largeScale/{eventId}/",
+		"/event/monthly/{eventId}/",
 		authenticator.Wrap(DeleteEvent),
 	)
 	RegisterRoute(
-		"SetEventGroupId_largeScale",
+		"SetEventGroupId_monthly",
 		"PUT",
-		"/event/largeScale/{eventId}/groupId/",
+		"/event/monthly/{eventId}/groupId/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
-		"GetEventOwner_largeScale",
+		"GetEventOwner_monthly",
 		"GET",
-		"/event/largeScale/{eventId}/owner/",
+		"/event/monthly/{eventId}/owner/",
 		authenticator.Wrap(GetEventOwner),
 	)
 	RegisterRoute(
-		"SetEventOwner_largeScale",
+		"SetEventOwner_monthly",
 		"PUT",
-		"/event/largeScale/{eventId}/owner/",
+		"/event/monthly/{eventId}/owner/",
 		authenticator.Wrap(SetEventOwner),
 	)
 	RegisterRoute(
-		"GetEventMeta_largeScale",
+		"GetEventMeta_monthly",
 		"GET",
-		"/event/largeScale/{eventId}/meta/",
+		"/event/monthly/{eventId}/meta/",
 		authenticator.Wrap(GetEventMeta),
 	)
 	RegisterRoute(
-		"GetEventAccess_largeScale",
+		"GetEventAccess_monthly",
 		"GET",
-		"/event/largeScale/{eventId}/access/",
+		"/event/monthly/{eventId}/access/",
 		authenticator.Wrap(GetEventAccess),
 	)
 	RegisterRoute(
-		"SetEventAccess_largeScale",
+		"SetEventAccess_monthly",
 		"PUT",
-		"/event/largeScale/{eventId}/access/",
+		"/event/monthly/{eventId}/access/",
 		authenticator.Wrap(SetEventAccess),
 	)
 	RegisterRoute(
-		"AppendEventAccess_largeScale",
+		"AppendEventAccess_monthly",
 		"POST",
-		"/event/largeScale/{eventId}/access/",
+		"/event/monthly/{eventId}/access/",
 		authenticator.Wrap(AppendEventAccess),
 	)
 	RegisterRoute(
-		"JoinEvent_largeScale",
+		"JoinEvent_monthly",
 		"GET",
-		"/event/largeScale/{eventId}/join/",
+		"/event/monthly/{eventId}/join/",
 		authenticator.Wrap(JoinEvent),
 	)
 	RegisterRoute(
-		"LeaveEvent_largeScale",
+		"LeaveEvent_monthly",
 		"GET",
-		"/event/largeScale/{eventId}/leave/",
+		"/event/monthly/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
 
 }
 
-func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.LargeScaleEventModel{} // DYNAMIC
+	eventModel := event_lib.MonthlyEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -203,7 +203,7 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddLargeScale",
+			"funcName": "AddMonthly",
 			"ownerEmail": []interface{}{
 				nil,
 				email,
@@ -214,7 +214,7 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddLargeScale",
+			"funcName": "AddMonthly",
 			"groupId": []interface{}{
 				nil,
 				groupId,
@@ -238,7 +238,7 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLargeScaleEventModel(
+	_, err = event_lib.LoadMonthlyEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -265,7 +265,7 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -307,7 +307,7 @@ func GetLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventModel, err := event_lib.LoadLargeScaleEventModel(
+	eventModel, err := event_lib.LoadMonthlyEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -328,9 +328,9 @@ func GetLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.LargeScaleEventModel{} // DYNAMIC
+	eventModel := event_lib.MonthlyEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -421,7 +421,7 @@ func UpdateLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLargeScaleEventModel(
+	_, err = event_lib.LoadMonthlyEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -443,7 +443,7 @@ func UpdateLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -497,7 +497,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		return
 	}
-	eventModel, err := event_lib.LoadLargeScaleEventModel(
+	eventModel, err := event_lib.LoadMonthlyEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -619,67 +619,88 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 	{
-		rawValue, ok := patchMap["scale"]
+		rawValue, ok := patchMap["startJd"]
 		if ok {
-			value, typeOk := rawValue.(int64)
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'scale'",
+					"bad type for parameter 'startJd'",
 				)
 				return
 			}
-			eventModel.Scale = value
-			delete(patchMap, "scale")
+			eventModel.StartJd = int(value)
+			delete(patchMap, "startJd")
 		}
 	}
 	{
-		rawValue, ok := patchMap["start"]
+		rawValue, ok := patchMap["endJd"]
 		if ok {
-			value, typeOk := rawValue.(int64)
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'start'",
+					"bad type for parameter 'endJd'",
 				)
 				return
 			}
-			eventModel.Start = value
-			delete(patchMap, "start")
+			eventModel.EndJd = int(value)
+			delete(patchMap, "endJd")
 		}
 	}
 	{
-		rawValue, ok := patchMap["end"]
+		rawValue, ok := patchMap["day"]
 		if ok {
-			value, typeOk := rawValue.(int64)
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'end'",
+					"bad type for parameter 'day'",
 				)
 				return
 			}
-			eventModel.End = value
-			delete(patchMap, "end")
+			eventModel.Day = int(value)
+			delete(patchMap, "day")
 		}
 	}
 	{
-		rawValue, ok := patchMap["durationEnable"]
+		rawValue, ok := patchMap["dayStartSeconds"]
 		if ok {
-			value, typeOk := rawValue.(bool)
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'durationEnable'",
+					"bad type for parameter 'dayStartSeconds'",
 				)
 				return
 			}
-			eventModel.DurationEnable = value
-			delete(patchMap, "durationEnable")
+			eventModel.DayStartSeconds = int(value)
+			delete(patchMap, "dayStartSeconds")
+		}
+	}
+	{
+		rawValue, ok := patchMap["dayEndSeconds"]
+		if ok {
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'dayEndSeconds'",
+				)
+				return
+			}
+			eventModel.DayEndSeconds = int(value)
+			delete(patchMap, "dayEndSeconds")
 		}
 	}
 	if len(patchMap) > 0 {
@@ -718,7 +739,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLargeScaleEventModel(
+	_, err = event_lib.LoadMonthlyEventModel(
 		db,
 		eventModel.Sha1,
 	)

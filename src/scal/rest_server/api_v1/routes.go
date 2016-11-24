@@ -1,4 +1,4 @@
-package rest_server
+package api_v1
 
 import (
 	"net/http"

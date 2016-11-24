@@ -1,6 +1,6 @@
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
-package rest_server
+package api_v1
 
 import (
 	"fmt"
@@ -25,28 +25,28 @@ import (
 
 func init() {
 	RegisterRoute(
-		"AddUniversityClass",
+		"AddAllDayTask",
 		"POST",
-		"/event/universityClass/",
-		authenticator.Wrap(AddUniversityClass),
+		"/event/allDayTask/",
+		authenticator.Wrap(AddAllDayTask),
 	)
 	RegisterRoute(
-		"GetUniversityClass",
+		"GetAllDayTask",
 		"GET",
-		"/event/universityClass/{eventId}/",
-		authenticator.Wrap(GetUniversityClass),
+		"/event/allDayTask/{eventId}/",
+		authenticator.Wrap(GetAllDayTask),
 	)
 	RegisterRoute(
-		"UpdateUniversityClass",
+		"UpdateAllDayTask",
 		"PUT",
-		"/event/universityClass/{eventId}/",
-		authenticator.Wrap(UpdateUniversityClass),
+		"/event/allDayTask/{eventId}/",
+		authenticator.Wrap(UpdateAllDayTask),
 	)
 	RegisterRoute(
-		"PatchUniversityClass",
+		"PatchAllDayTask",
 		"PATCH",
-		"/event/universityClass/{eventId}/",
-		authenticator.Wrap(PatchUniversityClass),
+		"/event/allDayTask/{eventId}/",
+		authenticator.Wrap(PatchAllDayTask),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -54,71 +54,71 @@ func init() {
 	// so we will have to register their routes for each event type
 	// we don't use eventType in these functions
 	RegisterRoute(
-		"DeleteEvent_universityClass",
+		"DeleteEvent_allDayTask",
 		"DELETE",
-		"/event/universityClass/{eventId}/",
+		"/event/allDayTask/{eventId}/",
 		authenticator.Wrap(DeleteEvent),
 	)
 	RegisterRoute(
-		"SetEventGroupId_universityClass",
+		"SetEventGroupId_allDayTask",
 		"PUT",
-		"/event/universityClass/{eventId}/groupId/",
+		"/event/allDayTask/{eventId}/groupId/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
-		"GetEventOwner_universityClass",
+		"GetEventOwner_allDayTask",
 		"GET",
-		"/event/universityClass/{eventId}/owner/",
+		"/event/allDayTask/{eventId}/owner/",
 		authenticator.Wrap(GetEventOwner),
 	)
 	RegisterRoute(
-		"SetEventOwner_universityClass",
+		"SetEventOwner_allDayTask",
 		"PUT",
-		"/event/universityClass/{eventId}/owner/",
+		"/event/allDayTask/{eventId}/owner/",
 		authenticator.Wrap(SetEventOwner),
 	)
 	RegisterRoute(
-		"GetEventMeta_universityClass",
+		"GetEventMeta_allDayTask",
 		"GET",
-		"/event/universityClass/{eventId}/meta/",
+		"/event/allDayTask/{eventId}/meta/",
 		authenticator.Wrap(GetEventMeta),
 	)
 	RegisterRoute(
-		"GetEventAccess_universityClass",
+		"GetEventAccess_allDayTask",
 		"GET",
-		"/event/universityClass/{eventId}/access/",
+		"/event/allDayTask/{eventId}/access/",
 		authenticator.Wrap(GetEventAccess),
 	)
 	RegisterRoute(
-		"SetEventAccess_universityClass",
+		"SetEventAccess_allDayTask",
 		"PUT",
-		"/event/universityClass/{eventId}/access/",
+		"/event/allDayTask/{eventId}/access/",
 		authenticator.Wrap(SetEventAccess),
 	)
 	RegisterRoute(
-		"AppendEventAccess_universityClass",
+		"AppendEventAccess_allDayTask",
 		"POST",
-		"/event/universityClass/{eventId}/access/",
+		"/event/allDayTask/{eventId}/access/",
 		authenticator.Wrap(AppendEventAccess),
 	)
 	RegisterRoute(
-		"JoinEvent_universityClass",
+		"JoinEvent_allDayTask",
 		"GET",
-		"/event/universityClass/{eventId}/join/",
+		"/event/allDayTask/{eventId}/join/",
 		authenticator.Wrap(JoinEvent),
 	)
 	RegisterRoute(
-		"LeaveEvent_universityClass",
+		"LeaveEvent_allDayTask",
 		"GET",
-		"/event/universityClass/{eventId}/leave/",
+		"/event/allDayTask/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
 
 }
 
-func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.UniversityClassEventModel{} // DYNAMIC
+	eventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -203,7 +203,7 @@ func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddUniversityClass",
+			"funcName": "AddAllDayTask",
 			"ownerEmail": []interface{}{
 				nil,
 				email,
@@ -214,7 +214,7 @@ func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddUniversityClass",
+			"funcName": "AddAllDayTask",
 			"groupId": []interface{}{
 				nil,
 				groupId,
@@ -238,7 +238,7 @@ func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadUniversityClassEventModel(
+	_, err = event_lib.LoadAllDayTaskEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -265,7 +265,7 @@ func AddUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -307,7 +307,7 @@ func GetUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventModel, err := event_lib.LoadUniversityClassEventModel(
+	eventModel, err := event_lib.LoadAllDayTaskEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -328,9 +328,9 @@ func GetUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.UniversityClassEventModel{} // DYNAMIC
+	eventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -421,7 +421,7 @@ func UpdateUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadUniversityClassEventModel(
+	_, err = event_lib.LoadAllDayTaskEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -443,7 +443,7 @@ func UpdateUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -497,7 +497,7 @@ func PatchUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		return
 	}
-	eventModel, err := event_lib.LoadUniversityClassEventModel(
+	eventModel, err := event_lib.LoadAllDayTaskEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -619,35 +619,53 @@ func PatchUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 	{
-		rawValue, ok := patchMap["weekNumMode"]
+		rawValue, ok := patchMap["startJd"]
 		if ok {
-			value, typeOk := rawValue.(string)
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'weekNumMode'",
+					"bad type for parameter 'startJd'",
 				)
 				return
 			}
-			eventModel.WeekNumMode = value
-			delete(patchMap, "weekNumMode")
+			eventModel.StartJd = int(value)
+			delete(patchMap, "startJd")
 		}
 	}
 	{
-		rawValue, ok := patchMap["weekDayList"]
+		rawValue, ok := patchMap["endJd"]
 		if ok {
-			value, typeOk := rawValue.([]int)
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'weekDayList'",
+					"bad type for parameter 'endJd'",
 				)
 				return
 			}
-			eventModel.WeekDayList = value
-			delete(patchMap, "weekDayList")
+			eventModel.EndJd = int(value)
+			delete(patchMap, "endJd")
+		}
+	}
+	{
+		rawValue, ok := patchMap["durationEnable"]
+		if ok {
+			value, typeOk := rawValue.(bool)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'durationEnable'",
+				)
+				return
+			}
+			eventModel.DurationEnable = value
+			delete(patchMap, "durationEnable")
 		}
 	}
 	if len(patchMap) > 0 {
@@ -686,7 +704,7 @@ func PatchUniversityClass(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadUniversityClassEventModel(
+	_, err = event_lib.LoadAllDayTaskEventModel(
 		db,
 		eventModel.Sha1,
 	)

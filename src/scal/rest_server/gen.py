@@ -9,6 +9,7 @@ from django.conf import settings
 
 
 myDir = dirname(realpath(__file__))
+apiDir = join(myDir, "api_v1")
 myParentDir = dirname(myDir)
 templatesDir = join(myParentDir, 'templates')
 
@@ -55,7 +56,7 @@ def genEventTypeHandlers():
         )))
         goText = re.sub(r'^\s+\n', '', goText, flags=re.M)
         with open(join(
-            myDir,
+            apiDir,
             "event_handlers_%s.go" % eventType,
         ), "w") as goFp:
             goFp.write(goText)

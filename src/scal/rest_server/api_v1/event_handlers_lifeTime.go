@@ -1,6 +1,6 @@
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
-package rest_server
+package api_v1
 
 import (
 	"fmt"
@@ -25,28 +25,28 @@ import (
 
 func init() {
 	RegisterRoute(
-		"AddAllDayTask",
+		"AddLifeTime",
 		"POST",
-		"/event/allDayTask/",
-		authenticator.Wrap(AddAllDayTask),
+		"/event/lifeTime/",
+		authenticator.Wrap(AddLifeTime),
 	)
 	RegisterRoute(
-		"GetAllDayTask",
+		"GetLifeTime",
 		"GET",
-		"/event/allDayTask/{eventId}/",
-		authenticator.Wrap(GetAllDayTask),
+		"/event/lifeTime/{eventId}/",
+		authenticator.Wrap(GetLifeTime),
 	)
 	RegisterRoute(
-		"UpdateAllDayTask",
+		"UpdateLifeTime",
 		"PUT",
-		"/event/allDayTask/{eventId}/",
-		authenticator.Wrap(UpdateAllDayTask),
+		"/event/lifeTime/{eventId}/",
+		authenticator.Wrap(UpdateLifeTime),
 	)
 	RegisterRoute(
-		"PatchAllDayTask",
+		"PatchLifeTime",
 		"PATCH",
-		"/event/allDayTask/{eventId}/",
-		authenticator.Wrap(PatchAllDayTask),
+		"/event/lifeTime/{eventId}/",
+		authenticator.Wrap(PatchLifeTime),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -54,71 +54,71 @@ func init() {
 	// so we will have to register their routes for each event type
 	// we don't use eventType in these functions
 	RegisterRoute(
-		"DeleteEvent_allDayTask",
+		"DeleteEvent_lifeTime",
 		"DELETE",
-		"/event/allDayTask/{eventId}/",
+		"/event/lifeTime/{eventId}/",
 		authenticator.Wrap(DeleteEvent),
 	)
 	RegisterRoute(
-		"SetEventGroupId_allDayTask",
+		"SetEventGroupId_lifeTime",
 		"PUT",
-		"/event/allDayTask/{eventId}/groupId/",
+		"/event/lifeTime/{eventId}/groupId/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
-		"GetEventOwner_allDayTask",
+		"GetEventOwner_lifeTime",
 		"GET",
-		"/event/allDayTask/{eventId}/owner/",
+		"/event/lifeTime/{eventId}/owner/",
 		authenticator.Wrap(GetEventOwner),
 	)
 	RegisterRoute(
-		"SetEventOwner_allDayTask",
+		"SetEventOwner_lifeTime",
 		"PUT",
-		"/event/allDayTask/{eventId}/owner/",
+		"/event/lifeTime/{eventId}/owner/",
 		authenticator.Wrap(SetEventOwner),
 	)
 	RegisterRoute(
-		"GetEventMeta_allDayTask",
+		"GetEventMeta_lifeTime",
 		"GET",
-		"/event/allDayTask/{eventId}/meta/",
+		"/event/lifeTime/{eventId}/meta/",
 		authenticator.Wrap(GetEventMeta),
 	)
 	RegisterRoute(
-		"GetEventAccess_allDayTask",
+		"GetEventAccess_lifeTime",
 		"GET",
-		"/event/allDayTask/{eventId}/access/",
+		"/event/lifeTime/{eventId}/access/",
 		authenticator.Wrap(GetEventAccess),
 	)
 	RegisterRoute(
-		"SetEventAccess_allDayTask",
+		"SetEventAccess_lifeTime",
 		"PUT",
-		"/event/allDayTask/{eventId}/access/",
+		"/event/lifeTime/{eventId}/access/",
 		authenticator.Wrap(SetEventAccess),
 	)
 	RegisterRoute(
-		"AppendEventAccess_allDayTask",
+		"AppendEventAccess_lifeTime",
 		"POST",
-		"/event/allDayTask/{eventId}/access/",
+		"/event/lifeTime/{eventId}/access/",
 		authenticator.Wrap(AppendEventAccess),
 	)
 	RegisterRoute(
-		"JoinEvent_allDayTask",
+		"JoinEvent_lifeTime",
 		"GET",
-		"/event/allDayTask/{eventId}/join/",
+		"/event/lifeTime/{eventId}/join/",
 		authenticator.Wrap(JoinEvent),
 	)
 	RegisterRoute(
-		"LeaveEvent_allDayTask",
+		"LeaveEvent_lifeTime",
 		"GET",
-		"/event/allDayTask/{eventId}/leave/",
+		"/event/lifeTime/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
 
 }
 
-func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
+	eventModel := event_lib.LifeTimeEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -203,7 +203,7 @@ func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddAllDayTask",
+			"funcName": "AddLifeTime",
 			"ownerEmail": []interface{}{
 				nil,
 				email,
@@ -214,7 +214,7 @@ func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddAllDayTask",
+			"funcName": "AddLifeTime",
 			"groupId": []interface{}{
 				nil,
 				groupId,
@@ -238,7 +238,7 @@ func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadAllDayTaskEventModel(
+	_, err = event_lib.LoadLifeTimeEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -265,7 +265,7 @@ func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -307,7 +307,7 @@ func GetAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventModel, err := event_lib.LoadAllDayTaskEventModel(
+	eventModel, err := event_lib.LoadLifeTimeEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -328,9 +328,9 @@ func GetAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.AllDayTaskEventModel{} // DYNAMIC
+	eventModel := event_lib.LifeTimeEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -421,7 +421,7 @@ func UpdateAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadAllDayTaskEventModel(
+	_, err = event_lib.LoadLifeTimeEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -443,7 +443,7 @@ func UpdateAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -497,7 +497,7 @@ func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		return
 	}
-	eventModel, err := event_lib.LoadAllDayTaskEventModel(
+	eventModel, err := event_lib.LoadLifeTimeEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -652,22 +652,6 @@ func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			delete(patchMap, "endJd")
 		}
 	}
-	{
-		rawValue, ok := patchMap["durationEnable"]
-		if ok {
-			value, typeOk := rawValue.(bool)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'durationEnable'",
-				)
-				return
-			}
-			eventModel.DurationEnable = value
-			delete(patchMap, "durationEnable")
-		}
-	}
 	if len(patchMap) > 0 {
 		for param, _ := range patchMap {
 			SetHttpError(
@@ -704,7 +688,7 @@ func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadAllDayTaskEventModel(
+	_, err = event_lib.LoadLifeTimeEventModel(
 		db,
 		eventModel.Sha1,
 	)

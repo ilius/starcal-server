@@ -1,6 +1,6 @@
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
-package rest_server
+package api_v1
 
 import (
 	"fmt"
@@ -25,28 +25,28 @@ import (
 
 func init() {
 	RegisterRoute(
-		"AddTask",
+		"AddDailyNote",
 		"POST",
-		"/event/task/",
-		authenticator.Wrap(AddTask),
+		"/event/dailyNote/",
+		authenticator.Wrap(AddDailyNote),
 	)
 	RegisterRoute(
-		"GetTask",
+		"GetDailyNote",
 		"GET",
-		"/event/task/{eventId}/",
-		authenticator.Wrap(GetTask),
+		"/event/dailyNote/{eventId}/",
+		authenticator.Wrap(GetDailyNote),
 	)
 	RegisterRoute(
-		"UpdateTask",
+		"UpdateDailyNote",
 		"PUT",
-		"/event/task/{eventId}/",
-		authenticator.Wrap(UpdateTask),
+		"/event/dailyNote/{eventId}/",
+		authenticator.Wrap(UpdateDailyNote),
 	)
 	RegisterRoute(
-		"PatchTask",
+		"PatchDailyNote",
 		"PATCH",
-		"/event/task/{eventId}/",
-		authenticator.Wrap(PatchTask),
+		"/event/dailyNote/{eventId}/",
+		authenticator.Wrap(PatchDailyNote),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -54,71 +54,71 @@ func init() {
 	// so we will have to register their routes for each event type
 	// we don't use eventType in these functions
 	RegisterRoute(
-		"DeleteEvent_task",
+		"DeleteEvent_dailyNote",
 		"DELETE",
-		"/event/task/{eventId}/",
+		"/event/dailyNote/{eventId}/",
 		authenticator.Wrap(DeleteEvent),
 	)
 	RegisterRoute(
-		"SetEventGroupId_task",
+		"SetEventGroupId_dailyNote",
 		"PUT",
-		"/event/task/{eventId}/groupId/",
+		"/event/dailyNote/{eventId}/groupId/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
-		"GetEventOwner_task",
+		"GetEventOwner_dailyNote",
 		"GET",
-		"/event/task/{eventId}/owner/",
+		"/event/dailyNote/{eventId}/owner/",
 		authenticator.Wrap(GetEventOwner),
 	)
 	RegisterRoute(
-		"SetEventOwner_task",
+		"SetEventOwner_dailyNote",
 		"PUT",
-		"/event/task/{eventId}/owner/",
+		"/event/dailyNote/{eventId}/owner/",
 		authenticator.Wrap(SetEventOwner),
 	)
 	RegisterRoute(
-		"GetEventMeta_task",
+		"GetEventMeta_dailyNote",
 		"GET",
-		"/event/task/{eventId}/meta/",
+		"/event/dailyNote/{eventId}/meta/",
 		authenticator.Wrap(GetEventMeta),
 	)
 	RegisterRoute(
-		"GetEventAccess_task",
+		"GetEventAccess_dailyNote",
 		"GET",
-		"/event/task/{eventId}/access/",
+		"/event/dailyNote/{eventId}/access/",
 		authenticator.Wrap(GetEventAccess),
 	)
 	RegisterRoute(
-		"SetEventAccess_task",
+		"SetEventAccess_dailyNote",
 		"PUT",
-		"/event/task/{eventId}/access/",
+		"/event/dailyNote/{eventId}/access/",
 		authenticator.Wrap(SetEventAccess),
 	)
 	RegisterRoute(
-		"AppendEventAccess_task",
+		"AppendEventAccess_dailyNote",
 		"POST",
-		"/event/task/{eventId}/access/",
+		"/event/dailyNote/{eventId}/access/",
 		authenticator.Wrap(AppendEventAccess),
 	)
 	RegisterRoute(
-		"JoinEvent_task",
+		"JoinEvent_dailyNote",
 		"GET",
-		"/event/task/{eventId}/join/",
+		"/event/dailyNote/{eventId}/join/",
 		authenticator.Wrap(JoinEvent),
 	)
 	RegisterRoute(
-		"LeaveEvent_task",
+		"LeaveEvent_dailyNote",
 		"GET",
-		"/event/task/{eventId}/leave/",
+		"/event/dailyNote/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
 
 }
 
-func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.TaskEventModel{} // DYNAMIC
+	eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -203,7 +203,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddTask",
+			"funcName": "AddDailyNote",
 			"ownerEmail": []interface{}{
 				nil,
 				email,
@@ -214,7 +214,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddTask",
+			"funcName": "AddDailyNote",
 			"groupId": []interface{}{
 				nil,
 				groupId,
@@ -238,7 +238,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadTaskEventModel(
+	_, err = event_lib.LoadDailyNoteEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -265,7 +265,7 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -307,7 +307,7 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventModel, err := event_lib.LoadTaskEventModel(
+	eventModel, err := event_lib.LoadDailyNoteEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -328,9 +328,9 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.TaskEventModel{} // DYNAMIC
+	eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -421,7 +421,7 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadTaskEventModel(
+	_, err = event_lib.LoadDailyNoteEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -443,7 +443,7 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -497,7 +497,7 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		return
 	}
-	eventModel, err := event_lib.LoadTaskEventModel(
+	eventModel, err := event_lib.LoadDailyNoteEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -619,49 +619,7 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 	{
-		rawValue, ok := patchMap["startTime"]
-		if ok {
-			value, typeOk := rawValue.(string)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'startTime'",
-				)
-				return
-			}
-			timeValue, err := time.Parse(time.RFC3339, value)
-			if err != nil {
-				SetHttpError(w, http.StatusBadRequest, err.Error())
-				return
-			}
-			eventModel.StartTime = &timeValue
-			delete(patchMap, "startTime")
-		}
-	}
-	{
-		rawValue, ok := patchMap["endTime"]
-		if ok {
-			value, typeOk := rawValue.(string)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'endTime'",
-				)
-				return
-			}
-			timeValue, err := time.Parse(time.RFC3339, value)
-			if err != nil {
-				SetHttpError(w, http.StatusBadRequest, err.Error())
-				return
-			}
-			eventModel.EndTime = &timeValue
-			delete(patchMap, "endTime")
-		}
-	}
-	{
-		rawValue, ok := patchMap["durationUnit"]
+		rawValue, ok := patchMap["jd"]
 		if ok {
 			// json Unmarshal converts int to float64
 			value, typeOk := rawValue.(float64)
@@ -669,12 +627,12 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'durationUnit'",
+					"bad type for parameter 'jd'",
 				)
 				return
 			}
-			eventModel.DurationUnit = int(value)
-			delete(patchMap, "durationUnit")
+			eventModel.Jd = int(value)
+			delete(patchMap, "jd")
 		}
 	}
 	if len(patchMap) > 0 {
@@ -713,7 +671,7 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadTaskEventModel(
+	_, err = event_lib.LoadDailyNoteEventModel(
 		db,
 		eventModel.Sha1,
 	)

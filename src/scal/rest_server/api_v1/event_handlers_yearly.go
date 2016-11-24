@@ -1,6 +1,6 @@
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
-package rest_server
+package api_v1
 
 import (
 	"fmt"
@@ -25,28 +25,28 @@ import (
 
 func init() {
 	RegisterRoute(
-		"AddLifeTime",
+		"AddYearly",
 		"POST",
-		"/event/lifeTime/",
-		authenticator.Wrap(AddLifeTime),
+		"/event/yearly/",
+		authenticator.Wrap(AddYearly),
 	)
 	RegisterRoute(
-		"GetLifeTime",
+		"GetYearly",
 		"GET",
-		"/event/lifeTime/{eventId}/",
-		authenticator.Wrap(GetLifeTime),
+		"/event/yearly/{eventId}/",
+		authenticator.Wrap(GetYearly),
 	)
 	RegisterRoute(
-		"UpdateLifeTime",
+		"UpdateYearly",
 		"PUT",
-		"/event/lifeTime/{eventId}/",
-		authenticator.Wrap(UpdateLifeTime),
+		"/event/yearly/{eventId}/",
+		authenticator.Wrap(UpdateYearly),
 	)
 	RegisterRoute(
-		"PatchLifeTime",
+		"PatchYearly",
 		"PATCH",
-		"/event/lifeTime/{eventId}/",
-		authenticator.Wrap(PatchLifeTime),
+		"/event/yearly/{eventId}/",
+		authenticator.Wrap(PatchYearly),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -54,71 +54,71 @@ func init() {
 	// so we will have to register their routes for each event type
 	// we don't use eventType in these functions
 	RegisterRoute(
-		"DeleteEvent_lifeTime",
+		"DeleteEvent_yearly",
 		"DELETE",
-		"/event/lifeTime/{eventId}/",
+		"/event/yearly/{eventId}/",
 		authenticator.Wrap(DeleteEvent),
 	)
 	RegisterRoute(
-		"SetEventGroupId_lifeTime",
+		"SetEventGroupId_yearly",
 		"PUT",
-		"/event/lifeTime/{eventId}/groupId/",
+		"/event/yearly/{eventId}/groupId/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
-		"GetEventOwner_lifeTime",
+		"GetEventOwner_yearly",
 		"GET",
-		"/event/lifeTime/{eventId}/owner/",
+		"/event/yearly/{eventId}/owner/",
 		authenticator.Wrap(GetEventOwner),
 	)
 	RegisterRoute(
-		"SetEventOwner_lifeTime",
+		"SetEventOwner_yearly",
 		"PUT",
-		"/event/lifeTime/{eventId}/owner/",
+		"/event/yearly/{eventId}/owner/",
 		authenticator.Wrap(SetEventOwner),
 	)
 	RegisterRoute(
-		"GetEventMeta_lifeTime",
+		"GetEventMeta_yearly",
 		"GET",
-		"/event/lifeTime/{eventId}/meta/",
+		"/event/yearly/{eventId}/meta/",
 		authenticator.Wrap(GetEventMeta),
 	)
 	RegisterRoute(
-		"GetEventAccess_lifeTime",
+		"GetEventAccess_yearly",
 		"GET",
-		"/event/lifeTime/{eventId}/access/",
+		"/event/yearly/{eventId}/access/",
 		authenticator.Wrap(GetEventAccess),
 	)
 	RegisterRoute(
-		"SetEventAccess_lifeTime",
+		"SetEventAccess_yearly",
 		"PUT",
-		"/event/lifeTime/{eventId}/access/",
+		"/event/yearly/{eventId}/access/",
 		authenticator.Wrap(SetEventAccess),
 	)
 	RegisterRoute(
-		"AppendEventAccess_lifeTime",
+		"AppendEventAccess_yearly",
 		"POST",
-		"/event/lifeTime/{eventId}/access/",
+		"/event/yearly/{eventId}/access/",
 		authenticator.Wrap(AppendEventAccess),
 	)
 	RegisterRoute(
-		"JoinEvent_lifeTime",
+		"JoinEvent_yearly",
 		"GET",
-		"/event/lifeTime/{eventId}/join/",
+		"/event/yearly/{eventId}/join/",
 		authenticator.Wrap(JoinEvent),
 	)
 	RegisterRoute(
-		"LeaveEvent_lifeTime",
+		"LeaveEvent_yearly",
 		"GET",
-		"/event/lifeTime/{eventId}/leave/",
+		"/event/yearly/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
 
 }
 
-func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.LifeTimeEventModel{} // DYNAMIC
+	eventModel := event_lib.YearlyEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -203,7 +203,7 @@ func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddLifeTime",
+			"funcName": "AddYearly",
 			"ownerEmail": []interface{}{
 				nil,
 				email,
@@ -214,7 +214,7 @@ func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			"email":    email,
 			"remoteIp": remoteIp,
 			"eventId":  eventId,
-			"funcName": "AddLifeTime",
+			"funcName": "AddYearly",
 			"groupId": []interface{}{
 				nil,
 				groupId,
@@ -238,7 +238,7 @@ func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLifeTimeEventModel(
+	_, err = event_lib.LoadYearlyEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -265,7 +265,7 @@ func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -307,7 +307,7 @@ func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventModel, err := event_lib.LoadLifeTimeEventModel(
+	eventModel, err := event_lib.LoadYearlyEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -328,9 +328,9 @@ func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
-	eventModel := event_lib.LifeTimeEventModel{} // DYNAMIC
+	eventModel := event_lib.YearlyEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
@@ -421,7 +421,7 @@ func UpdateLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLifeTimeEventModel(
+	_, err = event_lib.LoadYearlyEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -443,7 +443,7 @@ func UpdateLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	defer r.Body.Close()
 	// -----------------------------------------------
 	email := r.Username
@@ -497,7 +497,7 @@ func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		return
 	}
-	eventModel, err := event_lib.LoadLifeTimeEventModel(
+	eventModel, err := event_lib.LoadYearlyEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -619,7 +619,7 @@ func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 	{
-		rawValue, ok := patchMap["startJd"]
+		rawValue, ok := patchMap["month"]
 		if ok {
 			// json Unmarshal converts int to float64
 			value, typeOk := rawValue.(float64)
@@ -627,16 +627,16 @@ func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'startJd'",
+					"bad type for parameter 'month'",
 				)
 				return
 			}
-			eventModel.StartJd = int(value)
-			delete(patchMap, "startJd")
+			eventModel.Month = int(value)
+			delete(patchMap, "month")
 		}
 	}
 	{
-		rawValue, ok := patchMap["endJd"]
+		rawValue, ok := patchMap["day"]
 		if ok {
 			// json Unmarshal converts int to float64
 			value, typeOk := rawValue.(float64)
@@ -644,12 +644,45 @@ func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'endJd'",
+					"bad type for parameter 'day'",
 				)
 				return
 			}
-			eventModel.EndJd = int(value)
-			delete(patchMap, "endJd")
+			eventModel.Day = int(value)
+			delete(patchMap, "day")
+		}
+	}
+	{
+		rawValue, ok := patchMap["startYear"]
+		if ok {
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'startYear'",
+				)
+				return
+			}
+			eventModel.StartYear = int(value)
+			delete(patchMap, "startYear")
+		}
+	}
+	{
+		rawValue, ok := patchMap["startYearEnable"]
+		if ok {
+			value, typeOk := rawValue.(bool)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'startYearEnable'",
+				)
+				return
+			}
+			eventModel.StartYearEnable = value
+			delete(patchMap, "startYearEnable")
 		}
 	}
 	if len(patchMap) > 0 {
@@ -688,7 +721,7 @@ func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLifeTimeEventModel(
+	_, err = event_lib.LoadYearlyEventModel(
 		db,
 		eventModel.Sha1,
 	)
