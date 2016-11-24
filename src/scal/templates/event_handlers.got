@@ -4,14 +4,14 @@ package api_v1
 
 import (
 	"fmt"
-	"time"
 	"strings"
+	"time"
 	//"log"
+	"crypto/sha1"
+	"encoding/json"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"encoding/json"
-	"crypto/sha1"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -19,11 +19,11 @@ import (
 
 	"scal-lib/go-http-auth"
 
-	"scal/storage"
 	"scal/event_lib"
+	"scal/storage"
 )
 
-func init(){
+func init() {
 	RegisterRoute(
 		"Add{{EVENT_TYPE_CAP}}",
 		"POST",
@@ -189,20 +189,20 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 		groupId = &groupModel.Id
 	}
 	eventMeta := event_lib.EventMetaModel{
-		EventId: eventId,
-		EventType: eventModel.Type(),
+		EventId:      eventId,
+		EventType:    eventModel.Type(),
 		CreationTime: time.Now(),
-		OwnerEmail: email,
-		GroupId: groupId,
+		OwnerEmail:   email,
+		GroupId:      groupId,
 		//AccessEmails: []string{}
 	}
 	now := time.Now()
 	err = db.C(storage.C_eventMetaChangeLog).Insert(
 		bson.M{
-			"time": now,
-			"email": email,
+			"time":     now,
+			"email":    email,
 			"remoteIp": remoteIp,
-			"eventId": eventId,
+			"eventId":  eventId,
 			"funcName": "Add{{EVENT_TYPE_CAP}}",
 			"ownerEmail": []interface{}{
 				nil,
@@ -210,10 +210,10 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 			},
 		},
 		bson.M{
-			"time": now,
-			"email": email,
+			"time":     now,
+			"email":    email,
 			"remoteIp": remoteIp,
-			"eventId": eventId,
+			"eventId":  eventId,
 			"funcName": "Add{{EVENT_TYPE_CAP}}",
 			"groupId": []interface{}{
 				nil,
@@ -226,10 +226,10 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 		return
 	}
 	err = storage.Insert(db, event_lib.EventRevisionModel{
-		EventId: eventId,
+		EventId:   eventId,
 		EventType: eventModel.Type(),
-		Sha1: eventModel.Sha1,
-		Time: time.Now(),
+		Sha1:      eventModel.Sha1,
+		Time:      time.Now(),
 	})
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -261,7 +261,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 	}
 	json.NewEncoder(w).Encode(map[string]string{
 		"eventId": eventId.Hex(),
-		"sha1": eventModel.Sha1,
+		"sha1":    eventModel.Sha1,
 	})
 }
 
@@ -271,7 +271,9 @@ func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
-	if eventId==nil { return }
+	if eventId == nil {
+		return
+	}
 	// -----------------------------------------------
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	var err error
@@ -333,7 +335,9 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedReques
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
-	if eventId==nil { return }
+	if eventId == nil {
+		return
+	}
 	// -----------------------------------------------
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	var err error
@@ -403,10 +407,10 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedReques
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 
 	eventRev := event_lib.EventRevisionModel{
-		EventId: *eventId,
+		EventId:   *eventId,
 		EventType: eventModel.Type(),
-		Sha1: eventModel.Sha1,
-		Time: time.Now(),
+		Sha1:      eventModel.Sha1,
+		Time:      time.Now(),
 	}
 	err = storage.Insert(db, eventRev)
 	if err != nil {
@@ -430,13 +434,13 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedReques
 			}
 		} else {
 			SetHttpErrorInternal(w, err)
-			return 
+			return
 		}
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{
 		"eventId": eventId.Hex(),
-		"sha1": eventRev.Sha1,
+		"sha1":    eventRev.Sha1,
 	})
 }
 
@@ -447,7 +451,9 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest
 	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
-	if eventId==nil { return }
+	if eventId == nil {
+		return
+	}
 	// -----------------------------------------------
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	var err error
@@ -499,7 +505,7 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest
 	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
-		return 
+		return
 	}
 
 	{% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
@@ -561,10 +567,10 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 
 	err = storage.Insert(db, event_lib.EventRevisionModel{
-		EventId: *eventId,
+		EventId:   *eventId,
 		EventType: eventModel.Type(),
-		Sha1: eventModel.Sha1,
-		Time: time.Now(),
+		Sha1:      eventModel.Sha1,
+		Time:      time.Now(),
 	})
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -591,6 +597,6 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest
 	}
 	json.NewEncoder(w).Encode(map[string]string{
 		"eventId": eventId.Hex(),
-		"sha1": eventModel.Sha1,
+		"sha1":    eventModel.Sha1,
 	})
 }
