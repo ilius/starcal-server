@@ -34,7 +34,7 @@ params = {
 }
 
 r = requests.put(
-    "http://%s:8080/event/yearly/%s/" % (host, eventId),
+    "http://%s:9001/event/yearly/%s/" % (host, eventId),
     auth=HTTPDigestAuth(email, password),
     json=params,
 )

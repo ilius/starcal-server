@@ -17,7 +17,7 @@ password = os.getenv("STARCAL_PASSWORD")
 eventType, eventId, newGroupId = sys.argv[1:4]
 
 r = requests.put(
-    "http://%s:8080/event/%s/%s/groupId/" % (
+    "http://%s:9001/event/%s/%s/groupId/" % (
         host,
         eventType,
         eventId,

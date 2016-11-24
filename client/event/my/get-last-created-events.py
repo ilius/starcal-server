@@ -15,7 +15,7 @@ count = sys.argv[1]
 count = int(count)
 
 r = requests.get(
-    "http://%s:8080/event/my/last-created-events/%s/" % (host, count),
+    "http://%s:9001/event/my/last-created-events/%s/" % (host, count),
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

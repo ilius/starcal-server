@@ -19,7 +19,7 @@ groupId, groupTitle = sys.argv[1:3]
 # not passing "addAccessEmails" will remove it if it was set before
 
 r = requests.put(
-    "http://%s:8080/event/groups/%s/" % (host, groupId),
+    "http://%s:9001/event/groups/%s/" % (host, groupId),
     auth=HTTPDigestAuth(email, password),
     json={
         "title": groupTitle,

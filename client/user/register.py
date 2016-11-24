@@ -13,7 +13,7 @@ host = os.getenv("STARCAL_HOST", "127.0.0.1")
 email, password = sys.argv[1:3]
 
 r = requests.post(
-    "http://%s:8080/user/register/" % host,
+    "http://%s:9001/user/register/" % host,
     json={
         'email': email,
         'password': password,

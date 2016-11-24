@@ -15,7 +15,7 @@ password = os.getenv("STARCAL_PASSWORD")
 groupId = sys.argv[1]
 
 r = requests.get(
-    "http://%s:8080/event/groups/%s/events-full/" % (host, groupId),
+    "http://%s:9001/event/groups/%s/events-full/" % (host, groupId),
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

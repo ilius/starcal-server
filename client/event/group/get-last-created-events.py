@@ -17,7 +17,7 @@ groupId, count = sys.argv[1:3]
 count = int(count)
 
 r = requests.get(
-    "http://%s:8080/event/groups/%s/last-created-events/%s/" % (
+    "http://%s:9001/event/groups/%s/last-created-events/%s/" % (
         host,
         groupId,
         count,

@@ -13,7 +13,7 @@ email = os.getenv("STARCAL_EMAIL")
 password = os.getenv("STARCAL_PASSWORD")
 
 r = requests.get(
-    "http://%s:8080/event/ungrouped" % host,
+    "http://%s:9001/event/ungrouped" % host,
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

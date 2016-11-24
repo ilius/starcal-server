@@ -17,7 +17,7 @@ password = os.getenv("STARCAL_PASSWORD")
 eventType, eventId, toAddEmail = sys.argv[1:4]
 
 r = requests.post(
-    "http://%s:8080/event/%s/%s/access/" % (
+    "http://%s:9001/event/%s/%s/access/" % (
         host,
         eventType,
         eventId,

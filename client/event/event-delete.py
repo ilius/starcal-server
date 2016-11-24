@@ -16,7 +16,7 @@ password = os.getenv("STARCAL_PASSWORD")
 eventType, eventId = sys.argv[1:3]
 
 r = requests.delete(
-    "http://%s:8080/event/%s/%s/" % (
+    "http://%s:9001/event/%s/%s/" % (
         host,
         eventType,
         eventId,

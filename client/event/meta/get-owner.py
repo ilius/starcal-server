@@ -16,7 +16,7 @@ password = os.getenv("STARCAL_PASSWORD")
 eventType, eventId = sys.argv[1:3]
 
 r = requests.get(
-    "http://%s:8080/event/%s/%s/owner/" % (
+    "http://%s:9001/event/%s/%s/owner/" % (
         host,
         eventType,
         eventId,

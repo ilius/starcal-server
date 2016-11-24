@@ -16,7 +16,7 @@ password = os.getenv("STARCAL_PASSWORD")
 eventId = sys.argv[1]
 
 r = requests.get(
-    "http://%s:8080/event/weekly/%s/" % (host, eventId),
+    "http://%s:9001/event/weekly/%s/" % (host, eventId),
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

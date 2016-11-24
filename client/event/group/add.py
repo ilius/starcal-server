@@ -15,7 +15,7 @@ password = os.getenv("STARCAL_PASSWORD")
 groupTitle = sys.argv[1]
 
 r = requests.post(
-    "http://%s:8080/event/groups/" % host,
+    "http://%s:9001/event/groups/" % host,
     auth=HTTPDigestAuth(email, password),
     json={
         "title": groupTitle,

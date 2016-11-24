@@ -13,7 +13,7 @@ email = os.getenv("STARCAL_EMAIL")
 password = os.getenv("STARCAL_PASSWORD")
 
 r = requests.delete(
-    "http://%s:8080/user/default-group-id/" % host,
+    "http://%s:9001/user/default-group-id/" % host,
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

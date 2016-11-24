@@ -15,7 +15,7 @@ password = os.getenv("STARCAL_PASSWORD")
 groupId = sys.argv[1]
 
 r = requests.delete(
-    "http://%s:8080/event/groups/%s/" % (host, groupId),
+    "http://%s:9001/event/groups/%s/" % (host, groupId),
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

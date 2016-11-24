@@ -16,7 +16,7 @@ password = os.getenv("STARCAL_PASSWORD")
 groupId, sinceDateTime = sys.argv[1:3]
 
 r = requests.get(
-    "http://%s:8080/event/groups/%s/moved-events/%s/" % (
+    "http://%s:9001/event/groups/%s/moved-events/%s/" % (
         host,
         groupId,
         sinceDateTime,

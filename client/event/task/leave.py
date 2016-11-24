@@ -14,7 +14,7 @@ password = os.getenv("STARCAL_PASSWORD")
 eventId = sys.argv[1]
 
 r = requests.get(
-    "http://%s:8080/event/task/%s/leave" % (host, eventId),
+    "http://%s:9001/event/task/%s/leave" % (host, eventId),
     auth=HTTPDigestAuth(email, password),
 )
 print(r)

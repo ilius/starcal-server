@@ -15,7 +15,7 @@ password = os.getenv("STARCAL_PASSWORD")
 fullName = sys.argv[1]
 
 r = requests.put(
-    "http://%s:8080/user/full-name/" % host,
+    "http://%s:9001/user/full-name/" % host,
     auth=HTTPDigestAuth(email, password),
     json={
         'fullName': fullName,

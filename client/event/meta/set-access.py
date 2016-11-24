@@ -18,7 +18,7 @@ eventType, eventId = sys.argv[1:3]
 accessEmails = sys.argv[3:]
 
 r = requests.put(
-    "http://%s:8080/event/%s/%s/access/" % (
+    "http://%s:9001/event/%s/%s/access/" % (
         host,
         eventType,
         eventId,

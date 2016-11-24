@@ -41,7 +41,7 @@ except IndexError:
     pass
 
 r = requests.post(
-    "http://%s:8080/event/monthly/" % host,
+    "http://%s:9001/event/monthly/" % host,
     auth=HTTPDigestAuth(email, password),
     json=params,
 )

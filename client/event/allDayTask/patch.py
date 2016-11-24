@@ -33,7 +33,7 @@ params = {
 }
 
 r = requests.patch(
-    "http://%s:8080/event/allDayTask/%s/" % (host, eventId),
+    "http://%s:9001/event/allDayTask/%s/" % (host, eventId),
     auth=HTTPDigestAuth(email, password),
     json=params,
 )
