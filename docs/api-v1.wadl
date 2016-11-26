@@ -174,6 +174,23 @@
 						</response>
 					</method>
 				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_allDayTask">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/dailyNote">
@@ -338,6 +355,23 @@
 						</request>
 						<response>
 							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_dailyNote">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
 						</response>
 					</method>
 				</resource>
@@ -520,6 +554,23 @@
 						</response>
 					</method>
 				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_largeScale">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/lifeTime">
@@ -688,6 +739,23 @@
 						</request>
 						<response>
 							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_lifeTime">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
 						</response>
 					</method>
 				</resource>
@@ -874,6 +942,23 @@
 						</response>
 					</method>
 				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_monthly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/task">
@@ -1046,6 +1131,23 @@
 						</request>
 						<response>
 							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_task">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
 						</response>
 					</method>
 				</resource>
@@ -1240,6 +1342,23 @@
 						</response>
 					</method>
 				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_universityClass">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/universityExam">
@@ -1416,6 +1535,23 @@
 						</request>
 						<response>
 							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_universityExam">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
 						</response>
 					</method>
 				</resource>
@@ -1602,6 +1738,23 @@
 						</response>
 					</method>
 				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_weekly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/yearly">
@@ -1778,6 +1931,23 @@
 						</request>
 						<response>
 							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/meta">
+					<method name="GET" id="getEventMeta_yearly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
 						</response>
 					</method>
 				</resource>
