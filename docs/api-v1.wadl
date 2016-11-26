@@ -15,6 +15,8 @@
 				<option value="yearly"/>
 			</param>
 			<param name="eventId" type="xs:string"/>
+			<method name="DELETE" id="deleteEvent">
+			</method>
 			<resource path="/group">
 				<method name="PUT" id="setEventGroupId">
 					<request>
@@ -229,8 +231,6 @@
 						<param name="sha1" type="xs:string"/>
 					</response>
 				</method>
-				<method name="DELETE" id="delete_allDayTask">
-				</method>
 			</resource>
 		</resource>
 		<resource path="/event/dailyNote">
@@ -346,8 +346,6 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="sha1" type="xs:string"/>
 					</response>
-				</method>
-				<method name="DELETE" id="delete_dailyNote">
 				</method>
 			</resource>
 		</resource>
@@ -477,8 +475,6 @@
 						<param name="sha1" type="xs:string"/>
 					</response>
 				</method>
-				<method name="DELETE" id="delete_largeScale">
-				</method>
 			</resource>
 		</resource>
 		<resource path="/event/lifeTime">
@@ -598,8 +594,6 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="sha1" type="xs:string"/>
 					</response>
-				</method>
-				<method name="DELETE" id="delete_lifeTime">
 				</method>
 			</resource>
 		</resource>
@@ -733,8 +727,6 @@
 						<param name="sha1" type="xs:string"/>
 					</response>
 				</method>
-				<method name="DELETE" id="delete_monthly">
-				</method>
 			</resource>
 		</resource>
 		<resource path="/event/task">
@@ -858,8 +850,6 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="sha1" type="xs:string"/>
 					</response>
-				</method>
-				<method name="DELETE" id="delete_task">
 				</method>
 			</resource>
 		</resource>
@@ -1001,8 +991,6 @@
 						<param name="sha1" type="xs:string"/>
 					</response>
 				</method>
-				<method name="DELETE" id="delete_universityClass">
-				</method>
 			</resource>
 		</resource>
 		<resource path="/event/universityExam">
@@ -1130,8 +1118,6 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="sha1" type="xs:string"/>
 					</response>
-				</method>
-				<method name="DELETE" id="delete_universityExam">
 				</method>
 			</resource>
 		</resource>
@@ -1265,8 +1251,6 @@
 						<param name="sha1" type="xs:string"/>
 					</response>
 				</method>
-				<method name="DELETE" id="delete_weekly">
-				</method>
 			</resource>
 		</resource>
 		<resource path="/event/yearly">
@@ -1394,8 +1378,6 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="sha1" type="xs:string"/>
 					</response>
-				</method>
-				<method name="DELETE" id="delete_yearly">
 				</method>
 			</resource>
 		</resource>
