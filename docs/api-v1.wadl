@@ -24,6 +24,35 @@
 					<param name="groupId" type="xs:string"/>
 				</response>
 			</method>
+			<resource path="{groupId}/">
+				<method name="GET" id="getGroup">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="title" type="xs:string"/>
+						<param name="ownerEmail" type="xs:string"/>
+						<param name="addAccessEmails" type="xs:list" itemType="xs:string"
+							required="false" description="missing if it's empty"/>
+						<param name="readAccessEmails" type="xs:list" itemType="xs:string"
+							required="false" description="missing if it's empty"/>
+					</response>
+				</method>
+				<method name="PUT" id="updateGroup">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="title" type="xs:string" required="true"/>
+						<param name="addAccessEmails" type="xs:list" itemType="xs:string"
+							required="false" description="supposed empty if missing"/>
+						<param name="readAccessEmails" type="xs:list" itemType="xs:string"
+							required="false" description="supposed empty if missing"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+				<method name="DELETE" id="deleteGroup">
+				</method>
+			</resource>
 		</resource>
 		<resource path="event/{eventType}/{eventId}/">
 			<param name="eventType" type="xs:string">
