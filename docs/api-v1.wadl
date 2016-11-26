@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <application xmlns="http://localhost:9001/application.wadl">
 	<resources base="http://localhost:9001/">
+		<resource path="event/groups/">
+			<method name="GET" id="getGroupList">
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="groups" type="xs:list" itemType="xs:complexType">
+						<item type="xs:complexType">
+							<element name="groupId" type="xs:string"/>
+							<element name="title" type="xs:string"/>
+							<element name="ownerEmail" type="xs:string"/>
+						</item>
+					</param>
+				</response>
+			</method>
+			<method name="POST" id="addGroup">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="title" type="xs:string"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="groupId" type="xs:string"/>
+				</response>
+			</method>
+		</resource>
 		<resource path="event/{eventType}/{eventId}/">
 			<param name="eventType" type="xs:string">
 				<option value="allDayTask"/>
