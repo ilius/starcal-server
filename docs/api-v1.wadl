@@ -92,6 +92,20 @@
 					</response>
 				</method>
 			</resource>
+			<resource path="/join">
+				<method name="POST" id="joinEvent">
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
+			<resource path="/leave">
+				<method name="POST" id="leaveEvent">
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
 		</resource>
 		<resource path="/event/allDayTask">
 			<method name="POST" id="add_allDayTask">
