@@ -125,6 +125,55 @@
 				</method>
 				<method name="DELETE" id="delete_allDayTask">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_allDayTask">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_allDayTask">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_allDayTask">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_allDayTask">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_allDayTask">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/dailyNote">
@@ -243,9 +292,57 @@
 				</method>
 				<method name="DELETE" id="delete_dailyNote">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_dailyNote">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_dailyNote">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_dailyNote">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_dailyNote">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_dailyNote">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
-
 		<resource path="/event/largeScale">
 			<method name="POST" id="add_largeScale">
 				<request>
@@ -374,6 +471,55 @@
 				</method>
 				<method name="DELETE" id="delete_largeScale">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_largeScale">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_largeScale">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_largeScale">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_largeScale">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_largeScale">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/lifeTime">
@@ -496,6 +642,55 @@
 				</method>
 				<method name="DELETE" id="delete_lifeTime">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_lifeTime">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_lifeTime">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_lifeTime">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_lifeTime">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_lifeTime">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/monthly">
@@ -630,6 +825,55 @@
 				</method>
 				<method name="DELETE" id="delete_monthly">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_monthly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_monthly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_monthly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_monthly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_monthly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/task">
@@ -756,6 +1000,55 @@
 				</method>
 				<method name="DELETE" id="delete_task">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_task">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_task">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_task">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_task">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_task">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/universityClass">
@@ -898,6 +1191,55 @@
 				</method>
 				<method name="DELETE" id="delete_universityClass">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_universityClass">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_universityClass">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_universityClass">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_universityClass">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_universityClass">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/universityExam">
@@ -1028,6 +1370,55 @@
 				</method>
 				<method name="DELETE" id="delete_universityExam">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_universityExam">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_universityExam">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_universityExam">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_universityExam">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_universityExam">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/weekly">
@@ -1162,6 +1553,55 @@
 				</method>
 				<method name="DELETE" id="delete_weekly">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_weekly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_weekly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_weekly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_weekly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_weekly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="/event/yearly">
@@ -1292,6 +1732,55 @@
 				</method>
 				<method name="DELETE" id="delete_yearly">
 				</method>
+				<resource path="/owner">
+					<method name="GET" id="getEventOwner_yearly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="ownerEmail" type="xs:string"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner_yearly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="/access">
+					<method name="GET" id="getEventAccess_yearly">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess_yearly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess_yearly">
+						<request>
+							<representation mediaType="app/json"/>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 	</resources>
