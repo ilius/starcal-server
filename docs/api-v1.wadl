@@ -15,6 +15,17 @@
 				<option value="yearly"/>
 			</param>
 			<param name="eventId" type="xs:string"/>
+			<resource path="/group">
+				<method name="PUT" id="setEventGroupId">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="newGroupId" type="xs:string"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
 			<resource path="/owner">
 				<method name="GET" id="getEventOwner">
 					<response>
