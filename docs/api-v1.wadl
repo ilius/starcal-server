@@ -1,0 +1,1298 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<application xmlns="http://localhost:9001/application.wadl">
+	<resources base="http://localhost:9001/">
+		<resource path="/event/allDayTask">
+			<method name="POST" id="add_allDayTask">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="startJd" type="xs:int" required="true"/>
+					<param name="endJd" type="xs:int" required="true"/>
+					<param name="durationEnable" type="xs:boolean" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_allDayTask">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+					    <param name="startJd" type="xs:int"/>
+					    <param name="endJd" type="xs:int"/>
+					    <param name="durationEnable" type="xs:boolean"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_allDayTask">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+					    <param name="startJd" type="xs:int" required="true"/>
+					    <param name="endJd" type="xs:int" required="true"/>
+					    <param name="durationEnable" type="xs:boolean" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_allDayTask">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+					    <param name="startJd" type="xs:int" required="false"/>
+					    <param name="endJd" type="xs:int" required="false"/>
+					    <param name="durationEnable" type="xs:boolean" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_allDayTask">
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event/dailyNote">
+			<method name="POST" id="add_dailyNote">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="jd" type="xs:int" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_dailyNote">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="jd" type="xs:int"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_dailyNote">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="jd" type="xs:int" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_dailyNote">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="jd" type="xs:int" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_dailyNote">
+				</method>
+			</resource>
+		</resource>
+
+		<resource path="/event/largeScale">
+			<method name="POST" id="add_largeScale">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="scale" type="xs:int" required="true"/>
+					<param name="start" type="xs:int" required="true"/>
+					<param name="end" type="xs:int" required="true"/>
+					<param name="durationEnable" type="xs:boolean" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_largeScale">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="scale" type="xs:int"/>
+						<param name="start" type="xs:int"/>
+						<param name="end" type="xs:int"/>
+						<param name="durationEnable" type="xs:boolean"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_largeScale">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="scale" type="xs:int" required="true"/>
+						<param name="start" type="xs:int" required="true"/>
+						<param name="end" type="xs:int" required="true"/>
+						<param name="durationEnable" type="xs:boolean" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_largeScale">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="scale" type="xs:int" required="false"/>
+						<param name="start" type="xs:int" required="false"/>
+						<param name="end" type="xs:int" required="false"/>
+						<param name="durationEnable" type="xs:boolean" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_largeScale">
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event/lifeTime">
+			<method name="POST" id="add_lifeTime">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="startJd" type="xs:int" required="true"/>
+					<param name="endJd" type="xs:int" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_lifeTime">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="startJd" type="xs:int"/>
+						<param name="endJd" type="xs:int"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_lifeTime">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="startJd" type="xs:int" required="true"/>
+						<param name="endJd" type="xs:int" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_lifeTime">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="startJd" type="xs:int" required="false"/>
+						<param name="endJd" type="xs:int" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_lifeTime">
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event/monthly">
+			<method name="POST" id="add_monthly">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="startJd" type="xs:int" required="true"/>
+					<param name="endJd" type="xs:int" required="true"/>
+					<param name="day" type="xs:int" required="true"/>
+					<param name="dayStartSeconds" type="xs:int" required="true"/>
+					<param name="dayEndSeconds" type="xs:int" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_monthly">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="startJd" type="xs:int"/>
+						<param name="endJd" type="xs:int"/>
+						<param name="day" type="xs:int"/>
+						<param name="dayStartSeconds" type="xs:int"/>
+						<param name="dayEndSeconds" type="xs:int"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_monthly">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="startJd" type="xs:int" required="true"/>
+						<param name="endJd" type="xs:int" required="true"/>
+						<param name="day" type="xs:int" required="true"/>
+						<param name="dayStartSeconds" type="xs:int" required="true"/>
+						<param name="dayEndSeconds" type="xs:int" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_monthly">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="startJd" type="xs:int" required="false"/>
+						<param name="endJd" type="xs:int" required="false"/>
+						<param name="day" type="xs:int" required="false"/>
+						<param name="dayStartSeconds" type="xs:int" required="false"/>
+						<param name="dayEndSeconds" type="xs:int" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_monthly">
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event/task">
+			<method name="POST" id="add_task">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="startTime" type="xsd:dateTime" required="true"/>
+					<param name="endTime" type="xsd:dateTime" required="true"/>
+					<param name="durationUnit" type="xs:int" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_task">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="startTime" type="xsd:dateTime"/>
+						<param name="endTime" type="xsd:dateTime"/>
+						<param name="durationUnit" type="xs:int"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_task">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="startTime" type="xsd:dateTime" required="true"/>
+						<param name="endTime" type="xsd:dateTime" required="true"/>
+						<param name="durationUnit" type="xs:int" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_task">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="startTime" type="xsd:dateTime" required="false"/>
+						<param name="endTime" type="xsd:dateTime" required="false"/>
+						<param name="durationUnit" type="xs:int" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_task">
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event/universityClass">
+			<method name="POST" id="add_universityClass">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="weekNumMode" type="xs:string" required="true">
+						<option value="any"/>
+						<option value="odd"/>
+						<option value="even"/>
+					</param>
+					<param name="weekDayList" type="xs:list" itemType="xs:int"
+						required="true" description="0=Sunday, 6=Saturday"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_universityClass">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="weekNumMode" type="xs:string">
+							<option value="any"/>
+							<option value="odd"/>
+							<option value="even"/>
+						</param>
+						<param name="weekDayList" type="xs:list" itemType="xs:int"
+							description="0=Sunday, 6=Saturday"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_universityClass">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="weekNumMode" type="xs:string" required="true">
+							<option value="any"/>
+							<option value="odd"/>
+							<option value="even"/>
+						</param>
+						<param name="weekDayList" type="xs:list" itemType="xs:int"
+							required="true" description="0=Sunday, 6=Saturday"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_universityClass">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="weekNumMode" type="xs:string" required="false">
+							<option value="any"/>
+							<option value="odd"/>
+							<option value="even"/>
+						</param>
+						<param name="weekDayList" type="xs:list" itemType="xs:int"
+							required="false" description="0=Sunday, 6=Saturday"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_universityClass">
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event/universityExam">
+			<method name="POST" id="add_universityExam">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="jd" type="xs:int" required="true"/>
+					<param name="dayStartSeconds" type="xs:int" required="true"/>
+					<param name="dayEndSeconds" type="xs:int" required="true"/>
+					<param name="courseId" type="xs:int" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_universityExam">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="jd" type="xs:int"/>
+						<param name="dayStartSeconds" type="xs:int"/>
+						<param name="dayEndSeconds" type="xs:int"/>
+						<param name="courseId" type="xs:int"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_universityExam">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="jd" type="xs:int" required="true"/>
+						<param name="dayStartSeconds" type="xs:int" required="true"/>
+						<param name="dayEndSeconds" type="xs:int" required="true"/>
+						<param name="courseId" type="xs:int" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_universityExam">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="jd" type="xs:int" required="false"/>
+						<param name="dayStartSeconds" type="xs:int" required="false"/>
+						<param name="dayEndSeconds" type="xs:int" required="false"/>
+						<param name="courseId" type="xs:int" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_universityExam">
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event/weekly">
+			<method name="POST" id="add_weekly">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="startJd" type="xs:int" required="true"/>
+					<param name="endJd" type="xs:int" required="true"/>
+					<param name="cycleWeeks" type="xs:int" required="true"/>
+					<param name="dayStartSeconds" type="xs:int" required="true"/>
+					<param name="dayEndSeconds" type="xs:int" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_weekly">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="startJd" type="xs:int"/>
+						<param name="endJd" type="xs:int"/>
+						<param name="cycleWeeks" type="xs:int"/>
+						<param name="dayStartSeconds" type="xs:int"/>
+						<param name="dayEndSeconds" type="xs:int"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_weekly">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="startJd" type="xs:int" required="true"/>
+						<param name="endJd" type="xs:int" required="true"/>
+						<param name="cycleWeeks" type="xs:int" required="true"/>
+						<param name="dayStartSeconds" type="xs:int" required="true"/>
+						<param name="dayEndSeconds" type="xs:int" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_weekly">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="startJd" type="xs:int" required="false"/>
+						<param name="endJd" type="xs:int" required="false"/>
+						<param name="cycleWeeks" type="xs:int" required="false"/>
+						<param name="dayStartSeconds" type="xs:int" required="false"/>
+						<param name="dayEndSeconds" type="xs:int" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_weekly">
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event/yearly">
+			<method name="POST" id="add_yearly">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="notifyBefore" type="xs:int" required="false"/>
+					<param name="month" type="xs:int" required="true"/>
+					<param name="day" type="xs:int" required="true"/>
+					<param name="startYear" type="xs:int" required="true"/>
+					<param name="startYearEnable" type="xs:boolean" required="true"/>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="/{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_yearly">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="notifyBefore" type="xs:int"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="">
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="creationTime" type="xsd:dateTime"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+						<param name="month" type="xs:int"/>
+						<param name="day" type="xs:int"/>
+						<param name="startYear" type="xs:int"/>
+						<param name="startYearEnable" type="xs:boolean"/>
+					</response>
+				</method>
+				<method name="PUT" id="update_yearly">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="month" type="xs:int" required="true"/>
+						<param name="day" type="xs:int" required="true"/>
+						<param name="startYear" type="xs:int" required="true"/>
+						<param name="startYearEnable" type="xs:boolean" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_yearly">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+						<param name="notifyBefore" type="xs:int" required="false"/>
+						<param name="month" type="xs:int" required="false"/>
+						<param name="day" type="xs:int" required="false"/>
+						<param name="startYear" type="xs:int" required="false"/>
+						<param name="startYearEnable" type="xs:boolean" required="false"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="delete_yearly">
+				</method>
+			</resource>
+		</resource>
+	</resources>
+</application> 
