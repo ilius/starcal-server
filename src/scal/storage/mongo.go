@@ -69,7 +69,7 @@ func (db *MongoDatabase) PipeAll(
 	return db.C(colName).Pipe(pipeline).All(result)
 }
 
-func GetDB() (*MongoDatabase, error) {
+func GetDB() (Database, error) {
 	mongoDBDialInfo := &mgo.DialInfo{
 		Addrs:    []string{settings.MONGO_HOST},
 		Timeout:  2 * time.Second,

@@ -1,13 +1,18 @@
 package storage
 
 import (
+	"errors"
 	"gopkg.in/mgo.v2"
 )
 
 func init() {
-	db, err := GetDB()
+	dbI, err := GetDB()
 	if err != nil {
 		panic(err)
+	}
+	db, ok := dbI.(*MongoDatabase)
+	if !ok {
+		panic(errors.New("could not de-interface Database object"))
 	}
 	/*
 	   With DropDups set to true, documents with the

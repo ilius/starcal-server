@@ -20,7 +20,8 @@ type Database interface {
 	Upsert(model hasCollectionUniqueM) error
 	Remove(model hasCollectionUniqueM) error
 	Get(model hasCollectionUniqueM) error
+	First(scal.M, string, hasCollection) error
 	FindCount(string, scal.M) (int, error)
 	FindAll(string, scal.M, interface{}) error
-	First(scal.M, string, hasCollection) error
+	PipeAll(string, []scal.M, interface{}) error
 }
