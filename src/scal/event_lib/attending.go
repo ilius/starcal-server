@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"scal"
@@ -51,7 +50,7 @@ func LoadEventAttendingModel(
 		Email:   email,
 	}
 	err := db.Get(&attendingModel)
-	if err == mgo.ErrNotFound {
+	if db.IsNotFound(err) {
 		attendingModel.Attending = UNKNOWN
 		attendingModel.ModifiedTime = time.Now()
 		err = nil

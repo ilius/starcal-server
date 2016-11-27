@@ -12,6 +12,9 @@ type MongoDatabase struct {
 	mgo.Database
 }
 
+func (db *MongoDatabase) IsNotFound(err error) bool {
+	return err == mgo.ErrNotFound
+}
 func (db *MongoDatabase) Insert(model hasCollection) error {
 	return db.C(model.Collection()).Insert(model)
 }

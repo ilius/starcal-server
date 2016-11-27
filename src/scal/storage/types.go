@@ -14,6 +14,7 @@ type hasCollectionUniqueM interface {
 }
 
 type Database interface {
+	IsNotFound(error) bool
 	Insert(model hasCollection) error
 	Update(model hasCollectionUniqueM) error
 	Upsert(model hasCollectionUniqueM) error

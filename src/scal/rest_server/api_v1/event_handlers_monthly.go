@@ -13,7 +13,6 @@ import (
 	"net"
 	"net/http"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
@@ -244,7 +243,7 @@ func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		eventModel.Sha1,
 	)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			err = db.Insert(eventModel)
 			if err != nil {
 				SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -286,7 +285,7 @@ func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -300,7 +299,7 @@ func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -313,7 +312,7 @@ func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		eventRev.Sha1,
 	)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -366,7 +365,7 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// check if event exists, and has access to
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -382,7 +381,7 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		// do we need the last revision? to compare or what?
 		lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 		if err != nil {
-			if err == mgo.ErrNotFound {
+			if db.IsNotFound(err) {
 				SetHttpError(w, http.StatusBadRequest, "event not found")
 			} else {
 				SetHttpErrorInternal(w, err)
@@ -427,7 +426,7 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		eventRev.Sha1,
 	)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			err = db.Insert(eventModel)
 			if err != nil {
 				SetHttpError(w, http.StatusBadRequest, err.Error())
@@ -476,7 +475,7 @@ func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// check if event exists, and has access to
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -491,7 +490,7 @@ func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	// do we need the last revision? to compare or what?
 	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -745,7 +744,7 @@ func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		eventModel.Sha1,
 	)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			err = db.Insert(eventModel)
 			if err != nil {
 				SetHttpError(w, http.StatusBadRequest, err.Error())

@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"time"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
@@ -76,7 +75,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -171,7 +170,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, &oldEventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -185,7 +184,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventRev, err := event_lib.LoadLastRevisionModel(db, &oldEventId)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -297,7 +296,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -393,7 +392,7 @@ func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -445,7 +444,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -520,7 +519,7 @@ func GetEventMetaModelFromRequest(
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -619,7 +618,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -733,7 +732,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -798,7 +797,7 @@ func JoinEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)
@@ -835,7 +834,7 @@ func LeaveEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
 		} else {
 			SetHttpErrorInternal(w, err)

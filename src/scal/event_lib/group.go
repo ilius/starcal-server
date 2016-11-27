@@ -3,7 +3,6 @@ package event_lib
 import (
 	"errors"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"scal"
@@ -106,7 +105,7 @@ func LoadGroupModelById(
 	}
 	err = db.Get(groupModel)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if db.IsNotFound(err) {
 			err = errors.New("invalid '" + attrName + "'")
 		} else {
 			internalErr = true

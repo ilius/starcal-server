@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"scal"
@@ -36,7 +35,7 @@ func UserModelByEmail(email string, db storage.Database) *UserModel {
 	}
 	err := db.Get(&user)
 	if err != nil {
-		if err != mgo.ErrNotFound {
+		if !db.IsNotFound(err) {
 			log.Print("unkown error in fetching user model:", err)
 		}
 		return nil
