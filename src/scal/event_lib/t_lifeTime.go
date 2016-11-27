@@ -12,7 +12,7 @@ func (self LifeTimeEventModel) Type() string {
 	return "lifeTime"
 }
 
-func LoadLifeTimeEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadLifeTimeEventModel(db storage.Database, sha1 string) (
 	*LifeTimeEventModel,
 	error,
 ) {

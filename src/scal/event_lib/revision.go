@@ -17,7 +17,7 @@ func (self EventRevisionModel) Collection() string {
 	return storage.C_revision
 }
 
-func LoadLastRevisionModel(db *storage.MongoDatabase, eventId *bson.ObjectId) (
+func LoadLastRevisionModel(db storage.Database, eventId *bson.ObjectId) (
 	*EventRevisionModel,
 	error,
 ) {

@@ -17,7 +17,7 @@ func (self MonthlyEventModel) Type() string {
 	return "monthly"
 }
 
-func LoadMonthlyEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadMonthlyEventModel(db storage.Database, sha1 string) (
 	*MonthlyEventModel,
 	error,
 ) {

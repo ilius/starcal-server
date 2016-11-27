@@ -28,7 +28,7 @@ func (self EventAttendingModel) UniqueM() bson.M {
 func (self EventAttendingModel) Collection() string {
 	return storage.C_attending
 }
-func (self *EventAttendingModel) Save(db *storage.MongoDatabase) error {
+func (self *EventAttendingModel) Save(db storage.Database) error {
 	if self.Attending == UNKNOWN {
 		return db.Remove(self)
 	}
@@ -41,7 +41,7 @@ func (self *EventAttendingModel) Save(db *storage.MongoDatabase) error {
 }
 
 func LoadEventAttendingModel(
-	db *storage.MongoDatabase,
+	db storage.Database,
 	eventId bson.ObjectId,
 	email string,
 ) (EventAttendingModel, error) {

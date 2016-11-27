@@ -182,7 +182,6 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 func SetUserAttrInput(
 	w http.ResponseWriter,
-	db *storage.MongoDatabase,
 	email string,
 	body []byte,
 	attrName string,
@@ -231,7 +230,6 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	attrValue := SetUserAttrInput(
 		w,
-		db,
 		email,
 		body,
 		attrName,
@@ -358,7 +356,6 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 
 	attrValue := SetUserAttrInput(
 		w,
-		db,
 		email,
 		body,
 		attrName,

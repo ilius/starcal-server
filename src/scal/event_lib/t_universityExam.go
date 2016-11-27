@@ -16,7 +16,7 @@ func (self UniversityExamEventModel) Type() string {
 	return "universityExam"
 }
 
-func LoadUniversityExamEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadUniversityExamEventModel(db storage.Database, sha1 string) (
 	*UniversityExamEventModel,
 	error,
 ) {

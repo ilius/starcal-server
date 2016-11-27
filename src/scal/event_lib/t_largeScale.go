@@ -19,7 +19,7 @@ func (self LargeScaleEventModel) Type() string {
 	return "largeScale"
 }
 
-func LoadLargeScaleEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadLargeScaleEventModel(db storage.Database, sha1 string) (
 	*LargeScaleEventModel,
 	error,
 ) {

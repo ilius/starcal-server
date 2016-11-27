@@ -15,7 +15,7 @@ func (self AllDayTaskEventModel) Type() string {
 	return "allDayTask"
 }
 
-func LoadAllDayTaskEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadAllDayTaskEventModel(db storage.Database, sha1 string) (
 	*AllDayTaskEventModel,
 	error,
 ) {

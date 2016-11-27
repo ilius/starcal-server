@@ -17,7 +17,7 @@ func (self WeeklyEventModel) Type() string {
 	return "weekly"
 }
 
-func LoadWeeklyEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadWeeklyEventModel(db storage.Database, sha1 string) (
 	*WeeklyEventModel,
 	error,
 ) {

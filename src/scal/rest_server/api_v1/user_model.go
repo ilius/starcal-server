@@ -29,7 +29,7 @@ func (self UserModel) Collection() string {
 	return storage.C_user
 }
 
-func UserModelByEmail(email string, db *storage.MongoDatabase) *UserModel {
+func UserModelByEmail(email string, db storage.Database) *UserModel {
 	user := UserModel{
 		Email: email,
 	}

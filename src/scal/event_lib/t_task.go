@@ -26,7 +26,7 @@ func (self TaskEventModel) Type() string {
 	return "task"
 }
 
-func LoadTaskEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadTaskEventModel(db storage.Database, sha1 string) (
 	*TaskEventModel,
 	error,
 ) {

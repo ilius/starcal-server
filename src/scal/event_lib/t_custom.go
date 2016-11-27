@@ -52,7 +52,7 @@ func (self CustomEventModel) Type() string {
 	return "custom"
 }
 
-func LoadCustomEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadCustomEventModel(db storage.Database, sha1 string) (
 	*CustomEventModel,
 	error,
 ) {

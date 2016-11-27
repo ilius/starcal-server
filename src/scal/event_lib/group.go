@@ -89,7 +89,7 @@ func (self *EventGroupModel) GetLookupMetaAccessPipeline(
 
 func LoadGroupModelById(
 	attrName string,
-	db *storage.MongoDatabase,
+	db storage.Database,
 	groupId *bson.ObjectId,
 ) (
 	groupModel *EventGroupModel,
@@ -116,7 +116,7 @@ func LoadGroupModelById(
 
 func LoadGroupModelByIdHex(
 	attrName string,
-	db *storage.MongoDatabase,
+	db storage.Database,
 	groupIdHex string,
 ) (
 	groupModel *EventGroupModel,

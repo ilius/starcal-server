@@ -11,7 +11,7 @@ func (self DailyNoteEventModel) Type() string {
 	return "dailyNote"
 }
 
-func LoadDailyNoteEventModel(db *storage.MongoDatabase, sha1 string) (
+func LoadDailyNoteEventModel(db storage.Database, sha1 string) (
 	*DailyNoteEventModel,
 	error,
 ) {

@@ -47,6 +47,9 @@ func (db *MongoDatabase) First(
 ) error {
 	return db.C(model.Collection()).Find(cond).Sort(sortBy).One(model)
 }
+func (db *MongoDatabase) FindCount(colName string, cond bson.M) (int, error) {
+	return db.C(colName).Find(cond).Count()
+}
 
 func (db *MongoDatabase) FindAll(
 	colName string,
