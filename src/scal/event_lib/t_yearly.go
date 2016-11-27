@@ -1,6 +1,5 @@
 package event_lib
 
-import "gopkg.in/mgo.v2"
 import "scal/storage"
 
 type YearlyEventModel struct {
@@ -15,13 +14,13 @@ func (self YearlyEventModel) Type() string {
 	return "yearly"
 }
 
-func LoadYearlyEventModel(db *mgo.Database, sha1 string) (
+func LoadYearlyEventModel(db *storage.MongoDatabase, sha1 string) (
 	*YearlyEventModel,
 	error,
 ) {
 	model := YearlyEventModel{}
 	model.Sha1 = sha1
-	err := storage.Get(db, &model)
+	err := db.Get(&model)
 	return &model, err
 }
 

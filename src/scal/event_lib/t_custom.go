@@ -1,6 +1,5 @@
 package event_lib
 
-import "gopkg.in/mgo.v2"
 import "scal/storage"
 
 /*
@@ -53,13 +52,13 @@ func (self CustomEventModel) Type() string {
 	return "custom"
 }
 
-func LoadCustomEventModel(db *mgo.Database, sha1 string) (
+func LoadCustomEventModel(db *storage.MongoDatabase, sha1 string) (
 	*CustomEventModel,
 	error,
 ) {
 	model := CustomEventModel{}
 	model.Sha1 = sha1
-	err := storage.Get(db, &model)
+	err := db.Get(&model)
 	return &model, err
 }
 

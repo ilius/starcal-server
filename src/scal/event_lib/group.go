@@ -89,7 +89,7 @@ func (self *EventGroupModel) GetLookupMetaAccessPipeline(
 
 func LoadGroupModelById(
 	attrName string,
-	db *mgo.Database,
+	db *storage.MongoDatabase,
 	groupId *bson.ObjectId,
 ) (
 	groupModel *EventGroupModel,
@@ -103,7 +103,7 @@ func LoadGroupModelById(
 	groupModel = &EventGroupModel{
 		Id: *groupId,
 	}
-	err = storage.Get(db, groupModel)
+	err = db.Get(groupModel)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			err = errors.New("invalid '" + attrName + "'")
@@ -116,7 +116,7 @@ func LoadGroupModelById(
 
 func LoadGroupModelByIdHex(
 	attrName string,
-	db *mgo.Database,
+	db *storage.MongoDatabase,
 	groupIdHex string,
 ) (
 	groupModel *EventGroupModel,

@@ -141,7 +141,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		Title:      userModel.Email,
 		OwnerEmail: userModel.Email,
 	}
-	err = storage.Insert(db, defaultGroup)
+	err = db.Insert(defaultGroup)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -169,7 +169,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = storage.Insert(db, userModel)
+	err = db.Insert(userModel)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -182,7 +182,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 func SetUserAttrInput(
 	w http.ResponseWriter,
-	db *mgo.Database,
+	db *storage.MongoDatabase,
 	email string,
 	body []byte,
 	attrName string,

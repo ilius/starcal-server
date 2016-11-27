@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"scal/storage"
@@ -85,7 +84,7 @@ func (self *EventMetaModel) CanRead(email string) bool {
 	return self.CanReadFull(email)
 }
 func (self *EventMetaModel) GetAttending(
-	db *mgo.Database,
+	db *storage.MongoDatabase,
 	email string,
 ) string {
 	// returns YES, NO, or MAYBE
@@ -93,7 +92,7 @@ func (self *EventMetaModel) GetAttending(
 	return attendingModel.Attending
 }
 func (self *EventMetaModel) SetAttending(
-	db *mgo.Database,
+	db *storage.MongoDatabase,
 	email string,
 	attending string,
 ) error {
@@ -108,7 +107,7 @@ func (self *EventMetaModel) SetAttending(
 	return err
 }
 func (self *EventMetaModel) AttendingStatusCount(
-	db *mgo.Database,
+	db *storage.MongoDatabase,
 	attending string,
 ) (int, error) {
 	return db.C(storage.C_attending).Find(bson.M{
@@ -116,7 +115,7 @@ func (self *EventMetaModel) AttendingStatusCount(
 		"attending": attending,
 	}).Count()
 }
-func (self *EventMetaModel) Join(db *mgo.Database, email string) error {
+func (self *EventMetaModel) Join(db *storage.MongoDatabase, email string) error {
 	// does not make any changes on self
 	if self.GetAttending(db, email) == YES {
 		return errors.New("you have already joined this event")
@@ -142,7 +141,7 @@ func (self *EventMetaModel) Join(db *mgo.Database, email string) error {
 	self.SetAttending(db, email, YES)
 	return nil
 }
-func (self *EventMetaModel) Leave(db *mgo.Database, email string) error {
+func (self *EventMetaModel) Leave(db *storage.MongoDatabase, email string) error {
 	// does not make any changes on self
 	if self.GetAttending(db, email) == NO {
 		if self.CanReadFull(email) {
@@ -153,7 +152,7 @@ func (self *EventMetaModel) Leave(db *mgo.Database, email string) error {
 	return nil
 }
 func (self *EventMetaModel) GetEmailsByAttendingStatus(
-	db *mgo.Database,
+	db *storage.MongoDatabase,
 	attending string,
 ) []string {
 	emailStructs := []struct {
@@ -176,18 +175,18 @@ func (self *EventMetaModel) GetEmailsByAttendingStatus(
 	}
 	return emails
 }
-func (self *EventMetaModel) GetAttendingEmails(db *mgo.Database) []string {
+func (self *EventMetaModel) GetAttendingEmails(db *storage.MongoDatabase) []string {
 	return self.GetEmailsByAttendingStatus(db, YES)
 }
-func (self *EventMetaModel) GetNotAttendingEmails(db *mgo.Database) []string {
+func (self *EventMetaModel) GetNotAttendingEmails(db *storage.MongoDatabase) []string {
 	return self.GetEmailsByAttendingStatus(db, NO)
 }
-func (self *EventMetaModel) GetMaybeAttendingEmails(db *mgo.Database) []string {
+func (self *EventMetaModel) GetMaybeAttendingEmails(db *storage.MongoDatabase) []string {
 	return self.GetEmailsByAttendingStatus(db, MAYBE)
 }
 
 func LoadEventMetaModel(
-	db *mgo.Database,
+	db *storage.MongoDatabase,
 	eventId *bson.ObjectId,
 	loadGroup bool,
 ) (*EventMetaModel, error) {
@@ -195,7 +194,7 @@ func LoadEventMetaModel(
 	eventMeta := EventMetaModel{
 		EventId: *eventId,
 	}
-	err = storage.Get(db, &eventMeta)
+	err = db.Get(&eventMeta)
 	if err != nil {
 		return nil, err
 	}

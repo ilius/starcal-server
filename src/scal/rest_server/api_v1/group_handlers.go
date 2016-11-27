@@ -158,7 +158,7 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	groupId := bson.NewObjectId()
 	groupModel.Id = groupId
 	groupModel.OwnerEmail = email
-	err = storage.Insert(db, groupModel)
+	err = db.Insert(groupModel)
 
 	json.NewEncoder(w).Encode(map[string]string{
 		"groupId": groupId.Hex(),
@@ -237,7 +237,7 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	oldGroupModel.Title = newGroupModel.Title
 	oldGroupModel.AddAccessEmails = newGroupModel.AddAccessEmails
 	oldGroupModel.ReadAccessEmails = newGroupModel.ReadAccessEmails
-	err = storage.Update(db, oldGroupModel)
+	err = db.Update(oldGroupModel)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -339,7 +339,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			return
 		}
 		userModel.DefaultGroupId = nil
-		err = storage.Update(db, userModel)
+		err = db.Update(userModel)
 		if err != nil {
 			SetHttpErrorInternal(w, err)
 			return
@@ -392,7 +392,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			return
 		}
 	}
-	err = storage.Remove(db, groupModel)
+	err = db.Remove(groupModel)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return

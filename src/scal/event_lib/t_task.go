@@ -3,7 +3,6 @@ package event_lib
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/mgo.v2"
 	"scal/storage"
 	"time"
 )
@@ -27,13 +26,13 @@ func (self TaskEventModel) Type() string {
 	return "task"
 }
 
-func LoadTaskEventModel(db *mgo.Database, sha1 string) (
+func LoadTaskEventModel(db *storage.MongoDatabase, sha1 string) (
 	*TaskEventModel,
 	error,
 ) {
 	model := TaskEventModel{}
 	model.Sha1 = sha1
-	err := storage.Get(db, &model)
+	err := db.Get(&model)
 	return &model, err
 }
 

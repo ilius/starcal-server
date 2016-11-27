@@ -1,6 +1,5 @@
 package event_lib
 
-import "gopkg.in/mgo.v2"
 import "scal"
 import . "scal/utils"
 import "scal/storage"
@@ -17,13 +16,13 @@ func (self UniversityExamEventModel) Type() string {
 	return "universityExam"
 }
 
-func LoadUniversityExamEventModel(db *mgo.Database, sha1 string) (
+func LoadUniversityExamEventModel(db *storage.MongoDatabase, sha1 string) (
 	*UniversityExamEventModel,
 	error,
 ) {
 	model := UniversityExamEventModel{}
 	model.Sha1 = sha1
-	err := storage.Get(db, &model)
+	err := db.Get(&model)
 	return &model, err
 }
 

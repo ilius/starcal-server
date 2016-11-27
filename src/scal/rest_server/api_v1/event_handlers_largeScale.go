@@ -225,7 +225,7 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	err = storage.Insert(db, event_lib.EventRevisionModel{
+	err = db.Insert(event_lib.EventRevisionModel{
 		EventId:   eventId,
 		EventType: eventModel.Type(),
 		Sha1:      eventModel.Sha1,
@@ -244,7 +244,7 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			err = storage.Insert(db, eventModel)
+			err = db.Insert(eventModel)
 			if err != nil {
 				SetHttpError(w, http.StatusBadRequest, err.Error())
 				return
@@ -254,7 +254,7 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			return
 		}
 	}
-	err = storage.Insert(db, eventMeta)
+	err = db.Insert(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -412,7 +412,7 @@ func UpdateLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		Sha1:      eventModel.Sha1,
 		Time:      time.Now(),
 	}
-	err = storage.Insert(db, eventRev)
+	err = db.Insert(eventRev)
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
@@ -427,7 +427,7 @@ func UpdateLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			err = storage.Insert(db, eventModel)
+			err = db.Insert(eventModel)
 			if err != nil {
 				SetHttpError(w, http.StatusBadRequest, err.Error())
 				return
@@ -705,7 +705,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	jsonByte, _ := json.Marshal(eventModel)
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 
-	err = storage.Insert(db, event_lib.EventRevisionModel{
+	err = db.Insert(event_lib.EventRevisionModel{
 		EventId:   *eventId,
 		EventType: eventModel.Type(),
 		Sha1:      eventModel.Sha1,
@@ -724,7 +724,7 @@ func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			err = storage.Insert(db, eventModel)
+			err = db.Insert(eventModel)
 			if err != nil {
 				SetHttpError(w, http.StatusBadRequest, err.Error())
 				return

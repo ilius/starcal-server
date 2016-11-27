@@ -115,7 +115,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	err = storage.Insert(db, event_lib.EventRevisionModel{
+	err = db.Insert(event_lib.EventRevisionModel{
 		EventId:   *eventId,
 		EventType: eventMeta.EventType,
 		Sha1:      "",
@@ -125,7 +125,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	err = storage.Remove(db, eventMeta)
+	err = db.Remove(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -237,7 +237,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	err = storage.Insert(db, event_lib.EventMetaModel{
+	err = db.Insert(event_lib.EventMetaModel{
 		EventId:      newEventId,
 		EventType:    eventMeta.EventType,
 		CreationTime: time.Now(),
@@ -251,7 +251,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	eventRev.EventId = newEventId
-	err = storage.Insert(db, eventRev)
+	err = db.Insert(eventRev)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -322,7 +322,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	newGroupModel := event_lib.EventGroupModel{
 		Id: newGroupId,
 	}
-	err = storage.Get(db, &newGroupModel)
+	err = db.Get(&newGroupModel)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -368,7 +368,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	      return
 	  }*/
 	eventMeta.GroupId = &newGroupId
-	err = storage.Update(db, eventMeta)
+	err = db.Update(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -491,7 +491,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 	eventMeta.OwnerEmail = newOwnerEmail
-	err = storage.Update(db, eventMeta)
+	err = db.Update(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -693,7 +693,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	err = storage.Update(db, eventMeta)
+	err = db.Update(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -767,7 +767,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 	eventMeta.AccessEmails = newAccessEmails
-	err = storage.Update(db, eventMeta)
+	err = db.Update(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return

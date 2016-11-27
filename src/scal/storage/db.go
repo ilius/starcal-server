@@ -2,11 +2,54 @@ package storage
 
 import (
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"scal/settings"
 	"time"
 )
 
-func GetDB() (*mgo.Database, error) {
+type hasCollection interface {
+	Collection() string
+}
+
+type hasCollectionUniqueM interface {
+	Collection() string
+	UniqueM() bson.M
+}
+
+type MongoDatabase struct {
+	mgo.Database
+}
+
+func (db MongoDatabase) Insert(model hasCollection) error {
+	return db.C(model.Collection()).Insert(model)
+}
+func (db MongoDatabase) Update(model hasCollectionUniqueM) error {
+	return db.C(model.Collection()).Update(
+		model.UniqueM(),
+		model,
+	)
+}
+func (db MongoDatabase) Upsert(model hasCollectionUniqueM) error {
+	_, err := db.C(model.Collection()).Upsert(
+		model.UniqueM(),
+		model,
+	)
+	return err
+}
+func (db MongoDatabase) Remove(model hasCollectionUniqueM) error {
+	return db.C(model.Collection()).Remove(
+		model.UniqueM(),
+	)
+}
+
+//func (db MongoDatabase) Find(interface{})
+func (db MongoDatabase) Get(model hasCollectionUniqueM) error {
+	return db.C(model.Collection()).Find(
+		model.UniqueM(),
+	).One(model)
+}
+
+func GetDB() (*MongoDatabase, error) {
 	mongoDBDialInfo := &mgo.DialInfo{
 		Addrs:    []string{settings.MONGO_HOST},
 		Timeout:  2 * time.Second,
@@ -29,5 +72,7 @@ func GetDB() (*mgo.Database, error) {
 	// http://godoc.org/labix.org/v2/mgo#Session.SetMode
 	mongoSession.SetMode(mgo.Monotonic, true)
 
-	return mongoSession.DB(settings.MONGO_DB_NAME), nil
+	return &MongoDatabase{
+		*mongoSession.DB(settings.MONGO_DB_NAME),
+	}, nil
 }

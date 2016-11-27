@@ -1,7 +1,6 @@
 package event_lib
 
 import "time"
-import "gopkg.in/mgo.v2"
 import "gopkg.in/mgo.v2/bson"
 
 import "scal/storage"
@@ -18,7 +17,7 @@ func (self EventRevisionModel) Collection() string {
 	return storage.C_revision
 }
 
-func LoadLastRevisionModel(db *mgo.Database, eventId *bson.ObjectId) (
+func LoadLastRevisionModel(db *storage.MongoDatabase, eventId *bson.ObjectId) (
 	*EventRevisionModel,
 	error,
 ) {

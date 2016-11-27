@@ -29,11 +29,11 @@ func (self UserModel) Collection() string {
 	return storage.C_user
 }
 
-func UserModelByEmail(email string, db *mgo.Database) *UserModel {
+func UserModelByEmail(email string, db *storage.MongoDatabase) *UserModel {
 	user := UserModel{
 		Email: email,
 	}
-	err := storage.Get(db, &user)
+	err := db.Get(&user)
 	if err != nil {
 		if err != mgo.ErrNotFound {
 			log.Print("unkown error in fetching user model:", err)

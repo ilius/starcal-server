@@ -1,6 +1,5 @@
 package event_lib
 
-import "gopkg.in/mgo.v2"
 import "scal"
 import . "scal/utils"
 import "scal/storage"
@@ -18,13 +17,13 @@ func (self WeeklyEventModel) Type() string {
 	return "weekly"
 }
 
-func LoadWeeklyEventModel(db *mgo.Database, sha1 string) (
+func LoadWeeklyEventModel(db *storage.MongoDatabase, sha1 string) (
 	*WeeklyEventModel,
 	error,
 ) {
 	model := WeeklyEventModel{}
 	model.Sha1 = sha1
-	err := storage.Get(db, &model)
+	err := db.Get(&model)
 	return &model, err
 }
 

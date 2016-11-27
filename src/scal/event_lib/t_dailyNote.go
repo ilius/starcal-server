@@ -1,6 +1,5 @@
 package event_lib
 
-import "gopkg.in/mgo.v2"
 import "scal/storage"
 
 type DailyNoteEventModel struct {
@@ -12,13 +11,13 @@ func (self DailyNoteEventModel) Type() string {
 	return "dailyNote"
 }
 
-func LoadDailyNoteEventModel(db *mgo.Database, sha1 string) (
+func LoadDailyNoteEventModel(db *storage.MongoDatabase, sha1 string) (
 	*DailyNoteEventModel,
 	error,
 ) {
 	model := DailyNoteEventModel{}
 	model.Sha1 = sha1
-	err := storage.Get(db, &model)
+	err := db.Get(&model)
 	return &model, err
 }
 
