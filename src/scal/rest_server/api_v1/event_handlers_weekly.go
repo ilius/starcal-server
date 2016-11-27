@@ -197,23 +197,21 @@ func AddWeekly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		//AccessEmails: []string{}
 	}
 	now := time.Now()
-	err = db.C(storage.C_eventMetaChangeLog).Insert(
-		scal.M{
-			"time":     now,
-			"email":    email,
-			"remoteIp": remoteIp,
-			"eventId":  eventId,
-			"funcName": "AddWeekly",
-			"ownerEmail": []interface{}{
-				nil,
-				email,
-			},
-			"groupId": []interface{}{
-				nil,
-				groupId,
-			},
+	err = db.Insert(event_lib.EventMetaChangeLogModel{
+		Time:     now,
+		Email:    email,
+		RemoteIp: remoteIp,
+		EventId:  eventId,
+		FuncName: "AddWeekly",
+		OwnerEmail: &[2]*string{
+			nil,
+			&email,
 		},
-	)
+		GroupId: &[2]*bson.ObjectId{
+			nil,
+			groupId,
+		},
+	})
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return

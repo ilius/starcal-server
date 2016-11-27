@@ -350,8 +350,6 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 
-	eventMetaCol := db.C(storage.C_eventMeta)
-
 	var eventMetaModels []event_lib.EventMetaModel
 	err = db.FindAll(
 		storage.C_eventMeta,
@@ -371,30 +369,24 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			// (ungrouped) event into his default (or any other) group
 			// FIXME
 		}
-		// insert a new record to storage.C_eventMetaChangeLog // FIXME
-		eventMetaModel.GroupId = nil
-		err = eventMetaCol.Update(
-			scal.M{"_id": eventMetaModel.EventId},
-			eventMetaModel,
-		)
+		now := time.Now()
+		err = db.Insert(event_lib.EventMetaChangeLogModel{
+			Time:     now,
+			Email:    email,
+			RemoteIp: remoteIp,
+			EventId:  eventMetaModel.EventId,
+			FuncName: "DeleteGroup",
+			GroupId: &[2]*bson.ObjectId{
+				groupId,
+				nil,
+			},
+		})
 		if err != nil {
 			SetHttpErrorInternal(w, err)
 			return
 		}
-		now := time.Now()
-		err = db.C(storage.C_eventMetaChangeLog).Insert(
-			scal.M{
-				"time":     now,
-				"email":    email,
-				"remoteIp": remoteIp,
-				"eventId":  eventMetaModel.EventId,
-				"funcName": "DeleteGroup",
-				"groupId": []interface{}{
-					groupId,
-					nil,
-				},
-			},
-		)
+		eventMetaModel.GroupId = nil
+		err = db.Update(eventMetaModel)
 		if err != nil {
 			SetHttpErrorInternal(w, err)
 			return

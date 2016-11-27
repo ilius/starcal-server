@@ -87,30 +87,30 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 	now := time.Now()
-	metaChangeLog := scal.M{
-		"time":     now,
-		"email":    email,
-		"remoteIp": remoteIp,
-		"eventId":  eventId,
-		"funcName": "DeleteEvent",
-		"ownerEmail": []interface{}{
-			eventMeta.OwnerEmail,
+	metaChangeLog := event_lib.EventMetaChangeLogModel{
+		Time:     now,
+		Email:    email,
+		RemoteIp: remoteIp,
+		EventId:  *eventId,
+		FuncName: "DeleteEvent",
+		OwnerEmail: &[2]*string{
+			&eventMeta.OwnerEmail,
 			nil,
 		},
 	}
 	if eventMeta.GroupId != nil {
-		metaChangeLog["groupId"] = []interface{}{
+		metaChangeLog.GroupId = &[2]*bson.ObjectId{
 			eventMeta.GroupId,
 			nil,
 		}
 	}
 	if len(eventMeta.AccessEmails) > 0 {
-		metaChangeLog["accessEmails"] = []interface{}{
+		metaChangeLog.AccessEmails = &[2][]string{
 			eventMeta.AccessEmails,
-			nil,
+			{},
 		}
 	}
-	err = db.C(storage.C_eventMetaChangeLog).Insert(metaChangeLog)
+	err = db.Insert(metaChangeLog)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -208,23 +208,21 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	now := time.Now()
-	err = db.C(storage.C_eventMetaChangeLog).Insert(
-		scal.M{
-			"time":     now,
-			"email":    email,
-			"remoteIp": remoteIp,
-			"eventId":  newEventId,
-			"funcName": "CopyEvent",
-			"ownerEmail": []interface{}{
-				nil,
-				email,
-			},
-			"groupId": []interface{}{
-				nil,
-				newGroupId,
-			},
+	err = db.Insert(event_lib.EventMetaChangeLogModel{
+		Time:     now,
+		Email:    email,
+		RemoteIp: remoteIp,
+		EventId:  newEventId,
+		FuncName: "CopyEvent",
+		OwnerEmail: &[2]*string{
+			nil,
+			&email,
 		},
-	)
+		GroupId: &[2]*bson.ObjectId{
+			nil,
+			newGroupId,
+		},
+	})
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -330,26 +328,26 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	now := time.Now()
-	metaChangeLog := scal.M{
-		"time":     now,
-		"email":    email,
-		"remoteIp": remoteIp,
-		"eventId":  eventId,
-		"funcName": "SetEventGroupId",
-		"groupId": []interface{}{
+	metaChangeLog := event_lib.EventMetaChangeLogModel{
+		Time:     now,
+		Email:    email,
+		RemoteIp: remoteIp,
+		EventId:  *eventId,
+		FuncName: "SetEventGroupId",
+		GroupId: &[2]*bson.ObjectId{
 			eventMeta.GroupId,
-			newGroupId,
+			&newGroupId,
 		},
 	}
 	/*
-	   addedAccessEmails := Set(
-	       eventMeta.GroupModel.ReadAccessEmails,
-	   ).Difference(newGroupModel.ReadAccessEmails)
-	   if addedAccessEmails {
-	       metaChangeLog["addedAccessEmails"] = addedAccessEmails
-	   }
+		addedAccessEmails := Set(
+			eventMeta.GroupModel.ReadAccessEmails,
+		).Difference(newGroupModel.ReadAccessEmails)
+		if addedAccessEmails {
+			metaChangeLog.AddedAccessEmails = addedAccessEmails
+		}
 	*/
-	err = db.C(storage.C_eventMetaChangeLog).Insert(metaChangeLog)
+	err = db.Insert(metaChangeLog)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -468,15 +466,15 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 	now := time.Now()
-	err = db.C(storage.C_eventMetaChangeLog).Insert(scal.M{
-		"time":     now,
-		"email":    email,
-		"remoteIp": remoteIp,
-		"eventId":  eventId,
-		"funcName": "SetEventOwner",
-		"ownerEmail": []interface{}{
-			eventMeta.OwnerEmail,
-			newOwnerEmail,
+	err = db.Insert(event_lib.EventMetaChangeLogModel{
+		Time:     now,
+		Email:    email,
+		RemoteIp: remoteIp,
+		EventId:  *eventId,
+		FuncName: "SetEventOwner",
+		OwnerEmail: &[2]*string{
+			&eventMeta.OwnerEmail,
+			&newOwnerEmail,
 		},
 	})
 	if err != nil {
@@ -645,43 +643,43 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	now := time.Now()
-	metaChangeLog := scal.M{
-		"time":     now,
-		"email":    email,
-		"remoteIp": remoteIp,
-		"eventId":  eventId,
-		"funcName": "SetEventAccess",
+	metaChangeLog := event_lib.EventMetaChangeLogModel{
+		Time:     now,
+		Email:    email,
+		RemoteIp: remoteIp,
+		EventId:  *eventId,
+		FuncName: "SetEventAccess",
 	}
 	if *newIsPublic != eventMeta.IsPublic {
-		metaChangeLog["isPublic"] = []interface{}{
+		metaChangeLog.IsPublic = &[2]bool{
 			eventMeta.IsPublic,
-			newIsPublic,
+			*newIsPublic,
 		}
 		eventMeta.IsPublic = *newIsPublic
 	}
 	if !reflect.DeepEqual(*newAccessEmails, eventMeta.AccessEmails) {
-		metaChangeLog["accessEmails"] = []interface{}{
+		metaChangeLog.AccessEmails = &[2][]string{
 			eventMeta.AccessEmails,
-			newAccessEmails,
+			*newAccessEmails,
 		}
 		eventMeta.AccessEmails = *newAccessEmails
 	}
 	if *newPublicJoinOpen != eventMeta.PublicJoinOpen {
-		metaChangeLog["publicJoinOpen"] = []interface{}{
+		metaChangeLog.PublicJoinOpen = &[2]bool{
 			eventMeta.PublicJoinOpen,
-			newPublicJoinOpen,
+			*newPublicJoinOpen,
 		}
 		eventMeta.PublicJoinOpen = *newPublicJoinOpen
 
 	}
 	if *newMaxAttendees != eventMeta.MaxAttendees {
-		metaChangeLog["maxAttendees"] = []interface{}{
+		metaChangeLog.MaxAttendees = &[2]int{
 			eventMeta.MaxAttendees,
-			newMaxAttendees,
+			*newMaxAttendees,
 		}
 		eventMeta.MaxAttendees = *newMaxAttendees
 	}
-	err = db.C(storage.C_eventMetaChangeLog).Insert(metaChangeLog)
+	err = db.Insert(metaChangeLog)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -744,13 +742,13 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 	newAccessEmails := append(eventMeta.AccessEmails, toAddEmail)
 	now := time.Now()
-	err = db.C(storage.C_eventMetaChangeLog).Insert(scal.M{
-		"time":     now,
-		"email":    email,
-		"remoteIp": remoteIp,
-		"eventId":  eventId,
-		"funcName": "AppendEventAccess",
-		"accessEmails": []interface{}{
+	err = db.Insert(event_lib.EventMetaChangeLogModel{
+		Time:     now,
+		Email:    email,
+		RemoteIp: remoteIp,
+		EventId:  *eventId,
+		FuncName: "AppendEventAccess",
+		AccessEmails: &[2][]string{
 			eventMeta.AccessEmails,
 			newAccessEmails,
 		},

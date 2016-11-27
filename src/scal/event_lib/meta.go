@@ -220,3 +220,22 @@ func LoadEventMetaModel(
 	}
 	return &eventMeta, nil
 }
+
+type EventMetaChangeLogModel struct {
+	Time     time.Time     `bson:"time"`
+	Email    string        `bson:"email"`
+	RemoteIp string        `bson:"remoteIp"`
+	EventId  bson.ObjectId `bson:"eventId"`
+	FuncName string        `bson:"funcName"`
+
+	GroupId        *[2]*bson.ObjectId `bson:"groupId,omitempty"`
+	OwnerEmail     *[2]*string        `bson:"ownerEmail,omitempty"`
+	IsPublic       *[2]bool           `bson:"isPublic,omitempty"`
+	AccessEmails   *[2][]string       `bson:"accessEmails,omitempty"`
+	PublicJoinOpen *[2]bool           `bson:"publicJoinOpen,omitempty"`
+	MaxAttendees   *[2]int            `bson:"maxAttendees,omitempty"`
+}
+
+func (model EventMetaChangeLogModel) Collection() string {
+	return storage.C_eventMetaChangeLog
+}
