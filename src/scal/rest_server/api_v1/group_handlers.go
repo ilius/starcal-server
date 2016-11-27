@@ -60,12 +60,6 @@ func init() {
 		authenticator.Wrap(GetGroupEventList),
 	)
 	RegisterRoute(
-		"GetGroupEventsFull",
-		"GET",
-		"/event/groups/{groupId}/events-full/",
-		authenticator.Wrap(GetGroupEventsFull),
-	)
-	RegisterRoute(
 		"GetGroupModifiedEvents",
 		"GET",
 		"/event/groups/{groupId}/modified-events/{sinceDateTime}/",
@@ -449,90 +443,6 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 	if results == nil {
 		results = make([]resultModel, 0)
-	}
-	json.NewEncoder(w).Encode(scal.M{
-		"events": results,
-	})
-}
-
-func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
-	defer r.Body.Close()
-	email := r.Username
-	groupId := ObjectIdFromURL(w, r, "groupId", 1)
-	if groupId == nil {
-		return
-	}
-	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
-	db, err := storage.GetDB()
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	groupModel, err, internalErr := event_lib.LoadGroupModelById(
-		"groupId",
-		db,
-		groupId,
-	)
-	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
-	}
-
-	pipeline := []scal.M{
-		{"$match": scal.M{
-			"groupId": groupId,
-		}},
-	}
-	aCond := groupModel.GetAccessCond(email)
-	if len(aCond) > 0 {
-		pipeline = append(pipeline, scal.M{"$match": aCond})
-	}
-	pipeline = append(pipeline, []scal.M{
-		{"$lookup": scal.M{
-			"from":         storage.C_revision,
-			"localField":   "_id",
-			"foreignField": "eventId",
-			"as":           "revision",
-		}},
-		{"$unwind": "$revision"},
-		{"$group": scal.M{
-			"_id":       "$_id",
-			"eventType": scal.M{"$first": "$eventType"},
-			"meta": scal.M{
-				"$first": scal.M{
-					"ownerEmail":   "$ownerEmail",
-					"isPublic":     "$isPublic",
-					"creationTime": "$creationTime",
-				},
-			},
-			"lastModifiedTime": scal.M{"$first": "$revision.time"},
-			"lastSha1":         scal.M{"$first": "$revision.sha1"},
-		}},
-		{"$lookup": scal.M{
-			"from":         storage.C_eventData,
-			"localField":   "lastSha1",
-			"foreignField": "sha1",
-			"as":           "data",
-		}},
-		{"$unwind": "$data"},
-	}...)
-	var results []scal.M
-	err = db.PipeAll(
-		storage.C_eventMeta,
-		pipeline,
-		&results,
-	)
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	if results == nil {
-		results = make([]scal.M, 0)
 	}
 	json.NewEncoder(w).Encode(scal.M{
 		"events": results,
