@@ -21,35 +21,35 @@ type MongoDatabase struct {
 	mgo.Database
 }
 
-func (db MongoDatabase) Insert(model hasCollection) error {
+func (db *MongoDatabase) Insert(model hasCollection) error {
 	return db.C(model.Collection()).Insert(model)
 }
-func (db MongoDatabase) Update(model hasCollectionUniqueM) error {
+func (db *MongoDatabase) Update(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Update(
 		model.UniqueM(),
 		model,
 	)
 }
-func (db MongoDatabase) Upsert(model hasCollectionUniqueM) error {
+func (db *MongoDatabase) Upsert(model hasCollectionUniqueM) error {
 	_, err := db.C(model.Collection()).Upsert(
 		model.UniqueM(),
 		model,
 	)
 	return err
 }
-func (db MongoDatabase) Remove(model hasCollectionUniqueM) error {
+func (db *MongoDatabase) Remove(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Remove(
 		model.UniqueM(),
 	)
 }
 
-//func (db MongoDatabase) Find(interface{})
-func (db MongoDatabase) Get(model hasCollectionUniqueM) error {
+//func (db *MongoDatabase) Find(interface{})
+func (db *MongoDatabase) Get(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Find(
 		model.UniqueM(),
 	).One(model)
 }
-func (db MongoDatabase) First(
+func (db *MongoDatabase) First(
 	cond bson.M,
 	sortBy string,
 	model hasCollection,
@@ -57,14 +57,14 @@ func (db MongoDatabase) First(
 	return db.C(model.Collection()).Find(cond).Sort(sortBy).One(model)
 }
 
-func (db MongoDatabase) FindAll(
+func (db *MongoDatabase) FindAll(
 	colName string,
 	cond bson.M,
 	result interface{},
 ) error {
 	return db.C(colName).Find(cond).All(result)
 }
-func (db MongoDatabase) PipeAll(
+func (db *MongoDatabase) PipeAll(
 	colName string,
 	pipeline []bson.M,
 	result interface{},
