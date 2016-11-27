@@ -52,6 +52,30 @@
 				</method>
 				<method name="DELETE" id="deleteGroup">
 				</method>
+				<resource path="events/">
+					<method name="GET" id="getGroupEvents">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="events" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType">
+									<element name="eventId" type="xs:string"/>
+									<element name="eventType" type="xs:string">
+										<option value="allDayTask"/>
+										<option value="dailyNote"/>
+										<option value="largeScale"/>
+										<option value="lifeTime"/>
+										<option value="monthly"/>
+										<option value="task"/>
+										<option value="universityClass"/>
+										<option value="universityExam"/>
+										<option value="weekly"/>
+										<option value="yearly"/>
+									</element>
+								</item>
+							</param>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="event/{eventType}/{eventId}/">
