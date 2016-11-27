@@ -238,14 +238,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 					    <param name="startJd" type="xs:int"/>
 					    <param name="endJd" type="xs:int"/>
@@ -360,14 +360,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="jd" type="xs:int"/>
 					</response>
@@ -479,14 +479,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="scale" type="xs:int"/>
 						<param name="start" type="xs:int"/>
@@ -605,14 +605,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="startJd" type="xs:int"/>
 						<param name="endJd" type="xs:int"/>
@@ -728,14 +728,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="startJd" type="xs:int"/>
 						<param name="endJd" type="xs:int"/>
@@ -858,14 +858,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="startTime" type="xsd:dateTime"/>
 						<param name="endTime" type="xsd:dateTime"/>
@@ -986,14 +986,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="weekNumMode" type="xs:string">
 							<option value="any"/>
@@ -1123,14 +1123,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="jd" type="xs:int"/>
 						<param name="dayStartSeconds" type="xs:int"/>
@@ -1252,14 +1252,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="startJd" type="xs:int"/>
 						<param name="endJd" type="xs:int"/>
@@ -1383,14 +1383,14 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="">
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="creationTime" type="xsd:dateTime"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="ownerEmail" type="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
 						<param name="month" type="xs:int"/>
 						<param name="day" type="xs:int"/>
