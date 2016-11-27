@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"time"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"scal"
@@ -259,19 +258,12 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	_, err = db.C(storage.C_user).Find(scal.M{
-		"email": email,
-	}).Apply(
-		mgo.Change{
-			Update: scal.M{
-				"$set": scal.M{
-					"fullName": attrValue,
-				},
-			},
-			ReturnNew: false,
-		},
-		nil,
-	)
+	userModel.FullName = attrValue
+	err = db.Update(userModel)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(map[string]string{
 		"successful": "true",
@@ -316,19 +308,12 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	_, err = db.C(storage.C_user).Find(scal.M{
-		"email": email,
-	}).Apply(
-		mgo.Change{
-			Update: scal.M{
-				"$set": scal.M{
-					"fullName": "",
-				},
-			},
-			ReturnNew: false,
-		},
-		nil,
-	)
+	userModel.FullName = ""
+	err = db.Update(userModel)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(map[string]string{
 		"successful": "true",
@@ -404,19 +389,12 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 		return
 	}
 
-	_, err = db.C(storage.C_user).Find(scal.M{
-		"email": email,
-	}).Apply(
-		mgo.Change{
-			Update: scal.M{
-				"$set": scal.M{
-					"defaultGroupId": groupId,
-				},
-			},
-			ReturnNew: false,
-		},
-		nil,
-	)
+	userModel.DefaultGroupId = &groupId
+	err = db.Update(userModel)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(map[string]string{
 		"successful": "true",
@@ -461,19 +439,12 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
 		return
 	}
 
-	_, err = db.C(storage.C_user).Find(scal.M{
-		"email": email,
-	}).Apply(
-		mgo.Change{
-			Update: scal.M{
-				"$set": scal.M{
-					"defaultGroupId": nil,
-				},
-			},
-			ReturnNew: false,
-		},
-		nil,
-	)
+	userModel.DefaultGroupId = nil
+	err = db.Update(userModel)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(map[string]string{
 		"successful": "true",
