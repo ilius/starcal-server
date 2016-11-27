@@ -208,13 +208,6 @@ func AddWeekly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 				nil,
 				email,
 			},
-		},
-		scal.M{
-			"time":     now,
-			"email":    email,
-			"remoteIp": remoteIp,
-			"eventId":  eventId,
-			"funcName": "AddWeekly",
 			"groupId": []interface{}{
 				nil,
 				groupId,

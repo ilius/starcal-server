@@ -219,13 +219,6 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 				nil,
 				email,
 			},
-		},
-		scal.M{
-			"time":     now,
-			"email":    email,
-			"remoteIp": remoteIp,
-			"eventId":  newEventId,
-			"funcName": "CopyEvent",
 			"groupId": []interface{}{
 				nil,
 				newGroupId,
