@@ -49,6 +49,14 @@ func (db MongoDatabase) Get(model hasCollectionUniqueM) error {
 		model.UniqueM(),
 	).One(model)
 }
+func (db MongoDatabase) First(
+	cond bson.M,
+	sortBy string,
+	model hasCollection,
+) error {
+	return db.C(model.Collection()).Find(cond).Sort(sortBy).One(model)
+}
+
 func (db MongoDatabase) FindAll(
 	colName string,
 	cond bson.M,

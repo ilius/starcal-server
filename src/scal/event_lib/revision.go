@@ -22,8 +22,12 @@ func LoadLastRevisionModel(db *storage.MongoDatabase, eventId *bson.ObjectId) (
 	error,
 ) {
 	eventRev := EventRevisionModel{}
-	err := db.C(storage.C_revision).Find(bson.M{
-		"eventId": eventId,
-	}).Sort("-time").One(&eventRev)
+	err := db.First(
+		bson.M{
+			"eventId": eventId,
+		},
+		"-time",
+		&eventRev,
+	)
 	return &eventRev, err
 }
