@@ -147,21 +147,22 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userModel.DefaultGroupId = &defaultGroup.Id
-	err = db.C(storage.C_userChangeLog).Insert(scal.M{
-		"time":     time.Now(),
-		"remoteIp": remoteIp,
-		"funcName": "RegisterUser",
-		"email": []interface{}{
+	err = db.Insert(UserChangeLogModel{
+		Time:         time.Now(),
+		RequestEmail: "", // FIXME
+		RemoteIp:     remoteIp,
+		FuncName:     "RegisterUser",
+		Email: &[2]*string{
 			nil,
-			userModel.Email,
+			&userModel.Email,
 		},
-		"defaultGroupId": []interface{}{
+		DefaultGroupId: &[2]*bson.ObjectId{
 			nil,
 			userModel.DefaultGroupId,
 		},
-		//"fullName": []interface{}{
+		//FullName: &[2]*string{
 		//    nil
-		//    userModel.FullName,
+		//    &userModel.FullName,
 		//},
 	})
 	if err != nil {
@@ -243,14 +244,14 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-	err = db.C(storage.C_userChangeLog).Insert(scal.M{
-		"time":     time.Now(),
-		"email":    email,
-		"remoteIp": remoteIp,
-		"funcName": "SetUserFullName",
-		"fullName": []interface{}{
-			userModel.FullName,
-			attrValue,
+	err = db.Insert(UserChangeLogModel{
+		Time:         time.Now(),
+		RequestEmail: email,
+		RemoteIp:     remoteIp,
+		FuncName:     "SetUserFullName",
+		FullName: &[2]*string{
+			&userModel.FullName,
+			&attrValue,
 		},
 	})
 	if err != nil {
@@ -293,13 +294,13 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-	err = db.C(storage.C_userChangeLog).Insert(scal.M{
-		"time":     time.Now(),
-		"email":    email,
-		"remoteIp": remoteIp,
-		"funcName": "UnsetUserFullName",
-		"fullName": []interface{}{
-			userModel.FullName,
+	err = db.Insert(UserChangeLogModel{
+		Time:         time.Now(),
+		RequestEmail: email,
+		RemoteIp:     remoteIp,
+		FuncName:     "UnsetUserFullName",
+		FullName: &[2]*string{
+			&userModel.FullName,
 			nil,
 		},
 	})
@@ -374,14 +375,14 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-	err = db.C(storage.C_userChangeLog).Insert(scal.M{
-		"time":     time.Now(),
-		"email":    email,
-		"remoteIp": remoteIp,
-		"funcName": "SetUserDefaultGroupId",
-		"defaultGroupId": []interface{}{
+	err = db.Insert(UserChangeLogModel{
+		Time:         time.Now(),
+		RequestEmail: email,
+		RemoteIp:     remoteIp,
+		FuncName:     "SetUserDefaultGroupId",
+		DefaultGroupId: &[2]*bson.ObjectId{
 			userModel.DefaultGroupId,
-			groupId,
+			&groupId,
 		},
 	})
 	if err != nil {
@@ -424,12 +425,12 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
 		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-	err = db.C(storage.C_userChangeLog).Insert(scal.M{
-		"time":     time.Now(),
-		"email":    email,
-		"remoteIp": remoteIp,
-		"funcName": "UnsetUserDefaultGroupId",
-		"defaultGroupId": []interface{}{
+	err = db.Insert(UserChangeLogModel{
+		Time:         time.Now(),
+		RequestEmail: email,
+		RemoteIp:     remoteIp,
+		FuncName:     "UnsetUserDefaultGroupId",
+		DefaultGroupId: &[2]*bson.ObjectId{
 			userModel.DefaultGroupId,
 			nil,
 		},

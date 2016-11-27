@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
@@ -52,4 +53,20 @@ func SetHttpErrorUserNotFound(w http.ResponseWriter, email string) {
 			email,
 		),
 	)
+}
+
+type UserChangeLogModel struct {
+	Time         time.Time `bson:"time"`
+	RequestEmail string    `bson:"requestEmail"`
+	RemoteIp     string    `bson:"remoteIp"`
+	FuncName     string    `bson:"funcName"`
+
+	Email          *[2]*string        `bson:"email,omitempty"`
+	FullName       *[2]*string        `bson:"fullName,omitempty"`
+	DefaultGroupId *[2]*bson.ObjectId `bson:"defaultGroupId,omitempty"`
+	Locked         *[2]bool           `bson:"locked,omitempty"`
+}
+
+func (model UserChangeLogModel) Collection() string {
+	return storage.C_userChangeLog
 }
