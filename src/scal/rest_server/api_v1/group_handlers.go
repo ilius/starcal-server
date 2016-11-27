@@ -101,12 +101,16 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		OwnerEmail string        `bson:"ownerEmail" json:"ownerEmail"`
 	}
 	var results []resultModel
-	err = db.C(storage.C_group).Find(bson.M{
-		"$or": []bson.M{
-			bson.M{"ownerEmail": email},
-			bson.M{"readAccessEmails": email},
+	err = db.FindAll(
+		storage.C_group,
+		bson.M{
+			"$or": []bson.M{
+				bson.M{"ownerEmail": email},
+				bson.M{"readAccessEmails": email},
+			},
 		},
-	}).All(&results)
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -349,9 +353,13 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	eventMetaCol := db.C(storage.C_eventMeta)
 
 	var eventMetaModels []event_lib.EventMetaModel
-	err = eventMetaCol.Find(bson.M{
-		"groupId": groupId,
-	}).All(&eventMetaModels)
+	err = db.FindAll(
+		storage.C_eventMeta,
+		bson.M{
+			"groupId": groupId,
+		},
+		&eventMetaModels,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -438,7 +446,11 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	cond := groupModel.GetAccessCond(email)
 	cond["groupId"] = groupId
 	var results []resultModel
-	err = db.C(storage.C_eventMeta).Find(cond).All(&results)
+	err = db.FindAll(
+		storage.C_eventMeta,
+		cond,
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -518,7 +530,11 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		{"$unwind": "$data"},
 	}...)
 	var results []bson.M
-	err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
+	err = db.PipeAll(
+		storage.C_eventMeta,
+		pipeline,
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -627,7 +643,11 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 	}...)
 
 	results := []bson.M{}
-	err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
+	err = db.PipeAll(
+		storage.C_eventMeta,
+		pipeline,
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -717,7 +737,11 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 
 	results := []bson.M{}
-	err = db.C(storage.C_eventMetaChangeLog).Pipe(pipeline).All(&results)
+	err = db.PipeAll(
+		storage.C_eventMetaChangeLog,
+		pipeline,
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -822,7 +846,11 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
 	}...)
 
 	results := []bson.M{}
-	err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
+	err = db.PipeAll(
+		storage.C_eventMeta,
+		pipeline,
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return

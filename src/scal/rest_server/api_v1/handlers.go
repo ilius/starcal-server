@@ -865,10 +865,14 @@ func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		EventType string        `bson:"eventType" json:"eventType"`
 	}
 	var events []eventModel
-	err = db.C(storage.C_eventMeta).Find(bson.M{
-		"ownerEmail": email,
-		"groupId":    nil,
-	}).All(&events)
+	err = db.FindAll(
+		storage.C_eventMeta,
+		bson.M{
+			"ownerEmail": email,
+			"groupId":    nil,
+		},
+		&events,
+	)
 	if events == nil {
 		events = make([]eventModel, 0)
 	}
@@ -896,9 +900,13 @@ func GetMyEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	var results []resultModel
-	err = db.C(storage.C_eventMeta).Find(bson.M{
-		"ownerEmail": email,
-	}).All(&results)
+	err = db.FindAll(
+		storage.C_eventMeta,
+		bson.M{
+			"ownerEmail": email,
+		},
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -961,7 +969,11 @@ func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	results := []bson.M{}
-	err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
+	err = db.PipeAll(
+		storage.C_eventMeta,
+		pipeline,
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
@@ -1036,7 +1048,11 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 	}
 
 	results := []bson.M{}
-	err = db.C(storage.C_eventMeta).Pipe(pipeline).All(&results)
+	err = db.PipeAll(
+		storage.C_eventMeta,
+		pipeline,
+		&results,
+	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return

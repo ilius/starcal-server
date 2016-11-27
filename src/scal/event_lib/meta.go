@@ -158,10 +158,14 @@ func (self *EventMetaModel) GetEmailsByAttendingStatus(
 	emailStructs := []struct {
 		Email string `bson:"email"`
 	}{}
-	err := db.C(storage.C_attending).Find(bson.M{
-		"eventId":   self.EventId,
-		"attending": attending,
-	}).All(&emailStructs)
+	err := db.FindAll(
+		storage.C_attending,
+		bson.M{
+			"eventId":   self.EventId,
+			"attending": attending,
+		},
+		&emailStructs,
+	)
 	if err != nil {
 		log.Printf(
 			"Internal Error: GetAttendingEmails: eventId=%v: %s\n",

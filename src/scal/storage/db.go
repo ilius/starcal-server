@@ -1,6 +1,7 @@
 package storage
 
 import (
+	//"errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"scal/settings"
@@ -47,6 +48,20 @@ func (db MongoDatabase) Get(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Find(
 		model.UniqueM(),
 	).One(model)
+}
+func (db MongoDatabase) FindAll(
+	colName string,
+	cond bson.M,
+	result interface{},
+) error {
+	return db.C(colName).Find(cond).All(result)
+}
+func (db MongoDatabase) PipeAll(
+	colName string,
+	pipeline []bson.M,
+	result interface{},
+) error {
+	return db.C(colName).Pipe(pipeline).All(result)
 }
 
 func GetDB() (*MongoDatabase, error) {
