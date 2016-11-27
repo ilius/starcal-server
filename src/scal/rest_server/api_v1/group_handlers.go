@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -638,16 +639,64 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		},
 	})
 
-	results := []scal.M{}
+	rawResults := []scal.M{}
 	err = db.PipeAll(
 		storage.C_eventMetaChangeLog,
 		pipeline,
-		&results,
+		&rawResults,
 	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
 	}
+	type resultModel struct {
+		EventId    interface{} `json:"eventId"`
+		OldGroupId interface{} `json:"oldGroupId"`
+		NewGroupId interface{} `json:"newGroupId"`
+		Time       interface{} `json:"time"`
+	}
+	results := make([]resultModel, 0, len(rawResults))
+	for _, m := range rawResults {
+		eventId, ok := m["_id"]
+		if !ok {
+			log.Print("GetGroupMovedEvents: '_id' not found")
+			continue
+		}
+		groupIdIn, ok := m["groupId"]
+		if !ok {
+			log.Print("GetGroupMovedEvents: 'groupId' not found")
+			continue
+		}
+		groupIdSlice, ok := groupIdIn.([]interface{})
+		if !ok {
+			log.Print("GetGroupMovedEvents: 'groupId' has invalid type", groupIdIn)
+			continue
+		}
+		if len(groupIdSlice) != 2 {
+			log.Print("GetGroupMovedEvents: 'groupId' has invalid length", groupIdIn)
+			continue
+		}
+		oldGroupId := groupIdSlice[0]
+		newGroupId := groupIdSlice[1]
+		if oldGroupId == nil {
+			oldGroupId = ""
+		}
+		if newGroupId == nil {
+			newGroupId = ""
+		}
+		_time, ok := m["time"]
+		if !ok {
+			log.Print("GetGroupMovedEvents: 'time' not found")
+			continue
+		}
+		results = append(results, resultModel{
+			EventId:    eventId,
+			Time:       _time,
+			OldGroupId: oldGroupId,
+			NewGroupId: newGroupId,
+		})
+	}
+
 	json.NewEncoder(w).Encode(scal.M{
 		"groupId":        groupModel.Id,
 		"since_datetime": since,
