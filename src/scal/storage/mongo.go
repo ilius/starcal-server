@@ -8,15 +8,6 @@ import (
 	"time"
 )
 
-type hasCollection interface {
-	Collection() string
-}
-
-type hasCollectionUniqueM interface {
-	Collection() string
-	UniqueM() bson.M
-}
-
 type MongoDatabase struct {
 	mgo.Database
 }
