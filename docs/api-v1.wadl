@@ -131,6 +131,26 @@
 						</response>
 					</method>
 				</resource>
+				<resource path="moved-events/{dateTime}/">
+					<param name="dateTime" type="xsd:dateTime"
+						description="filters out events moved before this {dateTime}
+						this should be the time of last sync on this client"/>
+					<method name="GET" id="getGroupMovedEvents">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="since_datetime" type="xsd:dateTime"/>
+							<param name="moved_events" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType">
+									<element name="eventId" type="xs:string"/>
+									<element name="time" type="xsd:dateTime"/>
+									<element name="oldGroupId" type="xs:string"/>
+									<element name="newGroupId" type="xs:string"/>
+								</item>
+							</param>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="event/{eventType}/{eventId}/">
