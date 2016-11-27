@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # DO NOT USE DJANGO OR ANY EXTERNAL LIBRARIES IN THIS SCRIPT
 
+import sys
 import os
 from os.path import join, isfile, isdir, dirname, abspath
 import json
@@ -106,6 +107,7 @@ status = subprocess.call([
     "server.go",
 ])
 
-os.remove(goSettingsFile)
+if "--no-remove" not in sys.argv:
+	os.remove(goSettingsFile)
 
 sys.exit(status)
