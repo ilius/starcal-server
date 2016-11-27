@@ -76,6 +76,61 @@
 						</response>
 					</method>
 				</resource>
+				<resource path="modified-events/{dateTime}/">
+					<param name="dateTime" type="xsd:dateTime"
+						description="filters out modifications before this {dateTime}
+						this should be the time of last sync on this client"/>
+					<method name="GET" id="getGroupModifiedEvents">
+						<response>
+							<representation mediaType="app/json"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="since_datetime" type="xsd:dateTime"/>
+							<param name="modified_events" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType">
+									<element name="_id" type="xs:string" description="eventId"/>
+									<element name="eventType" type="xs:string">
+										<option value="allDayTask"/>
+										<option value="dailyNote"/>
+										<option value="largeScale"/>
+										<option value="lifeTime"/>
+										<option value="monthly"/>
+										<option value="task"/>
+										<option value="universityClass"/>
+										<option value="universityExam"/>
+										<option value="weekly"/>
+										<option value="yearly"/>
+									</element>
+									<element name="lastModifiedTime" type="xsd:dateTime"/>
+									<element name="lastSha1" type="xs:string"/>
+									<element name="meta" type="xs:complexType">
+										<element name="ownerEmail" type="xs:string"/>
+										<element name="isPublic" type="xs:boolean"/>
+										<element name="creationTime" type="xsd:dateTime"/>
+									</element>
+									<element name="data" type="xs:complexType"
+										description="extra elements are present depending on {eventType},
+										only the common elements are documented">
+										<element name="summary" type="xs:string"/>
+										<element name="description" type="xs:string"/>
+										<element name="calType" type="xs:string">
+											<option value="gregorian"/>
+											<option value="jalali"/>
+											<option value="hijri"/>
+											<option value="indian_national"/>
+											<option value="julian"/>
+											<option value="ethiopian"/>
+											<option value="gregorian_proleptic"/>
+										</element>
+										<element name="icon" type="xs:string"/>
+										<element name="timeZone" type="xs:string"/>
+										<element name="timeZoneEnable" type="xs:boolean"/>
+										<element name="notifyBefore" type="xs:int"/>
+									</element>
+								</item>
+							</param>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="event/{eventType}/{eventId}/">
