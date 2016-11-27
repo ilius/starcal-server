@@ -7,6 +7,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"scal"
 	"scal/storage"
 )
 
@@ -34,8 +35,8 @@ type EventMetaModel struct {
 	MaxAttendees   int  `bson:"maxAttendees"`
 }
 
-func (self EventMetaModel) UniqueM() bson.M {
-	return bson.M{
+func (self EventMetaModel) UniqueM() scal.M {
+	return scal.M{
 		"_id": self.EventId,
 	}
 }
@@ -48,8 +49,8 @@ func (self EventMetaModel) GroupIdHex() string {
 	}
 	return ""
 }
-func (self EventMetaModel) JsonM() bson.M {
-	return bson.M{
+func (self EventMetaModel) JsonM() scal.M {
+	return scal.M{
 		"creationTime":   self.CreationTime,
 		"ownerEmail":     self.OwnerEmail,
 		"isPublic":       self.IsPublic,
@@ -112,7 +113,7 @@ func (self *EventMetaModel) AttendingStatusCount(
 ) (int, error) {
 	return db.FindCount(
 		storage.C_attending,
-		bson.M{
+		scal.M{
 			"eventId":   self.EventId,
 			"attending": attending,
 		},
@@ -163,7 +164,7 @@ func (self *EventMetaModel) GetEmailsByAttendingStatus(
 	}{}
 	err := db.FindAll(
 		storage.C_attending,
-		bson.M{
+		scal.M{
 			"eventId":   self.EventId,
 			"attending": attending,
 		},

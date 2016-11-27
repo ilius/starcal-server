@@ -14,6 +14,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
+	"scal"
 	"scal-lib/go-http-auth"
 	"scal/event_lib"
 	"scal/storage"
@@ -87,7 +88,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 	now := time.Now()
-	metaChangeLog := bson.M{
+	metaChangeLog := scal.M{
 		"time":     now,
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -130,7 +131,7 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -209,7 +210,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 	now := time.Now()
 	err = db.C(storage.C_eventMetaChangeLog).Insert(
-		bson.M{
+		scal.M{
 			"time":     now,
 			"email":    email,
 			"remoteIp": remoteIp,
@@ -220,7 +221,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 				email,
 			},
 		},
-		bson.M{
+		scal.M{
 			"time":     now,
 			"email":    email,
 			"remoteIp": remoteIp,
@@ -337,7 +338,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	now := time.Now()
-	metaChangeLog := bson.M{
+	metaChangeLog := scal.M{
 		"time":     now,
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -373,7 +374,7 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -407,7 +408,7 @@ func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		//"eventId": eventId.Hex(),
 		"ownerEmail": eventMeta.OwnerEmail,
 	})
@@ -475,7 +476,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 	now := time.Now()
-	err = db.C(storage.C_eventMetaChangeLog).Insert(bson.M{
+	err = db.C(storage.C_eventMetaChangeLog).Insert(scal.M{
 		"time":     now,
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -497,7 +498,7 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 	// send an E-Mail to `newOwnerEmail` FIXME
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func GetEventMetaModelFromRequest(
@@ -548,7 +549,7 @@ func GetEventMeta(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	if eventMeta == nil {
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		//"eventId": eventMeta.EventId.Hex(),
 		"ownerEmail":           eventMeta.OwnerEmail,
 		"creationTime":         eventMeta.CreationTime,
@@ -568,7 +569,7 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	if eventMeta == nil {
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		//"eventId": eventMeta.EventId.Hex(),
 		"isPublic":       eventMeta.IsPublic,
 		"accessEmails":   eventMeta.AccessEmails,
@@ -652,7 +653,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	now := time.Now()
-	metaChangeLog := bson.M{
+	metaChangeLog := scal.M{
 		"time":     now,
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -698,7 +699,7 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -751,7 +752,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 	newAccessEmails := append(eventMeta.AccessEmails, toAddEmail)
 	now := time.Now()
-	err = db.C(storage.C_eventMetaChangeLog).Insert(bson.M{
+	err = db.C(storage.C_eventMetaChangeLog).Insert(scal.M{
 		"time":     now,
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -772,7 +773,7 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func JoinEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -809,7 +810,7 @@ func JoinEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpError(w, http.StatusForbidden, err.Error())
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func LeaveEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -846,7 +847,7 @@ func LeaveEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpError(w, http.StatusForbidden, err.Error())
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -867,7 +868,7 @@ func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	var events []eventModel
 	err = db.FindAll(
 		storage.C_eventMeta,
-		bson.M{
+		scal.M{
 			"ownerEmail": email,
 			"groupId":    nil,
 		},
@@ -876,7 +877,7 @@ func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	if events == nil {
 		events = make([]eventModel, 0)
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"events": events,
 	})
 }
@@ -902,7 +903,7 @@ func GetMyEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	var results []resultModel
 	err = db.FindAll(
 		storage.C_eventMeta,
-		bson.M{
+		scal.M{
 			"ownerEmail": email,
 		},
 		&results,
@@ -914,7 +915,7 @@ func GetMyEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	if results == nil {
 		results = make([]resultModel, 0)
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"events": results,
 	})
 }
@@ -931,23 +932,23 @@ func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	pipeline := []bson.M{
-		{"$match": bson.M{
+	pipeline := []scal.M{
+		{"$match": scal.M{
 			"ownerEmail": email,
 		}},
-		{"$lookup": bson.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
 			"foreignField": "eventId",
 			"as":           "revision",
 		}},
 		{"$unwind": "$revision"},
-		{"$group": bson.M{
+		{"$group": scal.M{
 			"_id":       "$_id",
-			"eventType": bson.M{"$first": "$eventType"},
-			"groupId":   bson.M{"$first": "$groupId"},
-			"meta": bson.M{
-				"$first": bson.M{
+			"eventType": scal.M{"$first": "$eventType"},
+			"groupId":   scal.M{"$first": "$groupId"},
+			"meta": scal.M{
+				"$first": scal.M{
 					"ownerEmail":     "$ownerEmail",
 					"isPublic":       "$isPublic",
 					"creationTime":   "$creationTime",
@@ -956,10 +957,10 @@ func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 					"maxAttendees":   "$maxAttendees",
 				},
 			},
-			"lastModifiedTime": bson.M{"$first": "$revision.time"},
-			"lastSha1":         bson.M{"$first": "$revision.sha1"},
+			"lastModifiedTime": scal.M{"$first": "$revision.time"},
+			"lastSha1":         scal.M{"$first": "$revision.sha1"},
 		}},
-		{"$lookup": bson.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_eventData,
 			"localField":   "lastSha1",
 			"foreignField": "sha1",
@@ -968,7 +969,7 @@ func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		{"$unwind": "$data"},
 	}
 
-	results := []bson.M{}
+	results := []scal.M{}
 	err = db.PipeAll(
 		storage.C_eventMeta,
 		pipeline,
@@ -978,7 +979,7 @@ func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"events_full": results,
 	})
 }
@@ -1007,25 +1008,25 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		return
 	}
 
-	pipeline := []bson.M{
-		{"$match": bson.M{
+	pipeline := []scal.M{
+		{"$match": scal.M{
 			"ownerEmail": email,
 		}},
-		{"$sort": bson.M{"creationTime": -1}},
+		{"$sort": scal.M{"creationTime": -1}},
 		{"$limit": count},
-		{"$lookup": bson.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
 			"foreignField": "eventId",
 			"as":           "revision",
 		}},
 		{"$unwind": "$revision"},
-		{"$group": bson.M{
+		{"$group": scal.M{
 			"_id":       "$_id",
-			"eventType": bson.M{"$first": "$eventType"},
-			"groupId":   bson.M{"$first": "$groupId"},
-			"meta": bson.M{
-				"$first": bson.M{
+			"eventType": scal.M{"$first": "$eventType"},
+			"groupId":   scal.M{"$first": "$groupId"},
+			"meta": scal.M{
+				"$first": scal.M{
 					"ownerEmail":     "$ownerEmail",
 					"isPublic":       "$isPublic",
 					"creationTime":   "$creationTime",
@@ -1034,20 +1035,20 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 					"maxAttendees":   "$maxAttendees",
 				},
 			},
-			"lastModifiedTime": bson.M{"$first": "$revision.time"},
-			"lastSha1":         bson.M{"$first": "$revision.sha1"},
+			"lastModifiedTime": scal.M{"$first": "$revision.time"},
+			"lastSha1":         scal.M{"$first": "$revision.sha1"},
 		}},
-		{"$lookup": bson.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_eventData,
 			"localField":   "lastSha1",
 			"foreignField": "sha1",
 			"as":           "data",
 		}},
 		{"$unwind": "$data"},
-		{"$sort": bson.M{"meta.creationTime": -1}},
+		{"$sort": scal.M{"meta.creationTime": -1}},
 	}
 
-	results := []bson.M{}
+	results := []scal.M{}
 	err = db.PipeAll(
 		storage.C_eventMeta,
 		pipeline,
@@ -1057,7 +1058,7 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"max_count":           count,
 		"last_created_events": results,
 	})

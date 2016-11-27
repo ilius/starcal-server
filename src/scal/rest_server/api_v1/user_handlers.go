@@ -12,6 +12,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"scal"
 	"scal-lib/go-http-auth"
 	"scal/event_lib"
 	"scal/storage"
@@ -147,7 +148,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userModel.DefaultGroupId = &defaultGroup.Id
-	err = db.C(storage.C_userChangeLog).Insert(bson.M{
+	err = db.C(storage.C_userChangeLog).Insert(scal.M{
 		"time":     time.Now(),
 		"remoteIp": remoteIp,
 		"funcName": "RegisterUser",
@@ -243,7 +244,7 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-	err = db.C(storage.C_userChangeLog).Insert(bson.M{
+	err = db.C(storage.C_userChangeLog).Insert(scal.M{
 		"time":     time.Now(),
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -258,12 +259,12 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	_, err = db.C(storage.C_user).Find(bson.M{
+	_, err = db.C(storage.C_user).Find(scal.M{
 		"email": email,
 	}).Apply(
 		mgo.Change{
-			Update: bson.M{
-				"$set": bson.M{
+			Update: scal.M{
+				"$set": scal.M{
 					"fullName": attrValue,
 				},
 			},
@@ -300,7 +301,7 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-	err = db.C(storage.C_userChangeLog).Insert(bson.M{
+	err = db.C(storage.C_userChangeLog).Insert(scal.M{
 		"time":     time.Now(),
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -315,12 +316,12 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	_, err = db.C(storage.C_user).Find(bson.M{
+	_, err = db.C(storage.C_user).Find(scal.M{
 		"email": email,
 	}).Apply(
 		mgo.Change{
-			Update: bson.M{
-				"$set": bson.M{
+			Update: scal.M{
+				"$set": scal.M{
 					"fullName": "",
 				},
 			},
@@ -388,7 +389,7 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-	err = db.C(storage.C_userChangeLog).Insert(bson.M{
+	err = db.C(storage.C_userChangeLog).Insert(scal.M{
 		"time":     time.Now(),
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -403,12 +404,12 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 		return
 	}
 
-	_, err = db.C(storage.C_user).Find(bson.M{
+	_, err = db.C(storage.C_user).Find(scal.M{
 		"email": email,
 	}).Apply(
 		mgo.Change{
-			Update: bson.M{
-				"$set": bson.M{
+			Update: scal.M{
+				"$set": scal.M{
 					"defaultGroupId": groupId,
 				},
 			},
@@ -445,7 +446,7 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
 		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-	err = db.C(storage.C_userChangeLog).Insert(bson.M{
+	err = db.C(storage.C_userChangeLog).Insert(scal.M{
 		"time":     time.Now(),
 		"email":    email,
 		"remoteIp": remoteIp,
@@ -460,12 +461,12 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
 		return
 	}
 
-	_, err = db.C(storage.C_user).Find(bson.M{
+	_, err = db.C(storage.C_user).Find(scal.M{
 		"email": email,
 	}).Apply(
 		mgo.Change{
-			Update: bson.M{
-				"$set": bson.M{
+			Update: scal.M{
+				"$set": scal.M{
 					"defaultGroupId": nil,
 				},
 			},
@@ -497,7 +498,7 @@ func GetUserInfo(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"email":          userModel.Email,
 		"fullName":       userModel.FullName,
 		"defaultGroupId": userModel.DefaultGroupId,

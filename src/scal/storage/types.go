@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"gopkg.in/mgo.v2/bson"
+	"scal"
 )
 
 type hasCollection interface {
@@ -10,7 +10,7 @@ type hasCollection interface {
 
 type hasCollectionUniqueM interface {
 	Collection() string
-	UniqueM() bson.M
+	UniqueM() scal.M
 }
 
 type Database interface {
@@ -19,7 +19,7 @@ type Database interface {
 	Upsert(model hasCollectionUniqueM) error
 	Remove(model hasCollectionUniqueM) error
 	Get(model hasCollectionUniqueM) error
-	FindCount(string, bson.M) (int, error)
-	FindAll(string, bson.M, interface{}) error
-	First(bson.M, string, hasCollection) error
+	FindCount(string, scal.M) (int, error)
+	FindAll(string, scal.M, interface{}) error
+	First(scal.M, string, hasCollection) error
 }

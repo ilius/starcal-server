@@ -3,7 +3,7 @@ package storage
 import (
 	//"errors"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"scal"
 	"scal/settings"
 	"time"
 )
@@ -41,26 +41,26 @@ func (db *MongoDatabase) Get(model hasCollectionUniqueM) error {
 	).One(model)
 }
 func (db *MongoDatabase) First(
-	cond bson.M,
+	cond scal.M,
 	sortBy string,
 	model hasCollection,
 ) error {
 	return db.C(model.Collection()).Find(cond).Sort(sortBy).One(model)
 }
-func (db *MongoDatabase) FindCount(colName string, cond bson.M) (int, error) {
+func (db *MongoDatabase) FindCount(colName string, cond scal.M) (int, error) {
 	return db.C(colName).Find(cond).Count()
 }
 
 func (db *MongoDatabase) FindAll(
 	colName string,
-	cond bson.M,
+	cond scal.M,
 	result interface{},
 ) error {
 	return db.C(colName).Find(cond).All(result)
 }
 func (db *MongoDatabase) PipeAll(
 	colName string,
-	pipeline []bson.M,
+	pipeline []scal.M,
 	result interface{},
 ) error {
 	return db.C(colName).Pipe(pipeline).All(result)

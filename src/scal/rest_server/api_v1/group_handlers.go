@@ -13,6 +13,7 @@ import (
 	//"gopkg.in/mgo.v2"
 	//"github.com/gorilla/mux"
 
+	"scal"
 	"scal-lib/go-http-auth"
 	"scal/event_lib"
 	"scal/storage"
@@ -103,10 +104,10 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	var results []resultModel
 	err = db.FindAll(
 		storage.C_group,
-		bson.M{
-			"$or": []bson.M{
-				bson.M{"ownerEmail": email},
-				bson.M{"readAccessEmails": email},
+		scal.M{
+			"$or": []scal.M{
+				scal.M{"ownerEmail": email},
+				scal.M{"readAccessEmails": email},
 			},
 		},
 		&results,
@@ -118,7 +119,7 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	if results == nil {
 		results = make([]resultModel, 0)
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"groups": results,
 	})
 }
@@ -246,7 +247,7 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -355,7 +356,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	var eventMetaModels []event_lib.EventMetaModel
 	err = db.FindAll(
 		storage.C_eventMeta,
-		bson.M{
+		scal.M{
 			"groupId": groupId,
 		},
 		&eventMetaModels,
@@ -374,7 +375,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		// insert a new record to storage.C_eventMetaChangeLog // FIXME
 		eventMetaModel.GroupId = nil
 		err = eventMetaCol.Update(
-			bson.M{"_id": eventMetaModel.EventId},
+			scal.M{"_id": eventMetaModel.EventId},
 			eventMetaModel,
 		)
 		if err != nil {
@@ -383,7 +384,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 		now := time.Now()
 		err = db.C(storage.C_eventMetaChangeLog).Insert(
-			bson.M{
+			scal.M{
 				"time":     now,
 				"email":    email,
 				"remoteIp": remoteIp,
@@ -405,7 +406,7 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -458,7 +459,7 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	if results == nil {
 		results = make([]resultModel, 0)
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"events": results,
 	})
 }
@@ -491,37 +492,37 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 
-	pipeline := []bson.M{
-		{"$match": bson.M{
+	pipeline := []scal.M{
+		{"$match": scal.M{
 			"groupId": groupId,
 		}},
 	}
 	aCond := groupModel.GetAccessCond(email)
 	if len(aCond) > 0 {
-		pipeline = append(pipeline, bson.M{"$match": aCond})
+		pipeline = append(pipeline, scal.M{"$match": aCond})
 	}
-	pipeline = append(pipeline, []bson.M{
-		{"$lookup": bson.M{
+	pipeline = append(pipeline, []scal.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
 			"foreignField": "eventId",
 			"as":           "revision",
 		}},
 		{"$unwind": "$revision"},
-		{"$group": bson.M{
+		{"$group": scal.M{
 			"_id":       "$_id",
-			"eventType": bson.M{"$first": "$eventType"},
-			"meta": bson.M{
-				"$first": bson.M{
+			"eventType": scal.M{"$first": "$eventType"},
+			"meta": scal.M{
+				"$first": scal.M{
 					"ownerEmail":   "$ownerEmail",
 					"isPublic":     "$isPublic",
 					"creationTime": "$creationTime",
 				},
 			},
-			"lastModifiedTime": bson.M{"$first": "$revision.time"},
-			"lastSha1":         bson.M{"$first": "$revision.sha1"},
+			"lastModifiedTime": scal.M{"$first": "$revision.time"},
+			"lastSha1":         scal.M{"$first": "$revision.sha1"},
 		}},
-		{"$lookup": bson.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_eventData,
 			"localField":   "lastSha1",
 			"foreignField": "sha1",
@@ -529,7 +530,7 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}},
 		{"$unwind": "$data"},
 	}...)
-	var results []bson.M
+	var results []scal.M
 	err = db.PipeAll(
 		storage.C_eventMeta,
 		pipeline,
@@ -540,9 +541,9 @@ func GetGroupEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 	if results == nil {
-		results = make([]bson.M, 0)
+		results = make([]scal.M, 0)
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"events": results,
 	})
 }
@@ -595,45 +596,45 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	//json.NewEncoder(w).Encode(bson.M{"sinceDateTime": since})
+	//json.NewEncoder(w).Encode(scal.M{"sinceDateTime": since})
 
-	pipeline := []bson.M{
-		{"$match": bson.M{
+	pipeline := []scal.M{
+		{"$match": scal.M{
 			"groupId": groupId,
 		}},
 	}
 	aCond := groupModel.GetAccessCond(email)
 	if len(aCond) > 0 {
-		pipeline = append(pipeline, bson.M{"$match": aCond})
+		pipeline = append(pipeline, scal.M{"$match": aCond})
 	}
-	pipeline = append(pipeline, []bson.M{
-		{"$lookup": bson.M{
+	pipeline = append(pipeline, []scal.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
 			"foreignField": "eventId",
 			"as":           "revision",
 		}},
 		{"$unwind": "$revision"},
-		{"$match": bson.M{
-			"revision.time": bson.M{
+		{"$match": scal.M{
+			"revision.time": scal.M{
 				"$gt": since,
 			},
 		}},
-		{"$sort": bson.M{"revision.time": -1}},
-		{"$group": bson.M{
+		{"$sort": scal.M{"revision.time": -1}},
+		{"$group": scal.M{
 			"_id":       "$_id",
-			"eventType": bson.M{"$first": "$eventType"},
-			"meta": bson.M{
-				"$first": bson.M{
+			"eventType": scal.M{"$first": "$eventType"},
+			"meta": scal.M{
+				"$first": scal.M{
 					"ownerEmail":   "$ownerEmail",
 					"isPublic":     "$isPublic",
 					"creationTime": "$creationTime",
 				},
 			},
-			"lastModifiedTime": bson.M{"$first": "$revision.time"},
-			"lastSha1":         bson.M{"$first": "$revision.sha1"},
+			"lastModifiedTime": scal.M{"$first": "$revision.time"},
+			"lastSha1":         scal.M{"$first": "$revision.sha1"},
 		}},
-		{"$lookup": bson.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_eventData,
 			"localField":   "lastSha1",
 			"foreignField": "sha1",
@@ -642,7 +643,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		{"$unwind": "$data"},
 	}...)
 
-	results := []bson.M{}
+	results := []scal.M{}
 	err = db.PipeAll(
 		storage.C_eventMeta,
 		pipeline,
@@ -652,7 +653,7 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"groupId":         groupModel.Id,
 		"since_datetime":  since,
 		"modified_events": results,
@@ -710,16 +711,16 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	pipeline := []bson.M{
-		{"$match": bson.M{
+	pipeline := []scal.M{
+		{"$match": scal.M{
 			"groupId": groupId,
 		}},
-		{"$match": bson.M{
-			"time": bson.M{
+		{"$match": scal.M{
+			"time": scal.M{
 				"$gt": since,
 			},
 		}},
-		{"$sort": bson.M{"time": -1}},
+		{"$sort": scal.M{"time": -1}},
 	}
 	accessPl := groupModel.GetLookupMetaAccessPipeline(
 		email,
@@ -728,15 +729,15 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	if len(accessPl) > 0 {
 		pipeline = append(pipeline, accessPl...)
 	}
-	pipeline = append(pipeline, bson.M{
-		"$group": bson.M{
+	pipeline = append(pipeline, scal.M{
+		"$group": scal.M{
 			"_id":     "$eventId",
-			"time":    bson.M{"$first": "$time"},
-			"groupId": bson.M{"$first": "$groupId"},
+			"time":    scal.M{"$first": "$time"},
+			"groupId": scal.M{"$first": "$groupId"},
 		},
 	})
 
-	results := []bson.M{}
+	results := []scal.M{}
 	err = db.PipeAll(
 		storage.C_eventMetaChangeLog,
 		pipeline,
@@ -746,7 +747,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"groupId":        groupModel.Id,
 		"since_datetime": since,
 		"moved_events":   results,
@@ -803,49 +804,49 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
 		return
 	}
 
-	pipeline := []bson.M{
-		{"$match": bson.M{
+	pipeline := []scal.M{
+		{"$match": scal.M{
 			"groupId": groupId,
 		}},
 	}
 	aCond := groupModel.GetAccessCond(email)
 	if len(aCond) > 0 {
-		pipeline = append(pipeline, bson.M{"$match": aCond})
+		pipeline = append(pipeline, scal.M{"$match": aCond})
 	}
-	pipeline = append(pipeline, []bson.M{
-		{"$sort": bson.M{"creationTime": -1}},
+	pipeline = append(pipeline, []scal.M{
+		{"$sort": scal.M{"creationTime": -1}},
 		{"$limit": count},
-		{"$lookup": bson.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
 			"foreignField": "eventId",
 			"as":           "revision",
 		}},
 		{"$unwind": "$revision"},
-		{"$group": bson.M{
+		{"$group": scal.M{
 			"_id":       "$_id",
-			"eventType": bson.M{"$first": "$eventType"},
-			"meta": bson.M{
-				"$first": bson.M{
+			"eventType": scal.M{"$first": "$eventType"},
+			"meta": scal.M{
+				"$first": scal.M{
 					"ownerEmail":   "$ownerEmail",
 					"isPublic":     "$isPublic",
 					"creationTime": "$creationTime",
 				},
 			},
-			"lastModifiedTime": bson.M{"$first": "$revision.time"},
-			"lastSha1":         bson.M{"$first": "$revision.sha1"},
+			"lastModifiedTime": scal.M{"$first": "$revision.time"},
+			"lastSha1":         scal.M{"$first": "$revision.sha1"},
 		}},
-		{"$lookup": bson.M{
+		{"$lookup": scal.M{
 			"from":         storage.C_eventData,
 			"localField":   "lastSha1",
 			"foreignField": "sha1",
 			"as":           "data",
 		}},
 		{"$unwind": "$data"},
-		{"$sort": bson.M{"meta.creationTime": -1}},
+		{"$sort": scal.M{"meta.creationTime": -1}},
 	}...)
 
-	results := []bson.M{}
+	results := []scal.M{}
 	err = db.PipeAll(
 		storage.C_eventMeta,
 		pipeline,
@@ -855,7 +856,7 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(bson.M{
+	json.NewEncoder(w).Encode(scal.M{
 		"groupId":             groupModel.Id,
 		"max_count":           count,
 		"last_created_events": results,

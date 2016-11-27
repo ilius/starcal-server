@@ -3,6 +3,7 @@ package event_lib
 import "time"
 import "gopkg.in/mgo.v2/bson"
 
+import "scal"
 import "scal/storage"
 
 type EventRevisionModel struct {
@@ -23,7 +24,7 @@ func LoadLastRevisionModel(db storage.Database, eventId *bson.ObjectId) (
 ) {
 	eventRev := EventRevisionModel{}
 	err := db.First(
-		bson.M{
+		scal.M{
 			"eventId": eventId,
 		},
 		"-time",

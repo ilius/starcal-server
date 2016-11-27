@@ -19,6 +19,7 @@ import (
 
 	"scal-lib/go-http-auth"
 
+	"scal"
 	"scal/event_lib"
 	"scal/storage"
 )
@@ -198,7 +199,7 @@ func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 	now := time.Now()
 	err = db.C(storage.C_eventMetaChangeLog).Insert(
-		bson.M{
+		scal.M{
 			"time":     now,
 			"email":    email,
 			"remoteIp": remoteIp,
@@ -209,7 +210,7 @@ func AddAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 				email,
 			},
 		},
-		bson.M{
+		scal.M{
 			"time":     now,
 			"email":    email,
 			"remoteIp": remoteIp,
@@ -456,7 +457,7 @@ func PatchAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	var err error
 	body, _ := ioutil.ReadAll(r.Body)
-	patchMap := bson.M{}
+	patchMap := scal.M{}
 	err = json.Unmarshal(body, &patchMap)
 	if err != nil {
 		msg := err.Error()

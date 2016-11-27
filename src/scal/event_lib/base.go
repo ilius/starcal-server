@@ -5,6 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"time"
 
+	"scal"
 	"scal/cal_types"
 	"scal/storage"
 )
@@ -21,14 +22,14 @@ type BaseEventModel struct {
 	NotifyBefore   int           `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
 	//IsAllDay bool
 	GroupId string `bson:"-" json:"groupId"` // FIXME
-	Meta    bson.M `bson:"-" json:"meta"`
+	Meta    scal.M `bson:"-" json:"meta"`
 }
 
 func (self BaseEventModel) Collection() string {
 	return storage.C_eventData
 }
-func (self BaseEventModel) UniqueM() bson.M {
-	return bson.M{
+func (self BaseEventModel) UniqueM() scal.M {
+	return scal.M{
 		"sha1": self.Sha1,
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"scal"
 	"scal/storage"
 )
 
@@ -19,8 +20,8 @@ type EventAttendingModel struct {
 	ModifiedTime time.Time     `bson:"modifiedTime"`
 }
 
-func (self EventAttendingModel) UniqueM() bson.M {
-	return bson.M{
+func (self EventAttendingModel) UniqueM() scal.M {
+	return scal.M{
 		"eventId": self.EventId,
 		"email":   self.Email,
 	}

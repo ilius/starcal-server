@@ -8,6 +8,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"scal"
 	"scal/storage"
 )
 
@@ -20,8 +21,8 @@ type UserModel struct {
 	DefaultGroupId *bson.ObjectId `bson:"defaultGroupId" json:"defaultGroupId"`
 }
 
-func (self UserModel) UniqueM() bson.M {
-	return bson.M{
+func (self UserModel) UniqueM() scal.M {
+	return scal.M{
 		"email": self.Email,
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"scal"
 	"scal/storage"
 )
 
@@ -17,8 +18,8 @@ type EventGroupModel struct {
 	ReadAccessEmails []string      `bson:"readAccessEmails,omitempty" json:"readAccessEmails,omitempty"`
 }
 
-func (self EventGroupModel) UniqueM() bson.M {
-	return bson.M{
+func (self EventGroupModel) UniqueM() scal.M {
+	return scal.M{
 		"_id": self.Id,
 	}
 }
@@ -48,15 +49,15 @@ func (self EventGroupModel) CanRead(email string) bool {
 	return false
 }
 
-func (self *EventGroupModel) GetAccessCond(email string) bson.M {
+func (self *EventGroupModel) GetAccessCond(email string) scal.M {
 	if self.CanRead(email) {
-		return bson.M{}
+		return scal.M{}
 	} else {
-		return bson.M{
-			"$or": []bson.M{
-				bson.M{"ownerEmail": email},
-				bson.M{"isPublic": true},
-				bson.M{"accessEmails": email},
+		return scal.M{
+			"$or": []scal.M{
+				scal.M{"ownerEmail": email},
+				scal.M{"isPublic": true},
+				scal.M{"accessEmails": email},
 			},
 		}
 	}
@@ -64,23 +65,23 @@ func (self *EventGroupModel) GetAccessCond(email string) bson.M {
 func (self *EventGroupModel) GetLookupMetaAccessPipeline(
 	email string,
 	localField string,
-) []bson.M {
+) []scal.M {
 	if self.CanRead(email) {
-		return []bson.M{}
+		return []scal.M{}
 	} else {
-		return []bson.M{
-			{"$lookup": bson.M{
+		return []scal.M{
+			{"$lookup": scal.M{
 				"from":         storage.C_eventMeta,
 				"localField":   localField,
 				"foreignField": "_id",
 				"as":           "meta",
 			}},
 			{"$unwind": "$meta"},
-			{"$match": bson.M{
-				"$or": []bson.M{
-					bson.M{"meta.ownerEmail": email},
-					bson.M{"meta.isPublic": true},
-					bson.M{"meta.accessEmails": email},
+			{"$match": scal.M{
+				"$or": []scal.M{
+					scal.M{"meta.ownerEmail": email},
+					scal.M{"meta.isPublic": true},
+					scal.M{"meta.accessEmails": email},
 				},
 			}},
 		}
