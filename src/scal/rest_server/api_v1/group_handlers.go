@@ -791,6 +791,18 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
 		SetHttpErrorInternal(w, err)
 		return
 	}
+	for _, res := range results {
+		if eventId, ok := res["_id"]; ok {
+			res["eventId"] = eventId
+			delete(res, "_id")
+		}
+		if dataI, ok := res["data"]; ok {
+			data := dataI.(scal.M)
+			delete(data, "_id")
+			res["data"] = data
+		}
+	}
+
 	json.NewEncoder(w).Encode(scal.M{
 		"groupId":             groupModel.Id,
 		"max_count":           count,
