@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
+	//"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -639,7 +639,19 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		},
 	})
 
-	rawResults := []scal.M{}
+	type rawResultModel struct {
+		EventId bson.ObjectId  `bson:"_id"`
+		GroupId [2]interface{} `bson:"groupId"`
+		Time    time.Time      `bson:"time"`
+	}
+	type resultModel struct {
+		EventId    bson.ObjectId `json:"eventId"`
+		OldGroupId string        `json:"oldGroupId"`
+		NewGroupId string        `json:"newGroupId"`
+		Time       time.Time     `json:"time"`
+	}
+
+	rawResults := []rawResultModel{}
 	err = db.PipeAll(
 		storage.C_eventMetaChangeLog,
 		pipeline,
@@ -649,52 +661,14 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	type resultModel struct {
-		EventId    interface{} `json:"eventId"`
-		OldGroupId interface{} `json:"oldGroupId"`
-		NewGroupId interface{} `json:"newGroupId"`
-		Time       interface{} `json:"time"`
-	}
-	results := make([]resultModel, 0, len(rawResults))
-	for _, m := range rawResults {
-		eventId, ok := m["_id"]
-		if !ok {
-			log.Print("GetGroupMovedEvents: '_id' not found")
-			continue
+	results := make([]resultModel, len(rawResults))
+	for i, raw := range rawResults {
+		results[i] = resultModel{
+			EventId:    raw.EventId,
+			Time:       raw.Time,
+			OldGroupId: storage.Hex(raw.GroupId[0]),
+			NewGroupId: storage.Hex(raw.GroupId[1]),
 		}
-		groupIdIn, ok := m["groupId"]
-		if !ok {
-			log.Print("GetGroupMovedEvents: 'groupId' not found")
-			continue
-		}
-		groupIdSlice, ok := groupIdIn.([]interface{})
-		if !ok {
-			log.Print("GetGroupMovedEvents: 'groupId' has invalid type", groupIdIn)
-			continue
-		}
-		if len(groupIdSlice) != 2 {
-			log.Print("GetGroupMovedEvents: 'groupId' has invalid length", groupIdIn)
-			continue
-		}
-		oldGroupId := groupIdSlice[0]
-		newGroupId := groupIdSlice[1]
-		if oldGroupId == nil {
-			oldGroupId = ""
-		}
-		if newGroupId == nil {
-			newGroupId = ""
-		}
-		_time, ok := m["time"]
-		if !ok {
-			log.Print("GetGroupMovedEvents: 'time' not found")
-			continue
-		}
-		results = append(results, resultModel{
-			EventId:    eventId,
-			Time:       _time,
-			OldGroupId: oldGroupId,
-			NewGroupId: newGroupId,
-		})
 	}
 
 	json.NewEncoder(w).Encode(scal.M{

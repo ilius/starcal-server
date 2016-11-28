@@ -3,10 +3,27 @@ package storage
 import (
 	//"errors"
 	"gopkg.in/mgo.v2"
+	"log"
 	"scal"
 	"scal/settings"
 	"time"
 )
+
+type hasHex interface {
+	Hex() string
+}
+
+func Hex(id interface{}) string {
+	if id == nil {
+		return ""
+	}
+	id2, ok := id.(hasHex)
+	if !ok {
+		log.Print("storage.Hex: can not convert to hex: ", id)
+		return ""
+	}
+	return id2.Hex()
+}
 
 type MongoDatabase struct {
 	mgo.Database
