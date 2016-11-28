@@ -99,7 +99,7 @@ if hostArch:
     os.putenv("GOARCH", hostArch)
 
 os.putenv("GOPATH", rootDir)
-subprocess.call([
+status = subprocess.call([
     "go",
     "build",
     "-o", "server-%s" % hostName,
@@ -108,4 +108,4 @@ subprocess.call([
 
 os.remove(goSettingsFile)
 
-
+sys.exit(status)

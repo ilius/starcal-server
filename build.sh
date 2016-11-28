@@ -15,4 +15,4 @@ GOPATH=$PWD go install golang.org/x/net/context
 GOPATH=$PWD go install scal-lib/go-http-auth
 
 ./settings/build.py
-
+exit $?
