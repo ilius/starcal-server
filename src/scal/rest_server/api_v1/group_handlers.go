@@ -567,9 +567,9 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		}
 	}
 	json.NewEncoder(w).Encode(scal.M{
-		"groupId":         groupModel.Id,
-		"since_datetime":  since,
-		"modified_events": results,
+		"groupId":        groupModel.Id,
+		"sinceDatetime":  since,
+		"modifiedEvents": results,
 	})
 
 }
@@ -683,9 +683,9 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	json.NewEncoder(w).Encode(scal.M{
-		"groupId":        groupModel.Id,
-		"since_datetime": since,
-		"moved_events":   results,
+		"groupId":       groupModel.Id,
+		"sinceDatetime": since,
+		"movedEvents":   results,
 	})
 
 }
@@ -804,9 +804,9 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
 	}
 
 	json.NewEncoder(w).Encode(scal.M{
-		"groupId":             groupModel.Id,
-		"max_count":           count,
-		"last_created_events": results,
+		"groupId":           groupModel.Id,
+		"maxCount":          count,
+		"lastCreatedEvents": results,
 	})
 
 }

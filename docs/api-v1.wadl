@@ -84,8 +84,8 @@
 						<response>
 							<representation mediaType="app/json"/>
 							<param name="groupId" type="xs:string"/>
-							<param name="since_datetime" type="xsd:dateTime"/>
-							<param name="modified_events" type="xs:list" itemType="xs:complexType">
+							<param name="sinceDatetime" type="xsd:dateTime"/>
+							<param name="modifiedEvents" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
 									<element name="eventId" type="xs:string"/>
 									<element name="eventType" type="xs:string">
@@ -138,8 +138,8 @@
 						<response>
 							<representation mediaType="app/json"/>
 							<param name="groupId" type="xs:string"/>
-							<param name="max_count" type="xs:int"/>
-							<param name="last_created_events" type="xs:list" itemType="xs:complexType">
+							<param name="maxCount" type="xs:int"/>
+							<param name="lastCreatedEvents" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
 									<element name="eventId" type="xs:string"/>
 									<element name="eventType" type="xs:string">
@@ -193,8 +193,8 @@
 						<response>
 							<representation mediaType="app/json"/>
 							<param name="groupId" type="xs:string"/>
-							<param name="since_datetime" type="xsd:dateTime"/>
-							<param name="moved_events" type="xs:list" itemType="xs:complexType">
+							<param name="sinceDatetime" type="xsd:dateTime"/>
+							<param name="movedEvents" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
 									<element name="eventId" type="xs:string"/>
 									<element name="time" type="xsd:dateTime"/>
