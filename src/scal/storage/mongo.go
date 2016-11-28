@@ -1,7 +1,7 @@
 package storage
 
 import (
-	//"errors"
+	"errors"
 	"gopkg.in/mgo.v2"
 	"log"
 	"scal"
@@ -84,6 +84,29 @@ func (db *MongoDatabase) PipeAll(
 	result interface{},
 ) error {
 	return db.C(colName).Pipe(pipeline).All(result)
+}
+
+func (db *MongoDatabase) PipeIter(
+	colName string,
+	pipeline []scal.M,
+) <-chan scal.MErr {
+	ch := make(chan scal.MErr)
+	iter := db.C(colName).Pipe(pipeline).Iter()
+	go func() {
+		defer iter.Close()
+		defer close(ch)
+		resM := scal.M{}
+		for iter.Next(&resM) {
+			ch <- scal.MErr{M: resM}
+		}
+		if err := iter.Err(); err != nil {
+			ch <- scal.MErr{Err: err}
+		}
+		if iter.Timeout() {
+			ch <- scal.MErr{Err: errors.New("timeout")}
+		}
+	}()
+	return ch
 }
 
 func GetDB() (Database, error) {

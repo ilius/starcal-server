@@ -544,28 +544,24 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		}},
 		{"$unwind": "$data"},
 	}...)
-
 	results := []scal.M{}
-	err = db.PipeAll(
-		storage.C_eventMeta,
-		pipeline,
-		&results,
-	)
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	for _, res := range results {
-		if eventId, ok := res["_id"]; ok {
-			res["eventId"] = eventId
-			delete(res, "_id")
+	for res := range db.PipeIter(storage.C_eventMeta, pipeline) {
+		if err := res.Err; err != nil {
+			SetHttpErrorInternal(w, err)
+			return
 		}
-		if dataI, ok := res["data"]; ok {
+		if eventId, ok := res.M["_id"]; ok {
+			res.M["eventId"] = eventId
+			delete(res.M, "_id")
+		}
+		if dataI, ok := res.M["data"]; ok {
 			data := dataI.(scal.M)
 			delete(data, "_id")
-			res["data"] = data
+			res.M["data"] = data
 		}
+		results = append(results, res.M)
 	}
+
 	json.NewEncoder(w).Encode(scal.M{
 		"groupId":        groupModel.Id,
 		"sinceDatetime":  since,

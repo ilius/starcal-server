@@ -24,4 +24,5 @@ type Database interface {
 	FindCount(string, scal.M) (int, error)
 	FindAll(string, scal.M, interface{}) error
 	PipeAll(string, []scal.M, interface{}) error
+	PipeIter(string, []scal.M) <-chan scal.MErr
 }
