@@ -87,7 +87,7 @@
 							<param name="since_datetime" type="xsd:dateTime"/>
 							<param name="modified_events" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
-									<element name="_id" type="xs:string" description="eventId"/>
+									<element name="eventId" type="xs:string"/>
 									<element name="eventType" type="xs:string">
 										<option value="allDayTask"/>
 										<option value="dailyNote"/>
