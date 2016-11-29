@@ -308,6 +308,7 @@ func GetAllDayTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	eventModel.Id = *eventId
+	eventModel.DummyType = eventMeta.EventType  // not "allDayTask"
 	eventModel.GroupId = eventMeta.GroupIdHex() // FIXME
 	if eventMeta.CanReadFull(email) {
 		eventModel.Meta = eventMeta.JsonM()

@@ -108,7 +108,7 @@ def extractEventBasePatchParams():
         'type BaseEventModel.*?{.*?}',
         text,
         re.S,
-    )[0].split('\n')[2:-1]:
+    )[0].split('\n')[3:-1]:
         try:
             param, _type = parseModelVarLine(line)
         except ValueError:

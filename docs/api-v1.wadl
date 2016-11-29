@@ -349,6 +349,18 @@
 				<method name="GET" id="get_allDayTask">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -471,6 +483,18 @@
 				<method name="GET" id="get_dailyNote">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -590,6 +614,18 @@
 				<method name="GET" id="get_largeScale">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -716,6 +752,18 @@
 				<method name="GET" id="get_lifeTime">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -839,6 +887,18 @@
 				<method name="GET" id="get_monthly">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -969,6 +1029,18 @@
 				<method name="GET" id="get_task">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -1097,6 +1169,18 @@
 				<method name="GET" id="get_universityClass">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -1234,6 +1318,18 @@
 				<method name="GET" id="get_universityExam">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -1363,6 +1459,18 @@
 				<method name="GET" id="get_weekly">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
@@ -1494,6 +1602,18 @@
 				<method name="GET" id="get_yearly">
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>

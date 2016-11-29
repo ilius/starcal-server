@@ -11,6 +11,7 @@ import (
 )
 
 type BaseEventModel struct {
+	DummyType      string        `bson:"-" json:"eventType"`
 	Id             bson.ObjectId `bson:"-" json:"eventId,omitempty"`
 	Sha1           string        `bson:"sha1" json:"sha1,omitempty"`
 	TimeZone       string        `bson:"timeZone,omitempty" json:"timeZone"`

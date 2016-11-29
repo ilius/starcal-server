@@ -308,6 +308,7 @@ func GetDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 
 	eventModel.Id = *eventId
+	eventModel.DummyType = eventMeta.EventType  // not "dailyNote"
 	eventModel.GroupId = eventMeta.GroupIdHex() // FIXME
 	if eventMeta.CanReadFull(email) {
 		eventModel.Meta = eventMeta.JsonM()
