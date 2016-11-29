@@ -175,10 +175,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(map[string]string{
-		"successful":     "true",
-		"defaultGroupId": defaultGroup.Id.Hex(),
-	})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func SetUserAttrInput(
@@ -266,10 +263,7 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"successful": "true",
-		attrName:     attrValue,
-	})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -316,9 +310,7 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"successful": "true",
-	})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -397,10 +389,7 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"successful": "true",
-		attrName:     groupId.Hex(),
-	})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
@@ -447,9 +436,7 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"successful": "true",
-	})
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func GetUserInfo(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
