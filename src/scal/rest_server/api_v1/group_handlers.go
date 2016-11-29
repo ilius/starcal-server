@@ -651,37 +651,27 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		},
 	})
 
-	type rawResultModel struct {
-		EventId    bson.ObjectId `bson:"_id"`
-		OldGroupId interface{}   `bson:"oldGroupId"`
-		NewGroupId interface{}   `bson:"newGroupId"`
-		Time       time.Time     `bson:"time"`
-	}
 	type resultModel struct {
-		EventId    bson.ObjectId `json:"eventId"`
-		OldGroupId string        `json:"oldGroupId"`
-		NewGroupId string        `json:"newGroupId"`
-		Time       time.Time     `json:"time"`
+		EventId    bson.ObjectId `bson:"_id" json:"eventId"`
+		OldGroupId interface{}   `bson:"oldGroupId" json:"oldGroupId"`
+		NewGroupId interface{}   `bson:"newGroupId" json:"newGroupId"`
+		Time       time.Time     `bson:"time" json:"time"`
 	}
 
-	rawResults := []rawResultModel{}
+	results := []resultModel{}
 	err = db.PipeAll(
 		storage.C_eventMetaChangeLog,
 		pipeline,
-		&rawResults,
+		&results,
 	)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	results := make([]resultModel, len(rawResults))
-	for i, raw := range rawResults {
-		results[i] = resultModel{
-			EventId:    raw.EventId,
-			Time:       raw.Time,
-			OldGroupId: storage.Hex(raw.OldGroupId),
-			NewGroupId: storage.Hex(raw.NewGroupId),
-		}
+	// convert nil values to empty strings
+	for i := 0; i < len(results); i++ {
+		results[i].OldGroupId = storage.Hex(results[i].OldGroupId)
+		results[i].NewGroupId = storage.Hex(results[i].NewGroupId)
 	}
 
 	json.NewEncoder(w).Encode(scal.M{
