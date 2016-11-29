@@ -1015,12 +1015,7 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		{"$sort": scal.M{"meta.creationTime": -1}},
 	}
 
-	results := []scal.M{}
-	err = db.PipeAll(
-		storage.C_eventMeta,
-		&pipeline,
-		&results,
-	)
+	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
