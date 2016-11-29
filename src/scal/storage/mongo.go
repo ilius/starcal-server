@@ -98,6 +98,7 @@ func (db *MongoDatabase) PipeIter(
 		resM := scal.M{}
 		for iter.Next(&resM) {
 			ch <- scal.MErr{M: resM}
+			resM = scal.M{}
 		}
 		if err := iter.Err(); err != nil {
 			ch <- scal.MErr{Err: err}
