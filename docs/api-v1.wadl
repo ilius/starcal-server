@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <application xmlns="http://localhost:9001/application.wadl">
 	<resources base="http://localhost:9001/">
+		<resource path="user/">
+			<resource path="info/">
+				<method name="GET" id="getUserInfo">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="email" type="xs:string"/>
+						<param name="fullName" type="xs:string"/>
+						<param name="defaultGroupId" type="xs:string"/>
+					</response>
+				</method>
+			</resource>
+			<resource path="full-name/">
+				<method name="PUT" id="setUserFullName">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="fullName" type="xs:string"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+				<method name="DELETE" id="unsetUserFullName">
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
+			<resource path="default-group/">
+				<method name="PUT" id="setUserDefaultGroup">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="defaultGroupId" type="xs:string"/>
+					</response>
+				</method>
+				<method name="DELETE" id="unsetUserDefaultGroup">
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
+		</resource>
 		<resource path="event/groups/">
 			<method name="GET" id="getGroupList">
 				<response>
