@@ -20,7 +20,7 @@ type BaseEventModel struct {
 	Summary        string        `bson:"summary" json:"summary"`
 	Description    string        `bson:"description,omitempty" json:"description"`
 	Icon           string        `bson:"icon,omitempty" json:"icon"`
-	NotifyBefore   int           `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
+	//NotifyBefore   int           `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
 	//IsAllDay bool
 	GroupId string `bson:"-" json:"groupId"` // FIXME
 	Meta    scal.M `bson:"-" json:"meta"`
@@ -96,7 +96,7 @@ func (self BaseEvent) BaseModel() BaseEventModel {
 		Summary:        self.summary,
 		Description:    self.description,
 		Icon:           self.icon,
-		NotifyBefore:   self.notifyBefore,
+		//NotifyBefore:   self.notifyBefore,
 	}
 }
 func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
@@ -126,6 +126,6 @@ func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
 		summary:      self.Summary,
 		description:  self.Description,
 		icon:         self.Icon,
-		notifyBefore: self.NotifyBefore,
+		//notifyBefore: self.NotifyBefore,
 	}, nil
 }

@@ -204,7 +204,6 @@
 										<element name="icon" type="xs:string"/>
 										<element name="timeZone" type="xs:string"/>
 										<element name="timeZoneEnable" type="xs:boolean"/>
-										<element name="notifyBefore" type="xs:int"/>
 									</element>
 								</item>
 							</param>
@@ -258,7 +257,6 @@
 										<element name="icon" type="xs:string"/>
 										<element name="timeZone" type="xs:string"/>
 										<element name="timeZoneEnable" type="xs:boolean"/>
-										<element name="notifyBefore" type="xs:int"/>
 									</element>
 								</item>
 							</param>
@@ -434,7 +432,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="startJd" type="xs:int" required="true"/>
 					<param name="endJd" type="xs:int" required="true"/>
 					<param name="durationEnable" type="xs:boolean" required="true"/>
@@ -478,7 +475,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -511,7 +507,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 					    <param name="startJd" type="xs:int" required="true"/>
 					    <param name="endJd" type="xs:int" required="true"/>
 					    <param name="durationEnable" type="xs:boolean" required="true"/>
@@ -539,7 +534,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 					    <param name="startJd" type="xs:int" required="false"/>
 					    <param name="endJd" type="xs:int" required="false"/>
 					    <param name="durationEnable" type="xs:boolean" required="false"/>
@@ -570,7 +564,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="jd" type="xs:int" required="true"/>
 				</request>
 				<response>
@@ -612,7 +605,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -643,7 +635,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="jd" type="xs:int" required="true"/>
 					</request>
 					<response>
@@ -669,7 +660,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="jd" type="xs:int" required="false"/>
 					</request>
 					<response>
@@ -698,7 +688,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="scale" type="xs:int" required="true"/>
 					<param name="start" type="xs:int" required="true"/>
 					<param name="end" type="xs:int" required="true"/>
@@ -743,7 +732,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -777,7 +765,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="scale" type="xs:int" required="true"/>
 						<param name="start" type="xs:int" required="true"/>
 						<param name="end" type="xs:int" required="true"/>
@@ -806,7 +793,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="scale" type="xs:int" required="false"/>
 						<param name="start" type="xs:int" required="false"/>
 						<param name="end" type="xs:int" required="false"/>
@@ -838,7 +824,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="startJd" type="xs:int" required="true"/>
 					<param name="endJd" type="xs:int" required="true"/>
 				</request>
@@ -881,7 +866,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -913,7 +897,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="startJd" type="xs:int" required="true"/>
 						<param name="endJd" type="xs:int" required="true"/>
 					</request>
@@ -940,7 +923,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="startJd" type="xs:int" required="false"/>
 						<param name="endJd" type="xs:int" required="false"/>
 					</request>
@@ -970,7 +952,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="startJd" type="xs:int" required="true"/>
 					<param name="endJd" type="xs:int" required="true"/>
 					<param name="day" type="xs:int" required="true"/>
@@ -1016,7 +997,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -1051,7 +1031,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="startJd" type="xs:int" required="true"/>
 						<param name="endJd" type="xs:int" required="true"/>
 						<param name="day" type="xs:int" required="true"/>
@@ -1081,7 +1060,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="startJd" type="xs:int" required="false"/>
 						<param name="endJd" type="xs:int" required="false"/>
 						<param name="day" type="xs:int" required="false"/>
@@ -1114,7 +1092,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="startTime" type="xsd:dateTime" required="true"/>
 					<param name="endTime" type="xsd:dateTime" required="true"/>
 					<param name="durationUnit" type="xs:int" required="true"/>
@@ -1158,7 +1135,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -1191,7 +1167,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="startTime" type="xsd:dateTime" required="true"/>
 						<param name="endTime" type="xsd:dateTime" required="true"/>
 						<param name="durationUnit" type="xs:int" required="true"/>
@@ -1219,7 +1194,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="startTime" type="xsd:dateTime" required="false"/>
 						<param name="endTime" type="xsd:dateTime" required="false"/>
 						<param name="durationUnit" type="xs:int" required="false"/>
@@ -1250,7 +1224,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="weekNumMode" type="xs:string" required="true">
 						<option value="any"/>
 						<option value="odd"/>
@@ -1298,7 +1271,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -1335,7 +1307,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="weekNumMode" type="xs:string" required="true">
 							<option value="any"/>
 							<option value="odd"/>
@@ -1367,7 +1338,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="weekNumMode" type="xs:string" required="false">
 							<option value="any"/>
 							<option value="odd"/>
@@ -1402,7 +1372,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="jd" type="xs:int" required="true"/>
 					<param name="dayStartSeconds" type="xs:int" required="true"/>
 					<param name="dayEndSeconds" type="xs:int" required="true"/>
@@ -1447,7 +1416,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -1481,7 +1449,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="jd" type="xs:int" required="true"/>
 						<param name="dayStartSeconds" type="xs:int" required="true"/>
 						<param name="dayEndSeconds" type="xs:int" required="true"/>
@@ -1510,7 +1477,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="jd" type="xs:int" required="false"/>
 						<param name="dayStartSeconds" type="xs:int" required="false"/>
 						<param name="dayEndSeconds" type="xs:int" required="false"/>
@@ -1542,7 +1508,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="startJd" type="xs:int" required="true"/>
 					<param name="endJd" type="xs:int" required="true"/>
 					<param name="cycleWeeks" type="xs:int" required="true"/>
@@ -1588,7 +1553,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -1623,7 +1587,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="startJd" type="xs:int" required="true"/>
 						<param name="endJd" type="xs:int" required="true"/>
 						<param name="cycleWeeks" type="xs:int" required="true"/>
@@ -1653,7 +1616,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="startJd" type="xs:int" required="false"/>
 						<param name="endJd" type="xs:int" required="false"/>
 						<param name="cycleWeeks" type="xs:int" required="false"/>
@@ -1686,7 +1648,6 @@
 					<param name="icon" type="xs:string" required="true"/>
 					<param name="timeZone" type="xs:string" required="true"/>
 					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					<param name="notifyBefore" type="xs:int" required="false"/>
 					<param name="month" type="xs:int" required="true"/>
 					<param name="day" type="xs:int" required="true"/>
 					<param name="startYear" type="xs:int" required="true"/>
@@ -1731,7 +1692,6 @@
 						<param name="timeZone" type="xs:string"/>
 						<param name="timeZoneEnable" type="xs:boolean"/>
 						<param name="groupId" type="xs:string"/>
-						<param name="notifyBefore" type="xs:int"/>
 						<param name="sha1" type="xs:string"/>
 						<param name="meta" type="xs:complexType">
 							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
@@ -1765,7 +1725,6 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="month" type="xs:int" required="true"/>
 						<param name="day" type="xs:int" required="true"/>
 						<param name="startYear" type="xs:int" required="true"/>
@@ -1794,7 +1753,6 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-						<param name="notifyBefore" type="xs:int" required="false"/>
 						<param name="month" type="xs:int" required="false"/>
 						<param name="day" type="xs:int" required="false"/>
 						<param name="startYear" type="xs:int" required="false"/>

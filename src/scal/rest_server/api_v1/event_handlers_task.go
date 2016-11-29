@@ -604,23 +604,6 @@ func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		}
 	}
 	{
-		rawValue, ok := patchMap["notifyBefore"]
-		if ok {
-			// json Unmarshal converts int to float64
-			value, typeOk := rawValue.(float64)
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter 'notifyBefore'",
-				)
-				return
-			}
-			eventModel.NotifyBefore = int(value)
-			delete(patchMap, "notifyBefore")
-		}
-	}
-	{
 		rawValue, ok := patchMap["startTime"]
 		if ok {
 			value, typeOk := rawValue.(string)
