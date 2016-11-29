@@ -54,13 +54,13 @@ func init() {
 	RegisterRoute(
 		"SetUserDefaultGroupId",
 		"PUT",
-		"/user/default-group-id/",
+		"/user/default-group/",
 		authenticator.Wrap(SetUserDefaultGroupId),
 	)
 	RegisterRoute(
 		"UnsetUserDefaultGroupId",
 		"DELETE",
-		"/user/default-group-id/",
+		"/user/default-group/",
 		authenticator.Wrap(UnsetUserDefaultGroupId),
 	)
 }

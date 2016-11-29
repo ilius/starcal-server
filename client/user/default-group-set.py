@@ -15,7 +15,7 @@ password = os.getenv("STARCAL_PASSWORD")
 defaultGroupId = sys.argv[1]
 
 r = requests.put(
-    "http://%s:9001/user/default-group-id/" % host,
+    "http://%s:9001/user/default-group/" % host,
     auth=HTTPDigestAuth(email, password),
     json={
         'defaultGroupId': defaultGroupId,
