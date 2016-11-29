@@ -23,7 +23,7 @@ func init() {
 	RegisterRoute(
 		"CopyEvent",
 		"POST",
-		"/event/copy/",
+		"/event/copy/{eventId}/",
 		authenticator.Wrap(CopyEvent),
 	)
 	RegisterRoute(
@@ -138,37 +138,19 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	var err error
-	var ok bool
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	inputMap := map[string]string{}
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputMap)
-	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
-	}
+	oldEventId := ObjectIdFromURL(w, r, "eventId", 0)
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	oldEventIdHex, ok := inputMap["eventId"]
-	if !ok {
-		SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
-		return
-	}
-	if !bson.IsObjectIdHex(oldEventIdHex) {
-		SetHttpError(w, http.StatusBadRequest, "invalid 'eventId'")
-		return
-		// to avoid panic!
-	}
-	oldEventId := bson.ObjectIdHex(oldEventIdHex)
 
-	eventMeta, err := event_lib.LoadEventMetaModel(db, &oldEventId, true)
+	eventMeta, err := event_lib.LoadEventMetaModel(db, oldEventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")
@@ -182,7 +164,7 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		return
 	}
 
-	eventRev, err := event_lib.LoadLastRevisionModel(db, &oldEventId)
+	eventRev, err := event_lib.LoadLastRevisionModel(db, oldEventId)
 	if err != nil {
 		if db.IsNotFound(err) {
 			SetHttpError(w, http.StatusBadRequest, "event not found")

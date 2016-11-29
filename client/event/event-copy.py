@@ -15,11 +15,8 @@ password = os.getenv("STARCAL_PASSWORD")
 eventId = sys.argv[1]
 
 r = requests.post(
-    "http://%s:9001/event/copy/" % host,
+    "http://%s:9001/event/copy/%s/" % (host, eventId),
     auth=HTTPDigestAuth(email, password),
-    json={
-        'eventId': eventId,
-    },
 )
 print(r)
 try:
