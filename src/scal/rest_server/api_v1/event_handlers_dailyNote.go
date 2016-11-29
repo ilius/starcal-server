@@ -207,10 +207,6 @@ func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 			nil,
 			&email,
 		},
-		GroupId: &[2]*bson.ObjectId{
-			nil,
-			groupId,
-		},
 	})
 	if err != nil {
 		SetHttpErrorInternal(w, err)
