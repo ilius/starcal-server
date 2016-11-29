@@ -941,12 +941,7 @@ func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		{"$unwind": "$data"},
 	}
 
-	results := []scal.M{}
-	err = db.PipeAll(
-		storage.C_eventMeta,
-		pipeline,
-		&results,
-	)
+	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
 		return
