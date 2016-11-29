@@ -20,6 +20,7 @@ import (
 
 	"scal"
 	"scal/event_lib"
+	"scal/settings"
 	"scal/storage"
 )
 
@@ -282,6 +283,19 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	if !eventMeta.CanRead(email) {
 		SetHttpError(w, http.StatusForbidden, "you don't have access to this event")
 		return
+	}
+	if !settings.ALLOW_MISMATCH_EVENT_TYPE {
+		if eventMeta.EventType != "task" {
+			SetHttpError(
+				w,
+				http.StatusBadRequest,
+				fmt.Sprintf(
+					"mismatch {eventType}, must be '%s'",
+					eventMeta.EventType,
+				),
+			)
+			return
+		}
 	}
 
 	eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)

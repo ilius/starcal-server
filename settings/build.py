@@ -69,7 +69,7 @@ hostArch = settingsDict.pop("ARCH")
 lines = ["const ("]
 for param, value in sorted(settingsDict.items()):
     valueType = type(value)
-    if valueType in (str, int, float):
+    if valueType in (str, int, float, bool):
         valueRepr = json.dumps(value)
     else:
         # FIXME
