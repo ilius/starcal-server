@@ -649,7 +649,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	results := []resultModel{}
 	err = db.PipeAll(
 		storage.C_eventMetaChangeLog,
-		pipeline,
+		&pipeline,
 		&results,
 	)
 	if err != nil {
@@ -764,7 +764,7 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
 	results := []scal.M{}
 	err = db.PipeAll(
 		storage.C_eventMeta,
-		pipeline,
+		&pipeline,
 		&results,
 	)
 	if err != nil {

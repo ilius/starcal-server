@@ -245,7 +245,7 @@ func GetEventMetaPipeResults(
 	pipeline *[]scal.M,
 ) (*[]scal.M, error) {
 	results := []scal.M{}
-	for res := range db.PipeIter(storage.C_eventMeta, *pipeline) {
+	for res := range db.PipeIter(storage.C_eventMeta, pipeline) {
 		if err := res.Err; err != nil {
 			return nil, err
 		}

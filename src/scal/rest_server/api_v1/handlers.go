@@ -1018,7 +1018,7 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 	results := []scal.M{}
 	err = db.PipeAll(
 		storage.C_eventMeta,
-		pipeline,
+		&pipeline,
 		&results,
 	)
 	if err != nil {

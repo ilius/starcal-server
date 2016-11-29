@@ -80,7 +80,7 @@ func (db *MongoDatabase) FindAll(
 }
 func (db *MongoDatabase) PipeAll(
 	colName string,
-	pipeline []scal.M,
+	pipeline *[]scal.M,
 	result interface{},
 ) error {
 	return db.C(colName).Pipe(pipeline).All(result)
@@ -88,7 +88,7 @@ func (db *MongoDatabase) PipeAll(
 
 func (db *MongoDatabase) PipeIter(
 	colName string,
-	pipeline []scal.M,
+	pipeline *[]scal.M,
 ) <-chan scal.MErr {
 	ch := make(chan scal.MErr)
 	iter := db.C(colName).Pipe(pipeline).Iter()
