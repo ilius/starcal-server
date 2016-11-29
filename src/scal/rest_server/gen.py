@@ -70,6 +70,9 @@ def parseModelVarLine(line):
     return (param, _type)
     or raise ValueError
     """
+    line = line.strip()
+    if line.startswith('//'):
+        raise ValueError
     try:
         _type, param = re.findall(' ([^\\s]*?)\\s*?`.*json:"(.*?)"', line)[0]
     except IndexError:
