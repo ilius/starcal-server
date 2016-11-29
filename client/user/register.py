@@ -2,6 +2,7 @@
 """
 argv[1]: email
 argv[2]: password
+argv[3]: fullName (optional)
 """
 
 import sys
@@ -12,11 +13,17 @@ from pprint import pprint
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 email, password = sys.argv[1:3]
 
+try:
+	fullName = sys.argv[3]
+except IndexError:
+	fullName = ""
+
 r = requests.post(
     "http://%s:9001/user/register/" % host,
     json={
         'email': email,
         'password': password,
+        'fullName': fullName,
     },
 )
 print(r)
