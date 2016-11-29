@@ -239,3 +239,26 @@ type EventMetaChangeLogModel struct {
 func (model EventMetaChangeLogModel) Collection() string {
 	return storage.C_eventMetaChangeLog
 }
+
+func GetEventMetaPipeResults(
+	db storage.Database,
+	pipeline *[]scal.M,
+) (*[]scal.M, error) {
+	results := []scal.M{}
+	for res := range db.PipeIter(storage.C_eventMeta, *pipeline) {
+		if err := res.Err; err != nil {
+			return nil, err
+		}
+		if eventId, ok := res.M["_id"]; ok {
+			res.M["eventId"] = eventId
+			delete(res.M, "_id")
+		}
+		if dataI, ok := res.M["data"]; ok {
+			data := dataI.(scal.M)
+			delete(data, "_id")
+			res.M["data"] = data
+		}
+		results = append(results, res.M)
+	}
+	return &results, nil
+}
