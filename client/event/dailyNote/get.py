@@ -26,9 +26,9 @@ except:
     print("non-json data")
     print(r.text)
 else:
-    error = data.get('error', '')
+    error = data.get("error", "")
     if error:
         print(error)
     else:
         pprint(data, width=80)
-        print('Date:', datetime.fromordinal(data["jd"] - 1721425))
+        print("Date:", datetime.fromordinal(data["jd"] - 1721425))

@@ -35,7 +35,7 @@ except:
     print("non-json data")
     print(r.text)
 else:
-    error = data.get('error', '')
+    error = data.get("error", "")
     if error:
         print(error)
     else:

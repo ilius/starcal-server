@@ -18,7 +18,7 @@ r = requests.put(
     "http://%s:9001/user/default-group/" % host,
     auth=HTTPDigestAuth(email, password),
     json={
-        'defaultGroupId': defaultGroupId,
+        "defaultGroupId": defaultGroupId,
     },
 )
 print(r)
@@ -28,7 +28,7 @@ except:
     print("non-json data")
     print(r.text)
 else:
-    error = data.get('error', '')
+    error = data.get("error", "")
     if error:
         print(error)
     else:

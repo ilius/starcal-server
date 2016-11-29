@@ -26,10 +26,10 @@ except:
     print("non-json data")
     print(r.text)
 else:
-    error = data.get('error', '')
+    error = data.get("error", "")
     if error:
         print(error)
     else:
         pprint(data, width=80)
-        print('Start Date:', datetime.fromordinal(data["startJd"] - 1721425))
-        print('End Date:', datetime.fromordinal(data["endJd"] - 1721425))
+        print("Start Date:", datetime.fromordinal(data["startJd"] - 1721425))
+        print("End Date:", datetime.fromordinal(data["endJd"] - 1721425))

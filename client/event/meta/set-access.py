@@ -25,20 +25,20 @@ r = requests.put(
     ),
     auth=HTTPDigestAuth(email, password),
     json={
-        'isPublic': False,
-        'accessEmails': accessEmails,
-        'publicJoinOpen': False,  # used for public events, just pass False for non-public events
-        'maxAttendees': 0,  # used for public events, 0 means Unlimited
+        "isPublic": False,
+        "accessEmails": accessEmails,
+        "publicJoinOpen": False,  # used for public events, just pass False for non-public events
+        "maxAttendees": 0,  # used for public events, 0 means Unlimited
     },
 )
 print(r)
 try:
     data = r.json()
 except:
-    print('data is not json')
+    print("data is not json")
     print(r.text)
 else:
-    error = data.get('error', '')
+    error = data.get("error", "")
     if error:
         print(error)
     else:

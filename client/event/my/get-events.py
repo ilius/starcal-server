@@ -20,10 +20,10 @@ print(r)
 try:
     data = r.json()
 except:
-    print('data is not json')
+    print("data is not json")
     print(r.text)
 else:
-    error = data.get('error', '')
+    error = data.get("error", "")
     if error:
         print(error)
     else:

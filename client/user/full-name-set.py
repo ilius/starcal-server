@@ -18,7 +18,7 @@ r = requests.put(
     "http://%s:9001/user/full-name/" % host,
     auth=HTTPDigestAuth(email, password),
     json={
-        'fullName': fullName,
+        "fullName": fullName,
     },
 )
 print(r)
@@ -28,7 +28,7 @@ except:
     print("non-json data")
     print(r.text)
 else:
-    error = data.get('error', '')
+    error = data.get("error", "")
     if error:
         print(error)
     else:
