@@ -5,8 +5,6 @@ if [ -z $STARCAL_HOST ] ; then
     exit 1
 fi
 
-GOPATH=$PWD go fmt scal/...
-
 GOPATH=$PWD go install gopkg.in/mgo.v2
 GOPATH=$PWD go install github.com/gorilla/context
 GOPATH=$PWD go install github.com/gorilla/mux
