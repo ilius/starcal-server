@@ -63,7 +63,7 @@ func init() {
 	RegisterRoute(
 		"SetEventGroupId_largeScale",
 		"PUT",
-		"/event/largeScale/{eventId}/groupId/",
+		"/event/largeScale/{eventId}/group/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(

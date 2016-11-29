@@ -63,7 +63,7 @@ func init() {
 	RegisterRoute(
 		"SetEventGroupId_allDayTask",
 		"PUT",
-		"/event/allDayTask/{eventId}/groupId/",
+		"/event/allDayTask/{eventId}/group/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(

@@ -63,7 +63,7 @@ func init() {
 	RegisterRoute(
 		"SetEventGroupId_weekly",
 		"PUT",
-		"/event/weekly/{eventId}/groupId/",
+		"/event/weekly/{eventId}/group/",
 		authenticator.Wrap(SetEventGroupId),
 	)
 	RegisterRoute(
