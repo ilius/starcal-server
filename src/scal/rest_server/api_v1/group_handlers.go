@@ -640,16 +640,22 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	}
 	pipeline = append(pipeline, scal.M{
 		"$group": scal.M{
-			"_id":     "$eventId",
-			"time":    scal.M{"$first": "$time"},
-			"groupId": scal.M{"$first": "$groupId"},
+			"_id":  "$eventId",
+			"time": scal.M{"$first": "$time"},
+			"oldGroupId": scal.M{"$last": scal.M{
+				"$arrayElemAt": []interface{}{"$groupId", 0},
+			}},
+			"newGroupId": scal.M{"$first": scal.M{
+				"$arrayElemAt": []interface{}{"$groupId", 1},
+			}},
 		},
 	})
 
 	type rawResultModel struct {
-		EventId bson.ObjectId  `bson:"_id"`
-		GroupId [2]interface{} `bson:"groupId"`
-		Time    time.Time      `bson:"time"`
+		EventId    bson.ObjectId `bson:"_id"`
+		OldGroupId interface{}   `bson:"oldGroupId"`
+		NewGroupId interface{}   `bson:"newGroupId"`
+		Time       time.Time     `bson:"time"`
 	}
 	type resultModel struct {
 		EventId    bson.ObjectId `json:"eventId"`
@@ -673,8 +679,8 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		results[i] = resultModel{
 			EventId:    raw.EventId,
 			Time:       raw.Time,
-			OldGroupId: storage.Hex(raw.GroupId[0]),
-			NewGroupId: storage.Hex(raw.GroupId[1]),
+			OldGroupId: storage.Hex(raw.OldGroupId),
+			NewGroupId: storage.Hex(raw.NewGroupId),
 		}
 	}
 
