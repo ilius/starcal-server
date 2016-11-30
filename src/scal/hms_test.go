@@ -18,13 +18,13 @@ func TestHMS_FloatHour(t *testing.T) {
 }
 
 func TestParseHMS(t *testing.T) {
-	s := "12:01:01"
-	hms, err := ParseHMS(s)
-	//t.Log(hms, err)
+	str := "12:01:01"
+	obj, err := ParseHMS(str)
+	//t.Log(obj, err)
 	if err != nil {
 		t.Error(err)
 	}
-	if hms.String() != "12:01:01" {
-		t.Error("Wrong HMS: hms =", hms)
+	if obj.String() != str {
+		t.Error("Failed to parse HMS:", obj)
 	}
 }
