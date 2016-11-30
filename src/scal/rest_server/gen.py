@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 from os.path import join, dirname, realpath
+import string
 import re
 
 import django
@@ -25,7 +26,7 @@ activeEventTypes = (
     "universityExam",
     "weekly",
     "yearly",
-    #"custom",
+    "custom",
 )
 
 
@@ -81,6 +82,8 @@ def parseModelVarLine(line):
         raise ValueError
     if param == '-':
         raise ValueError
+    if _type[0] in string.ascii_uppercase:
+        _type = 'event_lib.' + _type
     param, _, opt = param.partition(',')
     assert opt in ('', 'omitempty')
     return (param, _type)

@@ -13,6 +13,16 @@ type HMS struct {
 	Second int
 }
 
+type DHMS struct {
+	HMS
+	Days int
+}
+
+type HMSRange struct {
+	Start HMS
+	End   HMS
+}
+
 func (self HMS) String() string {
 	return fmt.Sprintf("%.2d:%.2d:%.2d", self.Hour, self.Minute, self.Second)
 }
@@ -21,6 +31,18 @@ func (self HMS) GetTotalSeconds() int {
 }
 func (self HMS) GetFloatHour() float64 {
 	return float64(self.Hour) + float64(self.Minute)/60.0 + float64(self.Second)/3600.0
+}
+
+func (self HMS) IsValid() bool {
+	return self.Hour >= 0 && self.Hour < 24 &&
+		self.Minute >= 0 && self.Minute < 60 &&
+		self.Second >= 0 && self.Second < 60
+}
+func (self DHMS) IsValid() bool {
+	return self.HMS.IsValid() && self.Days >= 0
+}
+func (self HMSRange) IsValid() bool {
+	return self.Start.IsValid() && self.End.IsValid()
 }
 
 func ParseHMS(str string) (HMS, error) {
@@ -48,6 +70,45 @@ func ParseHMS(str string) (HMS, error) {
 		s = 0
 	}
 	return HMS{int(h), int(m), int(s)}, nil
+}
+
+func ParseDHMS(str string) (DHMS, error) {
+	// Days and HMS, format: "365 23:55:55"
+	parts := strings.Split(str, " ")
+	if len(parts) != 2 {
+		return DHMS{},
+			errors.New("invalid DHMS string '" + str + "'")
+	}
+	days, err := strconv.ParseInt(parts[0], 10, 0)
+	if err != nil {
+		return DHMS{}, err
+	}
+	hms, err := ParseHMS(parts[1])
+	if err != nil {
+		return DHMS{}, err
+	}
+	return DHMS{
+		HMS:  hms,
+		Days: int(days),
+	}, nil
+}
+
+func ParseHMSRange(str string) (HMSRange, error) {
+	// format: "14:30:00 15:30:00"
+	parts := strings.Split(str, " ")
+	if len(parts) != 2 {
+		return HMSRange{},
+			errors.New("invalid HMS Range string '" + str + "'")
+	}
+	start, err := ParseHMS(parts[0])
+	if err != nil {
+		return HMSRange{}, err
+	}
+	end, err := ParseHMS(parts[1])
+	if err != nil {
+		return HMSRange{}, err
+	}
+	return HMSRange{start, end}, nil
 }
 
 func FloatHourToHMS(fh float64) HMS {

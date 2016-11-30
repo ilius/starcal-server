@@ -28,3 +28,15 @@ func TestParseHMS(t *testing.T) {
 		t.Error("Failed to parse HMS:", obj)
 	}
 }
+
+func TestParseDHMS(t *testing.T) {
+	str := "90 12:01:01"
+	obj, err := ParseDHMS(str)
+	//t.Log(obj, err)
+	if err != nil {
+		t.Error(err)
+	}
+	if obj.String() != str {
+		t.Error("Failed to parse DHMS:", obj)
+	}
+}

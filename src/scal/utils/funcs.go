@@ -9,8 +9,8 @@ import (
 	"scal/cal_types"
 	"scal/cal_types/gregorian"
 	"sort"
-	//"strconv"
-	//"strings"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -23,6 +23,46 @@ func IntMin(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func ParseIntList(str string) ([]int, error) {
+	parts := strings.Split(str, " ")
+	intParts := make([]int, len(parts))
+	for index, part := range parts {
+		intPart, err := strconv.ParseInt(part, 10, 0)
+		if err != nil {
+			return []int{}, err
+		}
+		intParts[index] = int(intPart)
+	}
+	return intParts, nil
+}
+
+func MonthListIsValid(list []int) bool {
+	for _, v := range list {
+		if !(v > 0 && v < 13) {
+			return false
+		}
+	}
+	return true
+}
+
+func DayListIsValid(list []int) bool {
+	for _, v := range list {
+		if !(v > 0 && v < 40) {
+			return false
+		}
+	}
+	return true
+}
+
+func WeekDayListIsValid(list []int) bool {
+	for _, v := range list {
+		if !(v >= 0 && v < 7) {
+			return false
+		}
+	}
+	return true
 }
 
 func IntListBySet(set Set) []int {

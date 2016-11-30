@@ -65,6 +65,7 @@
 								<element name="eventId" type="xs:string"/>
 								<element name="eventType" type="xs:string">
 									<option value="allDayTask"/>
+									<option value="custom"/>
 									<option value="dailyNote"/>
 									<option value="largeScale"/>
 									<option value="lifeTime"/>
@@ -89,6 +90,7 @@
 								<element name="eventId" type="xs:string"/>
 								<element name="eventType" type="xs:string">
 									<option value="allDayTask"/>
+									<option value="custom"/>
 									<option value="dailyNote"/>
 									<option value="largeScale"/>
 									<option value="lifeTime"/>
@@ -140,6 +142,7 @@
 								<element name="eventId" type="xs:string"/>
 								<element name="eventType" type="xs:string">
 									<option value="allDayTask"/>
+									<option value="custom"/>
 									<option value="dailyNote"/>
 									<option value="largeScale"/>
 									<option value="lifeTime"/>
@@ -241,6 +244,7 @@
 									<element name="eventId" type="xs:string"/>
 									<element name="eventType" type="xs:string">
 										<option value="allDayTask"/>
+										<option value="custom"/>
 										<option value="dailyNote"/>
 										<option value="largeScale"/>
 										<option value="lifeTime"/>
@@ -270,6 +274,7 @@
 									<element name="eventId" type="xs:string"/>
 									<element name="eventType" type="xs:string">
 										<option value="allDayTask"/>
+										<option value="custom"/>
 										<option value="dailyNote"/>
 										<option value="largeScale"/>
 										<option value="lifeTime"/>
@@ -323,6 +328,7 @@
 									<element name="eventId" type="xs:string"/>
 									<element name="eventType" type="xs:string">
 										<option value="allDayTask"/>
+										<option value="custom"/>
 										<option value="dailyNote"/>
 										<option value="largeScale"/>
 										<option value="lifeTime"/>
@@ -391,6 +397,7 @@
 					<representation mediaType="app/json"/>
 					<param name="eventType" type="xs:string">
 						<option value="allDayTask"/>
+						<option value="custom"/>
 						<option value="dailyNote"/>
 						<option value="largeScale"/>
 						<option value="lifeTime"/>
@@ -409,6 +416,7 @@
 		<resource path="event/{eventType}/{eventId}/">
 			<param name="eventType" type="xs:string">
 				<option value="allDayTask"/>
+				<option value="custom"/>
 				<option value="dailyNote"/>
 				<option value="largeScale"/>
 				<option value="lifeTime"/>
@@ -549,6 +557,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -646,6 +655,235 @@
 				</method>
 			</resource>
 		</resource>
+		<resource path="event/custom/">
+			<method name="POST" id="add_custom">
+				<request>
+					<representation mediaType="app/json"/>
+					<param name="summary" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" required="true"/>
+					<param name="calType" type="xs:string" required="true">
+						<option value="gregorian"/>
+						<option value="jalali"/>
+						<option value="hijri"/>
+						<option value="indian_national"/>
+						<option value="julian"/>
+						<option value="ethiopian"/>
+						<option value="gregorian_proleptic"/>
+					</param>
+					<param name="icon" type="xs:string" required="true"/>
+					<param name="timeZone" type="xs:string" required="true"/>
+					<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					<param name="rules" type="xs:list" itemType="xs:complexType" required="true">
+						<item type="xs:complexType" description="event rule">
+							<element name="type" type="xs:string">
+								<option value="cycleDays"/>
+								<option value="cycleLen"/>
+								<option value="cycleWeeks"/>
+								<option value="date"/>
+								<option value="day"/>
+								<option value="dayTime"/>
+								<option value="dayTimeRange"/>
+								<option value="duration"/>
+								<option value="end"/>
+								<option value="ex_dates"/>
+								<option value="ex_day"/>
+								<option value="ex_month"/>
+								<option value="ex_year"/>
+								<option value="month"/>
+								<option value="start"/>
+								<option value="weekDay"/>
+								<option value="weekMonth"/>
+								<option value="weekNumMode"/>
+								<option value="year"/>
+							</element>
+							<element name="value" type="xs:string"
+								description="format depends on rule type"/>
+						</item>
+					</param>
+				</request>
+				<response>
+					<representation mediaType="app/json"/>
+					<param name="eventId" type="xs:string"/>
+					<param name="sha1" type="xs:string"/>
+				</response>
+			</method>
+			<resource path="{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="GET" id="get_custom">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="custom"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
+						<param name="eventId" type="xs:string"/>
+						<param name="summary" type="xs:string"/>
+						<param name="description" type="xs:string"/>
+						<param name="calType" type="xs:string">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string"/>
+						<param name="timeZone" type="xs:string"/>
+						<param name="timeZoneEnable" type="xs:boolean"/>
+						<param name="groupId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+						<param name="meta" type="xs:complexType">
+							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<element name="creationTime" type="xsd:dateTime"/>
+							<element name="groupId" type="xs:string"/>
+							<element name="isPublic" type="xs:boolean"/>
+							<element name="maxAttendees" type="xs:int"/>
+							<element name="ownerEmail" type="xs:string"/>
+							<element name="publicJoinOpen" type="xs:boolean"/>
+						</param>
+					    <param name="rules" type="xs:list" itemType="xs:complexType">
+							<item type="xs:complexType" description="event rule">
+								<element name="type" type="xs:string">
+									<option value="cycleDays"/>
+									<option value="cycleLen"/>
+									<option value="cycleWeeks"/>
+									<option value="date"/>
+									<option value="day"/>
+									<option value="dayTime"/>
+									<option value="dayTimeRange"/>
+									<option value="duration"/>
+									<option value="end"/>
+									<option value="ex_dates"/>
+									<option value="ex_day"/>
+									<option value="ex_month"/>
+									<option value="ex_year"/>
+									<option value="month"/>
+									<option value="start"/>
+									<option value="weekDay"/>
+									<option value="weekMonth"/>
+									<option value="weekNumMode"/>
+									<option value="year"/>
+								</element>
+								<element name="value" type="xs:string"
+									description="format depends on rule type"/>
+							</item>
+					    </param>
+					</response>
+				</method>
+				<method name="PUT" id="update_custom">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" required="true"/>
+						<param name="calType" type="xs:string" required="true">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="true"/>
+						<param name="timeZone" type="xs:string" required="true"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
+					    <param name="rules" type="xs:list" itemType="xs:complexType" required="true">
+							<item type="xs:complexType" description="event rule">
+								<element name="type" type="xs:string">
+									<option value="cycleDays"/>
+									<option value="cycleLen"/>
+									<option value="cycleWeeks"/>
+									<option value="date"/>
+									<option value="day"/>
+									<option value="dayTime"/>
+									<option value="dayTimeRange"/>
+									<option value="duration"/>
+									<option value="end"/>
+									<option value="ex_dates"/>
+									<option value="ex_day"/>
+									<option value="ex_month"/>
+									<option value="ex_year"/>
+									<option value="month"/>
+									<option value="start"/>
+									<option value="weekDay"/>
+									<option value="weekMonth"/>
+									<option value="weekNumMode"/>
+									<option value="year"/>
+								</element>
+								<element name="value" type="xs:string"
+									description="format depends on rule type"/>
+							</item>
+					    </param>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+				<method name="PATCH" id="patch_custom">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="summary" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" required="false"/>
+						<param name="calType" type="xs:string" required="false">
+							<option value="gregorian"/>
+							<option value="jalali"/>
+							<option value="hijri"/>
+							<option value="indian_national"/>
+							<option value="julian"/>
+							<option value="ethiopian"/>
+							<option value="gregorian_proleptic"/>
+						</param>
+						<param name="icon" type="xs:string" required="false"/>
+						<param name="timeZone" type="xs:string" required="false"/>
+						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
+					    <param name="rules" type="xs:list" itemType="xs:complexType" required="false">
+							<item type="xs:complexType" description="event rule">
+								<element name="type" type="xs:string">
+									<option value="cycleDays"/>
+									<option value="cycleLen"/>
+									<option value="cycleWeeks"/>
+									<option value="date"/>
+									<option value="day"/>
+									<option value="dayTime"/>
+									<option value="dayTimeRange"/>
+									<option value="duration"/>
+									<option value="end"/>
+									<option value="ex_dates"/>
+									<option value="ex_day"/>
+									<option value="ex_month"/>
+									<option value="ex_year"/>
+									<option value="month"/>
+									<option value="start"/>
+									<option value="weekDay"/>
+									<option value="weekMonth"/>
+									<option value="weekNumMode"/>
+									<option value="year"/>
+								</element>
+								<element name="value" type="xs:string"
+									description="format depends on rule type"/>
+							</item>
+					    </param>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</response>
+				</method>
+			</resource>
+		</resource>
 		<resource path="event/dailyNote/">
 			<method name="POST" id="add_dailyNote">
 				<request>
@@ -679,6 +917,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -806,6 +1045,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -940,6 +1180,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -1071,6 +1312,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -1209,6 +1451,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -1345,6 +1588,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -1490,6 +1734,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -1627,6 +1872,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>
@@ -1766,6 +2012,7 @@
 						<representation mediaType="app/json"/>
 						<param name="eventType" type="xs:string">
 							<option value="allDayTask"/>
+							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
 							<option value="lifeTime"/>

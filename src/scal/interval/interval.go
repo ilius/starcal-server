@@ -253,11 +253,45 @@ func ParseIntervalList(str string) (IntervalList, error) {
 	}
 	return list, nil
 }
-
+func ParseClosedIntervalList(str string) (IntervalList, error) {
+	parts := strings.Split(str, " ")
+	count := len(parts)
+	list := make(IntervalList, 0, count)
+	var interval Interval
+	var err error
+	for _, intervalStr := range parts {
+		interval, err = ParseInterval(intervalStr)
+		if err != nil {
+			return list, err
+		}
+		interval.ClosedEnd = true
+		list = append(list, interval)
+	}
+	return list, nil
+}
 func (list IntervalList) Normalize() (IntervalList, error) {
 	points := list.GetPointList(0)
 	points.Sort()
 	return points.GetIntervalList()
+}
+func (list IntervalList) Extract() []int64 {
+	count := 0
+	for _, interval := range list {
+		count += int(interval.End - interval.Start)
+		if interval.ClosedEnd {
+			count++
+		}
+	}
+	extList := make([]int64, 0, count)
+	for _, interval := range list {
+		for pos := interval.Start; pos < interval.End; pos++ {
+			extList = append(extList, pos)
+		}
+		if interval.ClosedEnd {
+			extList = append(extList, interval.End)
+		}
+	}
+	return extList
 }
 
 func (list IntervalList) Intersection(list2 IntervalList) (IntervalList, error) {

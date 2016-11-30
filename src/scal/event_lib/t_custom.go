@@ -1,6 +1,11 @@
 package event_lib
 
-import "scal/storage"
+import (
+	"errors"
+	"log"
+	. "scal/event_lib/rules_lib"
+	"scal/storage"
+)
 
 /*
 bson/bson.go:
@@ -8,38 +13,31 @@ bson/bson.go:
 
 
 Current rule value types:
-(Must convert all values into string)
 
-
+start           "%Y/%m/%d %H:%M:%S"
+end             "%Y/%m/%d %H:%M:%S"
+duration        examples: "2 s", "2.5 m", "2.5 h", "2.5 d", "2.0 w"
+date            "%Y/%m/%d"
+ex_dates        "%Y/%m/%d %Y/%m/%d %Y/%m/%d"
+dayTime         "%H:%M:%S"
+dayTimeRange    "%H:%M:%S %H:%M:%S"
+cycleLen        "%{days} %H:%M:%S"
 cycleDays       int
 cycleWeeks      int
-
-duration        string
-date            string              %Y-%m-%d
-dayTime         string              %H:%M:%S
-weekNumMode:    string              "any| "odd" | "even"
-
-year:           []int
-month:          []int
-day:            []int
-ex_year         []int
-ex_month        []int
-weekDay         []int
-
-dayTimeRange    [2]string           ["%H:%M:%S", "%H:%M:%S"]
-ex_dates        []string            ["%Y-%m-%d" ...]
-
-weekMonth       map[string][int]    keys: month, wmIndex, weekDay
-start           map[string]string   keys: date, time
-end             map[string]string   keys: date, time
-cycleLen        map                 keys: days(int), extraTime(HMS)
+weekDay         space-seperated integers (0 to 6)
+year            space-seperated ranges of integers
+                "1380-1383 1393 1396" = "1380 1381 1382 1383 1390 1393 1396"
+ex_year         space-seperated ranges of integers, like `year`
+month           space-seperated ranges of integers (1 to 12)
+                example: "1-6 10 12"
+ex_month        space-seperated ranges of integers (1 to 12), like `month`
+day             space-seperated ranges of integers (1 to 39)
+                example: "1-10 20 30-33"
+ex_day          space-seperated ranges of integers (1 to 39), like `day`
+weekNumMode     "any | "odd" | "even"
+weekMonth       json: `{"weekIndex": 4, "weekDay": 6, "month": 12}`
 
 */
-
-type EventRuleModel struct {
-	Name  string
-	Value string
-}
 
 type EventRuleModelList []EventRuleModel
 
@@ -48,7 +46,7 @@ type CustomEventModel struct {
 	Rules          EventRuleModelList `bson:"rules" json:"rules"`
 }
 
-func (self CustomEventModel) Type() string {
+func (model CustomEventModel) Type() string {
 	return "custom"
 }
 
@@ -62,77 +60,121 @@ func LoadCustomEventModel(db storage.Database, sha1 string) (
 	return &model, err
 }
 
-// Modular mode:
-type EventRule interface {
-	Name() string
-	Value() interface{}
-	ValueString() string
-	Model() EventRuleModel
-}
-
-type EventRuleList []EventRule
-
-//func (rules EventRuleList) Model() EventRuleModelList {
-//}
-
-/*
-
-
-// Non-Modular mode:
-type EventRule struct {
-    name string
-    value string
-}
-func (self EventRule) Name() string {
-    return self.name
-}
-func (self EventRule) Value() string {
-    return self.value
-}
-//func (self EventRule) ParseValue() interface{} {
-//    return self.value
-//}
-
+type EventRuleMap map[string]EventRule
 
 type CustomEvent struct {
-    BaseEvent
-    rules EventRuleList
-}
-func (self CustomEvent) Type() string {
-    return "custom"
-}
-func (self CustomEvent) Rules() EventRuleList {
-    return self.rules
+	BaseEvent
+	ruleMap   EventRuleMap
+	ruleTypes EventRuleTypeList
 }
 
-func (self EventRule) Model() EventRuleModel {
-    return EventRuleModel{
-        Name: self.name,
-        Value: self.value,
-    }
+func (event CustomEvent) Type() string {
+	return "custom"
 }
 
-func (self EventRuleModel) GetRule() EventRule {
-    return EventRule{
-        name: self.Name,
-        value: self.Value,
-    }
+//func (event CustomEvent) RuleMap() EventRuleMap {
+//	return event.ruleMap
+//}
+func (event CustomEvent) GetRule(typeName string) (EventRule, bool) {
+	typeObj, ok := event.ruleMap[typeName]
+	return typeObj, ok
+}
+func (event CustomEvent) RuleTypes() EventRuleTypeList {
+	return event.ruleTypes
+}
+func (event CustomEvent) IterRules() <-chan EventRule {
+	ch := make(chan EventRule)
+	go func() {
+		defer close(ch)
+		for _, ruleType := range event.ruleTypes {
+			rule, ok := event.ruleMap[ruleType.Name]
+			if !ok {
+				log.Printf(
+					"IterRules: rule type %s not found, eventId=%s\n",
+					ruleType.Name,
+					event.Id(),
+				)
+				continue
+			}
+			ch <- rule
+		}
+	}()
+	return ch
+}
+func (event CustomEvent) CheckRuleTypes() error {
+	for _, ruleType := range event.ruleTypes {
+		//_, ok := event.ruleMap[ruleType.Name]
+		//if !ok {
+		//	return errors.New(
+		//		"rule type " + ruleType.Name + " not found",
+		//	)
+		//}
+		requiredTypes, hasRequired := RulesRequire[ruleType.Name]
+		if hasRequired {
+			for _, requiredType := range requiredTypes {
+				_, ok := event.ruleMap[requiredType]
+				if !ok {
+					return errors.New(
+						"rule type '" + requiredType +
+							"' is required by '" + ruleType.Name + "'")
+				}
+			}
+		}
+		conflictTypes, hasConflicts := RulesConflictWith[ruleType.Name]
+		if hasConflicts {
+			for _, conflictType := range conflictTypes {
+				_, nok := event.ruleMap[conflictType]
+				if nok {
+					return errors.New(
+						"rule type '" + ruleType.Name +
+							"' conflicts with '" + conflictType + "'")
+				}
+			}
+		}
+	}
+	return nil
 }
 
-func (self CustomEvent) Model() CustomEventModel {
-    return CustomEventModel{
-        BaseEventModel: self.BaseModel("custom"),
-        //Rules: self.rules,
-    }
-}
-func (self CustomEventModel) GetEvent() (CustomEvent, error) {
-    baseEvent, err := self.BaseEventModel.GetBaseEvent("custom")
-    if err != nil {
-        return CustomEvent{}, err
-    }
-    return CustomEvent{
-        BaseEvent: baseEvent,
-        //rules: self.Rules,
-    }, nil
-}
+/*
+	func (event CustomEvent) Model() CustomEventModel {
+		ruleModels := make(EventRuleModelList, 0, len(event.ruleTypes))
+		for rule := range event.IterRules() {
+			ruleModels = append(ruleModels, rule.Model())
+		}
+		return CustomEventModel{
+			BaseEventModel: event.BaseModel("custom"),
+			Rules: ruleModels,
+		}
+	}
 */
+
+func (eventModel CustomEventModel) GetEvent() (CustomEvent, error) {
+	baseEvent, err := eventModel.BaseEventModel.GetBaseEvent()
+	if err != nil {
+		return CustomEvent{}, err
+	}
+	ruleMap := EventRuleMap{}
+	ruleTypes := make(EventRuleTypeList, len(eventModel.Rules))
+	for index, ruleModel := range eventModel.Rules {
+		rule, err := ruleModel.Decode()
+		if err != nil {
+			return CustomEvent{}, err
+		}
+		if !rule.Check() {
+			return CustomEvent{}, errors.New(
+				"bad value for event rule '" + ruleModel.Type + "'",
+			)
+		}
+		ruleMap[rule.Type.Name] = rule
+		ruleTypes[index] = rule.Type
+	}
+	event := CustomEvent{
+		BaseEvent: baseEvent,
+		ruleMap:   ruleMap,
+		ruleTypes: ruleTypes,
+	}
+	// whether or not check rule types (dependencies)
+	// pass a bool argument, or use a settings bool flag? FIXME
+	err = event.CheckRuleTypes()
+	return event, err
+}
