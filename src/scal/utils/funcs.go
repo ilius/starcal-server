@@ -4,16 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"scal"
+	. "scal-lib/mapset"
+	"scal/cal_types"
+	"scal/cal_types/gregorian"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
-
-import . "scal-lib/mapset"
-import "scal"
-import "scal/cal_types"
-import "scal/cal_types/gregorian"
 
 func init() {
 	fmt.Printf("")
