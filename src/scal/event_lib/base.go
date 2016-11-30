@@ -120,12 +120,12 @@ func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
 	return BaseEvent{
 		id: string(self.Id),
 		//ownerEmail: self.OwnerEmail,
-		loc:          loc,
-		locEnable:    locEnable,
-		calType:      calType,
-		summary:      self.Summary,
-		description:  self.Description,
-		icon:         self.Icon,
+		loc:         loc,
+		locEnable:   locEnable,
+		calType:     calType,
+		summary:     self.Summary,
+		description: self.Description,
+		icon:        self.Icon,
 		//notifyBefore: self.NotifyBefore,
 	}, nil
 }
