@@ -20,8 +20,8 @@ import (
 
 	"scal"
 	"scal/event_lib"
-	"scal/storage"
 	"scal/settings"
+	"scal/storage"
 )
 
 func init() {
@@ -322,7 +322,7 @@ func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 	}
 
 	eventModel.Id = *eventId
-	eventModel.DummyType = eventMeta.EventType // not "{{EVENT_TYPE}}"
+	eventModel.DummyType = eventMeta.EventType  // not "{{EVENT_TYPE}}"
 	eventModel.GroupId = eventMeta.GroupIdHex() // FIXME
 	if eventMeta.CanReadFull(email) {
 		eventModel.Meta = eventMeta.JsonM()
