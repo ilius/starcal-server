@@ -1021,7 +1021,7 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 		return
 	}
 	json.NewEncoder(w).Encode(scal.M{
-		"maxCount":           count,
+		"maxCount":          count,
 		"lastCreatedEvents": results,
 	})
 }
