@@ -17,9 +17,9 @@ func TestHMS_FloatHour(t *testing.T) {
 	//t.Log("hms2 =", hms2)
 }
 
-func TestDecodeHMS(t *testing.T) {
+func TestParseHMS(t *testing.T) {
 	s := "12:01:01"
-	hms, err := DecodeHMS(s)
+	hms, err := ParseHMS(s)
 	//t.Log(hms, err)
 	if err != nil {
 		t.Error(err)

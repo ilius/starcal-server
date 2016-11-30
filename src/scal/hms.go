@@ -23,7 +23,7 @@ func (self HMS) GetFloatHour() float64 {
 	return float64(self.Hour) + float64(self.Minute)/60.0 + float64(self.Second)/3600.0
 }
 
-func DecodeHMS(str string) (HMS, error) {
+func ParseHMS(str string) (HMS, error) {
 	parts := strings.Split(str, ":")
 	if len(parts) < 2 || len(parts) > 3 {
 		return HMS{},
