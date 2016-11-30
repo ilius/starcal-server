@@ -9,8 +9,8 @@ import (
 	"scal/cal_types"
 	"scal/cal_types/gregorian"
 	"sort"
-	"strconv"
-	"strings"
+	//"strconv"
+	//"strings"
 	"time"
 )
 
@@ -42,30 +42,6 @@ func bisectLeftRange(a []int, v int, lo, hi int) int {
 
 func BisectLeft(a []int, v int) int {
 	return bisectLeftRange(a, v, 0, len(a))
-}
-
-func ParseDate(str string) (scal.Date, error) {
-	parts := strings.Split(str, "-")
-	if len(parts) != 3 {
-		return scal.Date{},
-			errors.New("invalid Date string '" + str + "'")
-	}
-	var err error
-	var y, m, d int64
-	y, err = strconv.ParseInt(parts[0], 10, 0)
-	if err != nil {
-		return scal.Date{}, err
-	}
-	m, err = strconv.ParseInt(parts[1], 10, 0)
-	if err != nil {
-		return scal.Date{}, err
-	}
-	d, err = strconv.ParseInt(parts[2], 10, 0)
-	if err != nil {
-		return scal.Date{}, err
-	}
-	return scal.Date{int(y), int(m), int(d)}, nil
-
 }
 
 // tested

@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"scal"
 	. "scal-lib/mapset"
 	"scal/cal_types/gregorian"
 	. "scal/interval"
@@ -57,7 +58,7 @@ func makeInterval(startStr string, endStr string) Interval {
 func makeJdSet(strList ...string) Set {
 	set := NewSet()
 	for _, str := range strList {
-		date, _ := ParseDate(str)
+		date, _ := scal.ParseDate(str)
 		set.Add(gregorian.ToJd(date))
 	}
 	return set
@@ -73,10 +74,10 @@ func TestOccurrence_1(t *testing.T) {
 		i("2016-01-05 12:00", "2016-01-07 12:00"),
 	}}
 	occur2 := JdSetOccurrence{event, makeJdSet(
-		"2016-01-02",
-		"2016-01-04",
-		"2016-01-01",
-		"2016-01-06",
+		"2016/01/02",
+		"2016/01/04",
+		"2016/01/01",
+		"2016/01/06",
 	)}
 	inter, err := occur1.Intersection(occur2)
 	if err != nil {
