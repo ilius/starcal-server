@@ -70,12 +70,13 @@ constLines = []
 for param, value in sorted(settingsDict.items()):
     valueType = type(value)
     if valueType in (str, int, float, bool):
-        valueRepr = json.dumps(value)
+        constLines.append("\t%s = %s" % (param, json.dumps(value)))
     else:
         # FIXME
-        print("unknown value type %s, not sure how to encode" % valueType)
-        valueRepr = str(value)
-    constLines.append("\t%s = %s" % (param, valueRepr))
+        print("unknown (non-const) value type %s, not sure how to encode" % valueType)
+        # valueRepr = str(value)
+        # varLines.append("\t%s = %s" % (param, valueRepr))
+
 
 constBlock = "const (" + "\n".join(constLines) + ")"
 
