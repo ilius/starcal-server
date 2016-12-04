@@ -66,7 +66,7 @@ hostArch = settingsDict.pop("ARCH")
 
 #pprint(settingsDict)
 
-lines = ["const ("]
+constLines = []
 for param, value in sorted(settingsDict.items()):
     valueType = type(value)
     if valueType in (str, int, float, bool):
@@ -75,12 +75,11 @@ for param, value in sorted(settingsDict.items()):
         # FIXME
         print("unknown value type %s, not sure how to encode" % valueType)
         valueRepr = str(value)
-    lines.append("\t%s = %s" % (param, valueRepr))
-lines.append(")")
+    constLines.append("\t%s = %s" % (param, valueRepr))
 
-varCode = "\n".join(lines)
+constBlock = "const (" + "\n".join(constLines) + ")"
 
-#print(varCode)
+#print(constBlock)
 
 goSettingsDir = join(srcDir, "scal", "settings")
 goSettingsFile = join(goSettingsDir, "settings.go")
@@ -91,7 +90,7 @@ with open(goSettingsFile, "w") as goFp:
     goFp.write("""// This is an auto-generated code. DO NOT MODIFY
 package settings
 
-%s""" % varCode)
+%s""" % constBlock)
 
 
 if hostOS:
