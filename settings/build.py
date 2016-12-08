@@ -73,7 +73,10 @@ for param, value in sorted(settingsDict.items()):
 		constLines.append("\t%s = %s" % (param, json.dumps(value)))
 	else:
 		# FIXME
-		print("unknown (non-const) value type %s, not sure how to encode" % valueType)
+		print(
+			"skipping unknown (non-const) value type %s" % valueType +
+			", param %s" % param
+		)
 		# valueRepr = str(value)
 		# varLines.append("\t%s = %s" % (param, valueRepr))
 
