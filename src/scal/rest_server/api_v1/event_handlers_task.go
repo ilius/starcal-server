@@ -22,6 +22,7 @@ import (
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
+	. "scal/user_lib"
 )
 
 func init() {
@@ -114,7 +115,12 @@ func init() {
 		"/event/task/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
-
+	RegisterRoute(
+		"InviteToEvent_task",
+		"POST",
+		"/event/task/{eventId}/invite/",
+		authenticator.Wrap(InviteToEvent),
+	)
 }
 
 func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {

@@ -17,6 +17,7 @@ import (
 	"scal-lib/go-http-auth"
 	"scal/event_lib"
 	"scal/storage"
+	. "scal/user_lib"
 )
 
 const ALLOW_DELETE_DEFAULT_GROUP = true

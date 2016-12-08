@@ -17,6 +17,7 @@ import (
 	"scal-lib/go-http-auth"
 	"scal/event_lib"
 	"scal/storage"
+	. "scal/user_lib"
 )
 
 func init() {
@@ -817,6 +818,65 @@ func LeaveEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	err = eventMeta.Leave(db, email)
 	if err != nil {
 		SetHttpError(w, http.StatusForbidden, err.Error())
+		return
+	}
+	json.NewEncoder(w).Encode(scal.M{})
+}
+
+func InviteToEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+	defer r.Body.Close()
+	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	var err error
+	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	eventId := ObjectIdFromURL(w, r, "eventId", 1)
+	if eventId == nil {
+		return
+	}
+	inputStruct := struct {
+		InviteEmails *[]string `json:"inviteEmails"`
+	}{
+		nil,
+	}
+
+	body, _ := ioutil.ReadAll(r.Body)
+	err = json.Unmarshal(body, &inputStruct)
+	if err != nil {
+		SetHttpError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	db, err := storage.GetDB()
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "event not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
+	err, errCode := eventMeta.Invite(
+		db,
+		email,
+		inputStruct.InviteEmails,
+		remoteIp,
+		"http://"+r.Host, // FIXME
+	)
+	if err != nil {
+		if errCode == scal.InternalServerError {
+			SetHttpErrorInternal(w, err)
+		} else {
+			SetHttpError(w, errCode, err.Error())
+		}
 		return
 	}
 	json.NewEncoder(w).Encode(scal.M{})

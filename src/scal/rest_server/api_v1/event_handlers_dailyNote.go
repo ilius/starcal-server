@@ -22,6 +22,7 @@ import (
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
+	. "scal/user_lib"
 )
 
 func init() {
@@ -114,7 +115,12 @@ func init() {
 		"/event/dailyNote/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
-
+	RegisterRoute(
+		"InviteToEvent_dailyNote",
+		"POST",
+		"/event/dailyNote/{eventId}/invite/",
+		authenticator.Wrap(InviteToEvent),
+	)
 }
 
 func AddDailyNote(w http.ResponseWriter, r *auth.AuthenticatedRequest) {

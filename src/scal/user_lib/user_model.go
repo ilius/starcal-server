@@ -1,9 +1,7 @@
-package api_v1
+package user_lib
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -42,17 +40,6 @@ func UserModelByEmail(email string, db storage.Database) *UserModel {
 		return nil
 	}
 	return &user
-}
-
-func SetHttpErrorUserNotFound(w http.ResponseWriter, email string) {
-	SetHttpError(
-		w,
-		http.StatusInternalServerError,
-		fmt.Sprintf(
-			"user with email '%s' not found",
-			email,
-		),
-	)
 }
 
 type UserChangeLogModel struct {

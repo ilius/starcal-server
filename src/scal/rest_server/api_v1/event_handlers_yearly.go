@@ -22,6 +22,7 @@ import (
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
+	. "scal/user_lib"
 )
 
 func init() {
@@ -114,7 +115,12 @@ func init() {
 		"/event/yearly/{eventId}/leave/",
 		authenticator.Wrap(LeaveEvent),
 	)
-
+	RegisterRoute(
+		"InviteToEvent_yearly",
+		"POST",
+		"/event/yearly/{eventId}/invite/",
+		authenticator.Wrap(InviteToEvent),
+	)
 }
 
 func AddYearly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {

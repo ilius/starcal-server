@@ -40,6 +40,17 @@ func SetHttpErrorInternal(w http.ResponseWriter, err error) {
 	SetHttpError(w, http.StatusInternalServerError, err.Error())
 }
 
+func SetHttpErrorUserNotFound(w http.ResponseWriter, email string) {
+	SetHttpError(
+		w,
+		http.StatusInternalServerError,
+		fmt.Sprintf(
+			"user with email '%s' not found",
+			email,
+		),
+	)
+}
+
 func ObjectIdFromURL(
 	w http.ResponseWriter,
 	r *auth.AuthenticatedRequest,

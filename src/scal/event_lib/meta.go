@@ -1,14 +1,19 @@
 package event_lib
 
 import (
+	"bytes"
 	"errors"
 	"log"
+	"text/template"
 	"time"
+	//"net/url"
 
 	"gopkg.in/mgo.v2/bson"
 
 	"scal"
+	"scal/settings"
 	"scal/storage"
+	. "scal/user_lib"
 )
 
 /*
@@ -33,6 +38,15 @@ type EventMetaModel struct {
 	//PublicJoinPolicy string         `bson:"publicJoinPolicy"` // not indexed
 	PublicJoinOpen bool `bson:"publicJoinOpen"`
 	MaxAttendees   int  `bson:"maxAttendees"`
+}
+
+type InviteEmailTemplateParams struct {
+	EventModel  *BaseEventModel
+	SenderEmail string
+	SenderName  string
+	Email       string
+	Name        string
+	JoinURL     string
 }
 
 func (self EventMetaModel) UniqueM() scal.M {
@@ -154,6 +168,138 @@ func (self *EventMetaModel) Leave(db storage.Database, email string) error {
 	}
 	self.SetAttending(db, email, NO)
 	return nil
+}
+func (self *EventMetaModel) PublicCanJoin() bool {
+	return self.IsPublic && self.PublicJoinOpen
+}
+func (self *EventMetaModel) Invite(
+	db storage.Database,
+	email string,
+	inviteEmails *[]string,
+	remoteIp string,
+	host string,
+) (error, int) {
+	/*
+		returns (err, errCode)
+		errCode values:
+			scal.BadRequest
+			scal.Forbidden
+			scal.InternalServerError
+	*/
+	var err error
+	if inviteEmails == nil {
+		return errors.New("missing 'inviteEmails'"), scal.BadRequest
+	}
+	if len(*inviteEmails) == 0 {
+		return errors.New("empty 'inviteEmails'"), scal.BadRequest
+	}
+
+	fullAc := self.CanReadFull(email)
+	public := self.PublicCanJoin()
+	if !(fullAc || public) {
+		return errors.New("not allowed to invite to this event"), scal.Forbidden
+	}
+	if fullAc {
+		accessEmailsMap := make(map[string]bool)
+		newAccessEmails := make(
+			[]string,
+			0,
+			len(self.AccessEmails) + len(*inviteEmails),
+		)
+		for _, aEmail := range self.AccessEmails {
+			accessEmailsMap[aEmail] = true
+			newAccessEmails = append(newAccessEmails, aEmail)
+		}
+		for _, inviteEmail := range *inviteEmails {
+			_, found := accessEmailsMap[inviteEmail]
+			if !found {
+				newAccessEmails = append(newAccessEmails, inviteEmail)
+			}
+		}
+		now := time.Now()
+		metaChangeLog := EventMetaChangeLogModel{
+			Time:     now,
+			Email:    email,
+			RemoteIp: remoteIp,
+			EventId:  self.EventId,
+			FuncName: "SetEventAccess",
+			AccessEmails: &[2][]string{
+				self.AccessEmails,
+				newAccessEmails,
+			},
+		}
+		self.AccessEmails = newAccessEmails
+		err = db.Insert(metaChangeLog)
+		if err != nil {
+			return err, scal.InternalServerError
+		}
+		err = db.Update(self)
+		if err != nil {
+			return err, scal.InternalServerError
+		}
+	}
+
+	eventRev, err := LoadLastRevisionModel(db, &self.EventId)
+	if err != nil {
+		if db.IsNotFound(err) {
+			return errors.New("event not found"), scal.BadRequest
+		} else {
+			return err, scal.InternalServerError
+		}
+	}
+	eventModel, err := LoadBaseEventModel(db, eventRev.Sha1)
+	if err != nil {
+		return err, scal.InternalServerError
+	}
+
+	tplText := settings.EVENT_INVITE_EMAIL_TEMPLATE
+	user := UserModelByEmail(email, db)
+	if user == nil {
+		return errors.New("user not found"), scal.InternalServerError
+	}
+	eventUrl := host +
+		"/event/" +
+		self.EventType + "/" +
+		self.EventId.Hex() + "/"
+	joinURL := eventUrl + "join"
+	for _, inviteEmail := range *inviteEmails {
+		subject := "Invitation to event: " + eventModel.Summary
+		tpl, err := template.New(subject).Parse(tplText)
+		if err != nil {
+			return err, scal.InternalServerError
+		}
+		var inviteName string
+		inviteUser := UserModelByEmail(inviteEmail, db)
+		if inviteUser == nil {
+			//return errors.New("invited email not found"), scal.BadRequest
+			// FIXME
+			inviteName = ""
+		} else {
+			inviteName = inviteUser.FullName
+		}
+
+		tplParams := InviteEmailTemplateParams{
+			EventModel:  eventModel,
+			SenderEmail: email,
+			SenderName:  user.FullName,
+			Email:       inviteEmail,
+			Name:        inviteName,
+			JoinURL:     joinURL,
+		}
+		buf := bytes.NewBufferString("")
+		err = tpl.Execute(buf, tplParams)
+		if err != nil {
+			return err, scal.InternalServerError
+		}
+		emailBody := buf.String()
+		scal.SendEmail(
+			inviteEmail,
+			subject,
+			false, // isHtml
+			emailBody,
+		)
+	}
+	return nil, 200
 }
 func (self *EventMetaModel) GetEmailsByAttendingStatus(
 	db storage.Database,

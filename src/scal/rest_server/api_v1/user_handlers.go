@@ -15,6 +15,7 @@ import (
 	"scal-lib/go-http-auth"
 	"scal/event_lib"
 	"scal/storage"
+	. "scal/user_lib"
 )
 
 const REALM = "starcalendar.net"

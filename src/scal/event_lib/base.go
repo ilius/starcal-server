@@ -35,6 +35,16 @@ func (self BaseEventModel) UniqueM() scal.M {
 	}
 }
 
+func LoadBaseEventModel(db storage.Database, sha1 string) (
+	*BaseEventModel,
+	error,
+) {
+	model := BaseEventModel{}
+	model.Sha1 = sha1
+	err := db.Get(&model)
+	return &model, err
+}
+
 type BaseEvent struct {
 	id string
 	//ownerEmail string
