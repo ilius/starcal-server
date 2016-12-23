@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ -z $STARCAL_HOST ] ; then
-    echo 'Set (and export) environment varibale `STARCAL_HOST` before running this script'
-    exit 1
+	echo 'Set (and export) environment varibale `STARCAL_HOST` before running this script'
+	exit 1
 fi
 
 echo "Installing mongodb-org 3.2" ; ssh root@$STARCAL_HOST apt-get install 'mongodb-org=3.2.*'
