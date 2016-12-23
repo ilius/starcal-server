@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "Installing mongodb-org 3.2" ; sudo apt-get install 'mongodb-org=3.2.*'
 echo "Installing daemontools" ; sudo apt-get install daemontools
+echo "Installing bsdiff and libarchive-zip-perl" ; sudo apt-get install bsdiff libarchive-zip-perl
 
 echo "Building" ; STARCAL_HOST=localhost ./build.sh || exit 1
 sudo service starcal stop
