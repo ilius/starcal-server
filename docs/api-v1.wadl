@@ -594,9 +594,9 @@
 							<element name="ownerEmail" type="xs:string"/>
 							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
-					    <param name="startJd" type="xs:int"/>
-					    <param name="endJd" type="xs:int"/>
-					    <param name="durationEnable" type="xs:boolean"/>
+						<param name="startJd" type="xs:int"/>
+						<param name="endJd" type="xs:int"/>
+						<param name="durationEnable" type="xs:boolean"/>
 					</response>
 				</method>
 				<method name="PUT" id="update_allDayTask">
@@ -616,9 +616,9 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					    <param name="startJd" type="xs:int" required="true"/>
-					    <param name="endJd" type="xs:int" required="true"/>
-					    <param name="durationEnable" type="xs:boolean" required="true"/>
+						<param name="startJd" type="xs:int" required="true"/>
+						<param name="endJd" type="xs:int" required="true"/>
+						<param name="durationEnable" type="xs:boolean" required="true"/>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
@@ -643,9 +643,9 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-					    <param name="startJd" type="xs:int" required="false"/>
-					    <param name="endJd" type="xs:int" required="false"/>
-					    <param name="durationEnable" type="xs:boolean" required="false"/>
+						<param name="startJd" type="xs:int" required="false"/>
+						<param name="endJd" type="xs:int" required="false"/>
+						<param name="durationEnable" type="xs:boolean" required="false"/>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
@@ -751,7 +751,7 @@
 							<element name="ownerEmail" type="xs:string"/>
 							<element name="publicJoinOpen" type="xs:boolean"/>
 						</param>
-					    <param name="rules" type="xs:list" itemType="xs:complexType">
+						<param name="rules" type="xs:list" itemType="xs:complexType">
 							<item type="xs:complexType" description="event rule">
 								<element name="type" type="xs:string">
 									<option value="cycleDays"/>
@@ -777,7 +777,7 @@
 								<element name="value" type="xs:string"
 									description="format depends on rule type"/>
 							</item>
-					    </param>
+						</param>
 					</response>
 				</method>
 				<method name="PUT" id="update_custom">
@@ -797,7 +797,7 @@
 						<param name="icon" type="xs:string" required="true"/>
 						<param name="timeZone" type="xs:string" required="true"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="true"/>
-					    <param name="rules" type="xs:list" itemType="xs:complexType" required="true">
+						<param name="rules" type="xs:list" itemType="xs:complexType" required="true">
 							<item type="xs:complexType" description="event rule">
 								<element name="type" type="xs:string">
 									<option value="cycleDays"/>
@@ -823,7 +823,7 @@
 								<element name="value" type="xs:string"
 									description="format depends on rule type"/>
 							</item>
-					    </param>
+						</param>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
@@ -848,7 +848,7 @@
 						<param name="icon" type="xs:string" required="false"/>
 						<param name="timeZone" type="xs:string" required="false"/>
 						<param name="timeZoneEnable" type="xs:boolean" required="false"/>
-					    <param name="rules" type="xs:list" itemType="xs:complexType" required="false">
+						<param name="rules" type="xs:list" itemType="xs:complexType" required="false">
 							<item type="xs:complexType" description="event rule">
 								<element name="type" type="xs:string">
 									<option value="cycleDays"/>
@@ -874,7 +874,7 @@
 								<element name="value" type="xs:string"
 									description="format depends on rule type"/>
 							</item>
-					    </param>
+						</param>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
