@@ -17,25 +17,25 @@ password = os.getenv("STARCAL_PASSWORD")
 eventType, eventId, newOwnerEmail = sys.argv[1:4]
 
 r = requests.put(
-    "http://%s:9001/event/%s/%s/owner/" % (
-        host,
-        eventType,
-        eventId,
-    ),
-    auth=HTTPDigestAuth(email, password),
-    json={
-        "newOwnerEmail": newOwnerEmail,
-    },
+	"http://%s:9001/event/%s/%s/owner/" % (
+		host,
+		eventType,
+		eventId,
+	),
+	auth=HTTPDigestAuth(email, password),
+	json={
+		"newOwnerEmail": newOwnerEmail,
+	},
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("data is not json")
-    print(r.text)
+	print("data is not json")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

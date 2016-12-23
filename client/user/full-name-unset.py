@@ -13,18 +13,18 @@ email = os.getenv("STARCAL_EMAIL")
 password = os.getenv("STARCAL_PASSWORD")
 
 r = requests.delete(
-    "http://%s:9001/user/full-name/" % host,
-    auth=HTTPDigestAuth(email, password),
+	"http://%s:9001/user/full-name/" % host,
+	auth=HTTPDigestAuth(email, password),
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data")
-    print(r.text)
+	print("non-json data")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

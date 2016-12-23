@@ -21,31 +21,31 @@ eventId = sys.argv[1]
 todayJd = datetime.now().toordinal() + 1721425
 
 params = {
-    "timeZone": "CET",
-    "calType": "jalali",
-    "summary": "all-day task patched",
-    "description": "desc patched",
-    "icon": "task-patched.png",
+	"timeZone": "CET",
+	"calType": "jalali",
+	"summary": "all-day task patched",
+	"description": "desc patched",
+	"icon": "task-patched.png",
 
-    "startJd": todayJd-1,
-    "endJd": todayJd + random.randint(1, 5),
-    "durationEnable": False,
+	"startJd": todayJd-1,
+	"endJd": todayJd + random.randint(1, 5),
+	"durationEnable": False,
 }
 
 r = requests.patch(
-    "http://%s:9001/event/allDayTask/%s/" % (host, eventId),
-    auth=HTTPDigestAuth(email, password),
-    json=params,
+	"http://%s:9001/event/allDayTask/%s/" % (host, eventId),
+	auth=HTTPDigestAuth(email, password),
+	json=params,
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data")
-    print(r.text)
+	print("non-json data")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

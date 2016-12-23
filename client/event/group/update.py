@@ -19,31 +19,31 @@ groupId, groupTitle = sys.argv[1:3]
 # not passing "addAccessEmails" will remove it if it was set before
 
 r = requests.put(
-    "http://%s:9001/event/groups/%s/" % (host, groupId),
-    auth=HTTPDigestAuth(email, password),
-    json={
-        "title": groupTitle,
-        #"title": "", # must give error
-        #"title": None, # must give error
-        #"title": [], # must give error
-        #"ownerEmail": "abcde@gmail.com", # must give error
-        #"groupId": "57e199d5e576da125d153b70", # must give error
-        #"readAccessEmails": "test-1@gmail.com", # must give error
-        #"readAccessEmails": 12345, # must give error
-        #"readAccessEmails": None, # will unset the value
-        "readAccessEmails": ["test-1@gmail.com"],
-        "addAccessEmails": ["test-2@gmail.com"],
-    }
+	"http://%s:9001/event/groups/%s/" % (host, groupId),
+	auth=HTTPDigestAuth(email, password),
+	json={
+		"title": groupTitle,
+		#"title": "", # must give error
+		#"title": None, # must give error
+		#"title": [], # must give error
+		#"ownerEmail": "abcde@gmail.com", # must give error
+		#"groupId": "57e199d5e576da125d153b70", # must give error
+		#"readAccessEmails": "test-1@gmail.com", # must give error
+		#"readAccessEmails": 12345, # must give error
+		#"readAccessEmails": None, # will unset the value
+		"readAccessEmails": ["test-1@gmail.com"],
+		"addAccessEmails": ["test-2@gmail.com"],
+	}
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data")
-    print(r.text)
+	print("non-json data")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

@@ -19,22 +19,22 @@ except IndexError:
 	fullName = ""
 
 r = requests.post(
-    "http://%s:9001/user/register/" % host,
-    json={
-        "email": email,
-        "password": password,
-        "fullName": fullName,
-    },
+	"http://%s:9001/user/register/" % host,
+	json={
+		"email": email,
+		"password": password,
+		"fullName": fullName,
+	},
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data")
-    print(r.text)
+	print("non-json data")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

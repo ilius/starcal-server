@@ -20,29 +20,29 @@ eventId = sys.argv[1]
 todayJd = datetime.now().toordinal() + 1721425
 
 params = {
-    "timeZone": "CET",
-    "calType": "jalali",
-    "summary": "note patched",
-    "description": "desc patched",
-    "icon": "note-patched.png",
+	"timeZone": "CET",
+	"calType": "jalali",
+	"summary": "note patched",
+	"description": "desc patched",
+	"icon": "note-patched.png",
 
-    "jd": todayJd-2,
+	"jd": todayJd-2,
 }
 
 r = requests.patch(
-    "http://%s:9001/event/dailyNote/%s/" % (host, eventId),
-    auth=HTTPDigestAuth(email, password),
-    json=params,
+	"http://%s:9001/event/dailyNote/%s/" % (host, eventId),
+	auth=HTTPDigestAuth(email, password),
+	json=params,
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data")
-    print(r.text)
+	print("non-json data")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

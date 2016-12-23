@@ -16,22 +16,22 @@ password = os.getenv("STARCAL_PASSWORD")
 groupId, sinceDateTime = sys.argv[1:3]
 
 r = requests.get(
-    "http://%s:9001/event/groups/%s/modified-events/%s/" % (
-        host,
-        groupId,
-        sinceDateTime,
-    ),
-    auth=HTTPDigestAuth(email, password),
+	"http://%s:9001/event/groups/%s/modified-events/%s/" % (
+		host,
+		groupId,
+		sinceDateTime,
+	),
+	auth=HTTPDigestAuth(email, password),
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("data is not json")
-    print(r.text)
+	print("data is not json")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

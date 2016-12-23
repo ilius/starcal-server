@@ -14,15 +14,15 @@ password = os.getenv("STARCAL_PASSWORD")
 eventId = sys.argv[1]
 
 r = requests.get(
-    "http://%s:9001/event/dailyNote/%s/leave" % (host, eventId),
-    auth=HTTPDigestAuth(email, password),
+	"http://%s:9001/event/dailyNote/%s/leave" % (host, eventId),
+	auth=HTTPDigestAuth(email, password),
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data: ", r.text)
+	print("non-json data: ", r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
+	error = data.get("error", "")
+	if error:
+		print(error)

@@ -18,28 +18,28 @@ eventType, eventId = sys.argv[1:3]
 accessEmails = sys.argv[3:]
 
 r = requests.put(
-    "http://%s:9001/event/%s/%s/access/" % (
-        host,
-        eventType,
-        eventId,
-    ),
-    auth=HTTPDigestAuth(email, password),
-    json={
-        "isPublic": False,
-        "accessEmails": accessEmails,
-        "publicJoinOpen": False,  # used for public events, just pass False for non-public events
-        "maxAttendees": 0,  # used for public events, 0 means Unlimited
-    },
+	"http://%s:9001/event/%s/%s/access/" % (
+		host,
+		eventType,
+		eventId,
+	),
+	auth=HTTPDigestAuth(email, password),
+	json={
+		"isPublic": False,
+		"accessEmails": accessEmails,
+		"publicJoinOpen": False,  # used for public events, just pass False for non-public events
+		"maxAttendees": 0,  # used for public events, 0 means Unlimited
+	},
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("data is not json")
-    print(r.text)
+	print("data is not json")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

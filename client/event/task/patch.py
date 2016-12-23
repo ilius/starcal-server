@@ -23,31 +23,31 @@ nowEpoch = int(time.time())
 #nowDt = datetime.now()
 
 params = {
-    "timeZone": "CET",
-    "calType": "jalali",
-    "summary": "task 2",
-    "description": "desc 2",
-    "icon": "task2.png",
+	"timeZone": "CET",
+	"calType": "jalali",
+	"summary": "task 2",
+	"description": "desc 2",
+	"icon": "task2.png",
 
-    "startTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
-    "endTime": strftime(timeFormat, gmtime(nowEpoch - 7200)),
-    "durationUnit": 0,
+	"startTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
+	"endTime": strftime(timeFormat, gmtime(nowEpoch - 7200)),
+	"durationUnit": 0,
 }
 
 r = requests.patch(
-    "http://%s:9001/event/task/%s/" % (host, eventId),
-    auth=HTTPDigestAuth(email, password),
-    json=params,
+	"http://%s:9001/event/task/%s/" % (host, eventId),
+	auth=HTTPDigestAuth(email, password),
+	json=params,
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data")
-    print(r.text)
+	print("non-json data")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

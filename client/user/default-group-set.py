@@ -15,21 +15,21 @@ password = os.getenv("STARCAL_PASSWORD")
 defaultGroupId = sys.argv[1]
 
 r = requests.put(
-    "http://%s:9001/user/default-group/" % host,
-    auth=HTTPDigestAuth(email, password),
-    json={
-        "defaultGroupId": defaultGroupId,
-    },
+	"http://%s:9001/user/default-group/" % host,
+	auth=HTTPDigestAuth(email, password),
+	json={
+		"defaultGroupId": defaultGroupId,
+	},
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data")
-    print(r.text)
+	print("non-json data")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

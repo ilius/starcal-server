@@ -17,25 +17,25 @@ password = os.getenv("STARCAL_PASSWORD")
 eventType, eventId, toAddEmail = sys.argv[1:4]
 
 r = requests.post(
-    "http://%s:9001/event/%s/%s/access/" % (
-        host,
-        eventType,
-        eventId,
-    ),
-    auth=HTTPDigestAuth(email, password),
-    json={
-        "toAddEmail": toAddEmail,
-    },
+	"http://%s:9001/event/%s/%s/access/" % (
+		host,
+		eventType,
+		eventId,
+	),
+	auth=HTTPDigestAuth(email, password),
+	json={
+		"toAddEmail": toAddEmail,
+	},
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("data is not json")
-    print(r.text)
+	print("data is not json")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

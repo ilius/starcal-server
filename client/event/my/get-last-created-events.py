@@ -15,18 +15,18 @@ count = sys.argv[1]
 count = int(count)
 
 r = requests.get(
-    "http://%s:9001/event/my/last-created-events/%s/" % (host, count),
-    auth=HTTPDigestAuth(email, password),
+	"http://%s:9001/event/my/last-created-events/%s/" % (host, count),
+	auth=HTTPDigestAuth(email, password),
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("data is not json")
-    print(r.text)
+	print("data is not json")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

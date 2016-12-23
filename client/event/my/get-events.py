@@ -13,18 +13,18 @@ email = os.getenv("STARCAL_EMAIL")
 password = os.getenv("STARCAL_PASSWORD")
 
 r = requests.get(
-    "http://%s:9001/event/my/events/" % host,
-    auth=HTTPDigestAuth(email, password),
+	"http://%s:9001/event/my/events/" % host,
+	auth=HTTPDigestAuth(email, password),
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("data is not json")
-    print(r.text)
+	print("data is not json")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

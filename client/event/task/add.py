@@ -18,16 +18,16 @@ nowEpoch = int(time.time())
 #nowDt = datetime.now()
 
 params = {
-    #"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
-    "timeZone": "Asia/Tehran",
-    "calType": "jalali",
-    "summary": "task 1",
-    "description": "desc 1",
-    "icon": "task.png",
+	#"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
+	"timeZone": "Asia/Tehran",
+	"calType": "jalali",
+	"summary": "task 1",
+	"description": "desc 1",
+	"icon": "task.png",
 
-    "startTime": strftime(timeFormat, gmtime(nowEpoch)),
-    "endTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
-    "durationUnit": 0,
+	"startTime": strftime(timeFormat, gmtime(nowEpoch)),
+	"endTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
+	"durationUnit": 0,
 }
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
@@ -35,24 +35,24 @@ email = os.getenv("STARCAL_EMAIL")
 password = os.getenv("STARCAL_PASSWORD")
 
 try:
-    params["groupId"] = sys.argv[1]
+	params["groupId"] = sys.argv[1]
 except IndexError:
-    pass
+	pass
 
 r = requests.post(
-    "http://%s:9001/event/task/" % host,
-    auth=HTTPDigestAuth(email, password),
-    json=params,
+	"http://%s:9001/event/task/" % host,
+	auth=HTTPDigestAuth(email, password),
+	json=params,
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data")
-    print(r.text)
+	print("non-json data")
+	print(r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
-    else:
-        pprint(data, width=80)
+	error = data.get("error", "")
+	if error:
+		print(error)
+	else:
+		pprint(data, width=80)

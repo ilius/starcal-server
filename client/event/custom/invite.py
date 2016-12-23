@@ -20,18 +20,18 @@ if not inviteEmails:
 	sys.exit(1)
 
 r = requests.post(
-    "http://%s:9001/event/custom/%s/invite/" % (host, eventId),
-    auth=HTTPDigestAuth(email, password),
-    json={
-    	"inviteEmails": inviteEmails,
-    }
+	"http://%s:9001/event/custom/%s/invite/" % (host, eventId),
+	auth=HTTPDigestAuth(email, password),
+	json={
+		"inviteEmails": inviteEmails,
+	}
 )
 print(r)
 try:
-    data = r.json()
+	data = r.json()
 except:
-    print("non-json data: ", r.text)
+	print("non-json data: ", r.text)
 else:
-    error = data.get("error", "")
-    if error:
-        print(error)
+	error = data.get("error", "")
+	if error:
+		print(error)
