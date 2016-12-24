@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ -z $STARCAL_HOST ] ; then
-    echo 'Set (and export) environment varibale `STARCAL_HOST` before running this script'
-    exit 1
+	echo 'Set (and export) environment varibale `STARCAL_HOST` before running this script'
+	exit 1
 fi
 
 ./build.sh
@@ -27,10 +27,10 @@ echo "Cleaning up" ; rm server-$STARCAL_HOST.bz2
 # cp: cannot create regular file ‘/usr/local/sbin/starcal-server’: Text file busy
 
 for API_VERSION in 1 ; do
-    API_PORT="900$API_VERSION"
-    echo "Checking API version $API_VERSION on port $API_PORT"
-    V="`curl -s http://$STARCAL_HOST:$API_PORT/util/api-version/`"
-    if [ "$V" != "$API_VERSION" ] ; then
-        echo "API version mismatch: '$V' != '$API_VERSION'"
-    fi
+	API_PORT="900$API_VERSION"
+	echo "Checking API version $API_VERSION on port $API_PORT"
+	V="`curl -s http://$STARCAL_HOST:$API_PORT/util/api-version/`"
+	if [ "$V" != "$API_VERSION" ] ; then
+		echo "API version mismatch: '$V' != '$API_VERSION'"
+	fi
 done
