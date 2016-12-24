@@ -204,7 +204,7 @@ func (self *EventMetaModel) Invite(
 		newAccessEmails := make(
 			[]string,
 			0,
-			len(self.AccessEmails) + len(*inviteEmails),
+			len(self.AccessEmails)+len(*inviteEmails),
 		)
 		for _, aEmail := range self.AccessEmails {
 			accessEmailsMap[aEmail] = true
