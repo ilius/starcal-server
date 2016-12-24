@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License along
 // with this program. If not, see <https://www.gnu.org/licenses/agpl.txt>.
 
-// "timeRange" -> "intervalList" FIXME
+// "jdSet" -> "jd"
+// "timeRange" -> "interval" FIXME
 
 package occurrence
 
@@ -51,7 +52,7 @@ type JdOccurSet struct {
 	JdSet Set
 }
 
-func (self JdOccurSet) GetName() string { return "jdSet" }
+func (self JdOccurSet) GetName() string { return "jd" }
 func (self JdOccurSet) GetEvent() Event { return self.Event }
 func (self JdOccurSet) Len() int {
 	return self.JdSet.Cardinality()
@@ -79,14 +80,14 @@ func (self JdOccurSet) GetEndJd() int {
 	return end
 }
 func (self JdOccurSet) Intersection(other OccurSet) (OccurSet, error) {
-	if other.GetName() == "jdSet" {
+	if other.GetName() == "jd" {
 		return JdOccurSet{
 			self.GetEvent(),
 			self.JdSet.Intersect(other.(JdOccurSet).JdSet),
 		}, nil
 	} else {
 		/*
-		   if other.GetName() != "intervalList" {
+		   if other.GetName() != "interval" {
 		       return JdOccurSet{}, errors.New(fmp.Sprintf(
 		           "invalid OccurSet name '%v'",
 		           other.GetName(),
@@ -122,7 +123,7 @@ type IntervalOccurSet struct {
 	List  IntervalList
 }
 
-func (self IntervalOccurSet) GetName() string { return "intervalList" }
+func (self IntervalOccurSet) GetName() string { return "interval" }
 func (self IntervalOccurSet) GetEvent() Event { return self.Event }
 func (self IntervalOccurSet) Len() int {
 	return len(self.List)
