@@ -12,5 +12,5 @@ GOPATH=$PWD go install golang.org/x/crypto/bcrypt
 GOPATH=$PWD go install golang.org/x/net/context
 GOPATH=$PWD go install scal-lib/go-http-auth
 
-./settings/build.py
+./settings/build.py "$@"
 exit $?
