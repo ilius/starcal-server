@@ -10,6 +10,9 @@ from pprint import pprint
 
 import defaults
 
+secretSettingsParams = {
+	"MONGO_PASSWORD",
+}
 myDir = dirname(abspath(__file__))
 rootDir = dirname(myDir)
 srcDir = join(rootDir, "src")
@@ -67,6 +70,7 @@ hostArch = settingsDict.pop("ARCH")
 #pprint(settingsDict)
 
 constLines = []
+printLines = []
 for param, value in sorted(settingsDict.items()):
 	valueType = type(value)
 	if valueType in (str, int, float, bool):
@@ -79,9 +83,12 @@ for param, value in sorted(settingsDict.items()):
 		)
 		# valueRepr = str(value)
 		# varLines.append("\t%s = %s" % (param, valueRepr))
+	if param not in secretSettingsParams:
+		printLines.append('\tfmt.Printf("%s=%%#v\\n", %s)' % (param, param))
 
 
 constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
+printFunc = "func PrintSettings() {\n%s\n}" % "\n".join(printLines)
 
 #print(constBlock)
 
@@ -93,8 +100,14 @@ if not isdir(goSettingsDir):
 with open(goSettingsFile, "w") as goFp:
 	goFp.write("""// This is an auto-generated code. DO NOT MODIFY
 package settings
+import "fmt"
 
-%s""" % constBlock)
+%s
+
+%s""" % (
+	constBlock,
+	printFunc,
+))
 
 
 if hostOS:
