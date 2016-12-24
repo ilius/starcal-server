@@ -4,7 +4,7 @@ if [ -z $STARCAL_HOST ] ; then
 	exit 1
 fi
 
-./build.sh
+./build.sh || exit $?
 
 PROD_BIN=/usr/local/sbin/starcal-server
 
