@@ -81,7 +81,7 @@ for param, value in sorted(settingsDict.items()):
 		# varLines.append("\t%s = %s" % (param, valueRepr))
 
 
-constBlock = "const (" + "\n".join(constLines) + ")"
+constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
 
 #print(constBlock)
 
