@@ -38,18 +38,18 @@ if [ -n "$BIN_PATCH" ] ; then
 	ls -lh "$BIN_PATCH" "$NEW_BIN"
 	echo "Copying binary patch to host"; scp "$BIN_PATCH" root@$STARCAL_HOST:$PROD_BIN.patch.bz2
 	echo "Applying binary patch"; ssh root@$STARCAL_HOST "
-bunzip2 -f $PROD_BIN.patch.bz2 || exit 1
+bunzip2 -f $PROD_BIN.patch.bz2 || exit $?
 bspatch $PROD_BIN $PROD_BIN-new $PROD_BIN.patch
 chmod u+x $PROD_BIN-new
-	" || exit 1
+	" || exit $?
 else
-	echo "Compressing binary" ; bzip2 -kf $NEW_BIN || exit 1
-	echo "Copying compressed binary to host"; scp $NEW_BIN.bz2 root@$STARCAL_HOST:$PROD_BIN-new.bz2 || exit 1
-	echo "Uncompressing binary" ; ssh root@$STARCAL_HOST "bunzip2 -f $PROD_BIN-new.bz2" || exit 1
+	echo "Compressing binary" ; bzip2 -kf $NEW_BIN || exit $?
+	echo "Copying compressed binary to host"; scp $NEW_BIN.bz2 root@$STARCAL_HOST:$PROD_BIN-new.bz2 || exit $?
+	echo "Uncompressing binary" ; ssh root@$STARCAL_HOST "bunzip2 -f $PROD_BIN-new.bz2" || exit $?
 fi
 
 echo "Stopping service, updating binary and starting service again"
-ssh root@$STARCAL_HOST "ls -l $PROD_BIN-new || exit 1
+ssh root@$STARCAL_HOST "ls -l $PROD_BIN-new || exit $?
 service starcal stop
 mv -f $PROD_BIN-new $PROD_BIN
 service starcal start
