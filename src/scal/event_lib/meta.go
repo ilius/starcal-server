@@ -194,6 +194,8 @@ func (self *EventMetaModel) Invite(
 		return errors.New("empty 'inviteEmails'"), scal.BadRequest
 	}
 
+	now := time.Now()
+
 	fullAc := self.CanReadFull(email)
 	public := self.PublicCanJoin()
 	if !(fullAc || public) {
@@ -216,7 +218,6 @@ func (self *EventMetaModel) Invite(
 				newAccessEmails = append(newAccessEmails, inviteEmail)
 			}
 		}
-		now := time.Now()
 		metaChangeLog := EventMetaChangeLogModel{
 			Time:     now,
 			Email:    email,
@@ -292,6 +293,13 @@ func (self *EventMetaModel) Invite(
 			return err, scal.InternalServerError
 		}
 		emailBody := buf.String()
+		db.Insert(EventInvitationModel{
+			Time:         now,
+			SenderEmail:  email,
+			InvitedEmail: inviteEmail,
+			EventId:      self.EventId,
+		})
+
 		scal.SendEmail(
 			inviteEmail,
 			subject,
@@ -384,6 +392,17 @@ type EventMetaChangeLogModel struct {
 
 func (model EventMetaChangeLogModel) Collection() string {
 	return storage.C_eventMetaChangeLog
+}
+
+type EventInvitationModel struct {
+	Time         time.Time     `bson:"time"`
+	SenderEmail  string        `bson:"senderEmail"`
+	InvitedEmail string        `bson:"invitedEmail"`
+	EventId      bson.ObjectId `bson:"eventId"`
+}
+
+func (model EventInvitationModel) Collection() string {
+	return storage.C_invitation
 }
 
 func GetEventMetaPipeResults(

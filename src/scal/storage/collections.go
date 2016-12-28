@@ -10,4 +10,5 @@ const (
 	C_eventMetaChangeLog = "event_meta_change_log"
 	C_revision           = "event_revision"
 	C_eventData          = "event_data"
+	C_invitation         = "event_invitation"
 )
