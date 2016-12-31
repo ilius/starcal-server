@@ -3,4 +3,5 @@ bin_cache/
 server-*
 settings/hosts/*
 src/scal/settings/settings.go
-
+__pycache__
+*.pyc
