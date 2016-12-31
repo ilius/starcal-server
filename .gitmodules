@@ -19,3 +19,6 @@
 [submodule "src/github.com/bmizerany/pat"]
 	path = src/github.com/bmizerany/pat
 	url = git@github.com:bmizerany/pat
+[submodule "src/github.com/dgrijalva/jwt-go"]
+	path = src/github.com/dgrijalva/jwt-go
+	url = git@github.com:dgrijalva/jwt-go
