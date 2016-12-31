@@ -69,8 +69,12 @@ hostArch = settingsDict.pop("ARCH")
 
 #pprint(settingsDict)
 
-constLines = []
-printLines = []
+constLines = [
+	"\tHOST = %s" % json.dumps(hostName),
+]
+printLines = [
+	'\tfmt.Printf("HOST=%#v\\n", HOST)'
+]
 for param, value in sorted(settingsDict.items()):
 	valueType = type(value)
 	if valueType in (str, int, float, bool):
