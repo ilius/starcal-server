@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
+	//"github.com/dgrijalva/jwt-go"
 
 	"scal"
 	"scal-lib/go-http-auth"
@@ -18,11 +19,11 @@ import (
 	. "scal/user_lib"
 )
 
-const REALM = "starcalendar.net"
-
 var globalDb, globalDbErr = storage.GetDB()
 
+const REALM = "starcalendar.net"
 var authenticator = auth.NewDigestAuthenticator(REALM, Secret)
+var authWrap = authenticator.Wrap
 
 func init() {
 	if globalDbErr != nil {
@@ -38,31 +39,31 @@ func init() {
 		"SetUserFullName",
 		"PUT",
 		"/user/full-name/",
-		authenticator.Wrap(SetUserFullName),
+		authWrap(SetUserFullName),
 	)
 	RegisterRoute(
 		"UnsetUserFullName",
 		"DELETE",
 		"/user/full-name/",
-		authenticator.Wrap(UnsetUserFullName),
+		authWrap(UnsetUserFullName),
 	)
 	RegisterRoute(
 		"GetUserInfo",
 		"GET",
 		"/user/info/",
-		authenticator.Wrap(GetUserInfo),
+		authWrap(GetUserInfo),
 	)
 	RegisterRoute(
 		"SetUserDefaultGroupId",
 		"PUT",
 		"/user/default-group/",
-		authenticator.Wrap(SetUserDefaultGroupId),
+		authWrap(SetUserDefaultGroupId),
 	)
 	RegisterRoute(
 		"UnsetUserDefaultGroupId",
 		"DELETE",
 		"/user/default-group/",
-		authenticator.Wrap(UnsetUserDefaultGroupId),
+		authWrap(UnsetUserDefaultGroupId),
 	)
 }
 

@@ -30,25 +30,25 @@ func init() {
 		"AddLifeTime",
 		"POST",
 		"/event/lifeTime/",
-		authenticator.Wrap(AddLifeTime),
+		authWrap(AddLifeTime),
 	)
 	RegisterRoute(
 		"GetLifeTime",
 		"GET",
 		"/event/lifeTime/{eventId}/",
-		authenticator.Wrap(GetLifeTime),
+		authWrap(GetLifeTime),
 	)
 	RegisterRoute(
 		"UpdateLifeTime",
 		"PUT",
 		"/event/lifeTime/{eventId}/",
-		authenticator.Wrap(UpdateLifeTime),
+		authWrap(UpdateLifeTime),
 	)
 	RegisterRoute(
 		"PatchLifeTime",
 		"PATCH",
 		"/event/lifeTime/{eventId}/",
-		authenticator.Wrap(PatchLifeTime),
+		authWrap(PatchLifeTime),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_lifeTime",
 		"DELETE",
 		"/event/lifeTime/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_lifeTime",
 		"PUT",
 		"/event/lifeTime/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_lifeTime",
 		"GET",
 		"/event/lifeTime/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_lifeTime",
 		"PUT",
 		"/event/lifeTime/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_lifeTime",
 		"GET",
 		"/event/lifeTime/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_lifeTime",
 		"GET",
 		"/event/lifeTime/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_lifeTime",
 		"PUT",
 		"/event/lifeTime/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_lifeTime",
 		"POST",
 		"/event/lifeTime/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_lifeTime",
 		"GET",
 		"/event/lifeTime/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_lifeTime",
 		"GET",
 		"/event/lifeTime/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_lifeTime",
 		"POST",
 		"/event/lifeTime/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

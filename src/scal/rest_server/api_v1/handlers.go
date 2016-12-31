@@ -25,31 +25,31 @@ func init() {
 		"CopyEvent",
 		"POST",
 		"/event/copy/{eventId}/",
-		authenticator.Wrap(CopyEvent),
+		authWrap(CopyEvent),
 	)
 	RegisterRoute(
 		"GetUngroupedEvents",
 		"GET",
 		"/event/ungrouped/",
-		authenticator.Wrap(GetUngroupedEvents),
+		authWrap(GetUngroupedEvents),
 	)
 	RegisterRoute(
 		"GetMyEventList",
 		"GET",
 		"/event/my/events/",
-		authenticator.Wrap(GetMyEventList),
+		authWrap(GetMyEventList),
 	)
 	RegisterRoute(
 		"GetMyEventsFull",
 		"GET",
 		"/event/my/events-full/",
-		authenticator.Wrap(GetMyEventsFull),
+		authWrap(GetMyEventsFull),
 	)
 	RegisterRoute(
 		"GetMyLastCreatedEvents",
 		"GET",
 		"/event/my/last-created-events/{count}/",
-		authenticator.Wrap(GetMyLastCreatedEvents),
+		authWrap(GetMyLastCreatedEvents),
 	)
 }
 

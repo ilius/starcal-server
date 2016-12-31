@@ -30,25 +30,25 @@ func init() {
 		"AddLargeScale",
 		"POST",
 		"/event/largeScale/",
-		authenticator.Wrap(AddLargeScale),
+		authWrap(AddLargeScale),
 	)
 	RegisterRoute(
 		"GetLargeScale",
 		"GET",
 		"/event/largeScale/{eventId}/",
-		authenticator.Wrap(GetLargeScale),
+		authWrap(GetLargeScale),
 	)
 	RegisterRoute(
 		"UpdateLargeScale",
 		"PUT",
 		"/event/largeScale/{eventId}/",
-		authenticator.Wrap(UpdateLargeScale),
+		authWrap(UpdateLargeScale),
 	)
 	RegisterRoute(
 		"PatchLargeScale",
 		"PATCH",
 		"/event/largeScale/{eventId}/",
-		authenticator.Wrap(PatchLargeScale),
+		authWrap(PatchLargeScale),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_largeScale",
 		"DELETE",
 		"/event/largeScale/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_largeScale",
 		"PUT",
 		"/event/largeScale/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_largeScale",
 		"GET",
 		"/event/largeScale/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_largeScale",
 		"PUT",
 		"/event/largeScale/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_largeScale",
 		"GET",
 		"/event/largeScale/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_largeScale",
 		"GET",
 		"/event/largeScale/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_largeScale",
 		"PUT",
 		"/event/largeScale/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_largeScale",
 		"POST",
 		"/event/largeScale/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_largeScale",
 		"GET",
 		"/event/largeScale/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_largeScale",
 		"GET",
 		"/event/largeScale/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_largeScale",
 		"POST",
 		"/event/largeScale/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

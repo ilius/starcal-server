@@ -30,25 +30,25 @@ func init() {
 		"AddMonthly",
 		"POST",
 		"/event/monthly/",
-		authenticator.Wrap(AddMonthly),
+		authWrap(AddMonthly),
 	)
 	RegisterRoute(
 		"GetMonthly",
 		"GET",
 		"/event/monthly/{eventId}/",
-		authenticator.Wrap(GetMonthly),
+		authWrap(GetMonthly),
 	)
 	RegisterRoute(
 		"UpdateMonthly",
 		"PUT",
 		"/event/monthly/{eventId}/",
-		authenticator.Wrap(UpdateMonthly),
+		authWrap(UpdateMonthly),
 	)
 	RegisterRoute(
 		"PatchMonthly",
 		"PATCH",
 		"/event/monthly/{eventId}/",
-		authenticator.Wrap(PatchMonthly),
+		authWrap(PatchMonthly),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_monthly",
 		"DELETE",
 		"/event/monthly/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_monthly",
 		"PUT",
 		"/event/monthly/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_monthly",
 		"GET",
 		"/event/monthly/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_monthly",
 		"PUT",
 		"/event/monthly/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_monthly",
 		"GET",
 		"/event/monthly/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_monthly",
 		"GET",
 		"/event/monthly/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_monthly",
 		"PUT",
 		"/event/monthly/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_monthly",
 		"POST",
 		"/event/monthly/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_monthly",
 		"GET",
 		"/event/monthly/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_monthly",
 		"GET",
 		"/event/monthly/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_monthly",
 		"POST",
 		"/event/monthly/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

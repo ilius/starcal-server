@@ -30,25 +30,25 @@ func init() {
 		"AddDailyNote",
 		"POST",
 		"/event/dailyNote/",
-		authenticator.Wrap(AddDailyNote),
+		authWrap(AddDailyNote),
 	)
 	RegisterRoute(
 		"GetDailyNote",
 		"GET",
 		"/event/dailyNote/{eventId}/",
-		authenticator.Wrap(GetDailyNote),
+		authWrap(GetDailyNote),
 	)
 	RegisterRoute(
 		"UpdateDailyNote",
 		"PUT",
 		"/event/dailyNote/{eventId}/",
-		authenticator.Wrap(UpdateDailyNote),
+		authWrap(UpdateDailyNote),
 	)
 	RegisterRoute(
 		"PatchDailyNote",
 		"PATCH",
 		"/event/dailyNote/{eventId}/",
-		authenticator.Wrap(PatchDailyNote),
+		authWrap(PatchDailyNote),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_dailyNote",
 		"DELETE",
 		"/event/dailyNote/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_dailyNote",
 		"PUT",
 		"/event/dailyNote/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_dailyNote",
 		"GET",
 		"/event/dailyNote/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_dailyNote",
 		"PUT",
 		"/event/dailyNote/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_dailyNote",
 		"GET",
 		"/event/dailyNote/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_dailyNote",
 		"GET",
 		"/event/dailyNote/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_dailyNote",
 		"PUT",
 		"/event/dailyNote/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_dailyNote",
 		"POST",
 		"/event/dailyNote/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_dailyNote",
 		"GET",
 		"/event/dailyNote/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_dailyNote",
 		"GET",
 		"/event/dailyNote/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_dailyNote",
 		"POST",
 		"/event/dailyNote/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

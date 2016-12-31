@@ -30,25 +30,25 @@ func init() {
 		"AddYearly",
 		"POST",
 		"/event/yearly/",
-		authenticator.Wrap(AddYearly),
+		authWrap(AddYearly),
 	)
 	RegisterRoute(
 		"GetYearly",
 		"GET",
 		"/event/yearly/{eventId}/",
-		authenticator.Wrap(GetYearly),
+		authWrap(GetYearly),
 	)
 	RegisterRoute(
 		"UpdateYearly",
 		"PUT",
 		"/event/yearly/{eventId}/",
-		authenticator.Wrap(UpdateYearly),
+		authWrap(UpdateYearly),
 	)
 	RegisterRoute(
 		"PatchYearly",
 		"PATCH",
 		"/event/yearly/{eventId}/",
-		authenticator.Wrap(PatchYearly),
+		authWrap(PatchYearly),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_yearly",
 		"DELETE",
 		"/event/yearly/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_yearly",
 		"PUT",
 		"/event/yearly/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_yearly",
 		"GET",
 		"/event/yearly/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_yearly",
 		"PUT",
 		"/event/yearly/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_yearly",
 		"GET",
 		"/event/yearly/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_yearly",
 		"GET",
 		"/event/yearly/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_yearly",
 		"PUT",
 		"/event/yearly/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_yearly",
 		"POST",
 		"/event/yearly/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_yearly",
 		"GET",
 		"/event/yearly/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_yearly",
 		"GET",
 		"/event/yearly/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_yearly",
 		"POST",
 		"/event/yearly/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

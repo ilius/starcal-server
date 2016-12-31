@@ -30,25 +30,25 @@ func init() {
 		"AddUniversityClass",
 		"POST",
 		"/event/universityClass/",
-		authenticator.Wrap(AddUniversityClass),
+		authWrap(AddUniversityClass),
 	)
 	RegisterRoute(
 		"GetUniversityClass",
 		"GET",
 		"/event/universityClass/{eventId}/",
-		authenticator.Wrap(GetUniversityClass),
+		authWrap(GetUniversityClass),
 	)
 	RegisterRoute(
 		"UpdateUniversityClass",
 		"PUT",
 		"/event/universityClass/{eventId}/",
-		authenticator.Wrap(UpdateUniversityClass),
+		authWrap(UpdateUniversityClass),
 	)
 	RegisterRoute(
 		"PatchUniversityClass",
 		"PATCH",
 		"/event/universityClass/{eventId}/",
-		authenticator.Wrap(PatchUniversityClass),
+		authWrap(PatchUniversityClass),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_universityClass",
 		"DELETE",
 		"/event/universityClass/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_universityClass",
 		"PUT",
 		"/event/universityClass/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_universityClass",
 		"GET",
 		"/event/universityClass/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_universityClass",
 		"PUT",
 		"/event/universityClass/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_universityClass",
 		"GET",
 		"/event/universityClass/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_universityClass",
 		"GET",
 		"/event/universityClass/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_universityClass",
 		"PUT",
 		"/event/universityClass/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_universityClass",
 		"POST",
 		"/event/universityClass/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_universityClass",
 		"GET",
 		"/event/universityClass/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_universityClass",
 		"GET",
 		"/event/universityClass/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_universityClass",
 		"POST",
 		"/event/universityClass/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

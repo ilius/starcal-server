@@ -30,25 +30,25 @@ func init() {
 		"AddAllDayTask",
 		"POST",
 		"/event/allDayTask/",
-		authenticator.Wrap(AddAllDayTask),
+		authWrap(AddAllDayTask),
 	)
 	RegisterRoute(
 		"GetAllDayTask",
 		"GET",
 		"/event/allDayTask/{eventId}/",
-		authenticator.Wrap(GetAllDayTask),
+		authWrap(GetAllDayTask),
 	)
 	RegisterRoute(
 		"UpdateAllDayTask",
 		"PUT",
 		"/event/allDayTask/{eventId}/",
-		authenticator.Wrap(UpdateAllDayTask),
+		authWrap(UpdateAllDayTask),
 	)
 	RegisterRoute(
 		"PatchAllDayTask",
 		"PATCH",
 		"/event/allDayTask/{eventId}/",
-		authenticator.Wrap(PatchAllDayTask),
+		authWrap(PatchAllDayTask),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_allDayTask",
 		"DELETE",
 		"/event/allDayTask/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_allDayTask",
 		"PUT",
 		"/event/allDayTask/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_allDayTask",
 		"GET",
 		"/event/allDayTask/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_allDayTask",
 		"PUT",
 		"/event/allDayTask/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_allDayTask",
 		"GET",
 		"/event/allDayTask/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_allDayTask",
 		"GET",
 		"/event/allDayTask/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_allDayTask",
 		"PUT",
 		"/event/allDayTask/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_allDayTask",
 		"POST",
 		"/event/allDayTask/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_allDayTask",
 		"GET",
 		"/event/allDayTask/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_allDayTask",
 		"GET",
 		"/event/allDayTask/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_allDayTask",
 		"POST",
 		"/event/allDayTask/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

@@ -30,25 +30,25 @@ func init() {
 		"AddCustom",
 		"POST",
 		"/event/custom/",
-		authenticator.Wrap(AddCustom),
+		authWrap(AddCustom),
 	)
 	RegisterRoute(
 		"GetCustom",
 		"GET",
 		"/event/custom/{eventId}/",
-		authenticator.Wrap(GetCustom),
+		authWrap(GetCustom),
 	)
 	RegisterRoute(
 		"UpdateCustom",
 		"PUT",
 		"/event/custom/{eventId}/",
-		authenticator.Wrap(UpdateCustom),
+		authWrap(UpdateCustom),
 	)
 	RegisterRoute(
 		"PatchCustom",
 		"PATCH",
 		"/event/custom/{eventId}/",
-		authenticator.Wrap(PatchCustom),
+		authWrap(PatchCustom),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_custom",
 		"DELETE",
 		"/event/custom/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_custom",
 		"PUT",
 		"/event/custom/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_custom",
 		"GET",
 		"/event/custom/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_custom",
 		"PUT",
 		"/event/custom/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_custom",
 		"GET",
 		"/event/custom/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_custom",
 		"GET",
 		"/event/custom/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_custom",
 		"PUT",
 		"/event/custom/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_custom",
 		"POST",
 		"/event/custom/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_custom",
 		"GET",
 		"/event/custom/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_custom",
 		"GET",
 		"/event/custom/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_custom",
 		"POST",
 		"/event/custom/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

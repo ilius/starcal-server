@@ -30,25 +30,25 @@ func init() {
 		"Add{{EVENT_TYPE_CAP}}",
 		"POST",
 		"/event/{{EVENT_TYPE}}/",
-		authenticator.Wrap(Add{{EVENT_TYPE_CAP}}),
+		authWrap(Add{{EVENT_TYPE_CAP}}),
 	)
 	RegisterRoute(
 		"Get{{EVENT_TYPE_CAP}}",
 		"GET",
 		"/event/{{EVENT_TYPE}}/{eventId}/",
-		authenticator.Wrap(Get{{EVENT_TYPE_CAP}}),
+		authWrap(Get{{EVENT_TYPE_CAP}}),
 	)
 	RegisterRoute(
 		"Update{{EVENT_TYPE_CAP}}",
 		"PUT",
 		"/event/{{EVENT_TYPE}}/{eventId}/",
-		authenticator.Wrap(Update{{EVENT_TYPE_CAP}}),
+		authWrap(Update{{EVENT_TYPE_CAP}}),
 	)
 	RegisterRoute(
 		"Patch{{EVENT_TYPE_CAP}}",
 		"PATCH",
 		"/event/{{EVENT_TYPE}}/{eventId}/",
-		authenticator.Wrap(Patch{{EVENT_TYPE_CAP}}),
+		authWrap(Patch{{EVENT_TYPE_CAP}}),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_{{EVENT_TYPE}}",
 		"DELETE",
 		"/event/{{EVENT_TYPE}}/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_{{EVENT_TYPE}}",
 		"PUT",
 		"/event/{{EVENT_TYPE}}/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_{{EVENT_TYPE}}",
 		"GET",
 		"/event/{{EVENT_TYPE}}/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_{{EVENT_TYPE}}",
 		"PUT",
 		"/event/{{EVENT_TYPE}}/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_{{EVENT_TYPE}}",
 		"GET",
 		"/event/{{EVENT_TYPE}}/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_{{EVENT_TYPE}}",
 		"GET",
 		"/event/{{EVENT_TYPE}}/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_{{EVENT_TYPE}}",
 		"PUT",
 		"/event/{{EVENT_TYPE}}/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_{{EVENT_TYPE}}",
 		"POST",
 		"/event/{{EVENT_TYPE}}/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_{{EVENT_TYPE}}",
 		"GET",
 		"/event/{{EVENT_TYPE}}/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_{{EVENT_TYPE}}",
 		"GET",
 		"/event/{{EVENT_TYPE}}/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_{{EVENT_TYPE}}",
 		"POST",
 		"/event/{{EVENT_TYPE}}/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

@@ -29,55 +29,55 @@ func init() {
 		"GetGroupList",
 		"GET",
 		"/event/groups/",
-		authenticator.Wrap(GetGroupList),
+		authWrap(GetGroupList),
 	)
 	RegisterRoute(
 		"AddGroup",
 		"POST",
 		"/event/groups/",
-		authenticator.Wrap(AddGroup),
+		authWrap(AddGroup),
 	)
 	RegisterRoute(
 		"UpdateGroup",
 		"PUT",
 		"/event/groups/{groupId}/",
-		authenticator.Wrap(UpdateGroup),
+		authWrap(UpdateGroup),
 	)
 	RegisterRoute(
 		"GetGroup",
 		"GET",
 		"/event/groups/{groupId}/",
-		authenticator.Wrap(GetGroup),
+		authWrap(GetGroup),
 	)
 	RegisterRoute(
 		"DeleteGroup",
 		"DELETE",
 		"/event/groups/{groupId}/",
-		authenticator.Wrap(DeleteGroup),
+		authWrap(DeleteGroup),
 	)
 	RegisterRoute(
 		"GetGroupEventList",
 		"GET",
 		"/event/groups/{groupId}/events/",
-		authenticator.Wrap(GetGroupEventList),
+		authWrap(GetGroupEventList),
 	)
 	RegisterRoute(
 		"GetGroupModifiedEvents",
 		"GET",
 		"/event/groups/{groupId}/modified-events/{sinceDateTime}/",
-		authenticator.Wrap(GetGroupModifiedEvents),
+		authWrap(GetGroupModifiedEvents),
 	)
 	RegisterRoute(
 		"GetGroupMovedEvents",
 		"GET",
 		"/event/groups/{groupId}/moved-events/{sinceDateTime}/",
-		authenticator.Wrap(GetGroupMovedEvents),
+		authWrap(GetGroupMovedEvents),
 	)
 	RegisterRoute(
 		"GetGroupLastCreatedEvents",
 		"GET",
 		"/event/groups/{groupId}/last-created-events/{count}/",
-		authenticator.Wrap(GetGroupLastCreatedEvents),
+		authWrap(GetGroupLastCreatedEvents),
 	)
 }
 

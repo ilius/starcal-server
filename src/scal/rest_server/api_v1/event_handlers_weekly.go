@@ -30,25 +30,25 @@ func init() {
 		"AddWeekly",
 		"POST",
 		"/event/weekly/",
-		authenticator.Wrap(AddWeekly),
+		authWrap(AddWeekly),
 	)
 	RegisterRoute(
 		"GetWeekly",
 		"GET",
 		"/event/weekly/{eventId}/",
-		authenticator.Wrap(GetWeekly),
+		authWrap(GetWeekly),
 	)
 	RegisterRoute(
 		"UpdateWeekly",
 		"PUT",
 		"/event/weekly/{eventId}/",
-		authenticator.Wrap(UpdateWeekly),
+		authWrap(UpdateWeekly),
 	)
 	RegisterRoute(
 		"PatchWeekly",
 		"PATCH",
 		"/event/weekly/{eventId}/",
-		authenticator.Wrap(PatchWeekly),
+		authWrap(PatchWeekly),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_weekly",
 		"DELETE",
 		"/event/weekly/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_weekly",
 		"PUT",
 		"/event/weekly/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_weekly",
 		"GET",
 		"/event/weekly/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_weekly",
 		"PUT",
 		"/event/weekly/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_weekly",
 		"GET",
 		"/event/weekly/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_weekly",
 		"GET",
 		"/event/weekly/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_weekly",
 		"PUT",
 		"/event/weekly/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_weekly",
 		"POST",
 		"/event/weekly/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_weekly",
 		"GET",
 		"/event/weekly/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_weekly",
 		"GET",
 		"/event/weekly/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_weekly",
 		"POST",
 		"/event/weekly/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 

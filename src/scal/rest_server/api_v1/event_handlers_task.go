@@ -30,25 +30,25 @@ func init() {
 		"AddTask",
 		"POST",
 		"/event/task/",
-		authenticator.Wrap(AddTask),
+		authWrap(AddTask),
 	)
 	RegisterRoute(
 		"GetTask",
 		"GET",
 		"/event/task/{eventId}/",
-		authenticator.Wrap(GetTask),
+		authWrap(GetTask),
 	)
 	RegisterRoute(
 		"UpdateTask",
 		"PUT",
 		"/event/task/{eventId}/",
-		authenticator.Wrap(UpdateTask),
+		authWrap(UpdateTask),
 	)
 	RegisterRoute(
 		"PatchTask",
 		"PATCH",
 		"/event/task/{eventId}/",
-		authenticator.Wrap(PatchTask),
+		authWrap(PatchTask),
 	)
 	// functions of following operations are defined in handlers.go
 	// because their definition does not depend on event type
@@ -59,67 +59,67 @@ func init() {
 		"DeleteEvent_task",
 		"DELETE",
 		"/event/task/{eventId}/",
-		authenticator.Wrap(DeleteEvent),
+		authWrap(DeleteEvent),
 	)
 	RegisterRoute(
 		"SetEventGroupId_task",
 		"PUT",
 		"/event/task/{eventId}/group/",
-		authenticator.Wrap(SetEventGroupId),
+		authWrap(SetEventGroupId),
 	)
 	RegisterRoute(
 		"GetEventOwner_task",
 		"GET",
 		"/event/task/{eventId}/owner/",
-		authenticator.Wrap(GetEventOwner),
+		authWrap(GetEventOwner),
 	)
 	RegisterRoute(
 		"SetEventOwner_task",
 		"PUT",
 		"/event/task/{eventId}/owner/",
-		authenticator.Wrap(SetEventOwner),
+		authWrap(SetEventOwner),
 	)
 	RegisterRoute(
 		"GetEventMeta_task",
 		"GET",
 		"/event/task/{eventId}/meta/",
-		authenticator.Wrap(GetEventMeta),
+		authWrap(GetEventMeta),
 	)
 	RegisterRoute(
 		"GetEventAccess_task",
 		"GET",
 		"/event/task/{eventId}/access/",
-		authenticator.Wrap(GetEventAccess),
+		authWrap(GetEventAccess),
 	)
 	RegisterRoute(
 		"SetEventAccess_task",
 		"PUT",
 		"/event/task/{eventId}/access/",
-		authenticator.Wrap(SetEventAccess),
+		authWrap(SetEventAccess),
 	)
 	RegisterRoute(
 		"AppendEventAccess_task",
 		"POST",
 		"/event/task/{eventId}/access/",
-		authenticator.Wrap(AppendEventAccess),
+		authWrap(AppendEventAccess),
 	)
 	RegisterRoute(
 		"JoinEvent_task",
 		"GET",
 		"/event/task/{eventId}/join/",
-		authenticator.Wrap(JoinEvent),
+		authWrap(JoinEvent),
 	)
 	RegisterRoute(
 		"LeaveEvent_task",
 		"GET",
 		"/event/task/{eventId}/leave/",
-		authenticator.Wrap(LeaveEvent),
+		authWrap(LeaveEvent),
 	)
 	RegisterRoute(
 		"InviteToEvent_task",
 		"POST",
 		"/event/task/{eventId}/invite/",
-		authenticator.Wrap(InviteToEvent),
+		authWrap(InviteToEvent),
 	)
 }
 
