@@ -16,8 +16,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
-	"scal-lib/go-http-auth"
-
 	"scal"
 	"scal/event_lib"
 	"scal/settings"
@@ -26,110 +24,103 @@ import (
 )
 
 func init() {
-	RegisterRoute(
-		"AddUniversityExam",
-		"POST",
-		"/event/universityExam/",
-		authWrap(AddUniversityExam),
-	)
-	RegisterRoute(
-		"GetUniversityExam",
-		"GET",
-		"/event/universityExam/{eventId}/",
-		authWrap(GetUniversityExam),
-	)
-	RegisterRoute(
-		"UpdateUniversityExam",
-		"PUT",
-		"/event/universityExam/{eventId}/",
-		authWrap(UpdateUniversityExam),
-	)
-	RegisterRoute(
-		"PatchUniversityExam",
-		"PATCH",
-		"/event/universityExam/{eventId}/",
-		authWrap(PatchUniversityExam),
-	)
-	// functions of following operations are defined in handlers.go
-	// because their definition does not depend on event type
-	// but their URL still contains eventType for sake of compatibilty
-	// so we will have to register their routes for each event type
-	// we don't use eventType in these functions
-	RegisterRoute(
-		"DeleteEvent_universityExam",
-		"DELETE",
-		"/event/universityExam/{eventId}/",
-		authWrap(DeleteEvent),
-	)
-	RegisterRoute(
-		"SetEventGroupId_universityExam",
-		"PUT",
-		"/event/universityExam/{eventId}/group/",
-		authWrap(SetEventGroupId),
-	)
-	RegisterRoute(
-		"GetEventOwner_universityExam",
-		"GET",
-		"/event/universityExam/{eventId}/owner/",
-		authWrap(GetEventOwner),
-	)
-	RegisterRoute(
-		"SetEventOwner_universityExam",
-		"PUT",
-		"/event/universityExam/{eventId}/owner/",
-		authWrap(SetEventOwner),
-	)
-	RegisterRoute(
-		"GetEventMeta_universityExam",
-		"GET",
-		"/event/universityExam/{eventId}/meta/",
-		authWrap(GetEventMeta),
-	)
-	RegisterRoute(
-		"GetEventAccess_universityExam",
-		"GET",
-		"/event/universityExam/{eventId}/access/",
-		authWrap(GetEventAccess),
-	)
-	RegisterRoute(
-		"SetEventAccess_universityExam",
-		"PUT",
-		"/event/universityExam/{eventId}/access/",
-		authWrap(SetEventAccess),
-	)
-	RegisterRoute(
-		"AppendEventAccess_universityExam",
-		"POST",
-		"/event/universityExam/{eventId}/access/",
-		authWrap(AppendEventAccess),
-	)
-	RegisterRoute(
-		"JoinEvent_universityExam",
-		"GET",
-		"/event/universityExam/{eventId}/join/",
-		authWrap(JoinEvent),
-	)
-	RegisterRoute(
-		"LeaveEvent_universityExam",
-		"GET",
-		"/event/universityExam/{eventId}/leave/",
-		authWrap(LeaveEvent),
-	)
-	RegisterRoute(
-		"InviteToEvent_universityExam",
-		"POST",
-		"/event/universityExam/{eventId}/invite/",
-		authWrap(InviteToEvent),
-	)
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/universityExam",
+		Map: RouteMap{
+			"AddUniversityExam": {
+				"POST",
+				"",
+				authWrap(AddUniversityExam),
+			},
+			"GetUniversityExam": {
+				"GET",
+				"{eventId}",
+				authWrap(GetUniversityExam),
+			},
+			"UpdateUniversityExam": {
+				"PUT",
+				"{eventId}",
+				authWrap(UpdateUniversityExam),
+			},
+			"PatchUniversityExam": {
+				"PATCH",
+				"{eventId}",
+				authWrap(PatchUniversityExam),
+			},
+			// functions of following operations are defined in handlers.go
+			// because their definition does not depend on event type
+			// but their URL still contains eventType for sake of compatibilty
+			// so we will have to register their routes for each event type
+			// we don't use eventType in these functions
+			"DeleteEvent_universityExam": {
+				"DELETE",
+				"{eventId}",
+				authWrap(DeleteEvent),
+			},
+			"SetEventGroupId_universityExam": {
+				"PUT",
+				"{eventId}/group",
+				authWrap(SetEventGroupId),
+			},
+			"GetEventOwner_universityExam": {
+				"GET",
+				"{eventId}/owner",
+				authWrap(GetEventOwner),
+			},
+			"SetEventOwner_universityExam": {
+				"PUT",
+				"{eventId}/owner",
+				authWrap(SetEventOwner),
+			},
+			"GetEventMeta_universityExam": {
+				"GET",
+				"{eventId}/meta",
+				authWrap(GetEventMeta),
+			},
+			"GetEventAccess_universityExam": {
+				"GET",
+				"{eventId}/access",
+				authWrap(GetEventAccess),
+			},
+			"SetEventAccess_universityExam": {
+				"PUT",
+				"{eventId}/access",
+				authWrap(SetEventAccess),
+			},
+			"AppendEventAccess_universityExam": {
+				"POST",
+				"{eventId}/access",
+				authWrap(AppendEventAccess),
+			},
+			"JoinEvent_universityExam": {
+				"GET",
+				"{eventId}/join",
+				authWrap(JoinEvent),
+			},
+			"LeaveEvent_universityExam": {
+				"GET",
+				"{eventId}/leave",
+				authWrap(LeaveEvent),
+			},
+			"InviteToEvent_universityExam": {
+				"POST",
+				"{eventId}/invite",
+				authWrap(InviteToEvent),
+			},
+		},
+	})
 }
 
-func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddUniversityExam(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.UniversityExamEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -259,18 +250,20 @@ func AddUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetUniversityExam(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -336,21 +329,24 @@ func GetUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateUniversityExam(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.UniversityExamEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &eventModel)
+	err := json.Unmarshal(body, &eventModel)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {
@@ -451,21 +447,23 @@ func UpdateUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchUniversityExam(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchUniversityExam(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
 	patchMap := scal.M{}
-	err = json.Unmarshal(body, &patchMap)
+	err := json.Unmarshal(body, &patchMap)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {

@@ -1,27 +1,29 @@
 #!/usr/bin/python3
 """
-argv[1]: defaultGroupId
+argv[1]: email
+argv[2]: password
+argv[3]: fullName (optional)
 """
 
 import sys
 import os
 import requests
-
 from pprint import pprint
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
-token = os.getenv("STARCAL_TOKEN")
-if not token:
-	print("Please set and export STARCAL_TOKEN")
-	sys.exit(1)
+email, password = sys.argv[1:3]
 
-defaultGroupId = sys.argv[1]
+try:
+	fullName = sys.argv[3]
+except IndexError:
+	fullName = ""
 
-r = requests.put(
-	"http://%s:9001/user/default-group/" % host,
-	headers={"Authorization": "bearer " + token},
+r = requests.post(
+	"http://%s:9001/auth/register/" % host,
 	json={
-		"defaultGroupId": defaultGroupId,
+		"email": email,
+		"password": password,
+		"fullName": fullName,
 	},
 )
 print(r)

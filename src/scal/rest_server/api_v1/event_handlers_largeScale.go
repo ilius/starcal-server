@@ -16,8 +16,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
-	"scal-lib/go-http-auth"
-
 	"scal"
 	"scal/event_lib"
 	"scal/settings"
@@ -26,110 +24,103 @@ import (
 )
 
 func init() {
-	RegisterRoute(
-		"AddLargeScale",
-		"POST",
-		"/event/largeScale/",
-		authWrap(AddLargeScale),
-	)
-	RegisterRoute(
-		"GetLargeScale",
-		"GET",
-		"/event/largeScale/{eventId}/",
-		authWrap(GetLargeScale),
-	)
-	RegisterRoute(
-		"UpdateLargeScale",
-		"PUT",
-		"/event/largeScale/{eventId}/",
-		authWrap(UpdateLargeScale),
-	)
-	RegisterRoute(
-		"PatchLargeScale",
-		"PATCH",
-		"/event/largeScale/{eventId}/",
-		authWrap(PatchLargeScale),
-	)
-	// functions of following operations are defined in handlers.go
-	// because their definition does not depend on event type
-	// but their URL still contains eventType for sake of compatibilty
-	// so we will have to register their routes for each event type
-	// we don't use eventType in these functions
-	RegisterRoute(
-		"DeleteEvent_largeScale",
-		"DELETE",
-		"/event/largeScale/{eventId}/",
-		authWrap(DeleteEvent),
-	)
-	RegisterRoute(
-		"SetEventGroupId_largeScale",
-		"PUT",
-		"/event/largeScale/{eventId}/group/",
-		authWrap(SetEventGroupId),
-	)
-	RegisterRoute(
-		"GetEventOwner_largeScale",
-		"GET",
-		"/event/largeScale/{eventId}/owner/",
-		authWrap(GetEventOwner),
-	)
-	RegisterRoute(
-		"SetEventOwner_largeScale",
-		"PUT",
-		"/event/largeScale/{eventId}/owner/",
-		authWrap(SetEventOwner),
-	)
-	RegisterRoute(
-		"GetEventMeta_largeScale",
-		"GET",
-		"/event/largeScale/{eventId}/meta/",
-		authWrap(GetEventMeta),
-	)
-	RegisterRoute(
-		"GetEventAccess_largeScale",
-		"GET",
-		"/event/largeScale/{eventId}/access/",
-		authWrap(GetEventAccess),
-	)
-	RegisterRoute(
-		"SetEventAccess_largeScale",
-		"PUT",
-		"/event/largeScale/{eventId}/access/",
-		authWrap(SetEventAccess),
-	)
-	RegisterRoute(
-		"AppendEventAccess_largeScale",
-		"POST",
-		"/event/largeScale/{eventId}/access/",
-		authWrap(AppendEventAccess),
-	)
-	RegisterRoute(
-		"JoinEvent_largeScale",
-		"GET",
-		"/event/largeScale/{eventId}/join/",
-		authWrap(JoinEvent),
-	)
-	RegisterRoute(
-		"LeaveEvent_largeScale",
-		"GET",
-		"/event/largeScale/{eventId}/leave/",
-		authWrap(LeaveEvent),
-	)
-	RegisterRoute(
-		"InviteToEvent_largeScale",
-		"POST",
-		"/event/largeScale/{eventId}/invite/",
-		authWrap(InviteToEvent),
-	)
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/largeScale",
+		Map: RouteMap{
+			"AddLargeScale": {
+				"POST",
+				"",
+				authWrap(AddLargeScale),
+			},
+			"GetLargeScale": {
+				"GET",
+				"{eventId}",
+				authWrap(GetLargeScale),
+			},
+			"UpdateLargeScale": {
+				"PUT",
+				"{eventId}",
+				authWrap(UpdateLargeScale),
+			},
+			"PatchLargeScale": {
+				"PATCH",
+				"{eventId}",
+				authWrap(PatchLargeScale),
+			},
+			// functions of following operations are defined in handlers.go
+			// because their definition does not depend on event type
+			// but their URL still contains eventType for sake of compatibilty
+			// so we will have to register their routes for each event type
+			// we don't use eventType in these functions
+			"DeleteEvent_largeScale": {
+				"DELETE",
+				"{eventId}",
+				authWrap(DeleteEvent),
+			},
+			"SetEventGroupId_largeScale": {
+				"PUT",
+				"{eventId}/group",
+				authWrap(SetEventGroupId),
+			},
+			"GetEventOwner_largeScale": {
+				"GET",
+				"{eventId}/owner",
+				authWrap(GetEventOwner),
+			},
+			"SetEventOwner_largeScale": {
+				"PUT",
+				"{eventId}/owner",
+				authWrap(SetEventOwner),
+			},
+			"GetEventMeta_largeScale": {
+				"GET",
+				"{eventId}/meta",
+				authWrap(GetEventMeta),
+			},
+			"GetEventAccess_largeScale": {
+				"GET",
+				"{eventId}/access",
+				authWrap(GetEventAccess),
+			},
+			"SetEventAccess_largeScale": {
+				"PUT",
+				"{eventId}/access",
+				authWrap(SetEventAccess),
+			},
+			"AppendEventAccess_largeScale": {
+				"POST",
+				"{eventId}/access",
+				authWrap(AppendEventAccess),
+			},
+			"JoinEvent_largeScale": {
+				"GET",
+				"{eventId}/join",
+				authWrap(JoinEvent),
+			},
+			"LeaveEvent_largeScale": {
+				"GET",
+				"{eventId}/leave",
+				authWrap(LeaveEvent),
+			},
+			"InviteToEvent_largeScale": {
+				"POST",
+				"{eventId}/invite",
+				authWrap(InviteToEvent),
+			},
+		},
+	})
 }
 
-func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddLargeScale(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.LargeScaleEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -259,18 +250,20 @@ func AddLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetLargeScale(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -336,21 +329,24 @@ func GetLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateLargeScale(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.LargeScaleEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &eventModel)
+	err := json.Unmarshal(body, &eventModel)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {
@@ -451,21 +447,23 @@ func UpdateLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchLargeScale(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchLargeScale(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
 	patchMap := scal.M{}
-	err = json.Unmarshal(body, &patchMap)
+	err := json.Unmarshal(body, &patchMap)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {

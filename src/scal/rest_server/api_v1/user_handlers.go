@@ -1,7 +1,6 @@
 package api_v1
 
 import (
-	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,174 +9,45 @@ import (
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
-	//"github.com/dgrijalva/jwt-go"
 
 	"scal"
-	"scal-lib/go-http-auth"
 	"scal/event_lib"
+	//"scal/settings"
 	"scal/storage"
 	. "scal/user_lib"
 )
 
-var globalDb, globalDbErr = storage.GetDB()
-
-const REALM = "starcalendar.net"
-var authenticator = auth.NewDigestAuthenticator(REALM, Secret)
-var authWrap = authenticator.Wrap
-
 func init() {
-	if globalDbErr != nil {
-		panic(globalDbErr)
-	}
-	RegisterRoute(
-		"RegisterUser",
-		"POST",
-		"/user/register/",
-		RegisterUser,
-	)
-	RegisterRoute(
-		"SetUserFullName",
-		"PUT",
-		"/user/full-name/",
-		authWrap(SetUserFullName),
-	)
-	RegisterRoute(
-		"UnsetUserFullName",
-		"DELETE",
-		"/user/full-name/",
-		authWrap(UnsetUserFullName),
-	)
-	RegisterRoute(
-		"GetUserInfo",
-		"GET",
-		"/user/info/",
-		authWrap(GetUserInfo),
-	)
-	RegisterRoute(
-		"SetUserDefaultGroupId",
-		"PUT",
-		"/user/default-group/",
-		authWrap(SetUserDefaultGroupId),
-	)
-	RegisterRoute(
-		"UnsetUserDefaultGroupId",
-		"DELETE",
-		"/user/default-group/",
-		authWrap(UnsetUserDefaultGroupId),
-	)
-}
-
-//type Request http.Request
-/*
-type Request auth.AuthenticatedRequest
-func (r Request) Email() string {
-    return r.Username
-}
-*/
-
-func Secret(email string, realm string) string {
-	userModel := UserModelByEmail(email, globalDb)
-	if userModel == nil {
-		return ""
-	}
-	if userModel.Locked {
-		return "" // FIXME
-	}
-	return userModel.Password
-}
-
-func RegisterUser(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	userModel := UserModel{}
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &userModel)
-	if err != nil {
-		msg := err.Error()
-		//if strings.Contains(msg, "") {
-		//    msg = ""
-		//}
-		SetHttpError(w, http.StatusBadRequest, msg)
-		return
-	}
-	if userModel.Email == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'email'")
-		return
-	}
-	if userModel.Password == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'password'")
-		return
-	}
-	db, err := storage.GetDB()
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	anotherUserModel := UserModelByEmail(userModel.Email, db)
-	if anotherUserModel != nil {
-		SetHttpError(w, http.StatusBadRequest, "duplicate 'email'")
-		return
-	}
-	userModel.Password = fmt.Sprintf(
-		"%x",
-		md5.Sum(
-			[]byte(
-				fmt.Sprintf(
-					"%s:%s:%s",
-					userModel.Email,
-					REALM,
-					userModel.Password,
-				),
-			),
-		),
-	)
-	defaultGroup := event_lib.EventGroupModel{
-		Id:         bson.NewObjectId(),
-		Title:      userModel.Email,
-		OwnerEmail: userModel.Email,
-	}
-	err = db.Insert(defaultGroup)
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	userModel.DefaultGroupId = &defaultGroup.Id
-	err = db.Insert(UserChangeLogModel{
-		Time:         time.Now(),
-		RequestEmail: "", // FIXME
-		RemoteIp:     remoteIp,
-		FuncName:     "RegisterUser",
-		Email: &[2]*string{
-			nil,
-			&userModel.Email,
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "user",
+		Map: RouteMap{
+			"SetUserFullName": {
+				"PUT",
+				"full-name",
+				authWrap(SetUserFullName),
+			},
+			"UnsetUserFullName": {
+				"DELETE",
+				"full-name",
+				authWrap(UnsetUserFullName),
+			},
+			"GetUserInfo": {
+				"GET",
+				"info",
+				authWrap(GetUserInfo),
+			},
+			"SetUserDefaultGroupId": {
+				"PUT",
+				"default-group",
+				authWrap(SetUserDefaultGroupId),
+			},
+			"UnsetUserDefaultGroupId": {
+				"DELETE",
+				"default-group",
+				authWrap(UnsetUserDefaultGroupId),
+			},
 		},
-		DefaultGroupId: &[2]*bson.ObjectId{
-			nil,
-			userModel.DefaultGroupId,
-		},
-		//FullName: &[2]*string{
-		//    nil
-		//    &userModel.FullName,
-		//},
 	})
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-
-	err = db.Insert(userModel)
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func SetUserAttrInput(
@@ -208,12 +78,16 @@ func SetUserAttrInput(
 	return attrValue
 }
 
-func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func SetUserFullName(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	const attrName = "fullName"
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
+	const attrName = "fullName"
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -268,11 +142,14 @@ func SetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UnsetUserFullName(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -315,12 +192,16 @@ func UnsetUserFullName(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func SetUserDefaultGroupId(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	const attrName = "defaultGroupId"
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
+	const attrName = "defaultGroupId"
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -394,11 +275,14 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) 
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UnsetUserDefaultGroupId(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -441,12 +325,14 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func GetUserInfo(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
-
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)

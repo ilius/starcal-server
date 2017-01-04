@@ -7,9 +7,6 @@
 [submodule "src/github.com/gorilla/mux"]
 	path = src/github.com/gorilla/mux
 	url = git@github.com:gorilla/mux.git
-[submodule "src/scal/lib/go-http-auth"]
-	path = src/scal-lib/go-http-auth
-	url = https://github.com/abbot/go-http-auth
 [submodule "src/golang.org/x/net"]
 	path = src/golang.org/x/net
 	url = https://github.com/golang/net

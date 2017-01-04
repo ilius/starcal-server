@@ -16,8 +16,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
-	"scal-lib/go-http-auth"
-
 	"scal"
 	"scal/event_lib"
 	"scal/settings"
@@ -26,110 +24,103 @@ import (
 )
 
 func init() {
-	RegisterRoute(
-		"AddLifeTime",
-		"POST",
-		"/event/lifeTime/",
-		authWrap(AddLifeTime),
-	)
-	RegisterRoute(
-		"GetLifeTime",
-		"GET",
-		"/event/lifeTime/{eventId}/",
-		authWrap(GetLifeTime),
-	)
-	RegisterRoute(
-		"UpdateLifeTime",
-		"PUT",
-		"/event/lifeTime/{eventId}/",
-		authWrap(UpdateLifeTime),
-	)
-	RegisterRoute(
-		"PatchLifeTime",
-		"PATCH",
-		"/event/lifeTime/{eventId}/",
-		authWrap(PatchLifeTime),
-	)
-	// functions of following operations are defined in handlers.go
-	// because their definition does not depend on event type
-	// but their URL still contains eventType for sake of compatibilty
-	// so we will have to register their routes for each event type
-	// we don't use eventType in these functions
-	RegisterRoute(
-		"DeleteEvent_lifeTime",
-		"DELETE",
-		"/event/lifeTime/{eventId}/",
-		authWrap(DeleteEvent),
-	)
-	RegisterRoute(
-		"SetEventGroupId_lifeTime",
-		"PUT",
-		"/event/lifeTime/{eventId}/group/",
-		authWrap(SetEventGroupId),
-	)
-	RegisterRoute(
-		"GetEventOwner_lifeTime",
-		"GET",
-		"/event/lifeTime/{eventId}/owner/",
-		authWrap(GetEventOwner),
-	)
-	RegisterRoute(
-		"SetEventOwner_lifeTime",
-		"PUT",
-		"/event/lifeTime/{eventId}/owner/",
-		authWrap(SetEventOwner),
-	)
-	RegisterRoute(
-		"GetEventMeta_lifeTime",
-		"GET",
-		"/event/lifeTime/{eventId}/meta/",
-		authWrap(GetEventMeta),
-	)
-	RegisterRoute(
-		"GetEventAccess_lifeTime",
-		"GET",
-		"/event/lifeTime/{eventId}/access/",
-		authWrap(GetEventAccess),
-	)
-	RegisterRoute(
-		"SetEventAccess_lifeTime",
-		"PUT",
-		"/event/lifeTime/{eventId}/access/",
-		authWrap(SetEventAccess),
-	)
-	RegisterRoute(
-		"AppendEventAccess_lifeTime",
-		"POST",
-		"/event/lifeTime/{eventId}/access/",
-		authWrap(AppendEventAccess),
-	)
-	RegisterRoute(
-		"JoinEvent_lifeTime",
-		"GET",
-		"/event/lifeTime/{eventId}/join/",
-		authWrap(JoinEvent),
-	)
-	RegisterRoute(
-		"LeaveEvent_lifeTime",
-		"GET",
-		"/event/lifeTime/{eventId}/leave/",
-		authWrap(LeaveEvent),
-	)
-	RegisterRoute(
-		"InviteToEvent_lifeTime",
-		"POST",
-		"/event/lifeTime/{eventId}/invite/",
-		authWrap(InviteToEvent),
-	)
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/lifeTime",
+		Map: RouteMap{
+			"AddLifeTime": {
+				"POST",
+				"",
+				authWrap(AddLifeTime),
+			},
+			"GetLifeTime": {
+				"GET",
+				"{eventId}",
+				authWrap(GetLifeTime),
+			},
+			"UpdateLifeTime": {
+				"PUT",
+				"{eventId}",
+				authWrap(UpdateLifeTime),
+			},
+			"PatchLifeTime": {
+				"PATCH",
+				"{eventId}",
+				authWrap(PatchLifeTime),
+			},
+			// functions of following operations are defined in handlers.go
+			// because their definition does not depend on event type
+			// but their URL still contains eventType for sake of compatibilty
+			// so we will have to register their routes for each event type
+			// we don't use eventType in these functions
+			"DeleteEvent_lifeTime": {
+				"DELETE",
+				"{eventId}",
+				authWrap(DeleteEvent),
+			},
+			"SetEventGroupId_lifeTime": {
+				"PUT",
+				"{eventId}/group",
+				authWrap(SetEventGroupId),
+			},
+			"GetEventOwner_lifeTime": {
+				"GET",
+				"{eventId}/owner",
+				authWrap(GetEventOwner),
+			},
+			"SetEventOwner_lifeTime": {
+				"PUT",
+				"{eventId}/owner",
+				authWrap(SetEventOwner),
+			},
+			"GetEventMeta_lifeTime": {
+				"GET",
+				"{eventId}/meta",
+				authWrap(GetEventMeta),
+			},
+			"GetEventAccess_lifeTime": {
+				"GET",
+				"{eventId}/access",
+				authWrap(GetEventAccess),
+			},
+			"SetEventAccess_lifeTime": {
+				"PUT",
+				"{eventId}/access",
+				authWrap(SetEventAccess),
+			},
+			"AppendEventAccess_lifeTime": {
+				"POST",
+				"{eventId}/access",
+				authWrap(AppendEventAccess),
+			},
+			"JoinEvent_lifeTime": {
+				"GET",
+				"{eventId}/join",
+				authWrap(JoinEvent),
+			},
+			"LeaveEvent_lifeTime": {
+				"GET",
+				"{eventId}/leave",
+				authWrap(LeaveEvent),
+			},
+			"InviteToEvent_lifeTime": {
+				"POST",
+				"{eventId}/invite",
+				authWrap(InviteToEvent),
+			},
+		},
+	})
 }
 
-func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddLifeTime(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.LifeTimeEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -259,18 +250,20 @@ func AddLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetLifeTime(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -336,21 +329,24 @@ func GetLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateLifeTime(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.LifeTimeEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &eventModel)
+	err := json.Unmarshal(body, &eventModel)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {
@@ -451,21 +447,23 @@ func UpdateLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchLifeTime(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchLifeTime(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
 	patchMap := scal.M{}
-	err = json.Unmarshal(body, &patchMap)
+	err := json.Unmarshal(body, &patchMap)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {

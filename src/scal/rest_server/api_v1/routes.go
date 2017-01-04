@@ -1,9 +1,8 @@
 package api_v1
 
 import (
-	"net/http"
-
 	"github.com/gorilla/mux"
+	"net/http"
 )
 
 type Route struct {
@@ -11,36 +10,30 @@ type Route struct {
 	Pattern     string
 	HandlerFunc http.HandlerFunc
 }
-
 type RouteMap map[string]Route
 
-func GetEventRouter() http.Handler {
-	router := mux.NewRouter().StrictSlash(true)
-	for name, route := range routeMap {
-		router.
-			Methods(route.Method).
-			Path(route.Pattern).
-			Name(name).
-			Handler(route.HandlerFunc)
-	}
+type RouteGroup struct {
+	//NeedsAuth bool
+	Base string
+	Map  RouteMap
+}
 
+var routeGroups = []RouteGroup{}
+
+func GetRouter() http.Handler {
+	router := mux.NewRouter().StrictSlash(true)
+	for _, routeGroup := range routeGroups {
+		for name, route := range routeGroup.Map {
+			path := "/" + routeGroup.Base + "/"
+			if route.Pattern != "" {
+				path += route.Pattern + "/"
+			}
+			router.
+				Methods(route.Method).
+				Path(path).
+				Name(name).
+				Handler(route.HandlerFunc)
+		}
+	}
 	return router
 }
-
-func RegisterRoute(
-	name string,
-	method string,
-	pattern string,
-	handler http.HandlerFunc,
-) {
-	if _, ok := routeMap[name]; ok {
-		panic("Duplicate route name: " + name)
-	}
-	routeMap[name] = Route{
-		method,
-		pattern,
-		handler,
-	}
-}
-
-var routeMap = RouteMap{}

@@ -8,12 +8,15 @@ argv[3...]: accessEmails
 import sys
 import os
 import requests
-from requests.auth import HTTPDigestAuth
+
 from pprint import pprint
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
-email = os.getenv("STARCAL_EMAIL")
-password = os.getenv("STARCAL_PASSWORD")
+token = os.getenv("STARCAL_TOKEN")
+if not token:
+	print("Please set and export STARCAL_TOKEN")
+	sys.exit(1)
+
 eventType, eventId = sys.argv[1:3]
 accessEmails = sys.argv[3:]
 
@@ -23,7 +26,7 @@ r = requests.put(
 		eventType,
 		eventId,
 	),
-	auth=HTTPDigestAuth(email, password),
+	headers={"Authorization": "bearer " + token},
 	json={
 		"isPublic": False,
 		"accessEmails": accessEmails,

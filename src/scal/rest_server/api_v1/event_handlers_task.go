@@ -16,8 +16,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
-	"scal-lib/go-http-auth"
-
 	"scal"
 	"scal/event_lib"
 	"scal/settings"
@@ -26,110 +24,103 @@ import (
 )
 
 func init() {
-	RegisterRoute(
-		"AddTask",
-		"POST",
-		"/event/task/",
-		authWrap(AddTask),
-	)
-	RegisterRoute(
-		"GetTask",
-		"GET",
-		"/event/task/{eventId}/",
-		authWrap(GetTask),
-	)
-	RegisterRoute(
-		"UpdateTask",
-		"PUT",
-		"/event/task/{eventId}/",
-		authWrap(UpdateTask),
-	)
-	RegisterRoute(
-		"PatchTask",
-		"PATCH",
-		"/event/task/{eventId}/",
-		authWrap(PatchTask),
-	)
-	// functions of following operations are defined in handlers.go
-	// because their definition does not depend on event type
-	// but their URL still contains eventType for sake of compatibilty
-	// so we will have to register their routes for each event type
-	// we don't use eventType in these functions
-	RegisterRoute(
-		"DeleteEvent_task",
-		"DELETE",
-		"/event/task/{eventId}/",
-		authWrap(DeleteEvent),
-	)
-	RegisterRoute(
-		"SetEventGroupId_task",
-		"PUT",
-		"/event/task/{eventId}/group/",
-		authWrap(SetEventGroupId),
-	)
-	RegisterRoute(
-		"GetEventOwner_task",
-		"GET",
-		"/event/task/{eventId}/owner/",
-		authWrap(GetEventOwner),
-	)
-	RegisterRoute(
-		"SetEventOwner_task",
-		"PUT",
-		"/event/task/{eventId}/owner/",
-		authWrap(SetEventOwner),
-	)
-	RegisterRoute(
-		"GetEventMeta_task",
-		"GET",
-		"/event/task/{eventId}/meta/",
-		authWrap(GetEventMeta),
-	)
-	RegisterRoute(
-		"GetEventAccess_task",
-		"GET",
-		"/event/task/{eventId}/access/",
-		authWrap(GetEventAccess),
-	)
-	RegisterRoute(
-		"SetEventAccess_task",
-		"PUT",
-		"/event/task/{eventId}/access/",
-		authWrap(SetEventAccess),
-	)
-	RegisterRoute(
-		"AppendEventAccess_task",
-		"POST",
-		"/event/task/{eventId}/access/",
-		authWrap(AppendEventAccess),
-	)
-	RegisterRoute(
-		"JoinEvent_task",
-		"GET",
-		"/event/task/{eventId}/join/",
-		authWrap(JoinEvent),
-	)
-	RegisterRoute(
-		"LeaveEvent_task",
-		"GET",
-		"/event/task/{eventId}/leave/",
-		authWrap(LeaveEvent),
-	)
-	RegisterRoute(
-		"InviteToEvent_task",
-		"POST",
-		"/event/task/{eventId}/invite/",
-		authWrap(InviteToEvent),
-	)
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/task",
+		Map: RouteMap{
+			"AddTask": {
+				"POST",
+				"",
+				authWrap(AddTask),
+			},
+			"GetTask": {
+				"GET",
+				"{eventId}",
+				authWrap(GetTask),
+			},
+			"UpdateTask": {
+				"PUT",
+				"{eventId}",
+				authWrap(UpdateTask),
+			},
+			"PatchTask": {
+				"PATCH",
+				"{eventId}",
+				authWrap(PatchTask),
+			},
+			// functions of following operations are defined in handlers.go
+			// because their definition does not depend on event type
+			// but their URL still contains eventType for sake of compatibilty
+			// so we will have to register their routes for each event type
+			// we don't use eventType in these functions
+			"DeleteEvent_task": {
+				"DELETE",
+				"{eventId}",
+				authWrap(DeleteEvent),
+			},
+			"SetEventGroupId_task": {
+				"PUT",
+				"{eventId}/group",
+				authWrap(SetEventGroupId),
+			},
+			"GetEventOwner_task": {
+				"GET",
+				"{eventId}/owner",
+				authWrap(GetEventOwner),
+			},
+			"SetEventOwner_task": {
+				"PUT",
+				"{eventId}/owner",
+				authWrap(SetEventOwner),
+			},
+			"GetEventMeta_task": {
+				"GET",
+				"{eventId}/meta",
+				authWrap(GetEventMeta),
+			},
+			"GetEventAccess_task": {
+				"GET",
+				"{eventId}/access",
+				authWrap(GetEventAccess),
+			},
+			"SetEventAccess_task": {
+				"PUT",
+				"{eventId}/access",
+				authWrap(SetEventAccess),
+			},
+			"AppendEventAccess_task": {
+				"POST",
+				"{eventId}/access",
+				authWrap(AppendEventAccess),
+			},
+			"JoinEvent_task": {
+				"GET",
+				"{eventId}/join",
+				authWrap(JoinEvent),
+			},
+			"LeaveEvent_task": {
+				"GET",
+				"{eventId}/leave",
+				authWrap(LeaveEvent),
+			},
+			"InviteToEvent_task": {
+				"POST",
+				"{eventId}/invite",
+				authWrap(InviteToEvent),
+			},
+		},
+	})
 }
 
-func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddTask(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.TaskEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -259,18 +250,20 @@ func AddTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetTask(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -336,21 +329,24 @@ func GetTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.TaskEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &eventModel)
+	err := json.Unmarshal(body, &eventModel)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {
@@ -451,21 +447,23 @@ func UpdateTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchTask(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchTask(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
 	patchMap := scal.M{}
-	err = json.Unmarshal(body, &patchMap)
+	err := json.Unmarshal(body, &patchMap)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {

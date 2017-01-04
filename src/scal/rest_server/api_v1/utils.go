@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"gopkg.in/mgo.v2/bson"
-	"scal-lib/go-http-auth"
 )
 
 func SplitURL(u *url.URL) []string {
@@ -53,7 +52,7 @@ func SetHttpErrorUserNotFound(w http.ResponseWriter, email string) {
 
 func ObjectIdFromURL(
 	w http.ResponseWriter,
-	r *auth.AuthenticatedRequest,
+	r *http.Request,
 	name string,
 	indexFromEnd int,
 ) *bson.ObjectId {

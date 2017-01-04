@@ -16,8 +16,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
-	"scal-lib/go-http-auth"
-
 	"scal"
 	"scal/event_lib"
 	"scal/settings"
@@ -26,110 +24,103 @@ import (
 )
 
 func init() {
-	RegisterRoute(
-		"AddMonthly",
-		"POST",
-		"/event/monthly/",
-		authWrap(AddMonthly),
-	)
-	RegisterRoute(
-		"GetMonthly",
-		"GET",
-		"/event/monthly/{eventId}/",
-		authWrap(GetMonthly),
-	)
-	RegisterRoute(
-		"UpdateMonthly",
-		"PUT",
-		"/event/monthly/{eventId}/",
-		authWrap(UpdateMonthly),
-	)
-	RegisterRoute(
-		"PatchMonthly",
-		"PATCH",
-		"/event/monthly/{eventId}/",
-		authWrap(PatchMonthly),
-	)
-	// functions of following operations are defined in handlers.go
-	// because their definition does not depend on event type
-	// but their URL still contains eventType for sake of compatibilty
-	// so we will have to register their routes for each event type
-	// we don't use eventType in these functions
-	RegisterRoute(
-		"DeleteEvent_monthly",
-		"DELETE",
-		"/event/monthly/{eventId}/",
-		authWrap(DeleteEvent),
-	)
-	RegisterRoute(
-		"SetEventGroupId_monthly",
-		"PUT",
-		"/event/monthly/{eventId}/group/",
-		authWrap(SetEventGroupId),
-	)
-	RegisterRoute(
-		"GetEventOwner_monthly",
-		"GET",
-		"/event/monthly/{eventId}/owner/",
-		authWrap(GetEventOwner),
-	)
-	RegisterRoute(
-		"SetEventOwner_monthly",
-		"PUT",
-		"/event/monthly/{eventId}/owner/",
-		authWrap(SetEventOwner),
-	)
-	RegisterRoute(
-		"GetEventMeta_monthly",
-		"GET",
-		"/event/monthly/{eventId}/meta/",
-		authWrap(GetEventMeta),
-	)
-	RegisterRoute(
-		"GetEventAccess_monthly",
-		"GET",
-		"/event/monthly/{eventId}/access/",
-		authWrap(GetEventAccess),
-	)
-	RegisterRoute(
-		"SetEventAccess_monthly",
-		"PUT",
-		"/event/monthly/{eventId}/access/",
-		authWrap(SetEventAccess),
-	)
-	RegisterRoute(
-		"AppendEventAccess_monthly",
-		"POST",
-		"/event/monthly/{eventId}/access/",
-		authWrap(AppendEventAccess),
-	)
-	RegisterRoute(
-		"JoinEvent_monthly",
-		"GET",
-		"/event/monthly/{eventId}/join/",
-		authWrap(JoinEvent),
-	)
-	RegisterRoute(
-		"LeaveEvent_monthly",
-		"GET",
-		"/event/monthly/{eventId}/leave/",
-		authWrap(LeaveEvent),
-	)
-	RegisterRoute(
-		"InviteToEvent_monthly",
-		"POST",
-		"/event/monthly/{eventId}/invite/",
-		authWrap(InviteToEvent),
-	)
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/monthly",
+		Map: RouteMap{
+			"AddMonthly": {
+				"POST",
+				"",
+				authWrap(AddMonthly),
+			},
+			"GetMonthly": {
+				"GET",
+				"{eventId}",
+				authWrap(GetMonthly),
+			},
+			"UpdateMonthly": {
+				"PUT",
+				"{eventId}",
+				authWrap(UpdateMonthly),
+			},
+			"PatchMonthly": {
+				"PATCH",
+				"{eventId}",
+				authWrap(PatchMonthly),
+			},
+			// functions of following operations are defined in handlers.go
+			// because their definition does not depend on event type
+			// but their URL still contains eventType for sake of compatibilty
+			// so we will have to register their routes for each event type
+			// we don't use eventType in these functions
+			"DeleteEvent_monthly": {
+				"DELETE",
+				"{eventId}",
+				authWrap(DeleteEvent),
+			},
+			"SetEventGroupId_monthly": {
+				"PUT",
+				"{eventId}/group",
+				authWrap(SetEventGroupId),
+			},
+			"GetEventOwner_monthly": {
+				"GET",
+				"{eventId}/owner",
+				authWrap(GetEventOwner),
+			},
+			"SetEventOwner_monthly": {
+				"PUT",
+				"{eventId}/owner",
+				authWrap(SetEventOwner),
+			},
+			"GetEventMeta_monthly": {
+				"GET",
+				"{eventId}/meta",
+				authWrap(GetEventMeta),
+			},
+			"GetEventAccess_monthly": {
+				"GET",
+				"{eventId}/access",
+				authWrap(GetEventAccess),
+			},
+			"SetEventAccess_monthly": {
+				"PUT",
+				"{eventId}/access",
+				authWrap(SetEventAccess),
+			},
+			"AppendEventAccess_monthly": {
+				"POST",
+				"{eventId}/access",
+				authWrap(AppendEventAccess),
+			},
+			"JoinEvent_monthly": {
+				"GET",
+				"{eventId}/join",
+				authWrap(JoinEvent),
+			},
+			"LeaveEvent_monthly": {
+				"GET",
+				"{eventId}/leave",
+				authWrap(LeaveEvent),
+			},
+			"InviteToEvent_monthly": {
+				"POST",
+				"{eventId}/invite",
+				authWrap(InviteToEvent),
+			},
+		},
+	})
 }
 
-func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddMonthly(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.MonthlyEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -259,18 +250,20 @@ func AddMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetMonthly(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -336,21 +329,24 @@ func GetMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateMonthly(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventModel := event_lib.MonthlyEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &eventModel)
+	err := json.Unmarshal(body, &eventModel)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {
@@ -451,21 +447,23 @@ func UpdateMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		"sha1":    eventRev.Sha1,
 	})
 }
-func PatchMonthly(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
 	// -----------------------------------------------
-	email := r.Username
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
 	if eventId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	body, _ := ioutil.ReadAll(r.Body)
 	patchMap := scal.M{}
-	err = json.Unmarshal(body, &patchMap)
+	err := json.Unmarshal(body, &patchMap)
 	if err != nil {
 		msg := err.Error()
 		if strings.Contains(msg, "invalid ObjectId in JSON") {

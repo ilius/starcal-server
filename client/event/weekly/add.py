@@ -6,7 +6,7 @@ argv[1]: groupId, optional
 import sys
 import os
 import requests
-from requests.auth import HTTPDigestAuth
+
 from pprint import pprint
 from datetime import datetime, timedelta
 import time
@@ -32,8 +32,11 @@ params = {
 }
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
-email = os.getenv("STARCAL_EMAIL")
-password = os.getenv("STARCAL_PASSWORD")
+token = os.getenv("STARCAL_TOKEN")
+if not token:
+	print("Please set and export STARCAL_TOKEN")
+	sys.exit(1)
+
 
 try:
 	params["groupId"] = sys.argv[1]
@@ -42,7 +45,7 @@ except IndexError:
 
 r = requests.post(
 	"http://%s:9001/event/weekly/" % host,
-	auth=HTTPDigestAuth(email, password),
+	headers={"Authorization": "bearer " + token},
 	json=params,
 )
 print(r)

@@ -5,6 +5,6 @@ import "net/http"
 import _ "scal/init/cal_types_init"
 
 func StartAPIv1Server() {
-	router := GetEventRouter()
+	router := GetRouter()
 	log.Fatal(http.ListenAndServe(":9001", router))
 }

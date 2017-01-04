@@ -7,12 +7,16 @@ import (
 )
 
 func init() {
-	RegisterRoute(
-		"GetApiVersion",
-		"GET",
-		"/util/api-version/",
-		GetApiVersion,
-	)
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "util",
+		Map: RouteMap{
+			"GetApiVersion": {
+				"GET",
+				"api-version",
+				GetApiVersion,
+			},
+		},
+	})
 }
 
 func GetApiVersion(w http.ResponseWriter, r *http.Request) {

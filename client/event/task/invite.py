@@ -7,11 +7,14 @@ argv[2...]: inviteEmails
 import sys
 import os
 import requests
-from requests.auth import HTTPDigestAuth
+
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
-email = os.getenv("STARCAL_EMAIL")
-password = os.getenv("STARCAL_PASSWORD")
+token = os.getenv("STARCAL_TOKEN")
+if not token:
+	print("Please set and export STARCAL_TOKEN")
+	sys.exit(1)
+
 eventId = sys.argv[1]
 inviteEmails = sys.argv[2:]
 
@@ -21,7 +24,7 @@ if not inviteEmails:
 
 r = requests.post(
 	"http://%s:9001/event/task/%s/invite/" % (host, eventId),
-	auth=HTTPDigestAuth(email, password),
+	headers={"Authorization": "bearer " + token},
 	json={
 		"inviteEmails": inviteEmails,
 	}

@@ -14,7 +14,6 @@ import (
 	//"github.com/gorilla/mux"
 
 	"scal"
-	"scal-lib/go-http-auth"
 	"scal/event_lib"
 	"scal/storage"
 	. "scal/user_lib"
@@ -25,67 +24,66 @@ const ALLOW_DELETE_DEFAULT_GROUP = true
 // time.RFC3339 == "2006-01-02T15:04:05Z07:00"
 
 func init() {
-	RegisterRoute(
-		"GetGroupList",
-		"GET",
-		"/event/groups/",
-		authWrap(GetGroupList),
-	)
-	RegisterRoute(
-		"AddGroup",
-		"POST",
-		"/event/groups/",
-		authWrap(AddGroup),
-	)
-	RegisterRoute(
-		"UpdateGroup",
-		"PUT",
-		"/event/groups/{groupId}/",
-		authWrap(UpdateGroup),
-	)
-	RegisterRoute(
-		"GetGroup",
-		"GET",
-		"/event/groups/{groupId}/",
-		authWrap(GetGroup),
-	)
-	RegisterRoute(
-		"DeleteGroup",
-		"DELETE",
-		"/event/groups/{groupId}/",
-		authWrap(DeleteGroup),
-	)
-	RegisterRoute(
-		"GetGroupEventList",
-		"GET",
-		"/event/groups/{groupId}/events/",
-		authWrap(GetGroupEventList),
-	)
-	RegisterRoute(
-		"GetGroupModifiedEvents",
-		"GET",
-		"/event/groups/{groupId}/modified-events/{sinceDateTime}/",
-		authWrap(GetGroupModifiedEvents),
-	)
-	RegisterRoute(
-		"GetGroupMovedEvents",
-		"GET",
-		"/event/groups/{groupId}/moved-events/{sinceDateTime}/",
-		authWrap(GetGroupMovedEvents),
-	)
-	RegisterRoute(
-		"GetGroupLastCreatedEvents",
-		"GET",
-		"/event/groups/{groupId}/last-created-events/{count}/",
-		authWrap(GetGroupLastCreatedEvents),
-	)
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/groups",
+		Map: RouteMap{
+			"GetGroupList": {
+				"GET",
+				"",
+				authWrap(GetGroupList),
+			},
+			"AddGroup": {
+				"POST",
+				"",
+				authWrap(AddGroup),
+			},
+			"UpdateGroup": {
+				"PUT",
+				"{groupId}",
+				authWrap(UpdateGroup),
+			},
+			"GetGroup": {
+				"GET",
+				"{groupId}",
+				authWrap(GetGroup),
+			},
+			"DeleteGroup": {
+				"DELETE",
+				"{groupId}",
+				authWrap(DeleteGroup),
+			},
+			"GetGroupEventList": {
+				"GET",
+				"{groupId}/events",
+				authWrap(GetGroupEventList),
+			},
+			"GetGroupModifiedEvents": {
+				"GET",
+				"{groupId}/modified-events/{sinceDateTime}",
+				authWrap(GetGroupModifiedEvents),
+			},
+			"GetGroupMovedEvents": {
+				"GET",
+				"{groupId}/moved-events/{sinceDateTime}",
+				authWrap(GetGroupMovedEvents),
+			},
+			"GetGroupLastCreatedEvents": {
+				"GET",
+				"{groupId}/last-created-events/{count}",
+				authWrap(GetGroupLastCreatedEvents),
+			},
+		},
+	})
 }
 
-func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetGroupList(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -119,11 +117,14 @@ func GetGroupList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AddGroup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -165,16 +166,19 @@ func AddGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func UpdateGroup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	groupId := ObjectIdFromURL(w, r, "groupId", 0)
 	if groupId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -245,16 +249,19 @@ func UpdateGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetGroup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	groupId := ObjectIdFromURL(w, r, "groupId", 0)
 	if groupId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -283,16 +290,19 @@ func GetGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(groupModel)
 }
 
-func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	groupId := ObjectIdFromURL(w, r, "groupId", 0)
 	if groupId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -396,16 +406,19 @@ func DeleteGroup(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetGroupEventList(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	groupId := ObjectIdFromURL(w, r, "groupId", 1)
 	if groupId == nil {
 		return
 	}
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -451,9 +464,14 @@ func GetGroupEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetGroupModifiedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
 	//if groupId==nil { return }
 	parts := SplitURL(r.URL)
@@ -464,8 +482,6 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 	groupIdHex := parts[len(parts)-3]
 	sinceStr := parts[len(parts)-1] // datetime string
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -559,9 +575,14 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 
 }
 
-func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetGroupMovedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
 	//if groupId==nil { return }
 	parts := SplitURL(r.URL)
@@ -572,8 +593,6 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	groupIdHex := parts[len(parts)-3]
 	sinceStr := parts[len(parts)-1] // datetime string
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -671,9 +690,14 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 }
 
-func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetGroupLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
 	//if groupId==nil { return }
 	parts := SplitURL(r.URL)
@@ -684,8 +708,6 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedReque
 	groupIdHex := parts[len(parts)-3]
 	countStr := parts[len(parts)-1] // int string
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)

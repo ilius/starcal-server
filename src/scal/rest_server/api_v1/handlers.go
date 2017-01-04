@@ -14,50 +14,62 @@ import (
 	//"github.com/gorilla/mux"
 
 	"scal"
-	"scal-lib/go-http-auth"
 	"scal/event_lib"
 	"scal/storage"
 	. "scal/user_lib"
 )
 
 func init() {
-	RegisterRoute(
-		"CopyEvent",
-		"POST",
-		"/event/copy/{eventId}/",
-		authWrap(CopyEvent),
-	)
-	RegisterRoute(
-		"GetUngroupedEvents",
-		"GET",
-		"/event/ungrouped/",
-		authWrap(GetUngroupedEvents),
-	)
-	RegisterRoute(
-		"GetMyEventList",
-		"GET",
-		"/event/my/events/",
-		authWrap(GetMyEventList),
-	)
-	RegisterRoute(
-		"GetMyEventsFull",
-		"GET",
-		"/event/my/events-full/",
-		authWrap(GetMyEventsFull),
-	)
-	RegisterRoute(
-		"GetMyLastCreatedEvents",
-		"GET",
-		"/event/my/last-created-events/{count}/",
-		authWrap(GetMyLastCreatedEvents),
-	)
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/copy",
+		Map: RouteMap{
+			"CopyEvent": {
+				"POST",
+				"{eventId}",
+				authWrap(CopyEvent),
+			},
+		},
+	})
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/ungrouped",
+		Map: RouteMap{
+			"GetUngroupedEvents": {
+				"GET",
+				"",
+				authWrap(GetUngroupedEvents),
+			},
+		},
+	})
+	routeGroups = append(routeGroups, RouteGroup{
+		Base: "event/my",
+		Map: RouteMap{
+			"GetMyEventList": {
+				"GET",
+				"events",
+				authWrap(GetMyEventList),
+			},
+			"GetMyEventsFull": {
+				"GET",
+				"events-full",
+				authWrap(GetMyEventsFull),
+			},
+			"GetMyLastCreatedEvents": {
+				"GET",
+				"last-created-events/{count}",
+				authWrap(GetMyLastCreatedEvents),
+			},
+		},
+	})
 }
 
-func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -134,11 +146,14 @@ func DeleteEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func CopyEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -239,12 +254,14 @@ func CopyEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 }
 
-func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func SetEventGroupId(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
-	var ok bool
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -350,11 +367,14 @@ func SetEventGroupId(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetEventOwner(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	eventId := ObjectIdFromURL(w, r, "eventId", 1)
 	if eventId == nil {
 		return
@@ -387,12 +407,14 @@ func GetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func SetEventOwner(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
-	var ok bool
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -476,12 +498,12 @@ func SetEventOwner(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 
 func GetEventMetaModelFromRequest(
 	w http.ResponseWriter,
-	r *auth.AuthenticatedRequest,
+	r *http.Request,
+	email string,
 ) *event_lib.EventMetaModel {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	// -----------------------------------------------
 	eventId := ObjectIdFromURL(w, r, "eventId", 1)
 	if eventId == nil {
 		return nil
@@ -511,15 +533,22 @@ func GetEventMetaModelFromRequest(
 	return eventMeta
 }
 
-func GetEventMeta(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetEventMeta(w http.ResponseWriter, r *http.Request) {
 	// includes owner, creation time, groupId, access info, attendings info
+	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
+	eventMeta := GetEventMetaModelFromRequest(w, r, email)
+	if eventMeta == nil {
+		return
+	}
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
-		return
-	}
-	eventMeta := GetEventMetaModelFromRequest(w, r)
-	if eventMeta == nil {
 		return
 	}
 	json.NewEncoder(w).Encode(scal.M{
@@ -537,8 +566,15 @@ func GetEventMeta(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
-	eventMeta := GetEventMetaModelFromRequest(w, r)
+func GetEventAccess(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
+	eventMeta := GetEventMetaModelFromRequest(w, r, email)
 	if eventMeta == nil {
 		return
 	}
@@ -551,11 +587,14 @@ func GetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func SetEventAccess(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -675,12 +714,14 @@ func SetEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func AppendEventAccess(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
-	var ok bool
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -749,11 +790,14 @@ func AppendEventAccess(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func JoinEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func JoinEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	/*remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	  if err != nil {
 	      SetHttpErrorInternal(w, err)
@@ -786,11 +830,14 @@ func JoinEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func LeaveEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func LeaveEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	/*remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	  if err != nil {
 	      SetHttpErrorInternal(w, err)
@@ -823,11 +870,14 @@ func LeaveEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func InviteToEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func InviteToEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -882,11 +932,14 @@ func InviteToEvent(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	json.NewEncoder(w).Encode(scal.M{})
 }
 
-func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetUngroupedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -914,12 +967,14 @@ func GetUngroupedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetMyEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetMyEventList(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
-	// -----------------------------------------------
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -952,12 +1007,14 @@ func GetMyEventList(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetMyEventsFull(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
-	// -----------------------------------------------
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -1011,9 +1068,14 @@ func GetMyEventsFull(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	})
 }
 
-func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
+func GetMyLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	email := r.Username
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ok, email := CheckAuthGetEmail(w, r)
+	if !ok {
+		return
+	}
+	// -----------------------------------------------
 	parts := SplitURL(r.URL)
 	if len(parts) < 2 {
 		SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
@@ -1021,8 +1083,6 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *auth.AuthenticatedRequest)
 	}
 	countStr := parts[len(parts)-1] // int string
 	// -----------------------------------------------
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	var err error
 	db, err := storage.GetDB()
 	if err != nil {
 		SetHttpErrorInternal(w, err)

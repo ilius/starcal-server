@@ -6,17 +6,19 @@ argv[1]: fullName
 import sys
 import os
 import requests
-from requests.auth import HTTPDigestAuth
+
 from pprint import pprint
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
-email = os.getenv("STARCAL_EMAIL")
-password = os.getenv("STARCAL_PASSWORD")
+if not token:
+	print("Please set and export STARCAL_TOKEN")
+	sys.exit(1)
+
 fullName = sys.argv[1]
 
 r = requests.put(
 	"http://%s:9001/user/full-name/" % host,
-	auth=HTTPDigestAuth(email, password),
+	headers={"Authorization": "bearer " + token},
 	json={
 		"fullName": fullName,
 	},
