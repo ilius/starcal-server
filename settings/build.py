@@ -13,6 +13,7 @@ import defaults
 secretSettingsParams = {
 	"MONGO_PASSWORD",
 	"JWT_TOKEN_SECRET",
+	"PASSWORD_SALT",
 }
 myDir = dirname(abspath(__file__))
 rootDir = dirname(myDir)
