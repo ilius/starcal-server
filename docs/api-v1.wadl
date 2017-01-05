@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <application xmlns="http://localhost:9001/application.wadl">
 	<resources base="http://localhost:9001/">
+		<resource path="util/">
+			<resource path="api-version/">
+				<method name="GET" id="getApiVersion">
+					<response description="just a number, '1' for API v1">
+						<representation mediaType="text/plain"/>
+					</response>
+				</method>
+			</resource>
+		</resource>
 		<resource path="auth/">
 			<resource path="register/">
 				<method name="POST" id="registerUser">
