@@ -300,6 +300,9 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
+	if settings.JWT_TOKEN_SECRET == "" {
+		panic("settings.JWT_TOKEN_SECRET can not be empty, build again")
+	}
 	routeGroups = append(routeGroups, RouteGroup{
 		Base: "auth",
 		Map: RouteMap{
