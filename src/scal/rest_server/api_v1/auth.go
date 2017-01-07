@@ -161,11 +161,15 @@ func GetPasswordHash(email string, password string) string {
 }
 
 func NewSignedToken(userModel *UserModel) string {
+	now := time.Now()
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"email": userModel.Email, // FIXME
-			"iat":   time.Now(),
+			"iat":   now,
+			"exp": now.Add(
+				settings.JWT_TOKEN_EXP_SECONDS * time.Second,
+			).Unix(),
 			/*jwt.StandardClaims {
 				//ExpiresAt: expireToken.Unix(),
 				Issuer:	settings.HOST, // add ":port" too? FIXME
