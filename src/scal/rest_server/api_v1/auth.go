@@ -180,6 +180,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if userModel.Locked {
+		SetHttpError(
+			w,
+			http.StatusForbidden,
+			"user is locked",
+		)
+		return
+	}
+
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
