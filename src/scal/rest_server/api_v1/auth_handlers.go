@@ -27,6 +27,11 @@ func init() {
 				"login",
 				Login,
 			},
+			"ChangePassword": {
+				"POST",
+				"change-password",
+				ChangePassword,
+			},
 		},
 	})
 }
@@ -193,4 +198,102 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(scal.M{
 		"token": signedToken,
 	})
+}
+
+func ChangePassword(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+
+	inputModel := struct {
+		Email       string `json:"email"`
+		Password    string `json:"password"`
+		NewPassword string `json:"newPassword"`
+	}{}
+	body, _ := ioutil.ReadAll(r.Body)
+	err = json.Unmarshal(body, &inputModel)
+	if err != nil {
+		msg := err.Error()
+		SetHttpError(w, http.StatusBadRequest, msg)
+		return
+	}
+	if inputModel.Email == "" {
+		SetHttpError(w, http.StatusBadRequest, "missing 'email'")
+		return
+	}
+	if inputModel.Password == "" {
+		SetHttpError(w, http.StatusBadRequest, "missing 'password'")
+		return
+	}
+	if inputModel.NewPassword == "" {
+		SetHttpError(w, http.StatusBadRequest, "missing 'newPassword'")
+		return
+	}
+
+	db, err := storage.GetDB()
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+
+	userModel := UserModelByEmail(inputModel.Email, db)
+	if userModel == nil {
+		SetHttpError(
+			w,
+			http.StatusUnauthorized,
+			"authentication failed",
+		)
+		return
+	}
+
+	if GetPasswordHash(inputModel.Email, inputModel.Password) != userModel.Password {
+		SetHttpError(
+			w,
+			http.StatusUnauthorized,
+			"authentication failed",
+		)
+		return
+	}
+
+	if userModel.Locked {
+		SetHttpError(
+			w,
+			http.StatusForbidden,
+			"user is locked",
+		)
+		return
+	}
+
+	newPasswordHash := GetPasswordHash(
+		userModel.Email,
+		inputModel.NewPassword,
+	)
+
+	err = db.Insert(UserChangeLogModel{
+		Time:         time.Now(),
+		RequestEmail: "", // FIXME
+		RemoteIp:     remoteIp,
+		FuncName:     "ChangePassword",
+		Password: &[2]string{
+			userModel.Password,
+			newPasswordHash,
+		},
+	})
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+
+	userModel.Password = newPasswordHash
+	err = db.Update(userModel)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	json.NewEncoder(w).Encode(scal.M{})
 }

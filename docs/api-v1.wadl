@@ -37,6 +37,19 @@
 					</response>
 				</method>
 			</resource>
+			<resource path="change-password/">
+				<method name="POST" id="changePassword">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="email" type="xs:string" required="true"/>
+						<param name="password" type="xs:string" required="true"/>
+						<param name="newPassword" type="xs:string" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
 		</resource>
 		<resource path="user/">
 			<resource path="info/">
