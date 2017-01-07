@@ -16,7 +16,6 @@ import (
 	"scal"
 	"scal/event_lib"
 	"scal/storage"
-	. "scal/user_lib"
 )
 
 const ALLOW_DELETE_DEFAULT_GROUP = true
@@ -79,10 +78,11 @@ func init() {
 func GetGroupList(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
@@ -120,10 +120,11 @@ func GetGroupList(w http.ResponseWriter, r *http.Request) {
 func AddGroup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
@@ -169,10 +170,11 @@ func AddGroup(w http.ResponseWriter, r *http.Request) {
 func UpdateGroup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	groupId := ObjectIdFromURL(w, r, "groupId", 0)
 	if groupId == nil {
@@ -252,10 +254,11 @@ func UpdateGroup(w http.ResponseWriter, r *http.Request) {
 func GetGroup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	groupId := ObjectIdFromURL(w, r, "groupId", 0)
 	if groupId == nil {
@@ -293,10 +296,11 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	groupId := ObjectIdFromURL(w, r, "groupId", 0)
 	if groupId == nil {
@@ -334,11 +338,6 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userModel := UserModelByEmail(email, db)
-	if userModel == nil {
-		SetHttpErrorUserNotFound(w, email)
-		return
-	}
 	if userModel.DefaultGroupId != nil && *userModel.DefaultGroupId == *groupId {
 		if !ALLOW_DELETE_DEFAULT_GROUP {
 			SetHttpError(
@@ -409,10 +408,11 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 func GetGroupEventList(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	groupId := ObjectIdFromURL(w, r, "groupId", 1)
 	if groupId == nil {
@@ -467,10 +467,11 @@ func GetGroupEventList(w http.ResponseWriter, r *http.Request) {
 func GetGroupModifiedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
 	//if groupId==nil { return }
@@ -578,10 +579,11 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *http.Request) {
 func GetGroupMovedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
 	//if groupId==nil { return }
@@ -693,10 +695,11 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *http.Request) {
 func GetGroupLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
 	//if groupId==nil { return }

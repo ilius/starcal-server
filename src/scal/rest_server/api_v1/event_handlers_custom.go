@@ -20,7 +20,6 @@ import (
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
-	. "scal/user_lib"
 )
 
 func init() {
@@ -114,10 +113,11 @@ func init() {
 func AddCustom(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	eventModel := event_lib.CustomEventModel{} // DYNAMIC
 	// -----------------------------------------------
@@ -151,11 +151,6 @@ func AddCustom(w http.ResponseWriter, r *http.Request) {
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 	eventId := bson.NewObjectId()
 	eventModel.Id = eventId
-	userModel := UserModelByEmail(email, db)
-	if userModel == nil {
-		SetHttpErrorUserNotFound(w, email)
-		return
-	}
 	groupId := userModel.DefaultGroupId
 	if eventModel.GroupId != "" {
 		if !bson.IsObjectIdHex(eventModel.GroupId) {
@@ -253,10 +248,11 @@ func AddCustom(w http.ResponseWriter, r *http.Request) {
 func GetCustom(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
@@ -332,10 +328,11 @@ func GetCustom(w http.ResponseWriter, r *http.Request) {
 func UpdateCustom(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	eventModel := event_lib.CustomEventModel{} // DYNAMIC
 	// -----------------------------------------------
@@ -450,10 +447,11 @@ func UpdateCustom(w http.ResponseWriter, r *http.Request) {
 func PatchCustom(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)

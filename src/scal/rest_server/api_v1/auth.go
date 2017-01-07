@@ -72,35 +72,53 @@ func ExtractToken(r *http.Request) (*jwt.Token, error) {
 	return token, nil
 }
 
-func CheckAuthGetEmail(w http.ResponseWriter, r *http.Request) (bool, string) {
+func CheckAuthGetUserModel(w http.ResponseWriter, r *http.Request) *UserModel {
 	token, err := ExtractToken(r)
 	if err != nil {
 		SetHttpError(w, http.StatusUnauthorized, err.Error())
-		return false, ""
+		return nil
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
 		SetHttpErrorInternal(w, ErrClaimsNotFound)
-		return false, ""
+		return nil
 	}
 	emailI, ok := claims["email"]
 	if !ok {
 		SetHttpError(w, http.StatusUnauthorized, "missing email")
-		return false, ""
+		return nil
 	}
 	email, ok := emailI.(string)
 	if !ok {
 		SetHttpError(w, http.StatusUnauthorized, "bad email")
-		return false, ""
+		return nil
 	}
 	if email == "" {
 		SetHttpError(w, http.StatusUnauthorized, "empty email")
-		return false, ""
+		return nil
 	}
-	return true, email
+	userModel := UserModelByEmail(email, globalDb)
+	if userModel == nil {
+		SetHttpError(w, http.StatusUnauthorized, "email not found")
+		//SetHttpErrorUserNotFound(w, email) // FIXME
+		return nil
+	}
+	if userModel.Locked {
+		SetHttpError(w, http.StatusForbidden, "user is locked")
+		return nil
+	}
+	return userModel
 }
 
 /*
+NEW:
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
+		return
+	}
+	email := userModel.Email
+
+OLD:
 	ok, email := CheckAuthGetEmail(w, r)
 	if !ok {
 		return

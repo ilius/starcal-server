@@ -81,10 +81,11 @@ func SetUserAttrInput(
 func SetUserFullName(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	const attrName = "fullName"
 	// -----------------------------------------------
@@ -112,11 +113,6 @@ func SetUserFullName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userModel := UserModelByEmail(email, db)
-	if userModel == nil {
-		SetHttpErrorUserNotFound(w, email)
-		return
-	}
 	err = db.Insert(UserChangeLogModel{
 		Time:         time.Now(),
 		RequestEmail: email,
@@ -145,10 +141,11 @@ func SetUserFullName(w http.ResponseWriter, r *http.Request) {
 func UnsetUserFullName(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -162,11 +159,6 @@ func UnsetUserFullName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userModel := UserModelByEmail(email, db)
-	if userModel == nil {
-		SetHttpErrorUserNotFound(w, email)
-		return
-	}
 	err = db.Insert(UserChangeLogModel{
 		Time:         time.Now(),
 		RequestEmail: email,
@@ -195,10 +187,11 @@ func UnsetUserFullName(w http.ResponseWriter, r *http.Request) {
 func SetUserDefaultGroupId(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	const attrName = "defaultGroupId"
 	// -----------------------------------------------
@@ -245,11 +238,6 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userModel := UserModelByEmail(email, db)
-	if userModel == nil {
-		SetHttpErrorUserNotFound(w, email)
-		return
-	}
 	err = db.Insert(UserChangeLogModel{
 		Time:         time.Now(),
 		RequestEmail: email,
@@ -278,10 +266,11 @@ func SetUserDefaultGroupId(w http.ResponseWriter, r *http.Request) {
 func UnsetUserDefaultGroupId(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -295,11 +284,6 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userModel := UserModelByEmail(email, db)
-	if userModel == nil {
-		SetHttpErrorUserNotFound(w, email)
-		return
-	}
 	err = db.Insert(UserChangeLogModel{
 		Time:         time.Now(),
 		RequestEmail: email,
@@ -328,25 +312,14 @@ func UnsetUserDefaultGroupId(w http.ResponseWriter, r *http.Request) {
 func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
-		return
-	}
-	// -----------------------------------------------
-	db, err := storage.GetDB()
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-
-	userModel := UserModelByEmail(email, db)
+	userModel := CheckAuthGetUserModel(w, r)
 	if userModel == nil {
-		SetHttpErrorUserNotFound(w, email)
 		return
 	}
-
+	email := userModel.Email
+	// -----------------------------------------------
 	json.NewEncoder(w).Encode(scal.M{
-		"email":          userModel.Email,
+		"email":          email,
 		"fullName":       userModel.FullName,
 		"defaultGroupId": userModel.DefaultGroupId,
 		//"locked": userModel.Locked,

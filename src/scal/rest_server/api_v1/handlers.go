@@ -65,10 +65,11 @@ func init() {
 func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -149,10 +150,11 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 func CopyEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -191,12 +193,6 @@ func CopyEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newEventId := bson.NewObjectId()
-
-	userModel := UserModelByEmail(email, db)
-	if userModel == nil {
-		SetHttpErrorUserNotFound(w, email)
-		return
-	}
 
 	newGroupId := userModel.DefaultGroupId
 	if eventMeta.GroupModel != nil {
@@ -257,10 +253,11 @@ func CopyEvent(w http.ResponseWriter, r *http.Request) {
 func SetEventGroupId(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -370,10 +367,11 @@ func SetEventGroupId(w http.ResponseWriter, r *http.Request) {
 func GetEventOwner(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	eventId := ObjectIdFromURL(w, r, "eventId", 1)
 	if eventId == nil {
@@ -410,10 +408,11 @@ func GetEventOwner(w http.ResponseWriter, r *http.Request) {
 func SetEventOwner(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -458,8 +457,8 @@ func SetEventOwner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// should check if user with `newOwnerEmail` exists?
-	userModel := UserModelByEmail(newOwnerEmail, db)
-	if userModel == nil {
+	newOwnerUserModel := UserModelByEmail(newOwnerEmail, db)
+	if newOwnerUserModel == nil {
 		SetHttpError(
 			w,
 			http.StatusBadRequest,
@@ -537,10 +536,11 @@ func GetEventMeta(w http.ResponseWriter, r *http.Request) {
 	// includes owner, creation time, groupId, access info, attendings info
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	eventMeta := GetEventMetaModelFromRequest(w, r, email)
 	if eventMeta == nil {
@@ -569,10 +569,11 @@ func GetEventMeta(w http.ResponseWriter, r *http.Request) {
 func GetEventAccess(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	eventMeta := GetEventMetaModelFromRequest(w, r, email)
 	if eventMeta == nil {
@@ -590,10 +591,11 @@ func GetEventAccess(w http.ResponseWriter, r *http.Request) {
 func SetEventAccess(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -717,10 +719,11 @@ func SetEventAccess(w http.ResponseWriter, r *http.Request) {
 func AppendEventAccess(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -793,10 +796,11 @@ func AppendEventAccess(w http.ResponseWriter, r *http.Request) {
 func JoinEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	/*remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	  if err != nil {
@@ -833,10 +837,11 @@ func JoinEvent(w http.ResponseWriter, r *http.Request) {
 func LeaveEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	/*remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	  if err != nil {
@@ -873,10 +878,11 @@ func LeaveEvent(w http.ResponseWriter, r *http.Request) {
 func InviteToEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -935,10 +941,11 @@ func InviteToEvent(w http.ResponseWriter, r *http.Request) {
 func GetUngroupedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
@@ -970,10 +977,11 @@ func GetUngroupedEvents(w http.ResponseWriter, r *http.Request) {
 func GetMyEventList(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
@@ -1010,10 +1018,11 @@ func GetMyEventList(w http.ResponseWriter, r *http.Request) {
 func GetMyEventsFull(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
@@ -1071,10 +1080,11 @@ func GetMyEventsFull(w http.ResponseWriter, r *http.Request) {
 func GetMyLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ok, email := CheckAuthGetEmail(w, r)
-	if !ok {
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
 		return
 	}
+	email := userModel.Email
 	// -----------------------------------------------
 	parts := SplitURL(r.URL)
 	if len(parts) < 2 {
