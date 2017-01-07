@@ -13,8 +13,8 @@ import (
 type UserModel struct {
 	Id             bson.ObjectId  `bson:"_id,omitempty" json:"-"` // FIXME
 	Email          string         `bson:"email" json:"email"`
-	FullName       string         `bson:"fullName" json:"fullName"`
 	Password       string         `bson:"password" json:"password"`
+	FullName       string         `bson:"fullName" json:"fullName"`
 	Locked         bool           `bson:"locked" json:"-"`
 	DefaultGroupId *bson.ObjectId `bson:"defaultGroupId" json:"defaultGroupId"`
 }
@@ -50,8 +50,8 @@ type UserChangeLogModel struct {
 
 	Email          *[2]*string        `bson:"email,omitempty"`
 	FullName       *[2]*string        `bson:"fullName,omitempty"`
-	DefaultGroupId *[2]*bson.ObjectId `bson:"defaultGroupId,omitempty"`
 	Locked         *[2]bool           `bson:"locked,omitempty"`
+	DefaultGroupId *[2]*bson.ObjectId `bson:"defaultGroupId,omitempty"`
 }
 
 func (model UserChangeLogModel) Collection() string {
