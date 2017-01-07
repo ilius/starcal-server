@@ -165,7 +165,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if userModel == nil {
 		SetHttpError(
 			w,
-			http.StatusForbidden,
+			http.StatusUnauthorized,
 			"authentication failed",
 		)
 		return
@@ -174,7 +174,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if GetPasswordHash(authModel.Email, authModel.Password) != userModel.Password {
 		SetHttpError(
 			w,
-			http.StatusForbidden,
+			http.StatusUnauthorized,
 			"authentication failed",
 		)
 		return
