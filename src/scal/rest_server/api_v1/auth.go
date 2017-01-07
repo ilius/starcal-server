@@ -84,41 +84,73 @@ func CheckAuthGetUserModel(w http.ResponseWriter, r *http.Request) *UserModel {
 	}
 	emailI, ok := claims["email"]
 	if !ok {
-		SetHttpError(w, http.StatusUnauthorized, "missing email")
+		SetHttpError(
+			w,
+			http.StatusUnauthorized,
+			"Error parsing token: Missing 'email'",
+		)
 		return nil
 	}
 	email, ok := emailI.(string)
 	if !ok {
-		SetHttpError(w, http.StatusUnauthorized, "bad email")
+		SetHttpError(
+			w,
+			http.StatusUnauthorized,
+			"Error parsing token: Bad 'email'",
+		)
 		return nil
 	}
 	if email == "" {
-		SetHttpError(w, http.StatusUnauthorized, "empty email")
+		SetHttpError(
+			w,
+			http.StatusUnauthorized,
+			"Error parsing token: Empty 'email'",
+		)
 		return nil
 	}
 	userModel := UserModelByEmail(email, globalDb)
 	if userModel == nil {
-		SetHttpError(w, http.StatusUnauthorized, "email not found")
+		SetHttpError(
+			w,
+			http.StatusUnauthorized,
+			"Error parsing token: Bad 'email'",
+		)
 		//SetHttpErrorUserNotFound(w, email) // FIXME
 		return nil
 	}
 	if userModel.Locked {
-		SetHttpError(w, http.StatusForbidden, "user is locked")
+		SetHttpError(
+			w,
+			http.StatusForbidden,
+			"Error parsing token: User is locked",
+		)
 		return nil
 	}
 	if userModel.LastLogoutTime != nil {
 		issuedAtI, ok := claims["iat"]
 		if !ok {
-			SetHttpError(w, http.StatusUnauthorized, "bad token: missing 'iat'")
+			SetHttpError(
+				w,
+				http.StatusUnauthorized,
+				"Error parsing token: Missing 'iat'",
+			)
 			return nil
 		}
 		issuedAt, err := time.Parse(time.RFC3339, issuedAtI.(string))
 		if err != nil {
-			SetHttpError(w, http.StatusUnauthorized, "bad token: bad 'iat'")
+			SetHttpError(
+				w,
+				http.StatusUnauthorized,
+				"Error parsing token: Bad 'iat'",
+			)
 			return nil
 		}
 		if userModel.LastLogoutTime.After(issuedAt) {
-			SetHttpError(w, http.StatusUnauthorized, "token is expired")
+			SetHttpError(
+				w,
+				http.StatusUnauthorized,
+				"Error parsing token: Token is expired",
+			)
 			return nil
 		}
 	}
