@@ -9,6 +9,7 @@ import (
 	"scal/settings"
 	. "scal/user_lib"
 	"strings"
+	"time"
 )
 
 const TOKEN_CONTEXT = "user"
@@ -148,6 +149,7 @@ func NewSignedToken(userModel *UserModel) string {
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"email": userModel.Email, // FIXME
+			"iat":   time.Now(),
 			/*jwt.StandardClaims {
 				//ExpiresAt: expireToken.Unix(),
 				Issuer:	settings.HOST, // add ":port" too? FIXME
