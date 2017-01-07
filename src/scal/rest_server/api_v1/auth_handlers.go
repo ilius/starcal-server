@@ -27,6 +27,11 @@ func init() {
 				"login",
 				Login,
 			},
+			"Logout": {
+				"POST",
+				"logout",
+				Logout,
+			},
 			"ChangePassword": {
 				"POST",
 				"change-password",
@@ -198,6 +203,45 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(scal.M{
 		"token": signedToken,
 	})
+}
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
+		return
+	}
+	email := userModel.Email
+	// -----------------------------------------------
+	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	db, err := storage.GetDB()
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	now := time.Now()
+	err = db.Insert(UserChangeLogModel{
+		Time:         now,
+		RequestEmail: email,
+		RemoteIp:     remoteIp,
+		FuncName:     "Logout",
+		LastLogoutTime: &[2]*time.Time{
+			userModel.LastLogoutTime,
+			&now,
+		},
+	})
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	userModel.LastLogoutTime = &now
+	db.Update(userModel)
+	json.NewEncoder(w).Encode(scal.M{})
 }
 
 func ChangePassword(w http.ResponseWriter, r *http.Request) {

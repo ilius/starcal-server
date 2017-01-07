@@ -323,5 +323,6 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 		"fullName":       userModel.FullName,
 		"defaultGroupId": userModel.DefaultGroupId,
 		//"locked": userModel.Locked,
+		"lastLogoutTime": userModel.LastLogoutTime,
 	})
 }

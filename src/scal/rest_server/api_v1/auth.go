@@ -106,6 +106,22 @@ func CheckAuthGetUserModel(w http.ResponseWriter, r *http.Request) *UserModel {
 		SetHttpError(w, http.StatusForbidden, "user is locked")
 		return nil
 	}
+	if userModel.LastLogoutTime != nil {
+		issuedAtI, ok := claims["iat"]
+		if !ok {
+			SetHttpError(w, http.StatusUnauthorized, "bad token: missing 'iat'")
+			return nil
+		}
+		issuedAt, err := time.Parse(time.RFC3339, issuedAtI.(string))
+		if err != nil {
+			SetHttpError(w, http.StatusUnauthorized, "bad token: bad 'iat'")
+			return nil
+		}
+		if userModel.LastLogoutTime.After(issuedAt) {
+			SetHttpError(w, http.StatusUnauthorized, "token is expired")
+			return nil
+		}
+	}
 	return userModel
 }
 

@@ -17,6 +17,7 @@ type UserModel struct {
 	FullName       string         `bson:"fullName" json:"fullName"`
 	Locked         bool           `bson:"locked" json:"-"`
 	DefaultGroupId *bson.ObjectId `bson:"defaultGroupId" json:"defaultGroupId"`
+	LastLogoutTime *time.Time     `bson:"lastLogoutTime" json:"-"`
 }
 
 func (self UserModel) UniqueM() scal.M {
@@ -53,6 +54,7 @@ type UserChangeLogModel struct {
 	FullName       *[2]*string        `bson:"fullName,omitempty"`
 	Locked         *[2]bool           `bson:"locked,omitempty"`
 	DefaultGroupId *[2]*bson.ObjectId `bson:"defaultGroupId,omitempty"`
+	LastLogoutTime *[2]*time.Time     `bson:"lastLogoutTime,omitempty"`
 }
 
 func (model UserChangeLogModel) Collection() string {

@@ -37,6 +37,14 @@
 					</response>
 				</method>
 			</resource>
+			<resource path="logout/">
+				<method name="POST" id="logout"
+					description="invalidates/expires all valid tokens">
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
 			<resource path="change-password/">
 				<method name="POST" id="changePassword">
 					<request>
@@ -59,6 +67,8 @@
 						<param name="email" type="xs:string"/>
 						<param name="fullName" type="xs:string"/>
 						<param name="defaultGroupId" type="xs:string"/>
+						<param name="lastLogoutTime" type="xsd:dateTime"
+							nillable="true" description="dateTime or none"/>
 					</response>
 				</method>
 			</resource>
