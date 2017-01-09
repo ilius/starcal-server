@@ -11,6 +11,28 @@ MONGO_PASSWORD = ""
 JWT_TOKEN_SECRET = os.getenv("STARCAL_JWT_TOKEN_SECRET", "")
 JWT_TOKEN_EXP_SECONDS = 7 * 24 * 3600
 PASSWORD_SALT = "starcal"
+
+RESET_PASSWORD_TOKEN_LENGTH = 32
+RESET_PASSWORD_EXP_SECONDS = 30 * 60
+RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE = """You or someone else has requested a password reset for your StarCalendar account
+
+If it was you, you can use the following token to reset your password:
+Reset Password Token: {{.Token}}
+This token will be expired at {{.ExpireTime}}
+
+If it wasn't you, you can ignore this email.
+But you should know that this request was sent from this IP: {{.IssueRemoteIp}}
+
+Have fun using StarCalendar
+"""
+
+RESET_PASSWORD_DONE_EMAIL_TEMPLATE = """Hi {{.Name}}
+
+Your StarCalendar password has been reset by this IP: {{.RemoteIp}}
+
+Have fun using StarCalendar
+"""
+
 ALLOW_MISMATCH_EVENT_TYPE = False
 
 EVENT_INVITE_EMAIL_TEMPLATE = """Hi {{.Name}}

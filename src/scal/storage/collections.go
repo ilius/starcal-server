@@ -11,4 +11,6 @@ const (
 	C_revision           = "event_revision"
 	C_eventData          = "event_data"
 	C_invitation         = "event_invitation"
+	C_resetPwToken       = "reset_password_token"
+	C_resetPwLog         = "reset_password_log"
 )

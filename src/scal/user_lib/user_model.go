@@ -60,3 +60,30 @@ type UserChangeLogModel struct {
 func (model UserChangeLogModel) Collection() string {
 	return storage.C_userChangeLog
 }
+
+type ResetPasswordTokenModel struct {
+	Token         string    `bson:"token"`
+	Email         string    `bson:"email"`
+	IssueTime     time.Time `bson:"issueTime"`
+	ExpireTime    time.Time `bson:"expireTime"` // not reliable
+	IssueRemoteIp string    `bson:"issueRemoteIp"`
+}
+
+func (model ResetPasswordTokenModel) Collection() string {
+	return storage.C_resetPwToken
+}
+func (model ResetPasswordTokenModel) UniqueM() scal.M {
+	return scal.M{
+		"token": model.Token,
+	}
+}
+
+type ResetPasswordLogModel struct {
+	ResetPasswordTokenModel `bson:",inline"`
+	UsedTime                time.Time `bson:"usedTime"`
+	UsedRemoteIp            string    `bson:"usedRemoteIp"`
+}
+
+func (model ResetPasswordLogModel) Collection() string {
+	return storage.C_resetPwLog
+}

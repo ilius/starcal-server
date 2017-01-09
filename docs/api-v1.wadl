@@ -58,6 +58,30 @@
 					</response>
 				</method>
 			</resource>
+			<resource path="reset-password-request/">
+				<method name="POST" id="resetPasswordRequest">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="email" type="xs:string" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
+			<resource path="reset-password-action/">
+				<method name="POST" id="resetPasswordAction">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="email" type="xs:string" required="true"/>
+						<param name="resetPasswordToken" type="xs:string" required="true"/>
+						<param name="newPassword" type="xs:string" required="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
 		</resource>
 		<resource path="user/">
 			<resource path="info/">
