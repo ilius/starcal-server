@@ -139,7 +139,10 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	signedToken := NewSignedToken(&userModel)
+	json.NewEncoder(w).Encode(scal.M{
+		"token": signedToken,
+	})
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {

@@ -33,8 +33,11 @@ except:
 	print("non-json data")
 	print(r.text)
 else:
-	error = data.get("error", "")
-	if error:
+	token = data.get("token")
+	error = data.get("error")
+	if token:
+		print("export STARCAL_TOKEN='%s'" % token)
+	elif error:
 		print(error)
 	else:
 		pprint(data, width=80)

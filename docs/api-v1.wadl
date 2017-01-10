@@ -21,6 +21,7 @@
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="token" type="xs:string" required="true"/>
 					</response>
 				</method>
 			</resource>
