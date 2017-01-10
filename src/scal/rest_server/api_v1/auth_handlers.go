@@ -91,7 +91,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 	anotherUserModel := UserModelByEmail(userModel.Email, db)
 	if anotherUserModel != nil {
-		SetHttpError(w, http.StatusBadRequest, "duplicate 'email'")
+		SetHttpError(w, http.StatusBadRequest, "email is already registered")
 		return
 	}
 
