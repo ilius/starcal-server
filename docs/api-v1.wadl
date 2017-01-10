@@ -26,7 +26,7 @@
 				</method>
 			</resource>
 			<resource path="login/">
-				<method name="POST" id="registerUser">
+				<method name="POST" id="login">
 					<request>
 						<representation mediaType="app/json"/>
 						<param name="email" type="xs:string" required="true"/>
