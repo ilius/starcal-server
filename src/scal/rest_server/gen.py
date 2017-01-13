@@ -16,125 +16,125 @@ templatesDir = join(myParentDir, 'templates')
 
 
 activeEventTypes = (
-    "allDayTask",
-    "dailyNote",
-    "largeScale",
-    "lifeTime",
-    "monthly",
-    "task",
-    "universityClass",
-    "universityExam",
-    "weekly",
-    "yearly",
-    "custom",
+	"allDayTask",
+	"dailyNote",
+	"largeScale",
+	"lifeTime",
+	"monthly",
+	"task",
+	"universityClass",
+	"universityExam",
+	"weekly",
+	"yearly",
+	"custom",
 )
 
 
 def djangoInit():
-    settings.configure(
-        TEMPLATES = [
-            {
-                'BACKEND': 'django.template.backends.django.DjangoTemplates',
-                'DIRS': [templatesDir],
-                'APP_DIRS': False,
-            }
-        ]
-    )
-    django.setup()
+	settings.configure(
+		TEMPLATES = [
+			{
+				'BACKEND': 'django.template.backends.django.DjangoTemplates',
+				'DIRS': [templatesDir],
+				'APP_DIRS': False,
+			}
+		]
+	)
+	django.setup()
 
 
 def genEventTypeHandlers():
-    djangoInit()
-    tpl = loader.get_template('event_handlers.got')
-    basePatchParams = extractEventBasePatchParams()
-    for eventType in activeEventTypes:
-        eventTypeCap = eventType[0].upper() + eventType[1:]
-        typeParams = extractEventTypeParams(eventType)
-        goText = tpl.render(Context(dict(
-            EVENT_TYPE=eventType,
-            EVENT_TYPE_CAP=eventTypeCap, # instead of {{EVENT_TYPE|capfirst}}
-            EVENT_PATCH_PARAMS=basePatchParams + typeParams,
-        )))
-        goText = re.sub(r'^\s+\n', '', goText, flags=re.M)
-        goText = goText.replace("\t  ", "\t")
-        # use 2 spaces for template block indentation
-        # and tab for Golang block indentation (as expected by `go fmt`)
-        with open(join(
-            apiDir,
-            "event_handlers_%s.go" % eventType,
-        ), "w") as goFp:
-            goFp.write(goText)
+	djangoInit()
+	tpl = loader.get_template('event_handlers.got')
+	basePatchParams = extractEventBasePatchParams()
+	for eventType in activeEventTypes:
+		eventTypeCap = eventType[0].upper() + eventType[1:]
+		typeParams = extractEventTypeParams(eventType)
+		goText = tpl.render(Context(dict(
+			EVENT_TYPE=eventType,
+			EVENT_TYPE_CAP=eventTypeCap, # instead of {{EVENT_TYPE|capfirst}}
+			EVENT_PATCH_PARAMS=basePatchParams + typeParams,
+		)))
+		goText = re.sub(r'^\s+\n', '', goText, flags=re.M)
+		goText = goText.replace("\t  ", "\t")
+		# use 2 spaces for template block indentation
+		# and tab for Golang block indentation (as expected by `go fmt`)
+		with open(join(
+			apiDir,
+			"event_handlers_%s.go" % eventType,
+		), "w") as goFp:
+			goFp.write(goText)
 
 
 def parseModelVarLine(line):
-    """
-    return (param, _type)
-    or raise ValueError
-    """
-    line = line.strip()
-    if line.startswith('//'):
-        raise ValueError
-    try:
-        _type, param = re.findall(' ([^\\s]*?)\\s*?`.*json:"(.*?)"', line)[0]
-    except IndexError:
-        raise ValueError
-    if not param:
-        raise ValueError
-    if param == '-':
-        raise ValueError
-    if _type[0] in string.ascii_uppercase:
-        _type = 'event_lib.' + _type
-    param, _, opt = param.partition(',')
-    assert opt in ('', 'omitempty')
-    return (param, _type)
+	"""
+	return (param, _type)
+	or raise ValueError
+	"""
+	line = line.strip()
+	if line.startswith('//'):
+		raise ValueError
+	try:
+		_type, param = re.findall(' ([^\\s]*?)\\s*?`.*json:"(.*?)"', line)[0]
+	except IndexError:
+		raise ValueError
+	if not param:
+		raise ValueError
+	if param == '-':
+		raise ValueError
+	if _type[0] in string.ascii_uppercase:
+		_type = 'event_lib.' + _type
+	param, _, opt = param.partition(',')
+	assert opt in ('', 'omitempty')
+	return (param, _type)
 
 
 def extractEventTypeParams(eventType):
-    params = []
-    eventTypeCap = eventType[0].upper() + eventType[1:]
-    with open(join(myParentDir, 'event_lib/t_%s.go' % eventType)) as goFp:
-        text = goFp.read()
-    for line in re.findall(
-        'type %sEventModel.*?{.*?}' % eventTypeCap,
-        text,
-        re.S,
-    )[0].split('\n')[2:-1]:
-        try:
-            params.append(parseModelVarLine(line))
-        except ValueError:
-            pass
-    return params
+	params = []
+	eventTypeCap = eventType[0].upper() + eventType[1:]
+	with open(join(myParentDir, 'event_lib/t_%s.go' % eventType)) as goFp:
+		text = goFp.read()
+	for line in re.findall(
+		'type %sEventModel.*?{.*?}' % eventTypeCap,
+		text,
+		re.S,
+	)[0].split('\n')[2:-1]:
+		try:
+			params.append(parseModelVarLine(line))
+		except ValueError:
+			pass
+	return params
 
 
 def extractEventBasePatchParams():
-    params = []
-    with open(join(myParentDir, 'event_lib/base.go')) as goFp:
-        text = goFp.read()
-    for line in re.findall(
-        'type BaseEventModel.*?{.*?}',
-        text,
-        re.S,
-    )[0].split('\n')[3:-1]:
-        try:
-            param, _type = parseModelVarLine(line)
-        except ValueError:
-            continue
-        if param == 'sha1':
-            continue
-        if param in (
-            'groupId',
-            'meta',
-        ):
-            continue
-        params.append((param, _type))
-    return params
+	params = []
+	with open(join(myParentDir, 'event_lib/base.go')) as goFp:
+		text = goFp.read()
+	for line in re.findall(
+		'type BaseEventModel.*?{.*?}',
+		text,
+		re.S,
+	)[0].split('\n')[3:-1]:
+		try:
+			param, _type = parseModelVarLine(line)
+		except ValueError:
+			continue
+		if param == 'sha1':
+			continue
+		if param in (
+			'groupId',
+			'meta',
+		):
+			continue
+		params.append((param, _type))
+	return params
 
 
 def testExtractEventTypeParams():
-    print('---- base:', extractEventBasePatchParams())
-    for eventType in activeEventTypes:
-        print(eventType, extractEventTypeParams(eventType))
+	print('---- base:', extractEventBasePatchParams())
+	for eventType in activeEventTypes:
+		print(eventType, extractEventTypeParams(eventType))
 
 if __name__=="__main__":
-    genEventTypeHandlers()
-    #testExtractEventTypeParams()
+	genEventTypeHandlers()
+	#testExtractEventTypeParams()
