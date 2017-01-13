@@ -3,6 +3,7 @@ import os
 from os.path import join, dirname, realpath
 import string
 import re
+import subprocess
 
 import django
 from django.template import Template, loader, Context
@@ -59,12 +60,17 @@ def genEventTypeHandlers():
 		goText = goText.replace("\t  ", "\t")
 		# use 2 spaces for template block indentation
 		# and tab for Golang block indentation (as expected by `go fmt`)
-		with open(join(
+		goFilePath = join(
 			apiDir,
 			"event_handlers_%s.go" % eventType,
-		), "w") as goFp:
+		)
+		with open(goFilePath, "w") as goFp:
 			goFp.write(goText)
-
+		subprocess.call([
+			"go",
+			"fmt",
+			goFilePath,
+		])
 
 def parseModelVarLine(line):
 	"""
