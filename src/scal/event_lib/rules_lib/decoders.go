@@ -26,13 +26,13 @@ var valueDecoders = map[string]func(string) (interface{}, error){
 	T_int_range_list: func(value string) (interface{}, error) {
 		intervalList, err := interval.ParseClosedIntervalList(value)
 		if err != nil {
-			return []int64{}, err
+			return []int{}, err
 		}
 		intervalList, err = intervalList.Normalize()
 		if err != nil {
-			return []int64{}, err
+			return []int{}, err
 		}
-		return intervalList.Extract(), nil
+		return utils.Int64ListToIntList(intervalList.Extract()), nil
 	},
 	T_float: func(value string) (interface{}, error) {
 		v, err := strconv.ParseFloat(value, 64)

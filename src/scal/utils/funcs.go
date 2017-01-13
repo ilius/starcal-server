@@ -25,6 +25,14 @@ func IntMin(a, b int) int {
 	return b
 }
 
+func Int64ListToIntList(list []int64) []int {
+	list2 := make([]int, len(list))
+	for i, v := range list {
+		list2[i] = int(v)
+	}
+	return list2
+}
+
 func ParseIntList(str string) ([]int, error) {
 	parts := strings.Split(str, " ")
 	intParts := make([]int, len(parts))
