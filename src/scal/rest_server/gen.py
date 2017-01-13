@@ -57,7 +57,8 @@ def genEventTypeHandlers():
 			EVENT_PATCH_PARAMS=basePatchParams + typeParams,
 		)))
 		goText = re.sub(r'^\s+\n', '', goText, flags=re.M)
-		goText = goText.replace("\t  ", "\t")
+		for _ in range(5):
+			goText = goText.replace("\t  ", "\t")
 		# use 2 spaces for template block indentation
 		# and tab for Golang block indentation (as expected by `go fmt`)
 		goFilePath = join(
