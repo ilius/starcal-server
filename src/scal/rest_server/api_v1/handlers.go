@@ -555,6 +555,7 @@ func GetEventMeta(w http.ResponseWriter, r *http.Request) {
 		//"eventId": eventMeta.EventId.Hex(),
 		"ownerEmail":           eventMeta.OwnerEmail,
 		"creationTime":         eventMeta.CreationTime,
+		"fieldsMtime":          eventMeta.FieldsMtime,
 		"groupId":              eventMeta.GroupIdHex(),
 		"isPublic":             eventMeta.IsPublic,
 		"accessEmails":         eventMeta.AccessEmails,

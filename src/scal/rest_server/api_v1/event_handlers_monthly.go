@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"reflect"
 
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
@@ -234,6 +235,20 @@ func AddMonthly(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	eventMeta.FieldsMtime = map[string]time.Time{
+		"timeZone":        now,
+		"timeZoneEnable":  now,
+		"calType":         now,
+		"summary":         now,
+		"description":     now,
+		"icon":            now,
+		"startJd":         now,
+		"endJd":           now,
+		"day":             now,
+		"dayStartSeconds": now,
+		"dayEndSeconds":   now,
+	}
 	err = db.Insert(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -352,7 +367,7 @@ func UpdateMonthly(w http.ResponseWriter, r *http.Request) {
 		SetHttpError(w, http.StatusBadRequest, msg)
 		return
 	}
-	_, err = eventModel.GetEvent() // (event, err), just for validation
+	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
@@ -378,18 +393,27 @@ func UpdateMonthly(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*
-		// do we need the last revision? to compare or what?
-		lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
-		if err != nil {
-			if db.IsNotFound(err) {
-				SetHttpError(w, http.StatusBadRequest, "event not found")
-			} else {
-				SetHttpErrorInternal(w, err)
-			}
-			return
+	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "event not found")
+		} else {
+			SetHttpErrorInternal(w, err)
 		}
-	*/
+		return
+	}
+	lastEventModel, err := event_lib.LoadMonthlyEventModel(
+		db,
+		lastEventRev.Sha1,
+	)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
 
 	if eventModel.Id != "" {
 		SetHttpError(w, http.StatusBadRequest, "'eventId' must not be present in JSON")
@@ -439,6 +463,88 @@ func UpdateMonthly(w http.ResponseWriter, r *http.Request) {
 			SetHttpErrorInternal(w, err)
 			return
 		}
+	}
+	// PARAM="timeZone", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.TimeZone,
+		lastEventModel.TimeZone,
+	) {
+		eventMeta.FieldsMtime["timeZone"] = now
+	}
+	// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+	if !reflect.DeepEqual(
+		eventModel.TimeZoneEnable,
+		lastEventModel.TimeZoneEnable,
+	) {
+		eventMeta.FieldsMtime["timeZoneEnable"] = now
+	}
+	// PARAM="calType", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.CalType,
+		lastEventModel.CalType,
+	) {
+		eventMeta.FieldsMtime["calType"] = now
+	}
+	// PARAM="summary", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.Summary,
+		lastEventModel.Summary,
+	) {
+		eventMeta.FieldsMtime["summary"] = now
+	}
+	// PARAM="description", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.Description,
+		lastEventModel.Description,
+	) {
+		eventMeta.FieldsMtime["description"] = now
+	}
+	// PARAM="icon", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.Icon,
+		lastEventModel.Icon,
+	) {
+		eventMeta.FieldsMtime["icon"] = now
+	}
+	// PARAM="startJd", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.StartJd,
+		lastEventModel.StartJd,
+	) {
+		eventMeta.FieldsMtime["startJd"] = now
+	}
+	// PARAM="endJd", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.EndJd,
+		lastEventModel.EndJd,
+	) {
+		eventMeta.FieldsMtime["endJd"] = now
+	}
+	// PARAM="day", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.Day,
+		lastEventModel.Day,
+	) {
+		eventMeta.FieldsMtime["day"] = now
+	}
+	// PARAM="dayStartSeconds", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.DayStartSeconds,
+		lastEventModel.DayStartSeconds,
+	) {
+		eventMeta.FieldsMtime["dayStartSeconds"] = now
+	}
+	// PARAM="dayEndSeconds", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.DayEndSeconds,
+		lastEventModel.DayEndSeconds,
+	) {
+		eventMeta.FieldsMtime["dayEndSeconds"] = now
+	}
+	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{
@@ -526,6 +632,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.TimeZone = value
 			delete(patchMap, "timeZone")
+			eventMeta.FieldsMtime["timeZone"] = now
 		}
 	}
 	{
@@ -542,6 +649,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.TimeZoneEnable = value
 			delete(patchMap, "timeZoneEnable")
+			eventMeta.FieldsMtime["timeZoneEnable"] = now
 		}
 	}
 	{
@@ -558,6 +666,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.CalType = value
 			delete(patchMap, "calType")
+			eventMeta.FieldsMtime["calType"] = now
 		}
 	}
 	{
@@ -574,6 +683,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.Summary = value
 			delete(patchMap, "summary")
+			eventMeta.FieldsMtime["summary"] = now
 		}
 	}
 	{
@@ -590,6 +700,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.Description = value
 			delete(patchMap, "description")
+			eventMeta.FieldsMtime["description"] = now
 		}
 	}
 	{
@@ -606,6 +717,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.Icon = value
 			delete(patchMap, "icon")
+			eventMeta.FieldsMtime["icon"] = now
 		}
 	}
 	{
@@ -623,6 +735,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.StartJd = int(value)
 			delete(patchMap, "startJd")
+			eventMeta.FieldsMtime["startJd"] = now
 		}
 	}
 	{
@@ -640,6 +753,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.EndJd = int(value)
 			delete(patchMap, "endJd")
+			eventMeta.FieldsMtime["endJd"] = now
 		}
 	}
 	{
@@ -657,6 +771,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.Day = int(value)
 			delete(patchMap, "day")
+			eventMeta.FieldsMtime["day"] = now
 		}
 	}
 	{
@@ -674,6 +789,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.DayStartSeconds = int(value)
 			delete(patchMap, "dayStartSeconds")
+			eventMeta.FieldsMtime["dayStartSeconds"] = now
 		}
 	}
 	{
@@ -691,6 +807,7 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.DayEndSeconds = int(value)
 			delete(patchMap, "dayEndSeconds")
+			eventMeta.FieldsMtime["dayEndSeconds"] = now
 		}
 	}
 	if len(patchMap) > 0 {
@@ -706,12 +823,11 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	_, err = eventModel.GetEvent() // (event, err), for validation
+	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
@@ -744,6 +860,11 @@ func PatchMonthly(w http.ResponseWriter, r *http.Request) {
 			SetHttpErrorInternal(w, err)
 			return
 		}
+	}
+	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
 	}
 	json.NewEncoder(w).Encode(map[string]string{
 		"eventId": eventId.Hex(),

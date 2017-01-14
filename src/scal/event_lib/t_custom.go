@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 	. "scal/event_lib/rules_lib"
 	"scal/storage"
 )
@@ -134,6 +135,36 @@ func (event CustomEvent) CheckRuleTypes() error {
 		}
 	}
 	return nil
+}
+func (event *CustomEvent) GetModifiedRuleTypes(oldEvent *CustomEvent) EventRuleTypeList {
+	modTypes := make(
+		EventRuleTypeList,
+		0,
+		len(event.ruleTypes)+len(oldEvent.ruleTypes),
+	)
+	for _, ruleType := range event.ruleTypes {
+		newRule, ok := event.ruleMap[ruleType.Name]
+		if !ok {
+			log.Printf(
+				"GetModifiedRuleTypes: rule type %s not found, eventId=%s\n",
+				ruleType.Name,
+				event.Id(),
+			)
+			continue
+		}
+		oldRule, hasOld := oldEvent.ruleMap[ruleType.Name]
+		if !(hasOld && reflect.DeepEqual(oldRule.Value, newRule.Value)) {
+			modTypes = append(modTypes, ruleType)
+		}
+	}
+	for _, oldRuleType := range oldEvent.ruleTypes {
+		_, hasNew := event.ruleMap[oldRuleType.Name]
+		if !hasNew {
+			// rule has been deleted
+			modTypes = append(modTypes, oldRuleType)
+		}
+	}
+	return modTypes
 }
 
 /*

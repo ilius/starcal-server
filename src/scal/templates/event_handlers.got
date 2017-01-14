@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"reflect"
 
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
@@ -234,6 +235,17 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	eventMeta.FieldsMtime = map[string]time.Time{
+		{% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
+			"{{PARAM}}": now,
+		{% endfor %}
+	}
+	{% if EVENT_TYPE == "custom" %}
+		for _, ruleModel := range eventModel.Rules {
+			eventMeta.FieldsMtime["rules:"+ruleModel.Type] = now
+		}
+	{% endif %}
 	err = db.Insert(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -352,7 +364,11 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		SetHttpError(w, http.StatusBadRequest, msg)
 		return
 	}
-	_, err = eventModel.GetEvent() // (event, err), just for validation
+	{% if EVENT_TYPE == "custom" %}
+		event, err := eventModel.GetEvent() // for validation and comparing rules
+	{% else %}
+		_, err = eventModel.GetEvent() // for validation
+	{% endif %}
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
@@ -378,18 +394,27 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*
-		// do we need the last revision? to compare or what?
-		lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
-		if err != nil {
-			if db.IsNotFound(err) {
-				SetHttpError(w, http.StatusBadRequest, "event not found")
-			} else {
-				SetHttpErrorInternal(w, err)
-			}
-			return
+	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "event not found")
+		} else {
+			SetHttpErrorInternal(w, err)
 		}
-	*/
+		return
+	}
+	lastEventModel, err := event_lib.Load{{EVENT_TYPE_CAP}}EventModel(
+		db,
+		lastEventRev.Sha1,
+	)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
 
 	if eventModel.Id != "" {
 		SetHttpError(w, http.StatusBadRequest, "'eventId' must not be present in JSON")
@@ -439,6 +464,36 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 			SetHttpErrorInternal(w, err)
 			return
 		}
+	}
+
+	{% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
+		// PARAM="{{PARAM}}", PARAM_TYPE="{{PARAM_TYPE}}"
+		{% if PARAM == "rules" %}
+			lastEvent, err := lastEventModel.GetEvent() // for comparing rules
+			if err != nil {
+				SetHttpErrorInternal(w, err)
+				return
+			}
+			modRuleTypes := event.GetModifiedRuleTypes(&lastEvent)
+			if len(modRuleTypes) > 0 {
+				eventMeta.FieldsMtime["rules"] = now
+				for _, ruleType := range modRuleTypes {
+					eventMeta.FieldsMtime["rules:"+ruleType.Name] = now
+				}
+			}
+		{% else %}
+			if !reflect.DeepEqual(
+				eventModel.{{PARAM|capfirst}},
+				lastEventModel.{{PARAM|capfirst}},
+			) {
+				eventMeta.FieldsMtime["{{PARAM}}"] = now
+			}
+		{% endif %}
+	{% endfor %}
+	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{
@@ -513,6 +568,14 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
+	{% if EVENT_TYPE == "custom" %}
+		lastEvent, err := eventModel.GetEvent()// for comparing rules
+		if err != nil {
+			SetHttpErrorInternal(w, err)
+			return
+		}
+		rulesModified := false
+	{% endif %}
 	now := time.Now()
 	{% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
 	{
@@ -559,6 +622,10 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 				eventModel.{{PARAM|capfirst}} = value
 			{% endif %}
 			delete(patchMap, "{{PARAM}}")
+			eventMeta.FieldsMtime["{{PARAM}}"] = now
+			{% if PARAM == "rules" %}
+				rulesModified = true
+			{% endif %}
 		}
 	}{% endfor %}
 	if len(patchMap) > 0 {
@@ -574,11 +641,22 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	_, err = eventModel.GetEvent() // (event, err), for validation
+	{% if EVENT_TYPE == "custom" %}
+		event, err := eventModel.GetEvent() // for validation and comparing rules
+	{% else %}
+		_, err = eventModel.GetEvent() // for validation
+	{% endif %}
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	{% if EVENT_TYPE == "custom" %}
+		if rulesModified {
+			for _, ruleType := range event.GetModifiedRuleTypes(&lastEvent) {
+				eventMeta.FieldsMtime["rules:"+ruleType.Name] = now
+			}
+		}
+	{% endif %}
 
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -612,6 +690,11 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 			SetHttpErrorInternal(w, err)
 			return
 		}
+	}
+	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
 	}
 	json.NewEncoder(w).Encode(map[string]string{
 		"eventId": eventId.Hex(),

@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"reflect"
 
 	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
@@ -234,6 +235,16 @@ func AddDailyNote(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	eventMeta.FieldsMtime = map[string]time.Time{
+		"timeZone":       now,
+		"timeZoneEnable": now,
+		"calType":        now,
+		"summary":        now,
+		"description":    now,
+		"icon":           now,
+		"jd":             now,
+	}
 	err = db.Insert(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -352,7 +363,7 @@ func UpdateDailyNote(w http.ResponseWriter, r *http.Request) {
 		SetHttpError(w, http.StatusBadRequest, msg)
 		return
 	}
-	_, err = eventModel.GetEvent() // (event, err), just for validation
+	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
@@ -378,18 +389,27 @@ func UpdateDailyNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*
-		// do we need the last revision? to compare or what?
-		lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
-		if err != nil {
-			if db.IsNotFound(err) {
-				SetHttpError(w, http.StatusBadRequest, "event not found")
-			} else {
-				SetHttpErrorInternal(w, err)
-			}
-			return
+	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "event not found")
+		} else {
+			SetHttpErrorInternal(w, err)
 		}
-	*/
+		return
+	}
+	lastEventModel, err := event_lib.LoadDailyNoteEventModel(
+		db,
+		lastEventRev.Sha1,
+	)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
 
 	if eventModel.Id != "" {
 		SetHttpError(w, http.StatusBadRequest, "'eventId' must not be present in JSON")
@@ -439,6 +459,60 @@ func UpdateDailyNote(w http.ResponseWriter, r *http.Request) {
 			SetHttpErrorInternal(w, err)
 			return
 		}
+	}
+	// PARAM="timeZone", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.TimeZone,
+		lastEventModel.TimeZone,
+	) {
+		eventMeta.FieldsMtime["timeZone"] = now
+	}
+	// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+	if !reflect.DeepEqual(
+		eventModel.TimeZoneEnable,
+		lastEventModel.TimeZoneEnable,
+	) {
+		eventMeta.FieldsMtime["timeZoneEnable"] = now
+	}
+	// PARAM="calType", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.CalType,
+		lastEventModel.CalType,
+	) {
+		eventMeta.FieldsMtime["calType"] = now
+	}
+	// PARAM="summary", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.Summary,
+		lastEventModel.Summary,
+	) {
+		eventMeta.FieldsMtime["summary"] = now
+	}
+	// PARAM="description", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.Description,
+		lastEventModel.Description,
+	) {
+		eventMeta.FieldsMtime["description"] = now
+	}
+	// PARAM="icon", PARAM_TYPE="string"
+	if !reflect.DeepEqual(
+		eventModel.Icon,
+		lastEventModel.Icon,
+	) {
+		eventMeta.FieldsMtime["icon"] = now
+	}
+	// PARAM="jd", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.Jd,
+		lastEventModel.Jd,
+	) {
+		eventMeta.FieldsMtime["jd"] = now
+	}
+	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{
@@ -526,6 +600,7 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.TimeZone = value
 			delete(patchMap, "timeZone")
+			eventMeta.FieldsMtime["timeZone"] = now
 		}
 	}
 	{
@@ -542,6 +617,7 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.TimeZoneEnable = value
 			delete(patchMap, "timeZoneEnable")
+			eventMeta.FieldsMtime["timeZoneEnable"] = now
 		}
 	}
 	{
@@ -558,6 +634,7 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.CalType = value
 			delete(patchMap, "calType")
+			eventMeta.FieldsMtime["calType"] = now
 		}
 	}
 	{
@@ -574,6 +651,7 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.Summary = value
 			delete(patchMap, "summary")
+			eventMeta.FieldsMtime["summary"] = now
 		}
 	}
 	{
@@ -590,6 +668,7 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.Description = value
 			delete(patchMap, "description")
+			eventMeta.FieldsMtime["description"] = now
 		}
 	}
 	{
@@ -606,6 +685,7 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.Icon = value
 			delete(patchMap, "icon")
+			eventMeta.FieldsMtime["icon"] = now
 		}
 	}
 	{
@@ -623,6 +703,7 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 			}
 			eventModel.Jd = int(value)
 			delete(patchMap, "jd")
+			eventMeta.FieldsMtime["jd"] = now
 		}
 	}
 	if len(patchMap) > 0 {
@@ -638,12 +719,11 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	_, err = eventModel.GetEvent() // (event, err), for validation
+	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
@@ -676,6 +756,11 @@ func PatchDailyNote(w http.ResponseWriter, r *http.Request) {
 			SetHttpErrorInternal(w, err)
 			return
 		}
+	}
+	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
 	}
 	json.NewEncoder(w).Encode(map[string]string{
 		"eventId": eventId.Hex(),
