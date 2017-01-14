@@ -608,12 +608,12 @@ func PatchCustom(w http.ResponseWriter, r *http.Request) {
 	{
 		rawValue, ok := patchMap["rules"]
 		if ok {
-			value, typeOk := rawValue.(event_lib.EventRuleModelList)
-			if !typeOk {
+			value, err := event_lib.DecodeMapEventRuleModelList(rawValue)
+			if err != nil {
 				SetHttpError(
 					w,
 					http.StatusBadRequest,
-					"bad type for parameter 'rules'",
+					"bad type or value for parameter 'rules': "+err.Error(),
 				)
 				return
 			}

@@ -2,6 +2,7 @@ package event_lib
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	. "scal/event_lib/rules_lib"
 	"scal/storage"
@@ -177,4 +178,41 @@ func (eventModel CustomEventModel) GetEvent() (CustomEvent, error) {
 	// pass a bool argument, or use a settings bool flag? FIXME
 	err = event.CheckRuleTypes()
 	return event, err
+}
+
+func DecodeMapEventRuleModelList(rawMapList interface{}) (EventRuleModelList, error) {
+	rawList, ok := rawMapList.([]interface{})
+	if !ok {
+		return EventRuleModelList{}, errors.New(
+			"could not convert to rawList",
+		)
+	}
+	modelList := make(EventRuleModelList, len(rawList))
+	for i, raw := range rawList {
+		m, ok := raw.(map[string]interface{})
+		if !ok {
+			return EventRuleModelList{}, errors.New(fmt.Sprintf(
+				"could not convert %v with type %T to M",
+				raw,
+				raw,
+			))
+		}
+		typeName, ok := m["type"].(string)
+		if !ok {
+			return EventRuleModelList{}, errors.New(
+				"missing or bad parameter 'type'",
+			)
+		}
+		value, ok := m["value"].(string)
+		if !ok {
+			return EventRuleModelList{}, errors.New(
+				"missing or bad parameter 'value'",
+			)
+		}
+		modelList[i] = EventRuleModel{
+			Type:  typeName,
+			Value: value,
+		}
+	}
+	return modelList, nil
 }

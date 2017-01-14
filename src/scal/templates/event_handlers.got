@@ -516,22 +516,34 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	{
 		rawValue, ok := patchMap["{{PARAM}}"]
 		if ok {
-			{% if PARAM_TYPE == "int" %}
-			  // json Unmarshal converts int to float64
-			  value, typeOk := rawValue.(float64)
-			{% elif PARAM_TYPE == "*time.Time" %}
-			  value, typeOk := rawValue.(string)
+			{% if PARAM == "rules" %}
+				value, err := event_lib.DecodeMapEventRuleModelList(rawValue)
+				if err != nil {
+					SetHttpError(
+						w,
+						http.StatusBadRequest,
+						"bad type or value for parameter 'rules': "+err.Error(),
+					)
+					return
+				}
 			{% else %}
-			  value, typeOk := rawValue.({{PARAM_TYPE}})
+				{% if PARAM_TYPE == "int" %}
+					// json Unmarshal converts int to float64
+					value, typeOk := rawValue.(float64)
+				{% elif PARAM_TYPE == "*time.Time" %}
+					value, typeOk := rawValue.(string)
+				{% else %}
+					value, typeOk := rawValue.({{PARAM_TYPE}})
+				{% endif %}
+				if !typeOk {
+					SetHttpError(
+						w,
+						http.StatusBadRequest,
+						"bad type for parameter '{{PARAM}}'",
+					)
+					return
+				}
 			{% endif %}
-			if !typeOk {
-				SetHttpError(
-					w,
-					http.StatusBadRequest,
-					"bad type for parameter '{{PARAM}}'",
-				)
-				return
-			}
 			{% if PARAM_TYPE == "int" %}
 			  eventModel.{{PARAM|capfirst}} = int(value)
 			{% elif PARAM_TYPE == "*time.Time" %}
