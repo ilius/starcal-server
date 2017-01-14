@@ -132,7 +132,7 @@ func AddYearly(w http.ResponseWriter, r *http.Request) {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	_, err = eventModel.GetEvent() // (event, err), just for validation
+	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
@@ -407,11 +407,13 @@ func UpdateYearly(w http.ResponseWriter, r *http.Request) {
 	jsonByte, _ := json.Marshal(eventModel)
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 
+	now := time.Now()
+
 	eventRev := event_lib.EventRevisionModel{
 		EventId:   *eventId,
 		EventType: eventModel.Type(),
 		Sha1:      eventModel.Sha1,
-		Time:      time.Now(),
+		Time:      now,
 	}
 	err = db.Insert(eventRev)
 	if err != nil {
@@ -509,6 +511,7 @@ func PatchYearly(w http.ResponseWriter, r *http.Request) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
+	now := time.Now()
 	{
 		rawValue, ok := patchMap["timeZone"]
 		if ok {
@@ -699,7 +702,7 @@ func PatchYearly(w http.ResponseWriter, r *http.Request) {
 		EventId:   *eventId,
 		EventType: eventModel.Type(),
 		Sha1:      eventModel.Sha1,
-		Time:      time.Now(),
+		Time:      now,
 	})
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())

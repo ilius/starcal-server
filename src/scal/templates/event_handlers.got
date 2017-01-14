@@ -132,7 +132,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	_, err = eventModel.GetEvent() // (event, err), just for validation
+	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
@@ -407,11 +407,13 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	jsonByte, _ := json.Marshal(eventModel)
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
 
+	now := time.Now()
+
 	eventRev := event_lib.EventRevisionModel{
 		EventId:   *eventId,
 		EventType: eventModel.Type(),
 		Sha1:      eventModel.Sha1,
-		Time:      time.Now(),
+		Time:      now,
 	}
 	err = db.Insert(eventRev)
 	if err != nil {
@@ -511,7 +513,7 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-
+	now := time.Now()
 	{% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
 	{
 		rawValue, ok := patchMap["{{PARAM}}"]
@@ -545,16 +547,16 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 				}
 			{% endif %}
 			{% if PARAM_TYPE == "int" %}
-			  eventModel.{{PARAM|capfirst}} = int(value)
+				eventModel.{{PARAM|capfirst}} = int(value)
 			{% elif PARAM_TYPE == "*time.Time" %}
-			  timeValue, err := time.Parse(time.RFC3339, value)
-			  if err != nil {
-				  SetHttpError(w, http.StatusBadRequest, err.Error())
-				  return
-			  }
-			  eventModel.{{PARAM|capfirst}} = &timeValue
+				timeValue, err := time.Parse(time.RFC3339, value)
+				if err != nil {
+					SetHttpError(w, http.StatusBadRequest, err.Error())
+					return
+				}
+				eventModel.{{PARAM|capfirst}} = &timeValue
 			{% else %}
-			  eventModel.{{PARAM|capfirst}} = value
+				eventModel.{{PARAM|capfirst}} = value
 			{% endif %}
 			delete(patchMap, "{{PARAM}}")
 		}
@@ -586,7 +588,7 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		EventId:   *eventId,
 		EventType: eventModel.Type(),
 		Sha1:      eventModel.Sha1,
-		Time:      time.Now(),
+		Time:      now,
 	})
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
