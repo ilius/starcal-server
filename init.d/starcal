@@ -1,14 +1,161 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:      starcal
-# Required-Start:    $local_fs $remote_fs $network $syslog $named
-# Required-Stop:     $local_fs $remote_fs $network $syslog $named
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
+# Provides: starcal
+# Required-Start: $local_fs $remote_fs $network $syslog $named
+# Required-Stop: $local_fs $remote_fs $network $syslog $named
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
 # Short-Description: StarCakendar Server
-# Description:       starts StarCakendar Server using start-stop-daemon
+# Description: starts StarCakendar Server using start-stop-daemon
 ### END INIT INFO
+
+# Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
+# Also avalable in /usr/share/common-licenses/GPL on Debian systems
+# or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+
+########################## Functions ###########################
+
+if [ -f /etc/debian_version ] ; then
+	system=debian
+elif [ -f /etc/arch-release ]; then
+	system=arch
+elif [ -f /etc/redhat-release ]; then
+	system=redhat
+elif [ -f /etc/SuSE-release ]; then
+	system=suse
+elif [ -f /etc/gentoo-release ]; then
+	system=gentoo
+elif [ -f /etc/lfs-release -a -d /etc/rc.d/init.d ]; then
+	system=lfs
+else
+	system=other
+fi
+
+if [ "$system" = "debian" ] ; then
+	. /lib/init/vars.sh
+	. /lib/lsb/init-functions
+	fail_msg() {
+		log_end_msg 1
+	}
+	succ_msg() {
+		log_end_msg 0
+	}
+	begin() {
+		[ "$VERBOSE" != no ] && log_daemon_msg "$1" "$NAME"
+	}
+elif [ "$system" = "arch" ]; then
+	USECOLOR=yes
+	. /etc/rc.d/functions
+	fail_msg() {
+		stat_fail
+	}
+	succ_msg() {
+		stat_done
+	}
+	begin() {
+		stat_busy "$1"
+	}
+elif [ "$system" = "redhat" ]; then
+	. /etc/init.d/functions
+	fail_msg() {
+		echo_failure
+		echo
+	}
+	succ_msg() {
+		echo_success
+		echo
+	}
+	begin() {
+		echo -n "$1"
+	}
+elif [ "$system" = "suse" ]; then
+	. /etc/rc.status
+	fail_msg() {
+		rc_failed 1
+		rc_status -v
+	}
+	succ_msg() {
+		rc_reset
+		rc_status -v
+	}
+	begin() {
+		echo -n "$1"
+	}
+elif [ "$system" = "gentoo" ]; then
+	if [ -f /sbin/functions.sh ]; then
+		. /sbin/functions.sh
+	elif [ -f /etc/init.d/functions.sh ]; then
+		. /etc/init.d/functions.sh
+	fi
+	fail_msg() {
+		eend 1
+	}
+	succ_msg() {
+		eend $?
+	}
+	begin() {
+		ebegin $1
+	}
+	if [ "`which $0`" = "/sbin/rc" ]; then
+		shift
+	fi
+elif [ "$system" = "lfs" ]; then
+	. /etc/rc.d/init.d/functions
+	fail_msg() {
+		echo_failure
+	}
+	succ_msg() {
+		echo_ok
+	}
+	begin() {
+		echo $1
+	}
+else
+	fail_msg() {
+		echo " ...fail!"
+	}
+	succ_msg() {
+		echo " ...done."
+	}
+	begin() {
+		echo -n $1
+	}
+fi
+
+show_error()
+{
+	if [ "$system" = "gentoo" ]; then
+		eerror $1
+	fi
+	fail_msg
+	echo "($1)"
+}
+
+fail()
+{
+	show_error "$1"
+	exit 1
+}
+
+
+
+################################################################
+
+
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/local/sbin/starcal-server
@@ -26,8 +173,8 @@ mkdir -p $LOG_DIR
 
 test -x $DAEMON || exit 0
 
-. /lib/init/vars.sh
-. /lib/lsb/init-functions
+
+
 
 PID=/run/starcal-server.pid
 
@@ -64,55 +211,56 @@ do_stop()
 
 case "$1" in
 	start)
-		[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+		begin "Starting $DESC"
 		do_start
 		case "$?" in
 			0)
-				[ "$VERBOSE" != no ] && log_end_msg 0
+				[ "$VERBOSE" != no ] && succ_msg
 				;;
 			1)
-				[ "$VERBOSE" != no ] && log_end_msg 0
+				[ "$VERBOSE" != no ] && succ_msg
 				;;
 			2)
-				[ "$VERBOSE" != no ] && log_end_msg 1
+				[ "$VERBOSE" != no ] && fail_msg
 				;;
 		esac
 		;;
 	stop)
-		[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+		begin "Stopping $DESC"
 		do_stop
 		case "$?" in
 			0)
-				[ "$VERBOSE" != no ] && log_end_msg 0
+				[ "$VERBOSE" != no ] && succ_msg
 				;;
 			1)
-				[ "$VERBOSE" != no ] && log_end_msg 0
+				[ "$VERBOSE" != no ] && succ_msg
 				;;
 			2)
-				[ "$VERBOSE" != no ] && log_end_msg 1
+				[ "$VERBOSE" != no ] && fail_msg
 				;;
 		esac
 		;;
 	restart)
-		log_daemon_msg "Restarting $DESC" "$NAME"
+		begin "Restarting $DESC"
 		do_stop
 		case "$?" in
 			0|1)
 				do_start
 				case "$?" in
-					0) log_end_msg 0 ;;
-					1) log_end_msg 1 ;; # Old process is still running
-					*) log_end_msg 1 ;; # Failed to start
+					0) succ_msg ;;
+					1) fail_msg ;; # Old process is still running
+					*) fail_msg ;; # Failed to start
 				esac
 				;;
 			*)
 				# Failed to stop
-				log_end_msg 1
+				fail_msg
 				;;
 		esac
 		;;
 	status)
-		status_of_proc -p $PID "$DAEMON" "$NAME" && exit 0 || exit $?
+		#status_of_proc -p $PID "$DAEMON" "$NAME" && exit 0 || exit $? # Debian
+		systemctl status "$NAME"
 		;;
 	*)
 		echo "Usage: $NAME {start|stop|restart|status}" >&2
