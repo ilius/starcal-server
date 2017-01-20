@@ -237,14 +237,17 @@ func AddUniversityClass(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eventMeta.FieldsMtime = map[string]time.Time{
-		"timeZone":       now,
-		"timeZoneEnable": now,
-		"calType":        now,
-		"summary":        now,
-		"description":    now,
-		"icon":           now,
-		"weekNumMode":    now,
-		"weekDayList":    now,
+		"timeZone":        now,
+		"timeZoneEnable":  now,
+		"calType":         now,
+		"summary":         now,
+		"description":     now,
+		"icon":            now,
+		"weekNumMode":     now,
+		"weekDayList":     now,
+		"dayStartSeconds": now,
+		"dayEndSeconds":   now,
+		"courseId":        now,
 	}
 	err = db.Insert(eventMeta)
 	if err != nil {
@@ -517,6 +520,27 @@ func UpdateUniversityClass(w http.ResponseWriter, r *http.Request) {
 	) {
 		eventMeta.FieldsMtime["weekDayList"] = now
 	}
+	// PARAM="dayStartSeconds", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.DayStartSeconds,
+		lastEventModel.DayStartSeconds,
+	) {
+		eventMeta.FieldsMtime["dayStartSeconds"] = now
+	}
+	// PARAM="dayEndSeconds", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.DayEndSeconds,
+		lastEventModel.DayEndSeconds,
+	) {
+		eventMeta.FieldsMtime["dayEndSeconds"] = now
+	}
+	// PARAM="courseId", PARAM_TYPE="int"
+	if !reflect.DeepEqual(
+		eventModel.CourseId,
+		lastEventModel.CourseId,
+	) {
+		eventMeta.FieldsMtime["courseId"] = now
+	}
 	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -728,6 +752,60 @@ func PatchUniversityClass(w http.ResponseWriter, r *http.Request) {
 			eventModel.WeekDayList = value
 			delete(patchMap, "weekDayList")
 			eventMeta.FieldsMtime["weekDayList"] = now
+		}
+	}
+	{
+		rawValue, ok := patchMap["dayStartSeconds"]
+		if ok {
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'dayStartSeconds'",
+				)
+				return
+			}
+			eventModel.DayStartSeconds = int(value)
+			delete(patchMap, "dayStartSeconds")
+			eventMeta.FieldsMtime["dayStartSeconds"] = now
+		}
+	}
+	{
+		rawValue, ok := patchMap["dayEndSeconds"]
+		if ok {
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'dayEndSeconds'",
+				)
+				return
+			}
+			eventModel.DayEndSeconds = int(value)
+			delete(patchMap, "dayEndSeconds")
+			eventMeta.FieldsMtime["dayEndSeconds"] = now
+		}
+	}
+	{
+		rawValue, ok := patchMap["courseId"]
+		if ok {
+			// json Unmarshal converts int to float64
+			value, typeOk := rawValue.(float64)
+			if !typeOk {
+				SetHttpError(
+					w,
+					http.StatusBadRequest,
+					"bad type for parameter 'courseId'",
+				)
+				return
+			}
+			eventModel.CourseId = int(value)
+			delete(patchMap, "courseId")
+			eventMeta.FieldsMtime["courseId"] = now
 		}
 	}
 	if len(patchMap) > 0 {

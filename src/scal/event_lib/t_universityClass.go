@@ -16,9 +16,12 @@ import "scal/storage"
 */
 
 type UniversityClassEventModel struct {
-	BaseEventModel `bson:",inline" json:",inline"`
-	WeekNumMode    string `bson:"weekNumMode" json:"weekNumMode"`
-	WeekDayList    []int  `bson:"weekDayList" json:"weekDayList"`
+	BaseEventModel  `bson:",inline" json:",inline"`
+	WeekNumMode     string `bson:"weekNumMode" json:"weekNumMode"`
+	WeekDayList     []int  `bson:"weekDayList" json:"weekDayList"`
+	DayStartSeconds int    `bson:"dayStartSeconds" json:"dayStartSeconds"`
+	DayEndSeconds   int    `bson:"dayEndSeconds" json:"dayEndSeconds"`
+	CourseId        int    `bson:"courseId" json:"courseId"`
 }
 
 func (self UniversityClassEventModel) Type() string {
