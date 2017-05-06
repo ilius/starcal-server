@@ -56,6 +56,11 @@ func init() {
 				"{groupId}/events",
 				authWrap(GetGroupEventList),
 			},
+			"GetGroupEventListWithSha1": {
+				"GET",
+				"{groupId}/events-sha1",
+				authWrap(GetGroupEventListWithSha1),
+			},
 			"GetGroupModifiedEvents": {
 				"GET",
 				"{groupId}/modified-events/{sinceDateTime}",
@@ -462,6 +467,73 @@ func GetGroupEventList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(scal.M{
 		"events": results,
 	})
+}
+
+func GetGroupEventListWithSha1(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
+		return
+	}
+	email := userModel.Email
+	// -----------------------------------------------
+	groupId := ObjectIdFromURL(w, r, "groupId", 1)
+	if groupId == nil {
+		return
+	}
+	// -----------------------------------------------
+	db, err := storage.GetDB()
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	groupModel, err, internalErr := event_lib.LoadGroupModelById(
+		"groupId",
+		db,
+		groupId,
+	)
+	if err != nil {
+		if internalErr {
+			SetHttpErrorInternal(w, err)
+		} else {
+			SetHttpError(w, http.StatusBadRequest, err.Error())
+		}
+	}
+
+	pipeline := []scal.M{
+		{"$match": scal.M{
+			"groupId": groupId,
+		}},
+	}
+	aCond := groupModel.GetAccessCond(email)
+	if len(aCond) > 0 {
+		pipeline = append(pipeline, scal.M{"$match": aCond})
+	}
+	pipeline = append(pipeline, []scal.M{
+		{"$lookup": scal.M{
+			"from":         storage.C_revision,
+			"localField":   "_id",
+			"foreignField": "eventId",
+			"as":           "revision",
+		}},
+		{"$unwind": "$revision"},
+		{"$group": scal.M{
+			"_id":       "$_id",
+			"eventType": scal.M{"$first": "$eventType"},
+			"lastSha1":  scal.M{"$first": "$revision.sha1"},
+		}},
+	}...)
+
+	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	json.NewEncoder(w).Encode(scal.M{
+		"events": results,
+	})
+
 }
 
 func GetGroupModifiedEvents(w http.ResponseWriter, r *http.Request) {
