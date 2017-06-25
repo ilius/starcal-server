@@ -1,15 +1,17 @@
+[submodule "src/github.com/dgrijalva/jwt-go"]
+	path = src/github.com/dgrijalva/jwt-go
+	url = git@github.com:dgrijalva/jwt-go
 [submodule "src/gopkg.in/mgo.v2"]
 	path = src/gopkg.in/mgo.v2
 	url = https://gopkg.in/mgo.v2
+
 [submodule "src/github.com/gorilla/context"]
 	path = src/github.com/gorilla/context
 	url = git@github.com:gorilla/context.git
 [submodule "src/github.com/gorilla/mux"]
 	path = src/github.com/gorilla/mux
 	url = git@github.com:gorilla/mux.git
+
 [submodule "src/github.com/bmizerany/pat"]
 	path = src/github.com/bmizerany/pat
 	url = git@github.com:bmizerany/pat
-[submodule "src/github.com/dgrijalva/jwt-go"]
-	path = src/github.com/dgrijalva/jwt-go
-	url = git@github.com:dgrijalva/jwt-go
