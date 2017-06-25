@@ -1,6 +1,6 @@
-[submodule "src/gopkg.in/mgo.v2-unstable"]
+[submodule "src/gopkg.in/mgo.v2"]
 	path = src/gopkg.in/mgo.v2
-	url = git@github.com:go-mgo/mgo.git
+	url = https://gopkg.in/mgo.v2
 [submodule "src/github.com/gorilla/context"]
 	path = src/github.com/gorilla/context
 	url = git@github.com:gorilla/context.git
