@@ -23,54 +23,106 @@ import "scal"
 
 // don't import "scal/utils"
 
-type CalType struct {
-	Name         string
-	Desc         string
-	Epoch        int
-	MinMonthLen  int
-	MaxMonthLen  int
-	AvgYearLen   float64
-	MonthNames   []string
-	MonthNamesAb []string
-	IsLeap       func(year int) bool
-	ToJd         func(date scal.Date) int
-	JdTo         func(jd int) scal.Date
-	GetMonthLen  func(year int, month int) int
+type CalType interface {
+	Name() string
+	Desc() string
+	Epoch() int
+	MinMonthLen() int
+	MaxMonthLen() int
+	AvgYearLen() float64
+	MonthNames() []string
+	MonthNamesAb() []string
+	IsLeap(year int) bool
+	ToJd(date scal.Date) int
+	JdTo(jd int) scal.Date
+	GetMonthLen(year int, month int) int
 }
 
-var CalTypesList []*CalType
-var CalTypesMap = make(map[string]*CalType)
+type calTypeStruct struct {
+	name         string
+	desc         string
+	epoch        int
+	minMonthLen  int
+	maxMonthLen  int
+	avgYearLen   float64
+	monthNames   []string
+	monthNamesAb []string
+	isLeap       func(year int) bool
+	toJd         func(date scal.Date) int
+	jdTo         func(jd int) scal.Date
+	getMonthLen  func(year int, month int) int
+}
+
+func (ct *calTypeStruct) Name() string {
+	return ct.name
+}
+func (ct *calTypeStruct) Desc() string {
+	return ct.desc
+}
+func (ct *calTypeStruct) Epoch() int {
+	return ct.epoch
+}
+func (ct *calTypeStruct) MinMonthLen() int {
+	return ct.minMonthLen
+}
+func (ct *calTypeStruct) MaxMonthLen() int {
+	return ct.maxMonthLen
+}
+func (ct *calTypeStruct) AvgYearLen() float64 {
+	return ct.avgYearLen
+}
+func (ct *calTypeStruct) MonthNames() []string {
+	return ct.monthNames
+}
+func (ct *calTypeStruct) MonthNamesAb() []string {
+	return ct.monthNamesAb
+}
+func (ct *calTypeStruct) IsLeap(year int) bool {
+	return ct.isLeap(year)
+}
+func (ct *calTypeStruct) ToJd(date scal.Date) int {
+	return ct.toJd(date)
+}
+func (ct *calTypeStruct) JdTo(jd int) scal.Date {
+	return ct.jdTo(jd)
+}
+func (ct *calTypeStruct) GetMonthLen(year int, month int) int {
+	return ct.getMonthLen(year, month)
+}
+
+var CalTypesList []CalType
+var CalTypesMap = make(map[string]CalType)
 
 func RegisterCalType(
-	Name string,
-	Desc string,
-	Epoch int,
-	MinMonthLen int,
-	MaxMonthLen int,
-	AvgYearLen float64,
-	MonthNames []string,
-	MonthNamesAb []string,
-	IsLeap func(year int) bool,
-	ToJd func(date scal.Date) int,
-	JdTo func(jd int) scal.Date,
-	GetMonthLen func(year int, month int) int,
+	name string,
+	desc string,
+	epoch int,
+	minMonthLen int,
+	maxMonthLen int,
+	avgYearLen float64,
+	monthNames []string,
+	monthNamesAb []string,
+	isLeap func(year int) bool,
+	toJd func(date scal.Date) int,
+	jdTo func(jd int) scal.Date,
+	getMonthLen func(year int, month int) int,
 ) {
-	calType := CalType{
-		Name,
-		Desc,
-		Epoch,
-		MinMonthLen,
-		MaxMonthLen,
-		AvgYearLen,
-		MonthNames,
-		MonthNamesAb,
-		IsLeap,
-		ToJd,
-		JdTo,
-		GetMonthLen,
+	calType := &calTypeStruct{
+		name:         name,
+		desc:         desc,
+		epoch:        epoch,
+		minMonthLen:  minMonthLen,
+		maxMonthLen:  maxMonthLen,
+		avgYearLen:   avgYearLen,
+		monthNames:   monthNames,
+		monthNamesAb: monthNamesAb,
+		isLeap:       isLeap,
+		toJd:         toJd,
+		jdTo:         jdTo,
+		getMonthLen:  getMonthLen,
 	}
-	CalTypesList = append(CalTypesList, &calType)
-	CalTypesMap[Name] = &calType
+	CalTypesList = append(CalTypesList, calType)
+	CalTypesMap[name] = calType
 
 }
 
@@ -78,7 +130,7 @@ func invalidCalType(calTypeName string) error {
 	return errors.New("invalid calendar type '" + calTypeName + "'")
 }
 
-func GetCalType(calTypeName string) (*CalType, error) {
+func GetCalType(calTypeName string) (CalType, error) {
 	calType, calTypeOk := CalTypesMap[calTypeName]
 	if !calTypeOk {
 		return nil, invalidCalType(calTypeName)

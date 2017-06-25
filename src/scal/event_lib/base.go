@@ -50,7 +50,7 @@ type BaseEvent struct {
 	//ownerEmail string
 	loc          *time.Location
 	locEnable    bool
-	calType      *cal_types.CalType
+	calType      cal_types.CalType
 	summary      string
 	description  string
 	icon         string
@@ -81,7 +81,7 @@ func (self BaseEvent) Location() *time.Location {
 	//return time.Now().Location()
 	return time.UTC
 }
-func (self BaseEvent) CalType() *cal_types.CalType {
+func (self BaseEvent) CalType() cal_types.CalType {
 	return self.calType
 }
 func (self BaseEvent) Summary() string {
@@ -102,7 +102,7 @@ func (self BaseEvent) BaseModel() BaseEventModel {
 		Id:             bson.ObjectId(self.id),
 		TimeZone:       self.loc.String(),
 		TimeZoneEnable: self.locEnable,
-		CalType:        self.calType.Name,
+		CalType:        self.calType.Name(),
 		Summary:        self.summary,
 		Description:    self.description,
 		Icon:           self.icon,

@@ -6,7 +6,7 @@ import "scal/cal_types"
 type Event interface {
 	String() string
 	Location() *time.Location
-	CalType() *cal_types.CalType
+	CalType() cal_types.CalType
 
 	Id() string
 	Summary() string
@@ -23,7 +23,7 @@ func (self NilEvent) String() string {
 func (self NilEvent) Location() *time.Location {
 	return time.Now().Location()
 }
-func (self NilEvent) CalType() *cal_types.CalType {
+func (self NilEvent) CalType() cal_types.CalType {
 	calType, err := cal_types.GetCalType("gregorian")
 	if err != nil {
 		//log.Error(log)
