@@ -23,8 +23,8 @@ fi
 
 BIN_PATCH=
 if [ -n "$PROD_HASH" ] && \
-which bsdiff >/dev/null && \
-scal_ssh which bspatch >/dev/null
+command bsdiff >/dev/null && \
+scal_ssh command bspatch >/dev/null
 then
 	echo "Preparing for binary patch"
 	PROD_BIN_CACHED="$BIN_CACHE/$PROD_HASH"
