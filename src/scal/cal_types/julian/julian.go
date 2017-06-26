@@ -27,13 +27,14 @@ import (
 
 // ###### Common Globals #######
 
-var Name = "julian"
-var Desc = "Julian"
-
-var Epoch = 1721058
-var MinMonthLen = 28
-var MaxMonthLen = 32
-var AvgYearLen = 365.25
+const (
+	Name        = "julian"
+	Desc        = "Julian"
+	Epoch       = 1721058
+	MinMonthLen = 28
+	MaxMonthLen = 32
+	AvgYearLen  = 365.25
+)
 
 var MonthNames = []string{
 	"January", "February", "March",

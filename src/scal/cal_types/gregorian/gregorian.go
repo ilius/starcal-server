@@ -25,13 +25,14 @@ import (
 
 // ###### Common Globals #######
 
-var Name = "gregorian"
-var Desc = "Gregorian"
-
-var Epoch = 1721426
-var MinMonthLen = 29
-var MaxMonthLen = 31
-var AvgYearLen = 365.2425 // FIXME
+const (
+	Name        = "gregorian"
+	Desc        = "Gregorian"
+	Epoch       = 1721426
+	MinMonthLen = 29
+	MaxMonthLen = 31
+	AvgYearLen  = 365.2425 // FIXME
+)
 
 var MonthNames = []string{
 	"January", "February", "March", "April", "May", "June",
@@ -44,8 +45,8 @@ var MonthNamesAb = []string{
 
 // ###### Other Globals  #######
 
-//var J0001 = Epoch
-var J1970 = 2440588
+//const J0001 = Epoch
+const J1970 = 2440588
 
 // #############################
 

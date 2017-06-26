@@ -29,13 +29,14 @@ import "scal/cal_types"
 
 // ###### Common Globals #######
 
-var Name = "jalali"
-var Desc = "Jalali"
-
-var Epoch = 1948321
-var MinMonthLen = 29
-var MaxMonthLen = 31
-var AvgYearLen = 365.2425 // FIXME
+const (
+	Name        = "jalali"
+	Desc        = "Jalali"
+	Epoch       = 1948321
+	MinMonthLen = 29
+	MaxMonthLen = 31
+	AvgYearLen  = 365.2425 // FIXME
+)
 
 var MonthNames = []string{
 	"Farvardin", "Ordibehesht", "Khordad", "Teer", "Mordad", "Shahrivar",
@@ -48,7 +49,7 @@ var MonthNamesAb = []string{
 
 // ###### Other Globals  #######
 
-var GREGORIAN_EPOCH = 1721426 // used in 33-year algorithm
+const GREGORIAN_EPOCH = 1721426 // used in 33-year algorithm
 
 var monthLen = []int{31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30}
 var monthLenSum = []int{0, 31, 62, 93, 124, 155, 186, 216, 246, 276, 306, 336, 366}

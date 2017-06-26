@@ -27,13 +27,14 @@ import (
 
 // ###### Common Globals #######
 
-var Name = "ethiopian"
-var Desc = "Ethiopian"
-
-var Epoch = 1724235
-var MinMonthLen = 30
-var MaxMonthLen = 36
-var AvgYearLen = 365.25
+const (
+	Name        = "ethiopian"
+	Desc        = "Ethiopian"
+	Epoch       = 1724235
+	MinMonthLen = 30
+	MaxMonthLen = 36
+	AvgYearLen  = 365.25
+)
 
 var MonthNames = []string{
 	"Meskerem", "Tekimt", "Hidar",

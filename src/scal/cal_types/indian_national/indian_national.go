@@ -26,13 +26,14 @@ import "scal/cal_types/gregorian"
 
 // ###### Common Globals #######
 
-var Name = "indian_national"
-var Desc = "Indian National"
-
-var Epoch = 1749994
-var MinMonthLen = 30
-var MaxMonthLen = 31
-var AvgYearLen = 365.2425 // FIXME
+const (
+	Name        = "indian_national"
+	Desc        = "Indian National"
+	Epoch       = 1749994
+	MinMonthLen = 30
+	MaxMonthLen = 31
+	AvgYearLen  = 365.2425 // FIXME
+)
 
 var MonthNames = []string{
 	"Chaitra", "Vaishākh", "Jyaishtha", "Āshādha", "Shrāvana", "Bhādrapad",

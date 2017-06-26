@@ -26,13 +26,14 @@ import (
 
 // ###### Common Globals #######
 
-var Name = "hijri"
-var Desc = "Hijri(Islamic)"
-
-var Epoch = 1948440
-var MinMonthLen = 29
-var MaxMonthLen = 30
-var AvgYearLen = 354.3666 // FIXME
+const (
+	Name        = "hijri"
+	Desc        = "Hijri(Islamic)"
+	Epoch       = 1948440
+	MinMonthLen = 29
+	MaxMonthLen = 30
+	AvgYearLen  = 354.3666 // FIXME
+)
 
 var MonthNames = []string{
 	"Muharram", "Safar", "Rabia' 1",
