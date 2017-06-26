@@ -13,8 +13,8 @@ import (
 	. "scal/utils"
 )
 
-//var time_format = "2006-01-02 15:04:05";
-var time_format = "2006-01-02 15:04"
+//const time_format = "2006-01-02 15:04:05";
+const time_format = "2006-01-02 15:04"
 
 func (self JdOccurSet) String() string {
 	strList := make([]string, 0, self.Len())

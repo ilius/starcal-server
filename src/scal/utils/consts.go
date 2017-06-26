@@ -1,12 +1,12 @@
 package utils
 
-var MIN_INT64 = int64(-9223372036854775808)
-var J1970 = 2440588
+const MIN_INT64 = int64(-9223372036854775808)
+const J1970 = 2440588
 
-var DayLen = 24 * 3600
+const DayLen = 24 * 3600
 
-var IcsMinStartYear = 1970
-var IcsMaxEndYear = 2050
+const IcsMinStartYear = 1970
+const IcsMaxEndYear = 2050
 
 var DurationUnitByValue = map[int]string{
 	1:      "second",
