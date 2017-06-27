@@ -47,6 +47,11 @@ func init() {
 				"{eventId}",
 				authWrap(PatchWeekly),
 			},
+			"MergeWeekly": {
+				"POST",
+				"{eventId}/merge",
+				authWrap(MergeWeekly),
+			},
 			// functions of following operations are defined in handlers.go
 			// because their definition does not depend on event type
 			// but their URL still contains eventType for sake of compatibilty
@@ -870,4 +875,366 @@ func PatchWeekly(w http.ResponseWriter, r *http.Request) {
 		"eventId": eventId.Hex(),
 		"sha1":    eventModel.Sha1,
 	})
+}
+
+func MergeWeekly(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
+		return
+	}
+	email := userModel.Email
+	// remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	// if err != nil {
+	// 	SetHttpErrorInternal(w, err)
+	// 	return
+	// }
+	// -----------------------------------------------
+	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
+	eventId := ObjectIdFromURL(w, r, "eventId", 0)
+	if eventId == nil {
+		return
+	}
+	// -----------------------------------------------
+	inputStruct := struct {
+		Event event_lib.WeeklyEventModel `json:"event"` // DYNAMIC
+
+		LastMergeSha1 string               `json:"lastMergeSha1"`
+		FieldsMtime   map[string]time.Time `json:"fieldsMtime"`
+	}{}
+
+	body, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(body, &inputStruct)
+	if err != nil {
+		SetHttpError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	db, err := storage.GetDB()
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	// if inputStruct.Event.DummyType == "" {
+	// 	SetHttpError(w, http.StatusBadRequest, "missing 'eventType'")
+	// 	return
+	// }
+	if inputStruct.Event.Id == "" {
+		SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
+		return
+	}
+	// FIXME: LastMergeSha1 can be empty?
+	if inputStruct.LastMergeSha1 == "" {
+		SetHttpError(w, http.StatusBadRequest, "missing 'lastMergeSha1'")
+		return
+	}
+	inputEventModel := &inputStruct.Event
+	if inputEventModel.Id.Hex() != eventId.Hex() {
+		SetHttpError(w, http.StatusBadRequest, "mismatch 'event.id'")
+		return
+	}
+
+	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "event not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
+	if eventMeta.OwnerEmail != email {
+		SetHttpError(w, http.StatusForbidden, "you don't own this event")
+		return
+	}
+
+	lastRevModel, err := event_lib.LoadLastRevisionModel(db, eventId)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "event not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
+	parentEventModel, err := event_lib.LoadWeeklyEventModel(db, inputStruct.LastMergeSha1)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "invalid lastMergeSha1: revision not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
+	lastEventModel, err := event_lib.LoadWeeklyEventModel(db, lastRevModel.Sha1)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	fmt.Println(parentEventModel)
+	fmt.Println(lastEventModel)
+
+	// performing a 3-way merge
+	// C <== parentEventModel	<== The common ancestor (last merge for this client)
+	// A <== inputEventModel	<== The input (client's latest) data
+	// B <== lastEventModel		<== The current (server's latest) data
+	now := time.Now()
+	func() {
+		// PARAM="timeZone", PARAM_TYPE="string"
+		inputValue := inputEventModel.TimeZone
+		lastValue := lastEventModel.TimeZone
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.TimeZone
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.TimeZone = inputValue
+			eventMeta.FieldsMtime["timeZone"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["timeZone"].After(eventMeta.FieldsMtime["timeZone"]) {
+			lastEventModel.TimeZone = inputValue
+			eventMeta.FieldsMtime["timeZone"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+		inputValue := inputEventModel.TimeZoneEnable
+		lastValue := lastEventModel.TimeZoneEnable
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.TimeZoneEnable
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.TimeZoneEnable = inputValue
+			eventMeta.FieldsMtime["timeZoneEnable"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["timeZoneEnable"].After(eventMeta.FieldsMtime["timeZoneEnable"]) {
+			lastEventModel.TimeZoneEnable = inputValue
+			eventMeta.FieldsMtime["timeZoneEnable"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="calType", PARAM_TYPE="string"
+		inputValue := inputEventModel.CalType
+		lastValue := lastEventModel.CalType
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.CalType
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.CalType = inputValue
+			eventMeta.FieldsMtime["calType"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["calType"].After(eventMeta.FieldsMtime["calType"]) {
+			lastEventModel.CalType = inputValue
+			eventMeta.FieldsMtime["calType"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="summary", PARAM_TYPE="string"
+		inputValue := inputEventModel.Summary
+		lastValue := lastEventModel.Summary
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.Summary
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.Summary = inputValue
+			eventMeta.FieldsMtime["summary"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["summary"].After(eventMeta.FieldsMtime["summary"]) {
+			lastEventModel.Summary = inputValue
+			eventMeta.FieldsMtime["summary"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="description", PARAM_TYPE="string"
+		inputValue := inputEventModel.Description
+		lastValue := lastEventModel.Description
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.Description
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.Description = inputValue
+			eventMeta.FieldsMtime["description"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["description"].After(eventMeta.FieldsMtime["description"]) {
+			lastEventModel.Description = inputValue
+			eventMeta.FieldsMtime["description"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="icon", PARAM_TYPE="string"
+		inputValue := inputEventModel.Icon
+		lastValue := lastEventModel.Icon
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.Icon
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.Icon = inputValue
+			eventMeta.FieldsMtime["icon"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["icon"].After(eventMeta.FieldsMtime["icon"]) {
+			lastEventModel.Icon = inputValue
+			eventMeta.FieldsMtime["icon"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="startJd", PARAM_TYPE="int"
+		inputValue := inputEventModel.StartJd
+		lastValue := lastEventModel.StartJd
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.StartJd
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.StartJd = inputValue
+			eventMeta.FieldsMtime["startJd"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["startJd"].After(eventMeta.FieldsMtime["startJd"]) {
+			lastEventModel.StartJd = inputValue
+			eventMeta.FieldsMtime["startJd"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="endJd", PARAM_TYPE="int"
+		inputValue := inputEventModel.EndJd
+		lastValue := lastEventModel.EndJd
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.EndJd
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.EndJd = inputValue
+			eventMeta.FieldsMtime["endJd"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["endJd"].After(eventMeta.FieldsMtime["endJd"]) {
+			lastEventModel.EndJd = inputValue
+			eventMeta.FieldsMtime["endJd"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="cycleWeeks", PARAM_TYPE="int"
+		inputValue := inputEventModel.CycleWeeks
+		lastValue := lastEventModel.CycleWeeks
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.CycleWeeks
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.CycleWeeks = inputValue
+			eventMeta.FieldsMtime["cycleWeeks"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["cycleWeeks"].After(eventMeta.FieldsMtime["cycleWeeks"]) {
+			lastEventModel.CycleWeeks = inputValue
+			eventMeta.FieldsMtime["cycleWeeks"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="dayStartSeconds", PARAM_TYPE="int"
+		inputValue := inputEventModel.DayStartSeconds
+		lastValue := lastEventModel.DayStartSeconds
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.DayStartSeconds
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.DayStartSeconds = inputValue
+			eventMeta.FieldsMtime["dayStartSeconds"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["dayStartSeconds"].After(eventMeta.FieldsMtime["dayStartSeconds"]) {
+			lastEventModel.DayStartSeconds = inputValue
+			eventMeta.FieldsMtime["dayStartSeconds"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="dayEndSeconds", PARAM_TYPE="int"
+		inputValue := inputEventModel.DayEndSeconds
+		lastValue := lastEventModel.DayEndSeconds
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.DayEndSeconds
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.DayEndSeconds = inputValue
+			eventMeta.FieldsMtime["dayEndSeconds"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["dayEndSeconds"].After(eventMeta.FieldsMtime["dayEndSeconds"]) {
+			lastEventModel.DayEndSeconds = inputValue
+			eventMeta.FieldsMtime["dayEndSeconds"] = now
+			return
+		}
+	}()
+	// err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	// if err != nil {
+	// 	SetHttpErrorInternal(w, err)
+	// 	return
+	// }
 }

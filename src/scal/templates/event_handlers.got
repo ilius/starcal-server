@@ -47,6 +47,11 @@ func init() {
 				"{eventId}",
 				authWrap(Patch{{.CAP_EVENT_TYPE}}),
 			},
+			"Merge{{.CAP_EVENT_TYPE}}": {
+				"POST",
+				"{eventId}/merge",
+				authWrap(Merge{{.CAP_EVENT_TYPE}}),
+			},
 			// functions of following operations are defined in handlers.go
 			// because their definition does not depend on event type
 			// but their URL still contains eventType for sake of compatibilty
@@ -700,4 +705,140 @@ func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		"eventId": eventId.Hex(),
 		"sha1":    eventModel.Sha1,
 	})
+}
+
+func Merge{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	userModel := CheckAuthGetUserModel(w, r)
+	if userModel == nil {
+		return
+	}
+	email := userModel.Email
+	// remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	// if err != nil {
+	// 	SetHttpErrorInternal(w, err)
+	// 	return
+	// }
+	// -----------------------------------------------
+	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
+	eventId := ObjectIdFromURL(w, r, "eventId", 0)
+	if eventId == nil {
+		return
+	}
+	// -----------------------------------------------
+	inputStruct := struct {
+		Event event_lib.{{.CAP_EVENT_TYPE}}EventModel `json:"event"` // DYNAMIC
+
+		LastMergeSha1 string               `json:"lastMergeSha1"`
+		FieldsMtime   map[string]time.Time `json:"fieldsMtime"`
+	}{}
+
+	body, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(body, &inputStruct)
+	if err != nil {
+		SetHttpError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	db, err := storage.GetDB()
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	// if inputStruct.Event.DummyType == "" {
+	// 	SetHttpError(w, http.StatusBadRequest, "missing 'eventType'")
+	// 	return
+	// }
+	if inputStruct.Event.Id == "" {
+		SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
+		return
+	}
+	// FIXME: LastMergeSha1 can be empty?
+	if inputStruct.LastMergeSha1 == "" {
+		SetHttpError(w, http.StatusBadRequest, "missing 'lastMergeSha1'")
+		return
+	}
+	inputEventModel := &inputStruct.Event
+	if inputEventModel.Id.Hex() != eventId.Hex() {
+		SetHttpError(w, http.StatusBadRequest, "mismatch 'event.id'")
+		return
+	}
+
+	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "event not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
+	if eventMeta.OwnerEmail != email {
+		SetHttpError(w, http.StatusForbidden, "you don't own this event")
+		return
+	}
+
+	lastRevModel, err := event_lib.LoadLastRevisionModel(db, eventId)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "event not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
+	parentEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(db, inputStruct.LastMergeSha1)
+	if err != nil {
+		if db.IsNotFound(err) {
+			SetHttpError(w, http.StatusBadRequest, "invalid lastMergeSha1: revision not found")
+		} else {
+			SetHttpErrorInternal(w, err)
+		}
+		return
+	}
+	lastEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(db, lastRevModel.Sha1)
+	if err != nil {
+		SetHttpErrorInternal(w, err)
+		return
+	}
+	fmt.Println(parentEventModel)
+	fmt.Println(lastEventModel)
+
+	// performing a 3-way merge
+	// C <== parentEventModel	<== The common ancestor (last merge for this client)
+	// A <== inputEventModel	<== The input (client's latest) data
+	// B <== lastEventModel		<== The current (server's latest) data
+	now := time.Now()
+	{{ range .EVENT_PATCH_PARAMS }}
+	func(){
+		// PARAM="{{.PARAM}}", PARAM_TYPE="{{.PARAM_TYPE}}"
+		inputValue := inputEventModel.{{.CAP_PARAM}}
+		lastValue := lastEventModel.{{.CAP_PARAM}}
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.{{.CAP_PARAM}}
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.{{.CAP_PARAM}} = inputValue
+			eventMeta.FieldsMtime["{{.PARAM}}"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["{{.PARAM}}"].After(eventMeta.FieldsMtime["{{.PARAM}}"]) {
+			lastEventModel.{{.CAP_PARAM}} = inputValue
+			eventMeta.FieldsMtime["{{.PARAM}}"] = now
+			return
+		}
+	}()
+	{{ end }}
+	// err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	// if err != nil {
+	// 	SetHttpErrorInternal(w, err)
+	// 	return
+	// }
+
+
 }
