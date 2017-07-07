@@ -78,7 +78,7 @@ type ParamRow struct {
 
 func extractModelParams(model interface{}) []ParamRow {
 	modelType := reflect.TypeOf(model)
-	params := []ParamRow{}
+	params := make([]ParamRow, modelType.NumField())
 	for i := 0; i < modelType.NumField(); i++ {
 		field := modelType.Field(i)
 		paramType := field.Type.String()
@@ -89,18 +89,18 @@ func extractModelParams(model interface{}) []ParamRow {
 		}
 
 		param := lowerFirstLetter(paramCap)
-		params = append(params, ParamRow{
+		params[i] = ParamRow{
 			PARAM:      param,
 			CAP_PARAM:  upperFirstLetter(param),
 			PARAM_TYPE: paramType,
-		})
+		}
 	}
 	return params
 }
 
 func extractModelPatchParams(model interface{}) []ParamRow {
 	params := extractModelParams(model)
-	patchParams := []ParamRow{}
+	patchParams := make([]ParamRow, 0, len(params))
 	for _, row := range params {
 		param := row.PARAM
 		switch param {
