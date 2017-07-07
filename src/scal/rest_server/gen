@@ -9,8 +9,28 @@ if [ ! -f $srcDir/scal/settings/settings.go ] ; then
 	STARCAL_HOST=localhost $rootDir/settings/build.py --no-build || exit $?
 fi
 
-if [[ ! -f gen.bin || gen.go -nt gen.bin ]] ; then
-	echo "Compiling gen.go into gen.bin"
+function dir_mtime() {
+	find $1 -exec stat -c "%Y" '{}' \; | sort -n -r | head -1
+}
+
+function need_build_gen() {
+	if [ ! -f gen.bin ] ; then
+		echo "gen.bin does not exist, compiling"
+		return 0
+	fi
+	if [[ gen.go -nt gen.bin ]] ; then
+		echo "gen.go is newer than gen.bin, re-compiling"
+		return 0
+	fi
+	if [ `dir_mtime ../event_lib/` -gt `stat -c %Y gen.bin` ] ; then
+		echo "event_lib directory is changed, compiling gen.go into gen.bin"
+		return 0
+	fi
+	return 1
+}
+
+if need_build_gen ; then
 	GOPATH=$rootDir go build -o gen.bin gen.go || exit $?
 fi
+echo "Generating"
 ./gen.bin "$@"
