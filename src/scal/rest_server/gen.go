@@ -3,19 +3,18 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/kardianos/osext"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"scal/event_lib"
 	"strings"
+	"sync"
 	"text/template"
-
-	"os/exec"
-	"regexp"
-
-	"github.com/kardianos/osext"
 )
 
 var enableGoFmt = true
@@ -37,6 +36,16 @@ var activeEventModels = []interface{}{
 	event_lib.WeeklyEventModel{},
 	event_lib.YearlyEventModel{},
 	event_lib.CustomEventModel{},
+}
+
+var fmtWG sync.WaitGroup
+
+func goFmt(fpath string) {
+	err := exec.Command("go", "fmt", fpath).Run()
+	fmtWG.Done()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func init() {
@@ -155,14 +164,13 @@ func genEventTypeHandlers() {
 			panic(err)
 		}
 		if enableGoFmt {
-			err = exec.Command("go", "fmt", goPath).Run()
-			if err != nil {
-				panic(err)
-			}
+			fmtWG.Add(1)
+			go goFmt(goPath)
 		}
 	}
 }
 
 func main() {
 	genEventTypeHandlers()
+	fmtWG.Wait()
 }
