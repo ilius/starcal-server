@@ -5,6 +5,7 @@ import (
 	"os"
 	"scal/rest_server/api_v1"
 	"scal/settings"
+	"scal/storage"
 )
 
 func main() {
@@ -18,5 +19,6 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	storage.EnsureIndexes()
 	api_v1.StartAPIv1Server()
 }

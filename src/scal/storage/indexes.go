@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func init() {
+func EnsureIndexes() {
 	dbI, err := GetDB()
 	if err != nil {
 		panic(err)
