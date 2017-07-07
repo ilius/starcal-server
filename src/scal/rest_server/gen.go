@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
-	// "os"
 	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -17,6 +17,8 @@ import (
 
 	"github.com/kardianos/osext"
 )
+
+var enableGoFmt = true
 
 var myDir string
 var apiDir string
@@ -46,6 +48,9 @@ func init() {
 	apiDir = filepath.Join(myDir, "api_v1")
 	myParentDir = filepath.Dir(myDir)
 	templatesDir = filepath.Join(myParentDir, "templates")
+	if len(os.Args) > 1 && os.Args[1] == "--no-fmt" {
+		enableGoFmt = false
+	}
 }
 
 func lowerFirstLetter(paramCap string) string {
@@ -149,9 +154,11 @@ func genEventTypeHandlers() {
 		if err != nil {
 			panic(err)
 		}
-		err = exec.Command("go", "fmt", goPath).Run()
-		if err != nil {
-			panic(err)
+		if enableGoFmt {
+			err = exec.Command("go", "fmt", goPath).Run()
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 }
