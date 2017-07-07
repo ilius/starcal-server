@@ -130,6 +130,9 @@ if hostOS:
 if hostArch:
 	os.putenv("GOARCH", hostArch)
 
+if "--no-build" in sys.argv:
+	sys.exit(0)
+
 os.putenv("GOPATH", rootDir)
 status = subprocess.call([
 	"go",

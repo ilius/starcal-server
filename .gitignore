@@ -3,5 +3,6 @@ bin_cache/
 server-*
 settings/hosts/*
 src/scal/settings/settings.go
+src/scal/rest_server/gen
 __pycache__
 *.pyc

@@ -9,12 +9,12 @@ import (
 	//"log"
 	"crypto/sha1"
 	"encoding/json"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"reflect"
 
-	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
 	"scal"
@@ -25,84 +25,84 @@ import (
 
 func init() {
 	routeGroups = append(routeGroups, RouteGroup{
-		Base: "event/{{EVENT_TYPE}}",
+		Base: "event/{{.EVENT_TYPE}}",
 		Map: RouteMap{
-			"Add{{EVENT_TYPE_CAP}}": {
+			"Add{{.EVENT_TYPE_CAP}}": {
 				"POST",
 				"",
-				authWrap(Add{{EVENT_TYPE_CAP}}),
+				authWrap(Add{{.EVENT_TYPE_CAP}}),
 			},
-			"Get{{EVENT_TYPE_CAP}}": {
+			"Get{{.EVENT_TYPE_CAP}}": {
 				"GET",
 				"{eventId}",
-				authWrap(Get{{EVENT_TYPE_CAP}}),
+				authWrap(Get{{.EVENT_TYPE_CAP}}),
 			},
-			"Update{{EVENT_TYPE_CAP}}": {
+			"Update{{.EVENT_TYPE_CAP}}": {
 				"PUT",
 				"{eventId}",
-				authWrap(Update{{EVENT_TYPE_CAP}}),
+				authWrap(Update{{.EVENT_TYPE_CAP}}),
 			},
-			"Patch{{EVENT_TYPE_CAP}}": {
+			"Patch{{.EVENT_TYPE_CAP}}": {
 				"PATCH",
 				"{eventId}",
-				authWrap(Patch{{EVENT_TYPE_CAP}}),
+				authWrap(Patch{{.EVENT_TYPE_CAP}}),
 			},
 			// functions of following operations are defined in handlers.go
 			// because their definition does not depend on event type
 			// but their URL still contains eventType for sake of compatibilty
 			// so we will have to register their routes for each event type
 			// we don't use eventType in these functions
-			"DeleteEvent_{{EVENT_TYPE}}": {
+			"DeleteEvent_{{.EVENT_TYPE}}": {
 				"DELETE",
 				"{eventId}",
 				authWrap(DeleteEvent),
 			},
-			"SetEventGroupId_{{EVENT_TYPE}}": {
+			"SetEventGroupId_{{.EVENT_TYPE}}": {
 				"PUT",
 				"{eventId}/group",
 				authWrap(SetEventGroupId),
 			},
-			"GetEventOwner_{{EVENT_TYPE}}": {
+			"GetEventOwner_{{.EVENT_TYPE}}": {
 				"GET",
 				"{eventId}/owner",
 				authWrap(GetEventOwner),
 			},
-			"SetEventOwner_{{EVENT_TYPE}}": {
+			"SetEventOwner_{{.EVENT_TYPE}}": {
 				"PUT",
 				"{eventId}/owner",
 				authWrap(SetEventOwner),
 			},
-			"GetEventMeta_{{EVENT_TYPE}}": {
+			"GetEventMeta_{{.EVENT_TYPE}}": {
 				"GET",
 				"{eventId}/meta",
 				authWrap(GetEventMeta),
 			},
-			"GetEventAccess_{{EVENT_TYPE}}": {
+			"GetEventAccess_{{.EVENT_TYPE}}": {
 				"GET",
 				"{eventId}/access",
 				authWrap(GetEventAccess),
 			},
-			"SetEventAccess_{{EVENT_TYPE}}": {
+			"SetEventAccess_{{.EVENT_TYPE}}": {
 				"PUT",
 				"{eventId}/access",
 				authWrap(SetEventAccess),
 			},
-			"AppendEventAccess_{{EVENT_TYPE}}": {
+			"AppendEventAccess_{{.EVENT_TYPE}}": {
 				"POST",
 				"{eventId}/access",
 				authWrap(AppendEventAccess),
 			},
-			"JoinEvent_{{EVENT_TYPE}}": {
+			"JoinEvent_{{.EVENT_TYPE}}": {
 				"GET",
 				"{eventId}/join",
 				authWrap(JoinEvent),
 			},
-			"LeaveEvent_{{EVENT_TYPE}}": {
+			"LeaveEvent_{{.EVENT_TYPE}}": {
 				"GET",
 				"{eventId}/leave",
 				authWrap(LeaveEvent),
 			},
-			"InviteToEvent_{{EVENT_TYPE}}": {
+			"InviteToEvent_{{.EVENT_TYPE}}": {
 				"POST",
 				"{eventId}/invite",
 				authWrap(InviteToEvent),
@@ -111,7 +111,7 @@ func init() {
 	})
 }
 
-func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
+func Add{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	userModel := CheckAuthGetUserModel(w, r)
@@ -120,7 +120,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
+	eventModel := event_lib.{{.EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -196,7 +196,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		Email:    email,
 		RemoteIp: remoteIp,
 		EventId:  eventId,
-		FuncName: "Add{{EVENT_TYPE_CAP}}",
+		FuncName: "Add{{.EVENT_TYPE_CAP}}",
 		OwnerEmail: &[2]*string{
 			nil,
 			&email,
@@ -219,7 +219,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.Load{{EVENT_TYPE_CAP}}EventModel(
+	_, err = event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -237,15 +237,15 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eventMeta.FieldsMtime = map[string]time.Time{
-		{% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
-			"{{PARAM}}": now,
-		{% endfor %}
+		{{ range .EVENT_PATCH_PARAMS }}
+			"{{.PARAM}}": now,
+		{{ end }}
 	}
-	{% if EVENT_TYPE == "custom" %}
+	{{ if eq .EVENT_TYPE "custom" }}
 		for _, ruleModel := range eventModel.Rules {
 			eventMeta.FieldsMtime["rules:"+ruleModel.Type] = now
 		}
-	{% endif %}
+	{{ end }}
 	err = db.Insert(eventMeta)
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -257,7 +257,7 @@ func Add{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
+func Get{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	userModel := CheckAuthGetUserModel(w, r)
@@ -292,7 +292,7 @@ func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !settings.ALLOW_MISMATCH_EVENT_TYPE {
-		if eventMeta.EventType != "{{EVENT_TYPE}}" {
+		if eventMeta.EventType != "{{.EVENT_TYPE}}" {
 			SetHttpError(
 				w,
 				http.StatusBadRequest,
@@ -315,7 +315,7 @@ func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eventModel, err := event_lib.Load{{EVENT_TYPE_CAP}}EventModel(
+	eventModel, err := event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -329,7 +329,7 @@ func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eventModel.Id = *eventId
-	eventModel.DummyType = eventMeta.EventType  // not "{{EVENT_TYPE}}"
+	eventModel.DummyType = eventMeta.EventType  // not "{{.EVENT_TYPE}}"
 	eventModel.GroupId = eventMeta.GroupIdHex() // FIXME
 	if eventMeta.CanReadFull(email) {
 		eventModel.Meta = eventMeta.JsonM()
@@ -337,7 +337,7 @@ func Get{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
+func Update{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	userModel := CheckAuthGetUserModel(w, r)
@@ -346,7 +346,7 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventModel := event_lib.{{EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
+	eventModel := event_lib.{{.EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
 	// -----------------------------------------------
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
@@ -364,11 +364,11 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		SetHttpError(w, http.StatusBadRequest, msg)
 		return
 	}
-	{% if EVENT_TYPE == "custom" %}
+	{{ if eq .EVENT_TYPE "custom" }}
 		event, err := eventModel.GetEvent() // for validation and comparing rules
-	{% else %}
+	{{ else }}
 		_, err = eventModel.GetEvent() // for validation
-	{% endif %}
+	{{ end }}
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
@@ -403,7 +403,7 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	lastEventModel, err := event_lib.Load{{EVENT_TYPE_CAP}}EventModel(
+	lastEventModel, err := event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -449,7 +449,7 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.Load{{EVENT_TYPE_CAP}}EventModel(
+	_, err = event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -466,9 +466,9 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	{% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
-		// PARAM="{{PARAM}}", PARAM_TYPE="{{PARAM_TYPE}}"
-		{% if PARAM == "rules" %}
+	{{ range .EVENT_PATCH_PARAMS }}
+		// PARAM="{{.PARAM}}", PARAM_TYPE="{{.PARAM_TYPE}}"
+		{{ if eq .PARAM "rules" }}
 			lastEvent, err := lastEventModel.GetEvent() // for comparing rules
 			if err != nil {
 				SetHttpErrorInternal(w, err)
@@ -481,15 +481,15 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 					eventMeta.FieldsMtime["rules:"+ruleType.Name] = now
 				}
 			}
-		{% else %}
+		{{ else }}
 			if !reflect.DeepEqual(
-				eventModel.{{PARAM|capfirst}},
-				lastEventModel.{{PARAM|capfirst}},
+				eventModel.{{.CAP_PARAM}},
+				lastEventModel.{{.CAP_PARAM}},
 			) {
-				eventMeta.FieldsMtime["{{PARAM}}"] = now
+				eventMeta.FieldsMtime["{{.PARAM}}"] = now
 			}
-		{% endif %}
-	{% endfor %}
+		{{ end }}
+	{{ end }}
 	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
 	if err != nil {
 		SetHttpErrorInternal(w, err)
@@ -503,7 +503,7 @@ func Update{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
+func Patch{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	userModel := CheckAuthGetUserModel(w, r)
@@ -560,7 +560,7 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	eventModel, err := event_lib.Load{{EVENT_TYPE_CAP}}EventModel(
+	eventModel, err := event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -568,20 +568,20 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		SetHttpErrorInternal(w, err)
 		return
 	}
-	{% if EVENT_TYPE == "custom" %}
+	{{ if eq .EVENT_TYPE "custom" }}
 		lastEvent, err := eventModel.GetEvent()// for comparing rules
 		if err != nil {
 			SetHttpErrorInternal(w, err)
 			return
 		}
 		rulesModified := false
-	{% endif %}
+	{{ end }}
 	now := time.Now()
-	{% for PARAM, PARAM_TYPE in EVENT_PATCH_PARAMS %}
+	{{ range .EVENT_PATCH_PARAMS }}
 	{
-		rawValue, ok := patchMap["{{PARAM}}"]
+		rawValue, ok := patchMap["{{.PARAM}}"]
 		if ok {
-			{% if PARAM == "rules" %}
+			{{ if eq .PARAM "rules" }}
 				value, err := event_lib.DecodeMapEventRuleModelList(rawValue)
 				if err != nil {
 					SetHttpError(
@@ -591,43 +591,43 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 					)
 					return
 				}
-			{% else %}
-				{% if PARAM_TYPE == "int" %}
+			{{ else }}
+				{{ if eq .PARAM_TYPE "int" }}
 					// json Unmarshal converts int to float64
 					value, typeOk := rawValue.(float64)
-				{% elif PARAM_TYPE == "*time.Time" %}
+				{{ else if eq .PARAM_TYPE "*time.Time" }}
 					value, typeOk := rawValue.(string)
-				{% else %}
-					value, typeOk := rawValue.({{PARAM_TYPE}})
-				{% endif %}
+				{{ else }}
+					value, typeOk := rawValue.({{.PARAM_TYPE}})
+				{{ end }}
 				if !typeOk {
 					SetHttpError(
 						w,
 						http.StatusBadRequest,
-						"bad type for parameter '{{PARAM}}'",
+						"bad type for parameter '{{.PARAM}}'",
 					)
 					return
 				}
-			{% endif %}
-			{% if PARAM_TYPE == "int" %}
-				eventModel.{{PARAM|capfirst}} = int(value)
-			{% elif PARAM_TYPE == "*time.Time" %}
+			{{ end }}
+			{{ if eq .PARAM_TYPE "int" }}
+				eventModel.{{.CAP_PARAM}} = int(value)
+			{{ else if eq .PARAM_TYPE "*time.Time" }}
 				timeValue, err := time.Parse(time.RFC3339, value)
 				if err != nil {
 					SetHttpError(w, http.StatusBadRequest, err.Error())
 					return
 				}
-				eventModel.{{PARAM|capfirst}} = &timeValue
-			{% else %}
-				eventModel.{{PARAM|capfirst}} = value
-			{% endif %}
-			delete(patchMap, "{{PARAM}}")
-			eventMeta.FieldsMtime["{{PARAM}}"] = now
-			{% if PARAM == "rules" %}
+				eventModel.{{.CAP_PARAM}} = &timeValue
+			{{ else }}
+				eventModel.{{.CAP_PARAM}} = value
+			{{ end }}
+			delete(patchMap, "{{.PARAM}}")
+			eventMeta.FieldsMtime["{{.PARAM}}"] = now
+			{{ if eq .PARAM "rules" }}
 				rulesModified = true
-			{% endif %}
+			{{ end }}
 		}
-	}{% endfor %}
+	}{{ end }}
 	if len(patchMap) > 0 {
 		for param, _ := range patchMap {
 			SetHttpError(
@@ -641,22 +641,22 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	{% if EVENT_TYPE == "custom" %}
+	{{ if eq .EVENT_TYPE "custom" }}
 		event, err := eventModel.GetEvent() // for validation and comparing rules
-	{% else %}
+	{{ else }}
 		_, err = eventModel.GetEvent() // for validation
-	{% endif %}
+	{{ end }}
 	if err != nil {
 		SetHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	{% if EVENT_TYPE == "custom" %}
+	{{ if eq .EVENT_TYPE "custom" }}
 		if rulesModified {
 			for _, ruleType := range event.GetModifiedRuleTypes(&lastEvent) {
 				eventMeta.FieldsMtime["rules:"+ruleType.Name] = now
 			}
 		}
-	{% endif %}
+	{{ end }}
 
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -675,7 +675,7 @@ func Patch{{EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.Load{{EVENT_TYPE_CAP}}EventModel(
+	_, err = event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
 		db,
 		eventModel.Sha1,
 	)

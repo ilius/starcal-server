@@ -15,3 +15,6 @@
 [submodule "src/github.com/bmizerany/pat"]
 	path = src/github.com/bmizerany/pat
 	url = git@github.com:bmizerany/pat
+[submodule "src/github.com/kardianos/osext"]
+	path = src/github.com/kardianos/osext
+	url = git@github.com:kardianos/osext

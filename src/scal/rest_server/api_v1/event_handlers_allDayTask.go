@@ -9,12 +9,12 @@ import (
 	//"log"
 	"crypto/sha1"
 	"encoding/json"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"reflect"
 
-	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
 
 	"scal"
