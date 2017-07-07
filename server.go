@@ -1,9 +1,11 @@
 package main
 
-import "fmt"
-import "os"
-import "scal/rest_server/api_v1"
-import "scal/settings"
+import (
+	"fmt"
+	"os"
+	"scal/rest_server/api_v1"
+	"scal/settings"
+)
 
 func main() {
 	if len(os.Args) > 1 {
