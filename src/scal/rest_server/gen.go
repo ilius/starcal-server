@@ -122,7 +122,7 @@ type WithType interface {
 
 type EventHandlersTemplateParams struct {
 	EVENT_TYPE         string
-	EVENT_TYPE_CAP     string
+	CAP_EVENT_TYPE     string
 	EVENT_PATCH_PARAMS []ParamRow
 }
 
@@ -149,7 +149,7 @@ func genEventTypeHandlers() {
 		var outBuff bytes.Buffer
 		err := tpl.Execute(&outBuff, &EventHandlersTemplateParams{
 			EVENT_TYPE:         eventType,
-			EVENT_TYPE_CAP:     eventTypeCap,
+			CAP_EVENT_TYPE:     eventTypeCap,
 			EVENT_PATCH_PARAMS: typePatchParams,
 		})
 		if err != nil {

@@ -27,25 +27,25 @@ func init() {
 	routeGroups = append(routeGroups, RouteGroup{
 		Base: "event/{{.EVENT_TYPE}}",
 		Map: RouteMap{
-			"Add{{.EVENT_TYPE_CAP}}": {
+			"Add{{.CAP_EVENT_TYPE}}": {
 				"POST",
 				"",
-				authWrap(Add{{.EVENT_TYPE_CAP}}),
+				authWrap(Add{{.CAP_EVENT_TYPE}}),
 			},
-			"Get{{.EVENT_TYPE_CAP}}": {
+			"Get{{.CAP_EVENT_TYPE}}": {
 				"GET",
 				"{eventId}",
-				authWrap(Get{{.EVENT_TYPE_CAP}}),
+				authWrap(Get{{.CAP_EVENT_TYPE}}),
 			},
-			"Update{{.EVENT_TYPE_CAP}}": {
+			"Update{{.CAP_EVENT_TYPE}}": {
 				"PUT",
 				"{eventId}",
-				authWrap(Update{{.EVENT_TYPE_CAP}}),
+				authWrap(Update{{.CAP_EVENT_TYPE}}),
 			},
-			"Patch{{.EVENT_TYPE_CAP}}": {
+			"Patch{{.CAP_EVENT_TYPE}}": {
 				"PATCH",
 				"{eventId}",
-				authWrap(Patch{{.EVENT_TYPE_CAP}}),
+				authWrap(Patch{{.CAP_EVENT_TYPE}}),
 			},
 			// functions of following operations are defined in handlers.go
 			// because their definition does not depend on event type
@@ -111,7 +111,7 @@ func init() {
 	})
 }
 
-func Add{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
+func Add{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	userModel := CheckAuthGetUserModel(w, r)
@@ -120,7 +120,7 @@ func Add{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventModel := event_lib.{{.EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
+	eventModel := event_lib.{{.CAP_EVENT_TYPE}}EventModel{} // DYNAMIC
 	// -----------------------------------------------
 	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -196,7 +196,7 @@ func Add{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		Email:    email,
 		RemoteIp: remoteIp,
 		EventId:  eventId,
-		FuncName: "Add{{.EVENT_TYPE_CAP}}",
+		FuncName: "Add{{.CAP_EVENT_TYPE}}",
 		OwnerEmail: &[2]*string{
 			nil,
 			&email,
@@ -219,7 +219,7 @@ func Add{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
+	_, err = event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -257,7 +257,7 @@ func Add{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func Get{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
+func Get{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	userModel := CheckAuthGetUserModel(w, r)
@@ -315,7 +315,7 @@ func Get{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eventModel, err := event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
+	eventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -337,7 +337,7 @@ func Get{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(eventModel)
 }
 
-func Update{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
+func Update{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	userModel := CheckAuthGetUserModel(w, r)
@@ -346,7 +346,7 @@ func Update{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventModel := event_lib.{{.EVENT_TYPE_CAP}}EventModel{} // DYNAMIC
+	eventModel := event_lib.{{.CAP_EVENT_TYPE}}EventModel{} // DYNAMIC
 	// -----------------------------------------------
 	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
 	eventId := ObjectIdFromURL(w, r, "eventId", 0)
@@ -403,7 +403,7 @@ func Update{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	lastEventModel, err := event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
+	lastEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -449,7 +449,7 @@ func Update{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
+	_, err = event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -503,7 +503,7 @@ func Update{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func Patch{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
+func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	userModel := CheckAuthGetUserModel(w, r)
@@ -560,7 +560,7 @@ func Patch{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	eventModel, err := event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
+	eventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -675,7 +675,7 @@ func Patch{{.EVENT_TYPE_CAP}}(w http.ResponseWriter, r *http.Request) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.Load{{.EVENT_TYPE_CAP}}EventModel(
+	_, err = event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
 		eventModel.Sha1,
 	)
