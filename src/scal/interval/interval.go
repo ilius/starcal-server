@@ -144,7 +144,7 @@ func (points IntervalPointList) GetIntervalList() (IntervalList, error) {
 	for _, point := range points {
 		if point.IsEnd {
 			if len(startedStack) == 0 {
-				return IntervalList{}, fmt.Errorf(
+				return nil, fmt.Errorf(
 					"point='%v', startedStack=[]\n",
 					point,
 				)
@@ -305,7 +305,7 @@ func IntersectionOfSomeIntervalLists(lists ...IntervalList) (IntervalList, error
 	for listId, list := range lists {
 		list, err = list.Normalize()
 		if err != nil {
-			return IntervalList{}, err
+			return nil, err
 		}
 		lists[listId] = list
 		intervalCount += len(list)
@@ -343,7 +343,7 @@ func IntersectionOfSomeIntervalLists(lists ...IntervalList) (IntervalList, error
 			}
 			if !hasNil {
 				if start > point.Pos {
-					return IntervalList{}, fmt.Errorf(
+					return nil, fmt.Errorf(
 						"Internal Error: start - point.Pos = %d",
 						start-point.Pos,
 					)
@@ -361,7 +361,7 @@ func IntersectionOfSomeIntervalLists(lists ...IntervalList) (IntervalList, error
 			// start == point.Pos
 			if openStartList[point.ListId] != MIN_INT64 {
 				//for _, list := range lists { fmt.Println(list) }
-				return IntervalList{}, fmt.Errorf(
+				return nil, fmt.Errorf(
 					"Internal Error: point:  %v   openStartList: %v",
 					point,
 					openStartList,
