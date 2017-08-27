@@ -12,9 +12,6 @@
 	path = src/github.com/gorilla/mux
 	url = git@github.com:gorilla/mux.git
 
-[submodule "src/github.com/bmizerany/pat"]
-	path = src/github.com/bmizerany/pat
-	url = git@github.com:bmizerany/pat
 [submodule "src/github.com/kardianos/osext"]
 	path = src/github.com/kardianos/osext
 	url = git@github.com:kardianos/osext
