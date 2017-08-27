@@ -222,11 +222,11 @@ func DecodeMapEventRuleModelList(rawMapList interface{}) (EventRuleModelList, er
 	for i, raw := range rawList {
 		m, ok := raw.(map[string]interface{})
 		if !ok {
-			return EventRuleModelList{}, errors.New(fmt.Sprintf(
+			return EventRuleModelList{}, fmt.Errorf(
 				"could not convert %v with type %T to M",
 				raw,
 				raw,
-			))
+			)
 		}
 		typeName, ok := m["type"].(string)
 		if !ok {
