@@ -4,12 +4,13 @@ import (
 	"crypto/sha512"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"scal/settings"
 	. "scal/user_lib"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 const TOKEN_CONTEXT = "user"
@@ -194,19 +195,18 @@ func GetPasswordHash(email string, password string) string {
 
 func NewSignedToken(userModel *UserModel) string {
 	now := time.Now()
+	exp := now.Add(settings.JWT_TOKEN_EXP_SECONDS * time.Second)
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"email": userModel.Email, // FIXME
+			"email": userModel.Email,
 			"iat":   now,
-			"exp": now.Add(
-				settings.JWT_TOKEN_EXP_SECONDS * time.Second,
-			).Unix(),
-			/*jwt.StandardClaims {
-				//ExpiresAt: expireToken.Unix(),
-				Issuer:	settings.HOST, // add ":port" too? FIXME
-			},*/
+			"exp":   exp.Unix(),
 		},
+		// jwt.StandardClaims {
+		// 	//ExpiresAt: exp.Unix(),
+		// 	Issuer:	settings.HOST, // add ":port" too? FIXME
+		// },
 	)
 
 	// Signs the token with a secret.
