@@ -200,7 +200,7 @@ func NewSignedToken(userModel *UserModel) string {
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"email": userModel.Email,
-			"iat":   now,
+			"iat":   now.Unix(),
 			"exp":   exp.Unix(),
 		},
 		// jwt.StandardClaims {
