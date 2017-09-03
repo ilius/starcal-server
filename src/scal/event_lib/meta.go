@@ -6,6 +6,8 @@ import (
 	"log"
 	"text/template"
 	"time"
+
+	"github.com/ilius/restpc"
 	//"net/url"
 
 	"gopkg.in/mgo.v2/bson"
@@ -179,23 +181,13 @@ func (self *EventMetaModel) PublicCanJoin() bool {
 func (self *EventMetaModel) Invite(
 	db storage.Database,
 	email string,
-	inviteEmails *[]string,
+	inviteEmails []string,
 	remoteIp string,
 	host string,
-) (error, int) {
-	/*
-		returns (err, errCode)
-		errCode values:
-			scal.BadRequest
-			scal.Forbidden
-			scal.InternalServerError
-	*/
+) error {
 	var err error
-	if inviteEmails == nil {
-		return errors.New("missing 'inviteEmails'"), scal.BadRequest
-	}
-	if len(*inviteEmails) == 0 {
-		return errors.New("empty 'inviteEmails'"), scal.BadRequest
+	if len(inviteEmails) == 0 {
+		return restpc.NewError(restpc.InvalidArgument, "missing 'inviteEmails'", nil)
 	}
 
 	now := time.Now()
@@ -203,20 +195,20 @@ func (self *EventMetaModel) Invite(
 	fullAc := self.CanReadFull(email)
 	public := self.PublicCanJoin()
 	if !(fullAc || public) {
-		return errors.New("not allowed to invite to this event"), scal.Forbidden
+		return restpc.NewError(restpc.PermissionDenied, "not allowed to invite to this event", nil)
 	}
 	if fullAc {
 		accessEmailsMap := make(map[string]bool)
 		newAccessEmails := make(
 			[]string,
 			0,
-			len(self.AccessEmails)+len(*inviteEmails),
+			len(self.AccessEmails)+len(inviteEmails),
 		)
 		for _, aEmail := range self.AccessEmails {
 			accessEmailsMap[aEmail] = true
 			newAccessEmails = append(newAccessEmails, aEmail)
 		}
-		for _, inviteEmail := range *inviteEmails {
+		for _, inviteEmail := range inviteEmails {
 			_, found := accessEmailsMap[inviteEmail]
 			if !found {
 				newAccessEmails = append(newAccessEmails, inviteEmail)
@@ -236,42 +228,42 @@ func (self *EventMetaModel) Invite(
 		self.AccessEmails = newAccessEmails
 		err = db.Insert(metaChangeLog)
 		if err != nil {
-			return err, scal.InternalServerError
+			return restpc.NewError(restpc.Internal, "", err)
 		}
 		err = db.Update(self)
 		if err != nil {
-			return err, scal.InternalServerError
+			return restpc.NewError(restpc.Internal, "", err)
 		}
 	}
 
 	eventRev, err := LoadLastRevisionModel(db, &self.EventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return errors.New("event not found"), scal.BadRequest
-		} else {
-			return err, scal.InternalServerError
+			return restpc.NewError(restpc.NotFound, "event not found", err)
 		}
+		return restpc.NewError(restpc.Internal, "", err)
 	}
 	eventModel, err := LoadBaseEventModel(db, eventRev.Sha1)
 	if err != nil {
-		return err, scal.InternalServerError
+		return restpc.NewError(restpc.Internal, "", err)
 	}
 
 	tplText := settings.EVENT_INVITE_EMAIL_TEMPLATE
 	user := UserModelByEmail(email, db)
 	if user == nil {
-		return errors.New("user not found"), scal.InternalServerError
+		return restpc.NewError(restpc.NotFound, "user not found", nil)
+		// FIXME: or Internal?
 	}
 	eventUrl := host +
 		"/event/" +
 		self.EventType + "/" +
 		self.EventId.Hex() + "/"
 	joinURL := eventUrl + "join"
-	for _, inviteEmail := range *inviteEmails {
+	for _, inviteEmail := range inviteEmails {
 		subject := "Invitation to event: " + eventModel.Summary
 		tpl, err := template.New(subject).Parse(tplText)
 		if err != nil {
-			return err, scal.InternalServerError
+			return restpc.NewError(restpc.Internal, "", err)
 		}
 		var inviteName string
 		inviteUser := UserModelByEmail(inviteEmail, db)
@@ -294,7 +286,7 @@ func (self *EventMetaModel) Invite(
 		buf := bytes.NewBufferString("")
 		err = tpl.Execute(buf, tplParams)
 		if err != nil {
-			return err, scal.InternalServerError
+			return restpc.NewError(restpc.Internal, "", err)
 		}
 		emailBody := buf.String()
 		db.Insert(EventInvitationModel{
@@ -311,7 +303,7 @@ func (self *EventMetaModel) Invite(
 			emailBody,
 		)
 	}
-	return nil, 200
+	return nil
 }
 func (self *EventMetaModel) GetEmailsByAttendingStatus(
 	db storage.Database,
@@ -366,7 +358,7 @@ func LoadEventMetaModel(
 	}
 	if loadGroup && eventMeta.GroupId != nil {
 		// groupModel, err, internalErr
-		groupModel, err, _ := LoadGroupModelById(
+		groupModel, err := LoadGroupModelById(
 			"groupId",
 			db,
 			eventMeta.GroupId,

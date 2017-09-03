@@ -4,13 +4,13 @@ import (
 	"crypto/sha512"
 	"errors"
 	"fmt"
-	"net/http"
 	"scal/settings"
 	. "scal/user_lib"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	. "github.com/ilius/restpc"
 )
 
 const TOKEN_CONTEXT = "user"
@@ -31,11 +31,7 @@ func init() {
 	}
 }
 
-func ExtractToken(r *http.Request) (*jwt.Token, error) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		return nil, errTokenNotFound
-	}
+func TokenFromHeader(authHeader string) (*jwt.Token, error) {
 	authHeaderParts := strings.Split(authHeader, " ")
 	if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
 		return nil, errTokenBadFormat
@@ -72,110 +68,85 @@ func ExtractToken(r *http.Request) (*jwt.Token, error) {
 	return token, nil
 }
 
-func CheckAuthGetUserModel(w http.ResponseWriter, r *http.Request) *UserModel {
-	token, err := ExtractToken(r)
+func AuthError(err error) RPCError {
+	// TODO: sleep randomly
+	return NewError(Unauthenticated, "", nil)
+}
+
+func ForbiddenError(publicMsg string, err error) RPCError {
+	// TODO: sleep randomly
+	return NewError(PermissionDenied, publicMsg, err)
+}
+
+func CheckAuth(req Request) (*UserModel, error) {
+	authHeader := req.GetHeader("Authorization")
+	if authHeader == "" {
+		return nil, AuthError(errTokenNotFound)
+	}
+	token, err := TokenFromHeader(authHeader)
 	if err != nil {
-		SetHttpError(w, http.StatusUnauthorized, err.Error())
-		return nil
+		return nil, AuthError(err)
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		SetHttpErrorInternal(w, errClaimsNotFound)
-		return nil
+		return nil, NewError(Internal, "", errClaimsNotFound)
 	}
 	emailI, ok := claims["email"]
 	if !ok {
-		SetHttpError(
-			w,
-			http.StatusUnauthorized,
-			"Error parsing token: Missing 'email'",
-		)
-		return nil
+		return nil, AuthError(fmt.Errorf("Error parsing token: Missing 'email'"))
 	}
 	email, ok := emailI.(string)
 	if !ok {
-		SetHttpError(
-			w,
-			http.StatusUnauthorized,
-			"Error parsing token: Bad 'email'",
-		)
-		return nil
+		return nil, AuthError(fmt.Errorf("Error parsing token: Bad 'email'"))
 	}
 	if email == "" {
-		SetHttpError(
-			w,
-			http.StatusUnauthorized,
-			"Error parsing token: Empty 'email'",
-		)
-		return nil
+		return nil, AuthError(fmt.Errorf("Error parsing token: Empty 'email'"))
 	}
 	userModel := UserModelByEmail(email, globalDb)
 	if userModel == nil {
-		SetHttpError(
-			w,
-			http.StatusUnauthorized,
-			"Error parsing token: Bad 'email'",
-		)
 		//SetHttpErrorUserNotFound(w, email) // FIXME
-		return nil
+		return nil, AuthError(fmt.Errorf("Error parsing token: Bad 'email'"))
 	}
 	if userModel.Locked {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"Error parsing token: User is locked",
-		)
-		return nil
+		return nil, ForbiddenError("user is locked", nil)
 	}
 	if userModel.LastLogoutTime != nil {
 		issuedAtI, ok := claims["iat"]
 		if !ok {
-			SetHttpError(
-				w,
-				http.StatusUnauthorized,
-				"Error parsing token: Missing 'iat'",
-			)
-			return nil
+			return nil, AuthError(fmt.Errorf("Error parsing token: Missing 'iat'"))
 		}
 		issuedAt, err := time.Parse(time.RFC3339, issuedAtI.(string))
 		if err != nil {
-			SetHttpError(
-				w,
-				http.StatusUnauthorized,
-				"Error parsing token: Bad 'iat'",
-			)
-			return nil
+			return nil, AuthError(fmt.Errorf("Error parsing token: Bad 'iat'"))
 		}
 		if userModel.LastLogoutTime.After(issuedAt) {
-			SetHttpError(
-				w,
-				http.StatusUnauthorized,
-				"Error parsing token: Token is expired",
-			)
-			return nil
+			return nil, AuthError(fmt.Errorf("Error parsing token: Token is expired"))
 		}
 	}
-	return userModel
+	return userModel, nil
 }
 
 /*
 NEW:
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	email := userModel.Email
+
+OLD:
 	userModel := CheckAuthGetUserModel(w, r)
 	if userModel == nil {
 		return
 	}
 	email := userModel.Email
 
-OLD:
+VERY OLD:
 	ok, email := CheckAuthGetEmail(w, r)
 	if !ok {
 		return
 	}
 */
-
-func authWrap(protectedPage http.HandlerFunc) http.HandlerFunc { // REMOVE, FIXME
-	return protectedPage
-}
 
 func GetPasswordHash(email string, password string) string {
 	return fmt.Sprintf(

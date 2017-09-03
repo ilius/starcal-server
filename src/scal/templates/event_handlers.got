@@ -9,15 +9,11 @@ import (
 	//"log"
 	"crypto/sha1"
 	"encoding/json"
-	"gopkg.in/mgo.v2/bson"
-	"io/ioutil"
-	"net"
-	"net/http"
 	"reflect"
 
-	//"github.com/gorilla/mux"
+	. "github.com/ilius/restpc"
+	"gopkg.in/mgo.v2/bson"
 
-	"scal"
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
@@ -30,27 +26,27 @@ func init() {
 			"Add{{.CAP_EVENT_TYPE}}": {
 				Method: "POST",
 				Pattern: "",
-				HandlerFunc: authWrap(Add{{.CAP_EVENT_TYPE}}),
+				Handler: Add{{.CAP_EVENT_TYPE}},
 			},
 			"Get{{.CAP_EVENT_TYPE}}": {
 				Method: "GET",
 				Pattern: "{eventId}",
-				HandlerFunc: authWrap(Get{{.CAP_EVENT_TYPE}}),
+				Handler: Get{{.CAP_EVENT_TYPE}},
 			},
 			"Update{{.CAP_EVENT_TYPE}}": {
 				Method: "PUT",
 				Pattern: "{eventId}",
-				HandlerFunc: authWrap(Update{{.CAP_EVENT_TYPE}}),
+				Handler: Update{{.CAP_EVENT_TYPE}},
 			},
 			"Patch{{.CAP_EVENT_TYPE}}": {
 				Method: "PATCH",
 				Pattern: "{eventId}",
-				HandlerFunc: authWrap(Patch{{.CAP_EVENT_TYPE}}),
+				Handler: Patch{{.CAP_EVENT_TYPE}},
 			},
 			"Merge{{.CAP_EVENT_TYPE}}": {
 				Method: "POST",
 				Pattern: "{eventId}/merge",
-				HandlerFunc: authWrap(Merge{{.CAP_EVENT_TYPE}}),
+				Handler: Merge{{.CAP_EVENT_TYPE}},
 			},
 			// functions of following operations are defined in handlers.go
 			// because their definition does not depend on event type
@@ -60,97 +56,89 @@ func init() {
 			"DeleteEvent_{{.EVENT_TYPE}}": {
 				Method: "DELETE",
 				Pattern: "{eventId}",
-				HandlerFunc: authWrap(DeleteEvent),
+				Handler: DeleteEvent,
 			},
 			"SetEventGroupId_{{.EVENT_TYPE}}": {
 				Method: "PUT",
 				Pattern: "{eventId}/group",
-				HandlerFunc: authWrap(SetEventGroupId),
+				Handler: SetEventGroupId,
 			},
 			"GetEventOwner_{{.EVENT_TYPE}}": {
 				Method: "GET",
 				Pattern: "{eventId}/owner",
-				HandlerFunc: authWrap(GetEventOwner),
+				Handler: GetEventOwner,
 			},
 			"SetEventOwner_{{.EVENT_TYPE}}": {
 				Method: "PUT",
 				Pattern: "{eventId}/owner",
-				HandlerFunc: authWrap(SetEventOwner),
+				Handler: SetEventOwner,
 			},
 			"GetEventMeta_{{.EVENT_TYPE}}": {
 				Method: "GET",
 				Pattern: "{eventId}/meta",
-				HandlerFunc: authWrap(GetEventMeta),
+				Handler: GetEventMeta,
 			},
 			"GetEventAccess_{{.EVENT_TYPE}}": {
 				Method: "GET",
 				Pattern: "{eventId}/access",
-				HandlerFunc: authWrap(GetEventAccess),
+				Handler: GetEventAccess,
 			},
 			"SetEventAccess_{{.EVENT_TYPE}}": {
 				Method: "PUT",
 				Pattern: "{eventId}/access",
-				HandlerFunc: authWrap(SetEventAccess),
+				Handler: SetEventAccess,
 			},
 			"AppendEventAccess_{{.EVENT_TYPE}}": {
 				Method: "POST",
 				Pattern: "{eventId}/access",
-				HandlerFunc: authWrap(AppendEventAccess),
+				Handler: AppendEventAccess,
 			},
 			"JoinEvent_{{.EVENT_TYPE}}": {
 				Method: "GET",
 				Pattern: "{eventId}/join",
-				HandlerFunc: authWrap(JoinEvent),
+				Handler: JoinEvent,
 			},
 			"LeaveEvent_{{.EVENT_TYPE}}": {
 				Method: "GET",
 				Pattern: "{eventId}/leave",
-				HandlerFunc: authWrap(LeaveEvent),
+				Handler: LeaveEvent,
 			},
 			"InviteToEvent_{{.EVENT_TYPE}}": {
 				Method: "POST",
 				Pattern: "{eventId}/invite",
-				HandlerFunc: authWrap(InviteToEvent),
+				Handler: InviteToEvent,
 			},
 		},
 	})
 }
 
-func Add{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+	userModel, err := CheckAuthNew(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
 	eventModel := event_lib.{{.CAP_EVENT_TYPE}}EventModel{} // DYNAMIC
 	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &eventModel)
+	err = req.BodyTo(&eventModel)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, err
 	}
 	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, NewError(InvalidArgument, err.Error(), err) // FIXME: correct msg?
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	if eventModel.Id != "" {
-		SetHttpError(w, http.StatusBadRequest, "you can't specify 'eventId'")
-		return
+		return nil, NewError(InvalidArgument, "you can't specify 'eventId'", nil)
 	}
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -160,30 +148,18 @@ func Add{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	groupId := userModel.DefaultGroupId
 	if eventModel.GroupId != "" {
 		if !bson.IsObjectIdHex(eventModel.GroupId) {
-			SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-			return
-			// to avoid panic!
+			return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
 		}
-		groupModel, err, internalErr := event_lib.LoadGroupModelByIdHex(
+		groupModel, err := event_lib.LoadGroupModelByIdHex(
 			"groupId",
 			db,
 			eventModel.GroupId,
 		)
 		if err != nil {
-			if internalErr {
-				SetHttpErrorInternal(w, err)
-			} else {
-				SetHttpError(w, http.StatusBadRequest, err.Error())
-			}
-			return
+			return nil, err
 		}
 		if groupModel.OwnerEmail != email {
-			SetHttpError(
-				w,
-				http.StatusForbidden,
-				"you don't have write access this event group",
-			)
-			return
+			return nil, ForbiddenError("you don't have write access this event group",nil)
 		}
 		groupId = &groupModel.Id
 	}
@@ -208,8 +184,7 @@ func Add{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	err = db.Insert(event_lib.EventRevisionModel{
 		EventId:   eventId,
@@ -218,8 +193,7 @@ func Add{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		Time:      time.Now(),
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
@@ -232,12 +206,10 @@ func Add{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		if db.IsNotFound(err) {
 			err = db.Insert(eventModel)
 			if err != nil {
-				SetHttpError(w, http.StatusBadRequest, err.Error())
-				return
+				return nil, NewError(Internal, "", err)
 			}
 		} else {
-			SetHttpErrorInternal(w, err)
-			return
+			return nil, NewError(Internal, "", err)
 		}
 	}
 
@@ -253,71 +225,62 @@ func Add{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	{{ end }}
 	err = db.Insert(eventMeta)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(map[string]string{
-		"eventId": eventId.Hex(),
-		"sha1":    eventModel.Sha1,
-	})
+	return &Response{
+		Data: map[string]string{
+			"eventId": eventId.Hex(),
+			"sha1":    eventModel.Sha1,
+		},
+	}, nil
 }
 
-func Get{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+	userModel, err := CheckAuthNew(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-	eventId := ObjectIdFromURL(w, r, "eventId", 0)
-	if eventId == nil {
-		return
+	eventId, err := ObjectIdFromURLNew(req, "eventId", 0)
+	if err != nil {
+		return nil, err
 	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if !eventMeta.CanRead(email) {
-		SetHttpError(w, http.StatusForbidden, "you don't have access to this event")
-		return
+		return nil, ForbiddenError("you don't have access to this event", nil)
 	}
 	if !settings.ALLOW_MISMATCH_EVENT_TYPE {
 		if eventMeta.EventType != "{{.EVENT_TYPE}}" {
-			SetHttpError(
-				w,
-				http.StatusBadRequest,
+			return nil, NewError(
+				InvalidArgument,
 				fmt.Sprintf(
 					"mismatch {eventType}, must be '%s'",
 					eventMeta.EventType,
 				),
+				nil,
 			)
-			return
 		}
 	}
 
 	eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 
 	eventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
@@ -326,11 +289,9 @@ func Get{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 
 	eventModel.Id = *eventId
@@ -339,35 +300,32 @@ func Get{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	if eventMeta.CanReadFull(email) {
 		eventModel.Meta = eventMeta.JsonM()
 	}
-	json.NewEncoder(w).Encode(eventModel)
+	return &Response{
+		Data: eventModel,
+	}, nil
 }
 
-func Update{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+	userModel, err := CheckAuthNew(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
 	eventModel := event_lib.{{.CAP_EVENT_TYPE}}EventModel{} // DYNAMIC
 	// -----------------------------------------------
-	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-	eventId := ObjectIdFromURL(w, r, "eventId", 0)
-	if eventId == nil {
-		return
+	eventId, err := ObjectIdFromURLNew(req, "eventId", 0)
+	if err != nil {
+		return nil, err
 	}
 	// -----------------------------------------------
-	body, _ := ioutil.ReadAll(r.Body)
-	err := json.Unmarshal(body, &eventModel)
+	err = req.BodyTo(&eventModel)
 	if err != nil {
-		msg := err.Error()
-		if strings.Contains(msg, "invalid ObjectId in JSON") {
-			msg = "invalid 'eventId'"
-		}
-		SetHttpError(w, http.StatusBadRequest, msg)
-		return
+		// msg := err.Error()
+		// if strings.Contains(msg, "invalid ObjectId in JSON") {
+		// 	msg = "invalid 'eventId'"
+		// }
+		return nil, err
 	}
 	{{ if eq .EVENT_TYPE "custom" }}
 		event, err := eventModel.GetEvent() // for validation and comparing rules
@@ -375,38 +333,31 @@ func Update{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		_, err = eventModel.GetEvent() // for validation
 	{{ end }}
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, NewError(InvalidArgument, err.Error(), err)
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 
 	// check if event exists, and has access to
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
-		SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
-		return
+		return nil, ForbiddenError("you don't have write access to this event", nil)
 	}
 
 	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	lastEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
@@ -414,24 +365,19 @@ func Update{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusInternalServerError, "event snapshot not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event snapshot not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 
 	if eventModel.Id != "" {
-		SetHttpError(w, http.StatusBadRequest, "'eventId' must not be present in JSON")
-		return
+		return nil, NewError(InvalidArgument, "'eventId' must not be present in JSON", nil)
 	}
 	if eventModel.GroupId != "" {
-		SetHttpError(w, http.StatusBadRequest, "'groupId' must not be present in JSON")
-		return
+		return nil, NewError(InvalidArgument, "'groupId' must not be present in JSON", nil)
 	}
 	if len(eventModel.Meta) != 0 {
-		SetHttpError(w, http.StatusBadRequest, "'meta' must not be present in JSON")
-		return
+		return nil, NewError(InvalidArgument, "'meta' must not be present in JSON", nil)
 	}
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -447,8 +393,8 @@ func Update{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	}
 	err = db.Insert(eventRev)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		// FIXME: BadRequest or Internal error?
+		return nil, NewError(Internal, "", err)
 	}
 
 	// don't store duplicate eventModel, even if it was added by another user
@@ -462,12 +408,11 @@ func Update{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		if db.IsNotFound(err) {
 			err = db.Insert(eventModel)
 			if err != nil {
-				SetHttpError(w, http.StatusBadRequest, err.Error())
-				return
+				// FIXME: BadRequest or Internal error?
+				return nil, NewError(Internal, "", err)
 			}
 		} else {
-			SetHttpErrorInternal(w, err)
-			return
+			return nil, NewError(Internal, "", err)
 		}
 	}
 
@@ -476,8 +421,7 @@ func Update{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		{{ if eq .PARAM "rules" }}
 			lastEvent, err := lastEventModel.GetEvent() // for comparing rules
 			if err != nil {
-				SetHttpErrorInternal(w, err)
-				return
+				return nil, NewError(Internal, "", err)
 			}
 			modRuleTypes := event.GetModifiedRuleTypes(&lastEvent)
 			if len(modRuleTypes) > 0 {
@@ -497,87 +441,74 @@ func Update{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	{{ end }}
 	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"eventId": eventId.Hex(),
-		"sha1":    eventRev.Sha1,
-	})
+	return &Response{
+		Data: map[string]string{
+			"eventId": eventId.Hex(),
+			"sha1":    eventRev.Sha1,
+		},
+	}, nil
 }
 
 
-func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+	userModel, err := CheckAuthNew(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-	eventId := ObjectIdFromURL(w, r, "eventId", 0)
-	if eventId == nil {
-		return
+	eventId, err := ObjectIdFromURLNew(req, "eventId", 0)
+	if err != nil {
+		return nil, err
 	}
 	// -----------------------------------------------
-	body, _ := ioutil.ReadAll(r.Body)
-	patchMap := scal.M{}
-	err := json.Unmarshal(body, &patchMap)
+	patchMap, err := req.BodyMap()
 	if err != nil {
-		msg := err.Error()
-		if strings.Contains(msg, "invalid ObjectId in JSON") {
-			msg = "invalid 'eventId'"
-		}
-		SetHttpError(w, http.StatusBadRequest, msg)
-		return
+		// msg := err.Error()
+		// if strings.Contains(msg, "invalid ObjectId in JSON") {
+		// 	msg = "invalid 'eventId'"
+		// }
+		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 
 	// check if event exists, and has access to
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
-		SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
-		return
+		return nil, ForbiddenError("you don't have write access to this event", nil)
 	}
 
 	// do we need the last revision? to compare or what?
 	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	eventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
 		lastEventRev.Sha1,
 	)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	{{ if eq .EVENT_TYPE "custom" }}
 		lastEvent, err := eventModel.GetEvent()// for comparing rules
 		if err != nil {
-			SetHttpErrorInternal(w, err)
-			return
+			return nil, NewError(Internal, "", err)
 		}
 		rulesModified := false
 	{{ end }}
@@ -589,12 +520,11 @@ func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 			{{ if eq .PARAM "rules" }}
 				value, err := event_lib.DecodeMapEventRuleModelList(rawValue)
 				if err != nil {
-					SetHttpError(
-						w,
-						http.StatusBadRequest,
+					return nil, NewError(
+						InvalidArgument,
 						"bad type or value for parameter 'rules': "+err.Error(),
+						err,
 					)
-					return
 				}
 			{{ else }}
 				{{ if eq .PARAM_TYPE "int" }}
@@ -606,12 +536,11 @@ func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 					value, typeOk := rawValue.({{.PARAM_TYPE}})
 				{{ end }}
 				if !typeOk {
-					SetHttpError(
-						w,
-						http.StatusBadRequest,
+					return nil, NewError(
+						InvalidArgument,
 						"bad type for parameter '{{.PARAM}}'",
+						nil,
 					)
-					return
 				}
 			{{ end }}
 			{{ if eq .PARAM_TYPE "int" }}
@@ -619,8 +548,8 @@ func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 			{{ else if eq .PARAM_TYPE "*time.Time" }}
 				timeValue, err := time.Parse(time.RFC3339, value)
 				if err != nil {
-					SetHttpError(w, http.StatusBadRequest, err.Error())
-					return
+					// FIXME: give a better msg
+					return nil, NewError(InvalidArgument, err.Error(), err)
 				}
 				eventModel.{{.CAP_PARAM}} = &timeValue
 			{{ else }}
@@ -634,17 +563,18 @@ func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		}
 	}{{ end }}
 	if len(patchMap) > 0 {
+		extraNames := []string{}
 		for param, _ := range patchMap {
-			SetHttpError(
-				w,
-				http.StatusBadRequest,
-				fmt.Sprintf(
-					"extra parameter '%s'",
-					param,
-				),
-			)
+			extraNames = append(extraNames, param)
 		}
-		return
+		return nil, NewError(
+			InvalidArgument,
+			fmt.Sprintf(
+				"extra parameters: %v",
+				strings.Join(extraNames, ", "),
+			),
+			nil,
+		)
 	}
 	{{ if eq .EVENT_TYPE "custom" }}
 		event, err := eventModel.GetEvent() // for validation and comparing rules
@@ -652,8 +582,7 @@ func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		_, err = eventModel.GetEvent() // for validation
 	{{ end }}
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, NewError(InvalidArgument, err.Error(), err)
 	}
 	{{ if eq .EVENT_TYPE "custom" }}
 		if rulesModified {
@@ -674,8 +603,8 @@ func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		Time:      now,
 	})
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		// FIXME: BadRequest or Internal error?
+		return nil, NewError(Internal, "", err)
 	}
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
@@ -688,43 +617,35 @@ func Patch{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		if db.IsNotFound(err) {
 			err = db.Insert(eventModel)
 			if err != nil {
-				SetHttpError(w, http.StatusBadRequest, err.Error())
-				return
+				// FIXME: BadRequest or Internal error?
+				return nil, NewError(Internal, "", err)
 			}
 		} else {
-			SetHttpErrorInternal(w, err)
-			return
+			return nil, NewError(Internal, "", err)
 		}
 	}
 	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(map[string]string{
-		"eventId": eventId.Hex(),
-		"sha1":    eventModel.Sha1,
-	})
+	return &Response{
+		Data: map[string]string{
+			"eventId": eventId.Hex(),
+			"sha1":    eventModel.Sha1,
+		},
+	}, nil
 }
 
-func Merge{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+	userModel, err := CheckAuthNew(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
-	// remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
-	// if err != nil {
-	// 	SetHttpErrorInternal(w, err)
-	// 	return
-	// }
 	// -----------------------------------------------
-	//vars := mux.Vars(&r.Request) // vars == map[] // FIXME
-	eventId := ObjectIdFromURL(w, r, "eventId", 0)
-	if eventId == nil {
-		return
+	eventId, err := ObjectIdFromURLNew(req, "eventId", 0)
+	if err != nil {
+		return nil, err
 	}
 	// -----------------------------------------------
 	inputStruct := struct {
@@ -734,72 +655,59 @@ func Merge{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 		FieldsMtime   map[string]time.Time `json:"fieldsMtime"`
 	}{}
 
-	body, _ := ioutil.ReadAll(r.Body)
-	err := json.Unmarshal(body, &inputStruct)
+	err = req.BodyTo(&inputStruct)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, err
 	}
+
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	// if inputStruct.Event.DummyType == "" {
 	// 	SetHttpError(w, http.StatusBadRequest, "missing 'eventType'")
 	// 	return
 	// }
 	if inputStruct.Event.Id == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'eventId'")
-		return
+		return nil, NewError(InvalidArgument, "missing 'eventId'", nil)
 	}
 	// FIXME: LastMergeSha1 can be empty?
 	if inputStruct.LastMergeSha1 == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'lastMergeSha1'")
-		return
+		return nil, NewError(InvalidArgument, "missing 'lastMergeSha1'", nil)
 	}
 	inputEventModel := &inputStruct.Event
 	if inputEventModel.Id.Hex() != eventId.Hex() {
-		SetHttpError(w, http.StatusBadRequest, "mismatch 'event.id'")
-		return
+		return nil, NewError(InvalidArgument, "mismatch 'event.id'", nil)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
-		SetHttpError(w, http.StatusForbidden, "you don't own this event")
-		return
+		return nil, ForbiddenError("you don't own this event", nil)
 	}
 
 	lastRevModel, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	parentEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(db, inputStruct.LastMergeSha1)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "invalid lastMergeSha1: revision not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(InvalidArgument, "invalid lastMergeSha1: revision not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	lastEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(db, lastRevModel.Sha1)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	fmt.Println(parentEventModel)
 	fmt.Println(lastEventModel)
@@ -840,5 +748,5 @@ func Merge{{.CAP_EVENT_TYPE}}(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-
+	return &Response{}, nil
 }

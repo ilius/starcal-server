@@ -1,17 +1,12 @@
 package api_v1
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	//"log"
-	"net"
-	"net/http"
 	"strconv"
 	"time"
 
+	. "github.com/ilius/restpc"
 	"gopkg.in/mgo.v2/bson"
-	//"github.com/gorilla/mux"
 
 	"scal"
 	"scal/event_lib"
@@ -27,72 +22,69 @@ func init() {
 		Base: "event/groups",
 		Map: RouteMap{
 			"GetGroupList": {
-				Method:      "GET",
-				Pattern:     "",
-				HandlerFunc: authWrap(GetGroupList),
+				Method:  "GET",
+				Pattern: "",
+				Handler: GetGroupList,
 			},
 			"AddGroup": {
-				Method:      "POST",
-				Pattern:     "",
-				HandlerFunc: authWrap(AddGroup),
+				Method:  "POST",
+				Pattern: "",
+				Handler: AddGroup,
 			},
 			"UpdateGroup": {
-				Method:      "PUT",
-				Pattern:     "{groupId}",
-				HandlerFunc: authWrap(UpdateGroup),
+				Method:  "PUT",
+				Pattern: "{groupId}",
+				Handler: UpdateGroup,
 			},
 			"GetGroup": {
-				Method:      "GET",
-				Pattern:     "{groupId}",
-				HandlerFunc: authWrap(GetGroup),
+				Method:  "GET",
+				Pattern: "{groupId}",
+				Handler: GetGroup,
 			},
 			"DeleteGroup": {
-				Method:      "DELETE",
-				Pattern:     "{groupId}",
-				HandlerFunc: authWrap(DeleteGroup),
+				Method:  "DELETE",
+				Pattern: "{groupId}",
+				Handler: DeleteGroup,
 			},
 			"GetGroupEventList": {
-				Method:      "GET",
-				Pattern:     "{groupId}/events",
-				HandlerFunc: authWrap(GetGroupEventList),
+				Method:  "GET",
+				Pattern: "{groupId}/events",
+				Handler: GetGroupEventList,
 			},
 			"GetGroupEventListWithSha1": {
-				Method:      "GET",
-				Pattern:     "{groupId}/events-sha1",
-				HandlerFunc: authWrap(GetGroupEventListWithSha1),
+				Method:  "GET",
+				Pattern: "{groupId}/events-sha1",
+				Handler: GetGroupEventListWithSha1,
 			},
 			"GetGroupModifiedEvents": {
-				Method:      "GET",
-				Pattern:     "{groupId}/modified-events/{sinceDateTime}",
-				HandlerFunc: authWrap(GetGroupModifiedEvents),
+				Method:  "GET",
+				Pattern: "{groupId}/modified-events/{sinceDateTime}",
+				Handler: GetGroupModifiedEvents,
 			},
 			"GetGroupMovedEvents": {
-				Method:      "GET",
-				Pattern:     "{groupId}/moved-events/{sinceDateTime}",
-				HandlerFunc: authWrap(GetGroupMovedEvents),
+				Method:  "GET",
+				Pattern: "{groupId}/moved-events/{sinceDateTime}",
+				Handler: GetGroupMovedEvents,
 			},
 			"GetGroupLastCreatedEvents": {
-				Method:      "GET",
-				Pattern:     "{groupId}/last-created-events/{count}",
-				HandlerFunc: authWrap(GetGroupLastCreatedEvents),
+				Method:  "GET",
+				Pattern: "{groupId}/last-created-events/{count}",
+				Handler: GetGroupLastCreatedEvents,
 			},
 		},
 	})
 }
 
-func GetGroupList(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetGroupList(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	type resultModel struct {
 		GroupId    bson.ObjectId `bson:"_id" json:"groupId"`
@@ -111,252 +103,174 @@ func GetGroupList(w http.ResponseWriter, r *http.Request) {
 		&results,
 	)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if results == nil {
 		results = make([]resultModel, 0)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		"groups": results,
-	})
+	return &Response{
+		Data: scal.M{
+			"groups": results,
+		},
+	}, nil
 }
 
-func AddGroup(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func AddGroup(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
+
+	title, err := req.GetString("title")
+	if err != nil {
+		return nil, err
+	}
+
+	addAccessEmails, _ := req.GetStringList("addAccessEmails", Optional)
+	readAccessEmails, _ := req.GetStringList("readAccessEmails", Optional)
 
 	groupModel := event_lib.EventGroupModel{}
-
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &groupModel)
-	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	if groupModel.Id != "" {
-		SetHttpError(
-			w,
-			http.StatusBadRequest,
-			"can not specify 'groupId'",
-		)
-		return
-	}
-	if groupModel.OwnerEmail != "" {
-		SetHttpError(
-			w,
-			http.StatusBadRequest,
-			"can not specify 'ownerEmail'",
-		)
-		return
-	}
 
 	groupId := bson.NewObjectId()
 	groupModel.Id = groupId
 	groupModel.OwnerEmail = email
+	groupModel.Title = *title
+	groupModel.AddAccessEmails = addAccessEmails
+	groupModel.ReadAccessEmails = readAccessEmails
+
 	err = db.Insert(groupModel)
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"groupId": groupId.Hex(),
-	})
+	return &Response{
+		Data: map[string]string{
+			"groupId": groupId.Hex(),
+		},
+	}, nil
 }
 
-func UpdateGroup(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func UpdateGroup(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	groupId := ObjectIdFromURL(w, r, "groupId", 0)
-	if groupId == nil {
-		return
+	groupId, err := ObjectIdFromURL(req, "groupId", 0)
+	if err != nil {
+		return nil, err
 	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 
-	newGroupModel := event_lib.EventGroupModel{}
-
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &newGroupModel)
+	newTitle, err := req.GetString("title")
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	if newGroupModel.Id != "" {
-		SetHttpError(
-			w,
-			http.StatusBadRequest,
-			"can not specify 'groupId'",
-		)
-		return
-	}
-	if newGroupModel.OwnerEmail != "" {
-		SetHttpError(
-			w,
-			http.StatusBadRequest,
-			"can not specify 'ownerEmail'",
-		)
-		return
-	}
-	if newGroupModel.Title == "" {
-		SetHttpError(
-			w,
-			http.StatusBadRequest,
-			"missing or empty 'title'",
-		)
-		return
+		return nil, err
 	}
 
-	oldGroupModel, err, internalErr := event_lib.LoadGroupModelById(
+	newAddAccessEmails, _ := req.GetStringList("addAccessEmails", Optional)
+	newReadAccessEmails, _ := req.GetStringList("readAccessEmails", Optional)
+
+	groupModel, err := event_lib.LoadGroupModelById(
 		"groupId",
 		db,
 		groupId,
 	)
 	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
-	}
-	if oldGroupModel.OwnerEmail != email {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"you don't have write access to this event group",
-		)
-		return
-	}
-	oldGroupModel.Title = newGroupModel.Title
-	oldGroupModel.AddAccessEmails = newGroupModel.AddAccessEmails
-	oldGroupModel.ReadAccessEmails = newGroupModel.ReadAccessEmails
-	err = db.Update(oldGroupModel)
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	json.NewEncoder(w).Encode(scal.M{})
-}
-
-func GetGroup(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
-	}
-	email := userModel.Email
-	// -----------------------------------------------
-	groupId := ObjectIdFromURL(w, r, "groupId", 0)
-	if groupId == nil {
-		return
-	}
-	// -----------------------------------------------
-	db, err := storage.GetDB()
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	groupModel, err, internalErr := event_lib.LoadGroupModelById(
-		"groupId",
-		db,
-		groupId,
-	)
-	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
-	}
-	if !groupModel.CanRead(email) {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"you don't have access to this event group",
-		)
-		return
-	}
-	json.NewEncoder(w).Encode(groupModel)
-}
-
-func DeleteGroup(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
-	}
-	email := userModel.Email
-	// -----------------------------------------------
-	groupId := ObjectIdFromURL(w, r, "groupId", 0)
-	if groupId == nil {
-		return
-	}
-	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	db, err := storage.GetDB()
-	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
-	}
-	groupModel, err, internalErr := event_lib.LoadGroupModelById(
-		"groupId",
-		db,
-		groupId,
-	)
-	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
+		return nil, err
 	}
 	if groupModel.OwnerEmail != email {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"you are not allowed to delete this event group",
-		)
-		return
+		return nil, ForbiddenError("you don't have write access to this event group", nil)
+	}
+	groupModel.Title = *newTitle
+	groupModel.AddAccessEmails = newAddAccessEmails
+	groupModel.ReadAccessEmails = newReadAccessEmails
+	err = db.Update(groupModel)
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
+	return &Response{}, nil
+}
+
+func GetGroup(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	email := userModel.Email
+	// -----------------------------------------------
+	groupId, err := ObjectIdFromURL(req, "groupId", 0)
+	if err != nil {
+		return nil, err
+	}
+	// -----------------------------------------------
+	db, err := storage.GetDB()
+	if err != nil {
+		return nil, NewError(Unavailable, "", err)
+	}
+	groupModel, err := event_lib.LoadGroupModelById(
+		"groupId",
+		db,
+		groupId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	if !groupModel.CanRead(email) {
+		return nil, ForbiddenError("you don't have access to this event group", nil)
+	}
+	return &Response{
+		Data: groupModel,
+	}, nil
+}
+
+func DeleteGroup(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	email := userModel.Email
+	// -----------------------------------------------
+	groupId, err := ObjectIdFromURL(req, "groupId", 0)
+	if err != nil {
+		return nil, err
+	}
+	remoteIp, err := req.RemoteIP()
+	if err != nil {
+		return nil, err
+	}
+	// -----------------------------------------------
+	db, err := storage.GetDB()
+	if err != nil {
+		return nil, NewError(Unavailable, "", err)
+	}
+	groupModel, err := event_lib.LoadGroupModelById(
+		"groupId",
+		db,
+		groupId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	if groupModel.OwnerEmail != email {
+		return nil, ForbiddenError("you are not allowed to delete this event group", nil)
 	}
 
 	if userModel.DefaultGroupId != nil && *userModel.DefaultGroupId == *groupId {
 		if !ALLOW_DELETE_DEFAULT_GROUP {
-			SetHttpError(
-				w,
-				http.StatusForbidden,
-				"you can not delete your default event group",
-			)
-			return
+			return nil, ForbiddenError("you can not delete your default event group", nil)
 		}
 		userModel.DefaultGroupId = nil
 		err = db.Update(userModel)
 		if err != nil {
-			SetHttpErrorInternal(w, err)
-			return
+			return nil, NewError(Internal, "", err)
 		}
 	}
 
@@ -369,8 +283,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		&eventMetaModels,
 	)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	for _, eventMetaModel := range eventMetaModels {
 		if eventMetaModel.OwnerEmail != email {
@@ -392,54 +305,45 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 			},
 		})
 		if err != nil {
-			SetHttpErrorInternal(w, err)
-			return
+			return nil, NewError(Internal, "", err)
 		}
 		eventMetaModel.GroupId = nil
 		err = db.Update(eventMetaModel)
 		if err != nil {
-			SetHttpErrorInternal(w, err)
-			return
+			return nil, NewError(Internal, "", err)
 		}
 	}
 	err = db.Remove(groupModel)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func GetGroupEventList(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetGroupEventList(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	groupId := ObjectIdFromURL(w, r, "groupId", 1)
-	if groupId == nil {
-		return
+	groupId, err := ObjectIdFromURL(req, "groupId", 1)
+	if err != nil {
+		return nil, err
 	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-	groupModel, err, internalErr := event_lib.LoadGroupModelById(
+	// -----------------------------------------------
+	groupModel, err := event_lib.LoadGroupModelById(
 		"groupId",
 		db,
 		groupId,
 	)
 	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
+		return nil, err
 	}
 
 	type resultModel struct {
@@ -458,47 +362,41 @@ func GetGroupEventList(w http.ResponseWriter, r *http.Request) {
 		&results,
 	)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if results == nil {
 		results = make([]resultModel, 0)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		"events": results,
-	})
+	return &Response{
+		Data: scal.M{
+			"events": results,
+		},
+	}, nil
 }
 
-func GetGroupEventListWithSha1(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetGroupEventListWithSha1(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	groupId := ObjectIdFromURL(w, r, "groupId", 1)
-	if groupId == nil {
-		return
+	groupId, err := ObjectIdFromURL(req, "groupId", 1)
+	if err != nil {
+		return nil, err
 	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-	groupModel, err, internalErr := event_lib.LoadGroupModelById(
+	groupModel, err := event_lib.LoadGroupModelById(
 		"groupId",
 		db,
 		groupId,
 	)
 	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
+		return nil, err
 	}
 
 	pipeline := []scal.M{
@@ -527,66 +425,63 @@ func GetGroupEventListWithSha1(w http.ResponseWriter, r *http.Request) {
 
 	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		"events": results,
-	})
+	return &Response{
+		Data: scal.M{
+			"events": results,
+		},
+	}, nil
 
 }
 
-func GetGroupModifiedEvents(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetGroupModifiedEvents(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
-	//if groupId==nil { return }
-	parts := SplitURL(r.URL)
+	// groupId, err := ObjectIdFromURL(req, "groupId", 2)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if groupId==nil { return }
+	parts := SplitURL(req.URL())
 	if len(parts) < 3 {
-		SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-		return
+		return nil, NewError(Internal, "", fmt.Errorf("Unexpected URL: %s", req.URL()))
 	}
 	groupIdHex := parts[len(parts)-3]
 	sinceStr := parts[len(parts)-1] // datetime string
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	if groupIdHex == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
-		return
+		return nil, NewError(InvalidArgument, "missing 'groupId'", nil)
 	}
 	if !bson.IsObjectIdHex(groupIdHex) {
-		SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-		return
+		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
 		// to avoid panic!
 	}
-	groupModel, err, internalErr := event_lib.LoadGroupModelByIdHex(
+	groupModel, err := event_lib.LoadGroupModelByIdHex(
 		"groupId",
 		db,
 		groupIdHex,
 	)
 	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
+		return nil, err
 	}
 	groupId := groupModel.Id
 
 	since, err := time.Parse(time.RFC3339, sinceStr)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, NewError(
+			InvalidArgument,
+			fmt.Sprintf("invalid timestamp '%v': ", sinceStr, err.Error()),
+			err,
+		)
 	}
 	//json.NewEncoder(w).Encode(scal.M{"sinceDateTime": since})
 
@@ -637,69 +532,65 @@ func GetGroupModifiedEvents(w http.ResponseWriter, r *http.Request) {
 
 	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		"groupId":        groupModel.Id,
-		"sinceDatetime":  since,
-		"modifiedEvents": results,
-	})
-
+	return &Response{
+		Data: scal.M{
+			"groupId":        groupModel.Id,
+			"sinceDatetime":  since,
+			"modifiedEvents": results,
+		},
+	}, nil
 }
 
-func GetGroupMovedEvents(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetGroupMovedEvents(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
-	//if groupId==nil { return }
-	parts := SplitURL(r.URL)
+	// groupId, err := ObjectIdFromURL(req, "groupId", 2)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if groupId==nil { return }
+	parts := SplitURL(req.URL())
 	if len(parts) < 3 {
-		SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-		return
+		return nil, NewError(Internal, "", fmt.Errorf("Unexpected URL: %s", req.URL()))
 	}
 	groupIdHex := parts[len(parts)-3]
 	sinceStr := parts[len(parts)-1] // datetime string
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	if groupIdHex == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
-		return
+		return nil, NewError(InvalidArgument, "missing 'groupId'", nil)
 	}
 	if !bson.IsObjectIdHex(groupIdHex) {
-		SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-		return
+		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
 		// to avoid panic!
 	}
 
-	groupModel, err, internalErr := event_lib.LoadGroupModelByIdHex(
+	groupModel, err := event_lib.LoadGroupModelByIdHex(
 		"groupId",
 		db,
 		groupIdHex,
 	)
 	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
+		return nil, err
 	}
 	groupId := groupModel.Id
 
 	since, err := time.Parse(time.RFC3339, sinceStr)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, NewError(
+			InvalidArgument,
+			fmt.Sprintf("invalid timestamp '%v': ", sinceStr, err.Error()),
+			err,
+		)
 	}
 
 	pipeline := []scal.M{
@@ -747,8 +638,7 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *http.Request) {
 		&results,
 	)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	// convert nil values to empty strings
 	for i := 0; i < len(results); i++ {
@@ -756,65 +646,58 @@ func GetGroupMovedEvents(w http.ResponseWriter, r *http.Request) {
 		results[i].NewGroupId = storage.Hex(results[i].NewGroupId)
 	}
 
-	json.NewEncoder(w).Encode(scal.M{
-		"groupId":       groupModel.Id,
-		"sinceDatetime": since,
-		"movedEvents":   results,
-	})
-
+	return &Response{
+		Data: scal.M{
+			"groupId":       groupModel.Id,
+			"sinceDatetime": since,
+			"movedEvents":   results,
+		},
+	}, nil
 }
 
-func GetGroupLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetGroupLastCreatedEvents(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	//groupId := ObjectIdFromURL(w, r, "groupId", 2)
-	//if groupId==nil { return }
-	parts := SplitURL(r.URL)
+	// groupId, err := ObjectIdFromURL(req, "groupId", 2)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if groupId==nil { return }
+	parts := SplitURL(req.URL())
 	if len(parts) < 3 {
-		SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-		return
+		return nil, NewError(Internal, "", fmt.Errorf("Unexpected URL: %s", req.URL()))
 	}
 	groupIdHex := parts[len(parts)-3]
 	countStr := parts[len(parts)-1] // int string
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	if groupIdHex == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'groupId'")
-		return
+		return nil, NewError(InvalidArgument, "missing 'groupId'", nil)
 	}
 	if !bson.IsObjectIdHex(groupIdHex) {
-		SetHttpError(w, http.StatusBadRequest, "invalid 'groupId'")
-		return
+		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
 		// to avoid panic!
 	}
-	groupModel, err, internalErr := event_lib.LoadGroupModelByIdHex(
+	groupModel, err := event_lib.LoadGroupModelByIdHex(
 		"groupId",
 		db,
 		groupIdHex,
 	)
 	if err != nil {
-		if internalErr {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, http.StatusBadRequest, err.Error())
-		}
+		return nil, err
 	}
 	groupId := groupModel.Id
 
 	count, err := strconv.ParseInt(countStr, 10, 0)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, "invalid 'count', must be integer")
-		return
+		return nil, NewError(InvalidArgument, "invalid 'count', must be integer", err)
 	}
 
 	pipeline := []scal.M{
@@ -866,8 +749,7 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
 		&results,
 	)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	for _, res := range results {
 		if eventId, ok := res["_id"]; ok {
@@ -881,10 +763,11 @@ func GetGroupLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	json.NewEncoder(w).Encode(scal.M{
-		"groupId":           groupModel.Id,
-		"maxCount":          count,
-		"lastCreatedEvents": results,
-	})
-
+	return &Response{
+		Data: scal.M{
+			"groupId":           groupModel.Id,
+			"maxCount":          count,
+			"lastCreatedEvents": results,
+		},
+	}, nil
 }

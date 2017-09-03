@@ -1,7 +1,7 @@
 package event_lib
 
 import (
-	"errors"
+	"github.com/ilius/restpc"
 
 	"gopkg.in/mgo.v2/bson"
 
@@ -91,44 +91,33 @@ func LoadGroupModelById(
 	attrName string,
 	db storage.Database,
 	groupId *bson.ObjectId,
-) (
-	groupModel *EventGroupModel,
-	err error,
-	internalErr bool,
-) {
+) (*EventGroupModel, error) {
 	if groupId == nil {
-		err = errors.New("invalid '" + attrName + "'")
-		return
+		return nil, restpc.NewError(restpc.InvalidArgument, "missing '"+attrName+"'", nil)
 	}
-	groupModel = &EventGroupModel{
+	groupModel := &EventGroupModel{
 		Id: *groupId,
 	}
-	err = db.Get(groupModel)
+	err := db.Get(groupModel)
 	if err != nil {
 		if db.IsNotFound(err) {
-			err = errors.New("invalid '" + attrName + "'")
-		} else {
-			internalErr = true
+			return nil, restpc.NewError(restpc.NotFound, "group not found", err)
 		}
+		return nil, restpc.NewError(restpc.Internal, "", err)
 	}
-	return
+	return groupModel, nil
 }
 
 func LoadGroupModelByIdHex(
 	attrName string,
 	db storage.Database,
 	groupIdHex string,
-) (
-	groupModel *EventGroupModel,
-	err error,
-	internalErr bool,
-) {
+) (*EventGroupModel, error) {
 	if groupIdHex == "" {
-		return
+		return nil, restpc.NewError(restpc.InvalidArgument, "missing '"+attrName+"'", nil)
 	}
 	if !bson.IsObjectIdHex(groupIdHex) { // to avoid panic!
-		err = errors.New("invalid '" + attrName + "'")
-		return
+		return nil, restpc.NewError(restpc.InvalidArgument, "invalid '"+attrName+"'", nil)
 	}
 	groupId := bson.ObjectIdHex(groupIdHex)
 	return LoadGroupModelById(

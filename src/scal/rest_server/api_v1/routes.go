@@ -1,22 +1,36 @@
 package api_v1
 
 import (
-	"myrpc"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ilius/restpc"
 )
 
 type Route struct {
 	Method      string
 	Pattern     string
-	HandlerFunc http.HandlerFunc // TO REMOVE LATER
-	Handler     myrpc.Handler
+	Handler     restpc.Handler
+	HandlerFunc http.HandlerFunc // used only in util_handlers.go
 }
+
+func (route Route) GetHandlerFunc() http.HandlerFunc {
+	if route.Handler != nil {
+		return restpc.TranslateHandler(route.Handler)
+	}
+	if route.HandlerFunc != nil {
+		return route.HandlerFunc
+	}
+	panic(fmt.Sprintf(
+		"GetHandlerFunc: not route.Handler nor route.HandlerFunc is set, Method=%v",
+		route.Method,
+	))
+}
+
 type RouteMap map[string]Route
 
 type RouteGroup struct {
-	//NeedsAuth bool
 	Base string
 	Map  RouteMap
 }
@@ -35,7 +49,7 @@ func GetRouter() http.Handler {
 				Methods(route.Method).
 				Path(path).
 				Name(name).
-				Handler(route.HandlerFunc)
+				Handler(route.GetHandlerFunc())
 		}
 	}
 	return router

@@ -14,6 +14,15 @@
 	path = src/github.com/gorilla/mux
 	url = git@github.com:gorilla/mux.git
 
+[submodule "src/github.com/ilius/restpc"]
+	path = src/github.com/ilius/restpc
+	url = git@github.com:ilius/restpc
+
+[submodule "src/github.com/golang/mock"]
+	path = src/github.com/golang/mock
+	url = git@github.com:golang/mock
+
 [submodule "src/github.com/kardianos/osext"]
 	path = src/github.com/kardianos/osext
 	url = git@github.com:kardianos/osext
+

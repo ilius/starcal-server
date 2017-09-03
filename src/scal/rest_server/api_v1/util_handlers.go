@@ -1,8 +1,6 @@
 package api_v1
 
 import (
-	//"encoding/json"
-	//"gopkg.in/mgo.v2/bson"
 	"net/http"
 )
 

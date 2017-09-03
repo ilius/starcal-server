@@ -2,10 +2,6 @@ package api_v1
 
 import (
 	"bytes"
-	"encoding/json"
-	"io/ioutil"
-	"net"
-	"net/http"
 	"scal"
 	"scal/event_lib"
 	"scal/settings"
@@ -15,6 +11,8 @@ import (
 	"text/template"
 	"time"
 
+	. "github.com/ilius/restpc"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -23,77 +21,69 @@ func init() {
 		Base: "auth",
 		Map: RouteMap{
 			"RegisterUser": {
-				Method:      "POST",
-				Pattern:     "register",
-				HandlerFunc: RegisterUser,
+				Method:  "POST",
+				Pattern: "register",
+				Handler: RegisterUser,
 			},
 			"Login": {
-				Method:      "POST",
-				Pattern:     "login",
-				HandlerFunc: Login,
+				Method:  "POST",
+				Pattern: "login",
+				Handler: Login,
 			},
 			"Logout": {
-				Method:      "POST",
-				Pattern:     "logout",
-				HandlerFunc: Logout,
+				Method:  "POST",
+				Pattern: "logout",
+				Handler: Logout,
 			},
 			"ChangePassword": {
-				Method:      "POST",
-				Pattern:     "change-password",
-				HandlerFunc: ChangePassword,
+				Method:  "POST",
+				Pattern: "change-password",
+				Handler: ChangePassword,
 			},
 			"ResetPasswordRequest": {
-				Method:      "POST",
-				Pattern:     "reset-password-request",
-				HandlerFunc: ResetPasswordRequest,
+				Method:  "POST",
+				Pattern: "reset-password-request",
+				Handler: ResetPasswordRequest,
 			},
 			"ResetPasswordAction": {
-				Method:      "POST",
-				Pattern:     "reset-password-action",
-				HandlerFunc: ResetPasswordAction,
+				Method:  "POST",
+				Pattern: "reset-password-action",
+				Handler: ResetPasswordAction,
 			},
 		},
 	})
 }
 
-func RegisterUser(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-
-	userModel := UserModel{}
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+func RegisterUser(req Request) (*Response, error) {
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
+	}
+	email, err := req.GetString("email", NotFromForm) // only from json
+	if err != nil {
+		return nil, err
+	}
+	password, err := req.GetString("password", NotFromForm) // only from json
+	if err != nil {
+		return nil, err
 	}
 
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &userModel)
-	if err != nil {
-		msg := err.Error()
-		//if strings.Contains(msg, "") {
-		//	msg = ""
-		//}
-		SetHttpError(w, http.StatusBadRequest, msg)
-		return
+	userModel := UserModel{
+		Email:    *email,
+		Password: *password,
 	}
-	if userModel.Email == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'email'")
-		return
-	}
-	if userModel.Password == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'password'")
-		return
-	}
+
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	anotherUserModel := UserModelByEmail(userModel.Email, db)
 	if anotherUserModel != nil {
-		SetHttpError(w, http.StatusBadRequest, "email is already registered")
-		return
+		return nil, NewError(
+			AlreadyExists, // FIXME: right code?
+			"email is already registered",
+			nil,
+		)
 	}
 
 	// add new field userModel.PasswordHash, FIXME
@@ -108,8 +98,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 	err = db.Insert(defaultGroup)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	userModel.DefaultGroupId = &defaultGroup.Id
 	err = db.Insert(UserChangeLogModel{
@@ -131,78 +120,46 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		//},
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 
 	err = db.Insert(userModel)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	signedToken := NewSignedToken(&userModel)
-	json.NewEncoder(w).Encode(scal.M{
-		"token": signedToken,
-	})
+	return &Response{
+		Data: map[string]interface{}{
+			"token": signedToken,
+		},
+	}, nil
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func Login(req Request) (*Response, error) {
 	// Expires the token and cookie in 30 days
 	//expireToken := time.Now().Add(30 * time.Day)
 	//expireCookie := time.Now().Add(30 * time.Day)
-
-	inputModel := struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}{}
-	body, _ := ioutil.ReadAll(r.Body)
-	err := json.Unmarshal(body, &inputModel)
+	email, err := req.GetString("email", NotFromForm) // only from json
 	if err != nil {
-		msg := err.Error()
-		SetHttpError(w, http.StatusBadRequest, msg)
-		return
+		return nil, err
 	}
-	if inputModel.Email == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'email'")
-		return
+	password, err := req.GetString("password", NotFromForm) // only from json
+	if err != nil {
+		return nil, err
 	}
-	if inputModel.Password == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'password'")
-		return
-	}
-
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-
-	userModel := UserModelByEmail(inputModel.Email, db)
+	userModel := UserModelByEmail(*email, db)
 	if userModel == nil {
-		SetHttpError(
-			w,
-			http.StatusUnauthorized,
-			"authentication failed",
-		)
-		return
+		return nil, AuthError(nil)
 	}
-
-	if GetPasswordHash(inputModel.Email, inputModel.Password) != userModel.Password {
-		SetHttpError(
-			w,
-			http.StatusUnauthorized,
-			"authentication failed",
-		)
-		return
+	if GetPasswordHash(*email, *password) != userModel.Password {
+		return nil, AuthError(nil)
 	}
-
 	if userModel.Locked {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"user is locked",
-		)
-		return
+		return nil, ForbiddenError("user is locked", nil)
 	}
 
 	signedToken := NewSignedToken(userModel)
@@ -218,29 +175,29 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookie)
 	*/
 
-	json.NewEncoder(w).Encode(scal.M{
-		"token": signedToken,
-	})
+	return &Response{
+		Data: scal.M{
+			"token": signedToken,
+		},
+	}, nil
 }
 
-func Logout(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func Logout(req Request) (*Response, error) {
+	if req.GetHeader("Authorization") == "" {
+		return &Response{}, nil
+	}
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
-	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	now := time.Now()
 	err = db.Insert(UserChangeLogModel{
@@ -254,88 +211,48 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	userModel.LastLogoutTime = &now
 	db.Update(userModel)
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func ChangePassword(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+func ChangePassword(req Request) (*Response, error) {
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-
-	inputModel := struct {
-		Email       string `json:"email"`
-		Password    string `json:"password"`
-		NewPassword string `json:"newPassword"`
-	}{}
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputModel)
+	email, err := req.GetString("email", NotFromForm) // only from json
 	if err != nil {
-		msg := err.Error()
-		SetHttpError(w, http.StatusBadRequest, msg)
-		return
+		return nil, err
 	}
-	if inputModel.Email == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'email'")
-		return
+	password, err := req.GetString("password", NotFromForm) // only from json
+	if err != nil {
+		return nil, err
 	}
-	if inputModel.Password == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'password'")
-		return
+	newPassword, err := req.GetString("newPassword", NotFromForm) // only from json
+	if err != nil {
+		return nil, err
 	}
-	if inputModel.NewPassword == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'newPassword'")
-		return
-	}
-
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-
-	userModel := UserModelByEmail(inputModel.Email, db)
+	userModel := UserModelByEmail(*email, db)
 	if userModel == nil {
-		SetHttpError(
-			w,
-			http.StatusUnauthorized,
-			"authentication failed",
-		)
-		return
+		return nil, AuthError(nil)
 	}
-
-	if GetPasswordHash(inputModel.Email, inputModel.Password) != userModel.Password {
-		SetHttpError(
-			w,
-			http.StatusUnauthorized,
-			"authentication failed",
-		)
-		return
+	if GetPasswordHash(*email, *password) != userModel.Password {
+		return nil, AuthError(nil)
 	}
-
 	if userModel.Locked {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"user is locked",
-		)
-		return
+		return nil, ForbiddenError("user is locked", nil)
 	}
-
 	newPasswordHash := GetPasswordHash(
 		userModel.Email,
-		inputModel.NewPassword,
+		*newPassword,
 	)
-
 	err = db.Insert(UserChangeLogModel{
 		Time:         time.Now(),
 		RequestEmail: "", // FIXME
@@ -347,52 +264,33 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-
 	userModel.Password = newPasswordHash
 	err = db.Update(userModel)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func ResetPasswordRequest(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+func ResetPasswordRequest(req Request) (*Response, error) {
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	inputModel := struct {
-		Email string `json:"email"`
-	}{}
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputModel)
+	email, err := req.GetString("email", NotFromForm) // only from json
 	if err != nil {
-		msg := err.Error()
-		SetHttpError(w, http.StatusBadRequest, msg)
-		return
+		return nil, err
 	}
-	if inputModel.Email == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'email'")
-		return
-	}
-	email := inputModel.Email
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-	userModel := UserModelByEmail(email, db)
+	userModel := UserModelByEmail(*email, db)
 	if userModel == nil {
-		SetHttpError(w, http.StatusBadRequest, "bad 'email'")
-		return
+		// FIXME: should we let them know this email is not registered?
+		return nil, NewError(InvalidArgument, "bad 'email'", nil)
 	}
 	now := time.Now()
 	expDuration := settings.RESET_PASSWORD_EXP_SECONDS * time.Second
@@ -406,129 +304,99 @@ func ResetPasswordRequest(w http.ResponseWriter, r *http.Request) {
 	)
 	if err == nil {
 		if now.Sub(lastToken.IssueTime) < expDuration {
-			SetHttpError(
-				w,
-				http.StatusForbidden,
+			return nil, NewError(
+				PermissionDenied,
 				"There has been a Reset Password request for this email recently. Check your email inbox or wait more",
+				nil,
 			)
-			return
 		}
 	} else if !db.IsNotFound(err) {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
+
 	expTime := now.Add(expDuration)
 	token, err := utils.GenerateRandomBase64String(
 		settings.RESET_PASSWORD_TOKEN_LENGTH,
 	)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	tokenModel := ResetPasswordTokenModel{
 		Token:         token,
-		Email:         email,
+		Email:         *email,
 		IssueTime:     now,
 		ExpireTime:    expTime, // not reliable
 		IssueRemoteIp: remoteIp,
 	}
 	err = db.Insert(tokenModel)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	// send an email containing this `token`, (and some instructions to use it)
 	tplText := settings.RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE
-	tpl, err := template.New("ResetPassword " + email).Parse(tplText)
+	tpl, err := template.New("ResetPassword " + *email).Parse(tplText)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	buf := bytes.NewBufferString("")
 	err = tpl.Execute(buf, tokenModel)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	emailBody := buf.String()
 	scal.SendEmail(
-		email,
+		*email,
 		"StarCalendar Password Reset",
 		false, // isHtml
 		emailBody,
 	)
-	json.NewEncoder(w).Encode(scal.M{
-		"description": "Reset Password Token is sent to your email",
-	})
+	return &Response{
+		Data: scal.M{
+			"description": "Reset Password Token is sent to your email",
+		},
+	}, nil
 }
 
-func ResetPasswordAction(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+func ResetPasswordAction(req Request) (*Response, error) {
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	inputModel := struct {
-		Email              string `json:"email"`
-		ResetPasswordToken string `json:"resetPasswordToken"`
-		NewPassword        string `json:"newPassword"`
-	}{}
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputModel)
+	email, err := req.GetString("email", NotFromForm) // only from json
 	if err != nil {
-		msg := err.Error()
-		SetHttpError(w, http.StatusBadRequest, msg)
-		return
+		return nil, err
 	}
-	if inputModel.Email == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'email'")
-		return
+	resetPasswordToken, err := req.GetString("resetPasswordToken", NotFromForm) // only from json
+	if err != nil {
+		return nil, err
 	}
-	if inputModel.ResetPasswordToken == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'resetPasswordToken'")
-		return
+	newPassword, err := req.GetString("newPassword", NotFromForm) // only from json
+	if err != nil {
+		return nil, err
 	}
-	if inputModel.NewPassword == "" {
-		SetHttpError(w, http.StatusBadRequest, "missing 'newPassword'")
-		return
-	}
-	email := inputModel.Email
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	tokenModel := ResetPasswordTokenModel{
-		Token: inputModel.ResetPasswordToken,
+		Token: *resetPasswordToken,
 	}
 	err = db.Get(&tokenModel)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusForbidden, "invalid 'resetPasswordToken'")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, ForbiddenError("invalid 'resetPasswordToken'", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	if tokenModel.Email != email {
-		SetHttpError(w, http.StatusForbidden, "invalid 'resetPasswordToken'")
-		return
+	if tokenModel.Email != *email {
+		return nil, ForbiddenError("invalid 'resetPasswordToken'", nil)
 	}
-	userModel := UserModelByEmail(email, db)
+	userModel := UserModelByEmail(*email, db)
 	if userModel == nil {
-		SetHttpError(w, http.StatusBadRequest, "bad 'email'")
-		return
+		return nil, ForbiddenError("invalid 'resetPasswordToken'", nil)
 	}
 	if userModel.Locked {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"user is locked",
-		)
-		return
+		return nil, ForbiddenError("user is locked", nil)
 	}
 	now := time.Now()
 	logModel := ResetPasswordLogModel{
@@ -538,13 +406,15 @@ func ResetPasswordAction(w http.ResponseWriter, r *http.Request) {
 	}
 	err = db.Insert(logModel)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	db.Remove(tokenModel)
+	err = db.Remove(tokenModel)
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
 	newPasswordHash := GetPasswordHash(
 		userModel.Email,
-		inputModel.NewPassword,
+		*newPassword,
 	)
 	err = db.Insert(UserChangeLogModel{
 		Time:         now,
@@ -557,20 +427,17 @@ func ResetPasswordAction(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	userModel.Password = newPasswordHash
 	err = db.Update(userModel)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	tplText := settings.RESET_PASSWORD_DONE_EMAIL_TEMPLATE
-	tpl, err := template.New("ResetPasswordAction " + email).Parse(tplText)
+	tpl, err := template.New("ResetPasswordAction " + *email).Parse(tplText)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	buf := bytes.NewBufferString("")
 	tplParams := struct {
@@ -582,15 +449,17 @@ func ResetPasswordAction(w http.ResponseWriter, r *http.Request) {
 	}
 	err = tpl.Execute(buf, tplParams)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	emailBody := buf.String()
-	scal.SendEmail(
-		email,
+	err = scal.SendEmail(
+		*email,
 		"StarCalendar Password Reset",
 		false, // isHtml
 		emailBody,
 	)
-	json.NewEncoder(w).Encode(scal.M{})
+	if err != nil {
+		return nil, NewError(Unavailable, "", err)
+	}
+	return &Response{}, nil
 }

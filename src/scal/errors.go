@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	BadRequest          = http.StatusBadRequest
-	Forbidden           = http.StatusForbidden
-	InternalServerError = http.StatusInternalServerError
+	BadRequest          = http.StatusBadRequest          // FIXME: REMOVE
+	Forbidden           = http.StatusForbidden           // FIXME: REMOVE
+	InternalServerError = http.StatusInternalServerError // FIXME: REMOVE
 )

@@ -1,17 +1,13 @@
 package api_v1
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net"
-	"net/http"
 	"reflect"
 	"strconv"
 	"time"
 
+	. "github.com/ilius/restpc"
 	"gopkg.in/mgo.v2/bson"
-	//"github.com/gorilla/mux"
 
 	"scal"
 	"scal/event_lib"
@@ -24,9 +20,9 @@ func init() {
 		Base: "event/copy",
 		Map: RouteMap{
 			"CopyEvent": {
-				Method:      "POST",
-				Pattern:     "{eventId}",
-				HandlerFunc: authWrap(CopyEvent),
+				Method:  "POST",
+				Pattern: "{eventId}",
+				Handler: CopyEvent,
 			},
 		},
 	})
@@ -34,9 +30,9 @@ func init() {
 		Base: "event/ungrouped",
 		Map: RouteMap{
 			"GetUngroupedEvents": {
-				Method:      "GET",
-				Pattern:     "",
-				HandlerFunc: authWrap(GetUngroupedEvents),
+				Method:  "GET",
+				Pattern: "",
+				Handler: GetUngroupedEvents,
 			},
 		},
 	})
@@ -44,61 +40,56 @@ func init() {
 		Base: "event/my",
 		Map: RouteMap{
 			"GetMyEventList": {
-				Method:      "GET",
-				Pattern:     "events",
-				HandlerFunc: authWrap(GetMyEventList),
+				Method:  "GET",
+				Pattern: "events",
+				Handler: GetMyEventList,
 			},
 			"GetMyEventsFull": {
-				Method:      "GET",
-				Pattern:     "events-full",
-				HandlerFunc: authWrap(GetMyEventsFull),
+				Method:  "GET",
+				Pattern: "events-full",
+				Handler: GetMyEventsFull,
 			},
 			"GetMyLastCreatedEvents": {
-				Method:      "GET",
-				Pattern:     "last-created-events/{count}",
-				HandlerFunc: authWrap(GetMyLastCreatedEvents),
+				Method:  "GET",
+				Pattern: "last-created-events/{count}",
+				Handler: GetMyLastCreatedEvents,
 			},
 		},
 	})
 }
 
-func DeleteEvent(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func DeleteEvent(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	eventId := ObjectIdFromURL(w, r, "eventId", 0)
-	if eventId == nil {
-		return
+
+	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	if err != nil {
+		return nil, err
 	}
 
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
+
 	if eventMeta.OwnerEmail != email {
-		SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
-		return
+		return nil, ForbiddenError("you don't have write access to this event", nil)
 	}
 	now := time.Now()
 	metaChangeLog := event_lib.EventMetaChangeLogModel{
@@ -118,6 +109,7 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 			nil,
 		}
 	}
+
 	if len(eventMeta.AccessEmails) > 0 {
 		metaChangeLog.AccessEmails = &[2][]string{
 			eventMeta.AccessEmails,
@@ -126,8 +118,7 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	err = db.Insert(metaChangeLog)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	err = db.Insert(event_lib.EventRevisionModel{
 		EventId:   *eventId,
@@ -136,62 +127,51 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 		Time:      now,
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	err = db.Remove(eventMeta)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func CopyEvent(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func CopyEvent(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	oldEventId := ObjectIdFromURL(w, r, "eventId", 0)
+	oldEventId, err := ObjectIdFromURL(req, "eventId", 0)
+	if err != nil {
+		return nil, err
+	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-
 	eventMeta, err := event_lib.LoadEventMetaModel(db, oldEventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", nil)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if !eventMeta.CanRead(email) {
-		SetHttpError(w, http.StatusForbidden, "you don't have access to this event")
-		return
+		return nil, ForbiddenError("you don't have access to this event", nil)
 	}
-
 	eventRev, err := event_lib.LoadLastRevisionModel(db, oldEventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", nil)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
-
 	newEventId := bson.NewObjectId()
 
 	newGroupId := userModel.DefaultGroupId
@@ -200,7 +180,6 @@ func CopyEvent(w http.ResponseWriter, r *http.Request) {
 			newGroupId = &eventMeta.GroupModel.Id // == eventMeta.GroupId
 		}
 	}
-
 	now := time.Now()
 	err = db.Insert(event_lib.EventMetaChangeLogModel{
 		Time:     now,
@@ -218,10 +197,8 @@ func CopyEvent(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-
 	err = db.Insert(event_lib.EventMetaModel{
 		EventId:      newEventId,
 		EventType:    eventMeta.EventType,
@@ -231,97 +208,70 @@ func CopyEvent(w http.ResponseWriter, r *http.Request) {
 		//AccessEmails: []string{}// must not copy AccessEmails
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-
 	eventRev.EventId = newEventId
 	err = db.Insert(eventRev)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"eventType": eventRev.EventType,
-		"eventId":   newEventId.Hex(),
-		"sha1":      eventRev.Sha1,
-	})
-
+	return &Response{
+		Data: map[string]string{
+			"eventType": eventRev.EventType,
+			"eventId":   newEventId.Hex(),
+			"sha1":      eventRev.Sha1,
+		},
+	}, nil
 }
 
-func SetEventGroupId(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func SetEventGroupId(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return
-	}
-
-	inputMap := map[string]string{}
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputMap)
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
-		SetHttpError(w, http.StatusForbidden, "you don't have write access to this event")
-		return
+		return nil, ForbiddenError("you don't have write access to this event", err)
 	}
-
-	newGroupIdHex, ok := inputMap["newGroupId"]
-	if !ok {
-		SetHttpError(w, http.StatusBadRequest, "missing 'newGroupId'")
-		return
+	newGroupIdHex, err := req.GetString("newGroupId")
+	if err != nil {
+		return nil, err
 	}
-	if !bson.IsObjectIdHex(newGroupIdHex) {
-		SetHttpError(w, http.StatusBadRequest, "invalid 'newGroupId'")
-		return
+	if !bson.IsObjectIdHex(*newGroupIdHex) {
+		return nil, NewError(InvalidArgument, "invalid 'newGroupId'", nil)
 		// to avoid panic!
 	}
-	newGroupId := bson.ObjectIdHex(newGroupIdHex)
+	newGroupId := bson.ObjectIdHex(*newGroupIdHex)
 	newGroupModel := event_lib.EventGroupModel{
 		Id: newGroupId,
 	}
 	err = db.Get(&newGroupModel)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if !newGroupModel.EmailCanAdd(email) {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"you don't have write access to this group",
-		)
-		return
+		return nil, ForbiddenError("you don't have write access to this group", nil)
 	}
 
 	now := time.Now()
@@ -336,6 +286,7 @@ func SetEventGroupId(w http.ResponseWriter, r *http.Request) {
 			&newGroupId,
 		},
 	}
+
 	/*
 		addedAccessEmails := Set(
 			eventMeta.GroupModel.ReadAccessEmails,
@@ -346,10 +297,8 @@ func SetEventGroupId(w http.ResponseWriter, r *http.Request) {
 	*/
 	err = db.Insert(metaChangeLog)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-
 	/*userModel := UserModelByEmail(email, db)
 	  if userModel == nil {
 	      SetHttpErrorUserNotFound(w, email)
@@ -358,116 +307,88 @@ func SetEventGroupId(w http.ResponseWriter, r *http.Request) {
 	eventMeta.GroupId = &newGroupId
 	err = db.Update(eventMeta)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func GetEventOwner(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetEventOwner(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	if err != nil {
+		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if !eventMeta.CanRead(email) {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"you don't have access to this event",
-		)
-		return
+		return nil, ForbiddenError("you don't have access to this event", nil)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		//"eventId": eventId.Hex(),
-		"ownerEmail": eventMeta.OwnerEmail,
-	})
+	return &Response{
+		Data: scal.M{
+			//"eventId": eventId.Hex(),
+			"ownerEmail": eventMeta.OwnerEmail,
+		},
+	}, nil
 }
 
-func SetEventOwner(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func SetEventOwner(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return
-	}
-
-	inputMap := map[string]string{}
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputMap)
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, err
+	}
+	newOwnerEmail, err := req.GetString("newOwnerEmail")
+	if err != nil {
+		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
-		SetHttpError(w, http.StatusForbidden, "you don't own this event")
-		return
-	}
-
-	newOwnerEmail, ok := inputMap["newOwnerEmail"]
-	if !ok {
-		SetHttpError(w, http.StatusBadRequest, "missing 'newOwnerEmail'")
-		return
+		return nil, ForbiddenError("you don't own this event", err)
 	}
 	// should check if user with `newOwnerEmail` exists?
-	newOwnerUserModel := UserModelByEmail(newOwnerEmail, db)
+	newOwnerUserModel := UserModelByEmail(*newOwnerEmail, db)
 	if newOwnerUserModel == nil {
-		SetHttpError(
-			w,
-			http.StatusBadRequest,
+		return nil, NewError(
+			InvalidArgument,
 			fmt.Sprintf(
 				"user with email '%s' does not exist",
 				newOwnerEmail,
 			),
+			nil,
 		)
-		return
 	}
 	now := time.Now()
 	err = db.Insert(event_lib.EventMetaChangeLogModel{
@@ -478,193 +399,147 @@ func SetEventOwner(w http.ResponseWriter, r *http.Request) {
 		FuncName: "SetEventOwner",
 		OwnerEmail: &[2]*string{
 			&eventMeta.OwnerEmail,
-			&newOwnerEmail,
+			newOwnerEmail,
 		},
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	eventMeta.OwnerEmail = newOwnerEmail
+	eventMeta.OwnerEmail = *newOwnerEmail
 	err = db.Update(eventMeta)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	// send an E-Mail to `newOwnerEmail` FIXME
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func GetEventMetaModelFromRequest(
-	w http.ResponseWriter,
-	r *http.Request,
-	email string,
-) *event_lib.EventMetaModel {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	// -----------------------------------------------
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return nil
+func GetEventMetaModelFromRequest(req Request, email string) (*event_lib.EventMetaModel, error) {
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	if err != nil {
+		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return nil
+		return nil, NewError(Unavailable, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(InvalidArgument, "event not found", err)
 		}
-		return nil
+		return nil, NewError(Internal, "", err)
 	}
 	if !eventMeta.CanReadFull(email) {
-		SetHttpError(
-			w,
-			http.StatusForbidden,
-			"you can't meta information of this event",
-		)
-		return nil
+		return nil, ForbiddenError("you can't meta information of this event", nil)
 	}
-	return eventMeta
+	return eventMeta, nil
 }
 
-func GetEventMeta(w http.ResponseWriter, r *http.Request) {
+func GetEventMeta(req Request) (*Response, error) {
 	// includes owner, creation time, groupId, access info, attendings info
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventMeta := GetEventMetaModelFromRequest(w, r, email)
-	if eventMeta == nil {
-		return
+	eventMeta, err := GetEventMetaModelFromRequest(req, email)
+	if err != nil {
+		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		//"eventId": eventMeta.EventId.Hex(),
-		"ownerEmail":           eventMeta.OwnerEmail,
-		"creationTime":         eventMeta.CreationTime,
-		"fieldsMtime":          eventMeta.FieldsMtime,
-		"groupId":              eventMeta.GroupIdHex(),
-		"isPublic":             eventMeta.IsPublic,
-		"accessEmails":         eventMeta.AccessEmails,
-		"publicJoinOpen":       eventMeta.PublicJoinOpen,
-		"maxAttendees":         eventMeta.MaxAttendees,
-		"attendingEmails":      eventMeta.GetAttendingEmails(db),
-		"notAttendingEmails":   eventMeta.GetNotAttendingEmails(db),
-		"maybeAttendingEmails": eventMeta.GetMaybeAttendingEmails(db),
-	})
+
+	return &Response{
+		Data: scal.M{
+			//"eventId": eventMeta.EventId.Hex(),
+			"ownerEmail":           eventMeta.OwnerEmail,
+			"creationTime":         eventMeta.CreationTime,
+			"fieldsMtime":          eventMeta.FieldsMtime,
+			"groupId":              eventMeta.GroupIdHex(),
+			"isPublic":             eventMeta.IsPublic,
+			"accessEmails":         eventMeta.AccessEmails,
+			"publicJoinOpen":       eventMeta.PublicJoinOpen,
+			"maxAttendees":         eventMeta.MaxAttendees,
+			"attendingEmails":      eventMeta.GetAttendingEmails(db),
+			"notAttendingEmails":   eventMeta.GetNotAttendingEmails(db),
+			"maybeAttendingEmails": eventMeta.GetMaybeAttendingEmails(db),
+		},
+	}, nil
 }
 
-func GetEventAccess(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetEventAccess(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventMeta := GetEventMetaModelFromRequest(w, r, email)
-	if eventMeta == nil {
-		return
+	eventMeta, err := GetEventMetaModelFromRequest(req, email)
+	if err != nil {
+		return nil, err
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		//"eventId": eventMeta.EventId.Hex(),
-		"isPublic":       eventMeta.IsPublic,
-		"accessEmails":   eventMeta.AccessEmails,
-		"publicJoinOpen": eventMeta.PublicJoinOpen,
-		"maxAttendees":   eventMeta.MaxAttendees,
-	})
+	return &Response{
+		Data: scal.M{
+			//"eventId": eventMeta.EventId.Hex(),
+			"isPublic":       eventMeta.IsPublic,
+			"accessEmails":   eventMeta.AccessEmails,
+			"publicJoinOpen": eventMeta.PublicJoinOpen,
+			"maxAttendees":   eventMeta.MaxAttendees,
+		},
+	}, nil
 }
 
-func SetEventAccess(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func SetEventAccess(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	if err != nil {
+		return nil, err
 	}
 
-	inputStruct := struct {
-		IsPublic       *bool     `json:"isPublic"`
-		AccessEmails   *[]string `json:"accessEmails"`
-		PublicJoinOpen *bool     `json:"publicJoinOpen"`
-		MaxAttendees   *int      `json:"maxAttendees"`
-	}{
-		nil,
-		nil,
-		nil,
-		nil,
-	}
-
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputStruct)
-	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
-	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
-		SetHttpError(w, http.StatusForbidden, "you don't own this event")
-		return
+		return nil, ForbiddenError("you don't own this event", nil)
 	}
 
-	newIsPublic := inputStruct.IsPublic
-	if newIsPublic == nil {
-		SetHttpError(w, http.StatusBadRequest, "missing 'isPublic'")
-		return
+	newIsPublic, err := req.GetBool("isPublic")
+	if err != nil {
+		return nil, err
 	}
-	newAccessEmails := inputStruct.AccessEmails
-	if newAccessEmails == nil {
-		SetHttpError(w, http.StatusBadRequest, "missing 'accessEmails'")
-		return
+	newAccessEmails, err := req.GetStringList("accessEmails")
+	if err != nil {
+		return nil, err
 	}
-	newPublicJoinOpen := inputStruct.PublicJoinOpen
-	if newPublicJoinOpen == nil {
-		SetHttpError(w, http.StatusBadRequest, "missing 'publicJoinOpen'")
-		return
+	newPublicJoinOpen, err := req.GetBool("publicJoinOpen")
+	if err != nil {
+		return nil, err
 	}
-	newMaxAttendees := inputStruct.MaxAttendees
-	if newMaxAttendees == nil {
-		SetHttpError(w, http.StatusBadRequest, "missing 'maxAttendees'")
-		return
+	newMaxAttendees, err := req.GetInt("maxAttendees")
+	if err != nil {
+		return nil, err
 	}
 
 	now := time.Now()
@@ -682,12 +557,12 @@ func SetEventAccess(w http.ResponseWriter, r *http.Request) {
 		}
 		eventMeta.IsPublic = *newIsPublic
 	}
-	if !reflect.DeepEqual(*newAccessEmails, eventMeta.AccessEmails) {
+	if !reflect.DeepEqual(newAccessEmails, eventMeta.AccessEmails) {
 		metaChangeLog.AccessEmails = &[2][]string{
 			eventMeta.AccessEmails,
-			*newAccessEmails,
+			newAccessEmails,
 		}
-		eventMeta.AccessEmails = *newAccessEmails
+		eventMeta.AccessEmails = newAccessEmails
 	}
 	if *newPublicJoinOpen != eventMeta.PublicJoinOpen {
 		metaChangeLog.PublicJoinOpen = &[2]bool{
@@ -706,69 +581,53 @@ func SetEventAccess(w http.ResponseWriter, r *http.Request) {
 	}
 	err = db.Insert(metaChangeLog)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	err = db.Update(eventMeta)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func AppendEventAccess(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func AppendEventAccess(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	if err != nil {
+		return nil, err
 	}
 
-	inputMap := map[string]string{}
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputMap)
-	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
-	}
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
-		SetHttpError(w, http.StatusForbidden, "you don't own this event")
-		return
+		return nil, ForbiddenError("you don't own this event", nil)
 	}
 
-	toAddEmail, ok := inputMap["toAddEmail"]
-	if !ok {
-		SetHttpError(w, http.StatusBadRequest, "missing 'toAddEmail'")
-		return
+	toAddEmail, err := req.GetString("toAddEmail")
+	if err != nil {
+		return nil, err
 	}
-	newAccessEmails := append(eventMeta.AccessEmails, toAddEmail)
+
+	newAccessEmails := append(eventMeta.AccessEmails, *toAddEmail)
 	now := time.Now()
 	err = db.Insert(event_lib.EventMetaChangeLogModel{
 		Time:     now,
@@ -782,176 +641,139 @@ func AppendEventAccess(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	eventMeta.AccessEmails = newAccessEmails
 	err = db.Update(eventMeta)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func JoinEvent(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func JoinEvent(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	/*remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
-	  if err != nil {
-	      SetHttpErrorInternal(w, err)
-	      return
-	  }*/
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return
+	// remoteIp, err := req.RemoteIP()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	if err != nil {
+		return nil, err
 	}
 
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	err = eventMeta.Join(db, email)
 	if err != nil {
-		SetHttpError(w, http.StatusForbidden, err.Error())
-		return
+		return nil, ForbiddenError(err.Error(), err)
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func LeaveEvent(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func LeaveEvent(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	/*remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
-	  if err != nil {
-	      SetHttpErrorInternal(w, err)
-	      return
-	  }*/
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return
+	// remoteIp, err := req.RemoteIP()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	if err != nil {
+		return nil, err
 	}
 
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	err = eventMeta.Leave(db, email)
 	if err != nil {
-		SetHttpError(w, http.StatusForbidden, err.Error())
-		return
+		return nil, ForbiddenError(err.Error(), err)
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func InviteToEvent(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func InviteToEvent(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	remoteIp, _, err := net.SplitHostPort(r.RemoteAddr)
+	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, err
 	}
-	eventId := ObjectIdFromURL(w, r, "eventId", 1)
-	if eventId == nil {
-		return
-	}
-	inputStruct := struct {
-		InviteEmails *[]string `json:"inviteEmails"`
-	}{
-		nil,
+	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	if err != nil {
+		return nil, err
 	}
 
-	body, _ := ioutil.ReadAll(r.Body)
-	err = json.Unmarshal(body, &inputStruct)
+	inviteEmails, err := req.GetStringList("inviteEmails")
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, err.Error())
-		return
+		return nil, err
 	}
 
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			SetHttpError(w, http.StatusBadRequest, "event not found")
-		} else {
-			SetHttpErrorInternal(w, err)
+			return nil, NewError(NotFound, "event not found", err)
 		}
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	err, errCode := eventMeta.Invite(
+	err = eventMeta.Invite(
 		db,
 		email,
-		inputStruct.InviteEmails,
+		inviteEmails,
 		remoteIp,
-		"http://"+r.Host, // FIXME
+		"http://"+req.Host(), // FIXME
 	)
 	if err != nil {
-		if errCode == scal.InternalServerError {
-			SetHttpErrorInternal(w, err)
-		} else {
-			SetHttpError(w, errCode, err.Error())
-		}
-		return
+		return nil, err
 	}
-	json.NewEncoder(w).Encode(scal.M{})
+	return &Response{}, nil
 }
 
-func GetUngroupedEvents(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetUngroupedEvents(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 
 	type eventModel struct {
@@ -970,24 +792,23 @@ func GetUngroupedEvents(w http.ResponseWriter, r *http.Request) {
 	if events == nil {
 		events = make([]eventModel, 0)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		"events": events,
-	})
+	return &Response{
+		Data: scal.M{
+			"events": events,
+		},
+	}, nil
 }
 
-func GetMyEventList(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetMyEventList(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
 
 	type resultModel struct {
@@ -1005,32 +826,30 @@ func GetMyEventList(w http.ResponseWriter, r *http.Request) {
 		&results,
 	)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
+
 	if results == nil {
 		results = make([]resultModel, 0)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		"events": results,
-	})
+	return &Response{
+		Data: scal.M{
+			"events": results,
+		},
+	}, nil
 }
 
-func GetMyEventsFull(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetMyEventsFull(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-
 	pipeline := []scal.M{
 		{"$match": scal.M{
 			"ownerEmail": email,
@@ -1070,40 +889,35 @@ func GetMyEventsFull(w http.ResponseWriter, r *http.Request) {
 
 	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		"eventsFull": results,
-	})
+	return &Response{
+		Data: scal.M{
+			"eventsFull": results,
+		},
+	}, nil
 }
 
-func GetMyLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	userModel := CheckAuthGetUserModel(w, r)
-	if userModel == nil {
-		return
+func GetMyLastCreatedEvents(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	parts := SplitURL(r.URL)
+	parts := SplitURL(req.URL())
 	if len(parts) < 2 {
-		SetHttpErrorInternalMsg(w, fmt.Sprintf("Unexpected URL: %s", r.URL))
-		return
+		return nil, NewError(Internal, "", fmt.Errorf("Unexpected URL: %s", req.URL()))
 	}
 	countStr := parts[len(parts)-1] // int string
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Unavailable, "", err)
 	}
-
 	count, err := strconv.ParseInt(countStr, 10, 0)
 	if err != nil {
-		SetHttpError(w, http.StatusBadRequest, "invalid 'count', must be integer")
-		return
+		return nil, NewError(InvalidArgument, "invalid 'count', must be integer", err)
 	}
 
 	pipeline := []scal.M{
@@ -1148,11 +962,14 @@ func GetMyLastCreatedEvents(w http.ResponseWriter, r *http.Request) {
 
 	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
-		SetHttpErrorInternal(w, err)
-		return
+		return nil, NewError(Internal, "", err)
 	}
-	json.NewEncoder(w).Encode(scal.M{
-		"maxCount":          count,
-		"lastCreatedEvents": results,
-	})
+
+	return &Response{
+		Data: scal.M{
+			"maxCount":          count,
+			"lastCreatedEvents": results,
+		},
+	}, nil
+
 }
