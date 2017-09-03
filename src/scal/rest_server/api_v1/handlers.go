@@ -24,9 +24,9 @@ func init() {
 		Base: "event/copy",
 		Map: RouteMap{
 			"CopyEvent": {
-				"POST",
-				"{eventId}",
-				authWrap(CopyEvent),
+				Method:      "POST",
+				Pattern:     "{eventId}",
+				HandlerFunc: authWrap(CopyEvent),
 			},
 		},
 	})
@@ -34,9 +34,9 @@ func init() {
 		Base: "event/ungrouped",
 		Map: RouteMap{
 			"GetUngroupedEvents": {
-				"GET",
-				"",
-				authWrap(GetUngroupedEvents),
+				Method:      "GET",
+				Pattern:     "",
+				HandlerFunc: authWrap(GetUngroupedEvents),
 			},
 		},
 	})
@@ -44,19 +44,19 @@ func init() {
 		Base: "event/my",
 		Map: RouteMap{
 			"GetMyEventList": {
-				"GET",
-				"events",
-				authWrap(GetMyEventList),
+				Method:      "GET",
+				Pattern:     "events",
+				HandlerFunc: authWrap(GetMyEventList),
 			},
 			"GetMyEventsFull": {
-				"GET",
-				"events-full",
-				authWrap(GetMyEventsFull),
+				Method:      "GET",
+				Pattern:     "events-full",
+				HandlerFunc: authWrap(GetMyEventsFull),
 			},
 			"GetMyLastCreatedEvents": {
-				"GET",
-				"last-created-events/{count}",
-				authWrap(GetMyLastCreatedEvents),
+				Method:      "GET",
+				Pattern:     "last-created-events/{count}",
+				HandlerFunc: authWrap(GetMyLastCreatedEvents),
 			},
 		},
 	})

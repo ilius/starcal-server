@@ -3,7 +3,6 @@ package api_v1
 import (
 	"bytes"
 	"encoding/json"
-	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -15,6 +14,8 @@ import (
 	"scal/utils"
 	"text/template"
 	"time"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 func init() {
@@ -22,34 +23,34 @@ func init() {
 		Base: "auth",
 		Map: RouteMap{
 			"RegisterUser": {
-				"POST",
-				"register",
-				RegisterUser,
+				Method:      "POST",
+				Pattern:     "register",
+				HandlerFunc: RegisterUser,
 			},
 			"Login": {
-				"POST",
-				"login",
-				Login,
+				Method:      "POST",
+				Pattern:     "login",
+				HandlerFunc: Login,
 			},
 			"Logout": {
-				"POST",
-				"logout",
-				Logout,
+				Method:      "POST",
+				Pattern:     "logout",
+				HandlerFunc: Logout,
 			},
 			"ChangePassword": {
-				"POST",
-				"change-password",
-				ChangePassword,
+				Method:      "POST",
+				Pattern:     "change-password",
+				HandlerFunc: ChangePassword,
 			},
 			"ResetPasswordRequest": {
-				"POST",
-				"reset-password-request",
-				ResetPasswordRequest,
+				Method:      "POST",
+				Pattern:     "reset-password-request",
+				HandlerFunc: ResetPasswordRequest,
 			},
 			"ResetPasswordAction": {
-				"POST",
-				"reset-password-action",
-				ResetPasswordAction,
+				Method:      "POST",
+				Pattern:     "reset-password-action",
+				HandlerFunc: ResetPasswordAction,
 			},
 		},
 	})

@@ -1,14 +1,17 @@
 package api_v1
 
 import (
-	"github.com/gorilla/mux"
+	"myrpc"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Route struct {
 	Method      string
 	Pattern     string
-	HandlerFunc http.HandlerFunc
+	HandlerFunc http.HandlerFunc // TO REMOVE LATER
+	Handler     myrpc.Handler
 }
 type RouteMap map[string]Route
 

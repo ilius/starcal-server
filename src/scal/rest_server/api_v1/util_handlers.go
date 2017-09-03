@@ -11,9 +11,9 @@ func init() {
 		Base: "util",
 		Map: RouteMap{
 			"GetApiVersion": {
-				"GET",
-				"api-version",
-				GetApiVersion,
+				Method:      "GET",
+				Pattern:     "api-version",
+				HandlerFunc: GetApiVersion,
 			},
 		},
 	})
