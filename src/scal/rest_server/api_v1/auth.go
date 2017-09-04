@@ -18,11 +18,11 @@ const TOKEN_CONTEXT = "user"
 var JWT_SIGNING_METHOD = jwt.SigningMethodHS256
 
 var (
-	ErrTokenNotFound       = errors.New("JWT Authorization token not found")
-	ErrTokenBadFormat      = errors.New("JWT Authorization header format must be 'Bearer {token}'")
-	ErrTokenInvalid        = errors.New("JWT token is invalid")
-	ErrClaimsNotFound      = errors.New("JWT claims not found")
-	ErrClaimsEmailNotFound = errors.New("Email not found in JWT claims")
+	errTokenNotFound       = errors.New("JWT Authorization token not found")
+	errTokenBadFormat      = errors.New("JWT Authorization header format must be 'Bearer {token}'")
+	errTokenInvalid        = errors.New("JWT token is invalid")
+	errClaimsNotFound      = errors.New("JWT claims not found")
+	errClaimsEmailNotFound = errors.New("Email not found in JWT claims")
 )
 
 func init() {
@@ -34,15 +34,15 @@ func init() {
 func ExtractToken(r *http.Request) (*jwt.Token, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		return nil, ErrTokenNotFound
+		return nil, errTokenNotFound
 	}
 	authHeaderParts := strings.Split(authHeader, " ")
 	if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
-		return nil, ErrTokenBadFormat
+		return nil, errTokenBadFormat
 	}
 	tokenStr := authHeaderParts[1]
 	if tokenStr == "" {
-		return nil, ErrTokenNotFound
+		return nil, errTokenNotFound
 	}
 
 	token, err := jwt.Parse(
@@ -66,7 +66,7 @@ func ExtractToken(r *http.Request) (*jwt.Token, error) {
 	}
 
 	if !token.Valid {
-		return nil, ErrTokenInvalid
+		return nil, errTokenInvalid
 	}
 
 	return token, nil
@@ -80,7 +80,7 @@ func CheckAuthGetUserModel(w http.ResponseWriter, r *http.Request) *UserModel {
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		SetHttpErrorInternal(w, ErrClaimsNotFound)
+		SetHttpErrorInternal(w, errClaimsNotFound)
 		return nil
 	}
 	emailI, ok := claims["email"]
