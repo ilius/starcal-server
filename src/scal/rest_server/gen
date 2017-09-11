@@ -29,8 +29,10 @@ function need_build_gen() {
 	return 1
 }
 
+cd "$myDir"
 if need_build_gen ; then
 	GOPATH=$rootDir go build -o gen.bin gen.go || exit $?
 fi
 echo "Generating"
 ./gen.bin "$@"
+cd - >/dev/null
