@@ -1,8 +1,11 @@
 package api_v1
 
-import "log"
-import "net/http"
-import _ "scal/init/cal_types_init"
+import (
+	"log"
+	"net/http"
+
+	_ "scal/init/cal_types_init"
+)
 
 func StartAPIv1Server() {
 	router := GetRouter()
