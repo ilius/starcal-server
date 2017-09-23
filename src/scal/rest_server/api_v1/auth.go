@@ -4,6 +4,7 @@ import (
 	"crypto/sha512"
 	"errors"
 	"fmt"
+	"math/rand"
 	"scal/settings"
 	. "scal/user_lib"
 	"strings"
@@ -68,13 +69,19 @@ func TokenFromHeader(authHeader string) (*jwt.Token, error) {
 	return token, nil
 }
 
+func randomSleep(maxSeconds int) {
+	maxMS := 1000 * maxSeconds
+	minMS := maxMS / 2
+	time.Sleep(time.Duration(minMS+rand.Intn(maxMS-minMS)) * time.Millisecond)
+}
+
 func AuthError(err error) RPCError {
-	// TODO: sleep randomly
+	randomSleep(4)
 	return NewError(Unauthenticated, "", nil)
 }
 
 func ForbiddenError(publicMsg string, err error) RPCError {
-	// TODO: sleep randomly
+	randomSleep(4)
 	return NewError(PermissionDenied, publicMsg, err)
 }
 
