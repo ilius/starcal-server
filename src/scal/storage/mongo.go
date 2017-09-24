@@ -26,6 +26,8 @@ func Hex(id interface{}) string {
 	return id2.Hex()
 }
 
+var db *MongoDatabase
+
 type MongoDatabase struct {
 	mgo.Database
 }
@@ -112,6 +114,9 @@ func (db *MongoDatabase) PipeIter(
 }
 
 func GetDB() (Database, error) {
+	if db != nil {
+		return db, nil
+	}
 	mongoDBDialInfo := &mgo.DialInfo{
 		Addrs:    []string{settings.MONGO_HOST},
 		Timeout:  2 * time.Second,
@@ -134,7 +139,8 @@ func GetDB() (Database, error) {
 	// http://godoc.org/labix.org/v2/mgo#Session.SetMode
 	mongoSession.SetMode(mgo.Monotonic, true)
 
-	return &MongoDatabase{
+	db = &MongoDatabase{
 		*mongoSession.DB(settings.MONGO_DB_NAME),
-	}, nil
+	}
+	return db, nil
 }
