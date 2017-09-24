@@ -2,11 +2,12 @@ package storage
 
 import (
 	"errors"
-	"gopkg.in/mgo.v2"
 	"log"
 	"scal"
 	"scal/settings"
 	"time"
+
+	"gopkg.in/mgo.v2"
 )
 
 type hasHex interface {
