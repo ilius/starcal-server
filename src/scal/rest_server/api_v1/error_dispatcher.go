@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"log"
 	"scal/storage"
+	"time"
 
 	"github.com/ilius/restpc"
 )
 
 type ErrorModel struct {
+	Time           time.Time                `bson:"time"`
+	HandlerName    string                   `bson:"handlerName"`
 	URL            string                   `bson:"url"`
 	Code           string                   `bson:"code"`
 	Message        string                   `bson:"message"`
@@ -29,13 +32,16 @@ func SetMongoErrorDispatcher() {
 		panic(err)
 	}
 	restpc.SetErrorDispatcher(func(request restpc.Request, rpcErr restpc.RPCError) {
+		traceback := rpcErr.Traceback()
 		errorModel := &ErrorModel{
-			URL:       request.URL().String(),
-			Code:      rpcErr.Code().String(),
-			Message:   rpcErr.Message(),
-			Details:   rpcErr.Details(),
-			Request:   request.FullMap(),
-			Traceback: rpcErr.Traceback().MapRecords(),
+			Time:        time.Now().UTC(),
+			HandlerName: traceback.HandlerName(),
+			URL:         request.URL().String(),
+			Code:        rpcErr.Code().String(),
+			Message:     rpcErr.Message(),
+			Details:     rpcErr.Details(),
+			Request:     request.FullMap(),
+			Traceback:   traceback.MapRecords(),
 		}
 		privateErr := rpcErr.Private()
 		if privateErr != nil {
