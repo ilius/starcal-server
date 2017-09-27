@@ -77,7 +77,7 @@ func randomSleep(maxSeconds int) {
 
 func AuthError(err error) RPCError {
 	randomSleep(4)
-	return NewError(Unauthenticated, "", nil)
+	return NewError(Unauthenticated, "", err)
 }
 
 func ForbiddenError(publicMsg string, err error) RPCError {

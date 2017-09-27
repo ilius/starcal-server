@@ -2,6 +2,7 @@ package api_v1
 
 import (
 	"bytes"
+	"fmt"
 	"scal"
 	"scal/event_lib"
 	"scal/settings"
@@ -153,10 +154,10 @@ func Login(req Request) (*Response, error) {
 	}
 	userModel := UserModelByEmail(*email, db)
 	if userModel == nil {
-		return nil, AuthError(nil)
+		return nil, AuthError(fmt.Errorf("no user was found with this email"))
 	}
 	if GetPasswordHash(*email, *password) != userModel.Password {
-		return nil, AuthError(nil)
+		return nil, AuthError(fmt.Errorf("wrong password"))
 	}
 	if userModel.Locked {
 		return nil, ForbiddenError("user is locked", nil)
@@ -241,10 +242,10 @@ func ChangePassword(req Request) (*Response, error) {
 	}
 	userModel := UserModelByEmail(*email, db)
 	if userModel == nil {
-		return nil, AuthError(nil)
+		return nil, AuthError(fmt.Errorf("no user was found with this email"))
 	}
 	if GetPasswordHash(*email, *password) != userModel.Password {
-		return nil, AuthError(nil)
+		return nil, AuthError(fmt.Errorf("wrong password"))
 	}
 	if userModel.Locked {
 		return nil, ForbiddenError("user is locked", nil)
