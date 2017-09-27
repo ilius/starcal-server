@@ -20,5 +20,6 @@ func main() {
 		}
 	}
 	storage.EnsureIndexes()
+	api_v1.SetMongoErrorDispatcher()
 	api_v1.StartAPIv1Server()
 }
