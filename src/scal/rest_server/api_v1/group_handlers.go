@@ -132,8 +132,8 @@ func AddGroup(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	addAccessEmails, _ := req.GetStringList("addAccessEmails", Optional)
-	readAccessEmails, _ := req.GetStringList("readAccessEmails", Optional)
+	addAccessEmails, _ := req.GetStringList("addAccessEmails", FromBody, FromForm, FromEmpty)
+	readAccessEmails, _ := req.GetStringList("readAccessEmails", FromBody, FromForm, FromEmpty)
 
 	groupModel := event_lib.EventGroupModel{}
 
@@ -175,8 +175,8 @@ func UpdateGroup(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	newAddAccessEmails, _ := req.GetStringList("addAccessEmails", Optional)
-	newReadAccessEmails, _ := req.GetStringList("readAccessEmails", Optional)
+	newAddAccessEmails, _ := req.GetStringList("addAccessEmails", FromBody, FromForm, FromEmpty)
+	newReadAccessEmails, _ := req.GetStringList("readAccessEmails", FromBody, FromForm, FromEmpty)
 
 	groupModel, err := event_lib.LoadGroupModelById(
 		"groupId",

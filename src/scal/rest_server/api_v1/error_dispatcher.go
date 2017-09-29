@@ -35,13 +35,13 @@ func SetMongoErrorDispatcher() {
 		traceback := rpcErr.Traceback()
 		errorModel := &ErrorModel{
 			Time:        time.Now().UTC(),
-			HandlerName: traceback.HandlerName(),
+			HandlerName: request.HandlerName(),
 			URL:         request.URL().String(),
 			Code:        rpcErr.Code().String(),
 			Message:     rpcErr.Message(),
 			Details:     rpcErr.Details(),
 			Request:     request.FullMap(),
-			Traceback:   traceback.MapRecords(),
+			Traceback:   traceback.MapRecords(request.HandlerName()),
 		}
 		privateErr := rpcErr.Private()
 		if privateErr != nil {

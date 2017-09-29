@@ -60,11 +60,11 @@ func RegisterUser(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	email, err := req.GetString("email", NotFromForm) // only from json
+	email, err := req.GetString("email", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	password, err := req.GetString("password", NotFromForm) // only from json
+	password, err := req.GetString("password", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
@@ -140,11 +140,11 @@ func Login(req Request) (*Response, error) {
 	// Expires the token and cookie in 30 days
 	//expireToken := time.Now().Add(30 * time.Day)
 	//expireCookie := time.Now().Add(30 * time.Day)
-	email, err := req.GetString("email", NotFromForm) // only from json
+	email, err := req.GetString("email", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	password, err := req.GetString("password", NotFromForm) // only from json
+	password, err := req.GetString("password", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
@@ -224,15 +224,15 @@ func ChangePassword(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	email, err := req.GetString("email", NotFromForm) // only from json
+	email, err := req.GetString("email", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	password, err := req.GetString("password", NotFromForm) // only from json
+	password, err := req.GetString("password", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	newPassword, err := req.GetString("newPassword", NotFromForm) // only from json
+	newPassword, err := req.GetString("newPassword", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +280,7 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
-	email, err := req.GetString("email", NotFromForm) // only from json
+	email, err := req.GetString("email", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
@@ -363,15 +363,15 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	email, err := req.GetString("email", NotFromForm) // only from json
+	email, err := req.GetString("email", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	resetPasswordToken, err := req.GetString("resetPasswordToken", NotFromForm) // only from json
+	resetPasswordToken, err := req.GetString("resetPasswordToken", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	newPassword, err := req.GetString("newPassword", NotFromForm) // only from json
+	newPassword, err := req.GetString("newPassword", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
