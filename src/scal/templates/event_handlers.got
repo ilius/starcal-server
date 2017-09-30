@@ -113,7 +113,7 @@ func init() {
 }
 
 func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
-	userModel, err := CheckAuthNew(req)
+	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
@@ -236,13 +236,13 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 }
 
 func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
-	userModel, err := CheckAuthNew(req)
+	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURLNew(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId", 0)
 	if err != nil {
 		return nil, err
 	}
@@ -306,7 +306,7 @@ func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 }
 
 func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
-	userModel, err := CheckAuthNew(req)
+	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
@@ -314,7 +314,7 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.{{.CAP_EVENT_TYPE}}EventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURLNew(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId", 0)
 	if err != nil {
 		return nil, err
 	}
@@ -454,13 +454,13 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 
 
 func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
-	userModel, err := CheckAuthNew(req)
+	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURLNew(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId", 0)
 	if err != nil {
 		return nil, err
 	}
@@ -637,13 +637,13 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 }
 
 func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
-	userModel, err := CheckAuthNew(req)
+	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURLNew(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId", 0)
 	if err != nil {
 		return nil, err
 	}
