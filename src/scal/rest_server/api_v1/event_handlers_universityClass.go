@@ -830,11 +830,11 @@ func MergeUniversityClass(req Request) (*Response, error) {
 	// 	return
 	// }
 	if inputStruct.Event.Id == "" {
-		return nil, NewError(InvalidArgument, "missing 'eventId'", nil)
+		return nil, NewError(MissingArgument, "missing 'eventId'", nil)
 	}
 	// FIXME: LastMergeSha1 can be empty?
 	if inputStruct.LastMergeSha1 == "" {
-		return nil, NewError(InvalidArgument, "missing 'lastMergeSha1'", nil)
+		return nil, NewError(MissingArgument, "missing 'lastMergeSha1'", nil)
 	}
 	inputEventModel := &inputStruct.Event
 	if inputEventModel.Id.Hex() != eventId.Hex() {

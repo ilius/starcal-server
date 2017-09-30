@@ -459,7 +459,7 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 	if groupIdHex == "" {
-		return nil, NewError(InvalidArgument, "missing 'groupId'", nil)
+		return nil, NewError(MissingArgument, "missing 'groupId'", nil)
 	}
 	if !bson.IsObjectIdHex(groupIdHex) {
 		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
@@ -567,7 +567,7 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 	if groupIdHex == "" {
-		return nil, NewError(InvalidArgument, "missing 'groupId'", nil)
+		return nil, NewError(MissingArgument, "missing 'groupId'", nil)
 	}
 	if !bson.IsObjectIdHex(groupIdHex) {
 		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
@@ -679,7 +679,7 @@ func GetGroupLastCreatedEvents(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 	if groupIdHex == "" {
-		return nil, NewError(InvalidArgument, "missing 'groupId'", nil)
+		return nil, NewError(MissingArgument, "missing 'groupId'", nil)
 	}
 	if !bson.IsObjectIdHex(groupIdHex) {
 		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
