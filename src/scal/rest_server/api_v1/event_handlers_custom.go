@@ -746,8 +746,7 @@ func MergeCustom(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 	// if inputStruct.Event.DummyType == "" {
-	// 	SetHttpError(w, http.StatusBadRequest, "missing 'eventType'")
-	// 	return
+	//	return nil, NewError(MissingArgument, "missing 'eventType'", nil)
 	// }
 	if inputStruct.Event.Id == "" {
 		return nil, NewError(MissingArgument, "missing 'eventId'", nil)
