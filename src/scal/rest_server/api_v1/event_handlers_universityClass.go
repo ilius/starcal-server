@@ -30,22 +30,22 @@ func init() {
 			},
 			"GetUniversityClass": {
 				Method:  "GET",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: GetUniversityClass,
 			},
 			"UpdateUniversityClass": {
 				Method:  "PUT",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: UpdateUniversityClass,
 			},
 			"PatchUniversityClass": {
 				Method:  "PATCH",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: PatchUniversityClass,
 			},
 			"MergeUniversityClass": {
 				Method:  "POST",
-				Pattern: "{eventId}/merge",
+				Pattern: ":eventId/merge",
 				Handler: MergeUniversityClass,
 			},
 			// functions of following operations are defined in handlers.go
@@ -55,57 +55,57 @@ func init() {
 			// we don't use eventType in these functions
 			"DeleteEvent_universityClass": {
 				Method:  "DELETE",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: DeleteEvent,
 			},
 			"SetEventGroupId_universityClass": {
 				Method:  "PUT",
-				Pattern: "{eventId}/group",
+				Pattern: ":eventId/group",
 				Handler: SetEventGroupId,
 			},
 			"GetEventOwner_universityClass": {
 				Method:  "GET",
-				Pattern: "{eventId}/owner",
+				Pattern: ":eventId/owner",
 				Handler: GetEventOwner,
 			},
 			"SetEventOwner_universityClass": {
 				Method:  "PUT",
-				Pattern: "{eventId}/owner",
+				Pattern: ":eventId/owner",
 				Handler: SetEventOwner,
 			},
 			"GetEventMeta_universityClass": {
 				Method:  "GET",
-				Pattern: "{eventId}/meta",
+				Pattern: ":eventId/meta",
 				Handler: GetEventMeta,
 			},
 			"GetEventAccess_universityClass": {
 				Method:  "GET",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: GetEventAccess,
 			},
 			"SetEventAccess_universityClass": {
 				Method:  "PUT",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: SetEventAccess,
 			},
 			"AppendEventAccess_universityClass": {
 				Method:  "POST",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: AppendEventAccess,
 			},
 			"JoinEvent_universityClass": {
 				Method:  "GET",
-				Pattern: "{eventId}/join",
+				Pattern: ":eventId/join",
 				Handler: JoinEvent,
 			},
 			"LeaveEvent_universityClass": {
 				Method:  "GET",
-				Pattern: "{eventId}/leave",
+				Pattern: ":eventId/leave",
 				Handler: LeaveEvent,
 			},
 			"InviteToEvent_universityClass": {
 				Method:  "POST",
-				Pattern: "{eventId}/invite",
+				Pattern: ":eventId/invite",
 				Handler: InviteToEvent,
 			},
 		},

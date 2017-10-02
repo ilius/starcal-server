@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/ilius/restpc"
+	"github.com/julienschmidt/httprouter"
 )
 
 type Route struct {
@@ -38,18 +38,25 @@ type RouteGroup struct {
 var routeGroups = []RouteGroup{}
 
 func GetRouter() http.Handler {
-	router := mux.NewRouter().StrictSlash(true)
+	router := httprouter.New()
 	for _, routeGroup := range routeGroups {
-		for name, route := range routeGroup.Map {
+		for _, route := range routeGroup.Map {
 			path := "/" + routeGroup.Base + "/"
 			if route.Pattern != "" {
 				path += route.Pattern + "/"
 			}
-			router.
-				Methods(route.Method).
-				Path(path).
-				Name(name).
-				Handler(route.GetHandlerFunc())
+			handlerFunc := route.GetHandlerFunc()
+			router.Handle(
+				route.Method,
+				path,
+				func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+					r.ParseForm()
+					for _, p := range params {
+						r.Form.Add(p.Key, p.Value)
+					}
+					handlerFunc(w, r)
+				},
+			)
 		}
 	}
 	return router

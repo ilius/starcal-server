@@ -30,22 +30,22 @@ func init() {
 			},
 			"GetYearly": {
 				Method:  "GET",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: GetYearly,
 			},
 			"UpdateYearly": {
 				Method:  "PUT",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: UpdateYearly,
 			},
 			"PatchYearly": {
 				Method:  "PATCH",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: PatchYearly,
 			},
 			"MergeYearly": {
 				Method:  "POST",
-				Pattern: "{eventId}/merge",
+				Pattern: ":eventId/merge",
 				Handler: MergeYearly,
 			},
 			// functions of following operations are defined in handlers.go
@@ -55,57 +55,57 @@ func init() {
 			// we don't use eventType in these functions
 			"DeleteEvent_yearly": {
 				Method:  "DELETE",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: DeleteEvent,
 			},
 			"SetEventGroupId_yearly": {
 				Method:  "PUT",
-				Pattern: "{eventId}/group",
+				Pattern: ":eventId/group",
 				Handler: SetEventGroupId,
 			},
 			"GetEventOwner_yearly": {
 				Method:  "GET",
-				Pattern: "{eventId}/owner",
+				Pattern: ":eventId/owner",
 				Handler: GetEventOwner,
 			},
 			"SetEventOwner_yearly": {
 				Method:  "PUT",
-				Pattern: "{eventId}/owner",
+				Pattern: ":eventId/owner",
 				Handler: SetEventOwner,
 			},
 			"GetEventMeta_yearly": {
 				Method:  "GET",
-				Pattern: "{eventId}/meta",
+				Pattern: ":eventId/meta",
 				Handler: GetEventMeta,
 			},
 			"GetEventAccess_yearly": {
 				Method:  "GET",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: GetEventAccess,
 			},
 			"SetEventAccess_yearly": {
 				Method:  "PUT",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: SetEventAccess,
 			},
 			"AppendEventAccess_yearly": {
 				Method:  "POST",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: AppendEventAccess,
 			},
 			"JoinEvent_yearly": {
 				Method:  "GET",
-				Pattern: "{eventId}/join",
+				Pattern: ":eventId/join",
 				Handler: JoinEvent,
 			},
 			"LeaveEvent_yearly": {
 				Method:  "GET",
-				Pattern: "{eventId}/leave",
+				Pattern: ":eventId/leave",
 				Handler: LeaveEvent,
 			},
 			"InviteToEvent_yearly": {
 				Method:  "POST",
-				Pattern: "{eventId}/invite",
+				Pattern: ":eventId/invite",
 				Handler: InviteToEvent,
 			},
 		},

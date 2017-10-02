@@ -30,22 +30,22 @@ func init() {
 			},
 			"GetDailyNote": {
 				Method:  "GET",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: GetDailyNote,
 			},
 			"UpdateDailyNote": {
 				Method:  "PUT",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: UpdateDailyNote,
 			},
 			"PatchDailyNote": {
 				Method:  "PATCH",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: PatchDailyNote,
 			},
 			"MergeDailyNote": {
 				Method:  "POST",
-				Pattern: "{eventId}/merge",
+				Pattern: ":eventId/merge",
 				Handler: MergeDailyNote,
 			},
 			// functions of following operations are defined in handlers.go
@@ -55,57 +55,57 @@ func init() {
 			// we don't use eventType in these functions
 			"DeleteEvent_dailyNote": {
 				Method:  "DELETE",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: DeleteEvent,
 			},
 			"SetEventGroupId_dailyNote": {
 				Method:  "PUT",
-				Pattern: "{eventId}/group",
+				Pattern: ":eventId/group",
 				Handler: SetEventGroupId,
 			},
 			"GetEventOwner_dailyNote": {
 				Method:  "GET",
-				Pattern: "{eventId}/owner",
+				Pattern: ":eventId/owner",
 				Handler: GetEventOwner,
 			},
 			"SetEventOwner_dailyNote": {
 				Method:  "PUT",
-				Pattern: "{eventId}/owner",
+				Pattern: ":eventId/owner",
 				Handler: SetEventOwner,
 			},
 			"GetEventMeta_dailyNote": {
 				Method:  "GET",
-				Pattern: "{eventId}/meta",
+				Pattern: ":eventId/meta",
 				Handler: GetEventMeta,
 			},
 			"GetEventAccess_dailyNote": {
 				Method:  "GET",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: GetEventAccess,
 			},
 			"SetEventAccess_dailyNote": {
 				Method:  "PUT",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: SetEventAccess,
 			},
 			"AppendEventAccess_dailyNote": {
 				Method:  "POST",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: AppendEventAccess,
 			},
 			"JoinEvent_dailyNote": {
 				Method:  "GET",
-				Pattern: "{eventId}/join",
+				Pattern: ":eventId/join",
 				Handler: JoinEvent,
 			},
 			"LeaveEvent_dailyNote": {
 				Method:  "GET",
-				Pattern: "{eventId}/leave",
+				Pattern: ":eventId/leave",
 				Handler: LeaveEvent,
 			},
 			"InviteToEvent_dailyNote": {
 				Method:  "POST",
-				Pattern: "{eventId}/invite",
+				Pattern: ":eventId/invite",
 				Handler: InviteToEvent,
 			},
 		},

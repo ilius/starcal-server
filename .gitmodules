@@ -6,14 +6,6 @@
 	path = src/gopkg.in/mgo.v2
 	url = https://gopkg.in/mgo.v2
 
-[submodule "src/github.com/gorilla/context"]
-	path = src/github.com/gorilla/context
-	url = git@github.com:gorilla/context.git
-
-[submodule "src/github.com/gorilla/mux"]
-	path = src/github.com/gorilla/mux
-	url = git@github.com:gorilla/mux.git
-
 [submodule "src/github.com/ilius/restpc"]
 	path = src/github.com/ilius/restpc
 	url = git@github.com:ilius/restpc
@@ -26,3 +18,6 @@
 	path = src/github.com/kardianos/osext
 	url = git@github.com:kardianos/osext
 
+[submodule "src/github.com/julienschmidt/httprouter"]
+	path = src/github.com/julienschmidt/httprouter
+	url = git@github.com:julienschmidt/httprouter

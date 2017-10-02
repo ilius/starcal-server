@@ -3,7 +3,6 @@ package api_v1
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 	"time"
 
 	. "github.com/ilius/restpc"
@@ -21,7 +20,7 @@ func init() {
 		Map: RouteMap{
 			"CopyEvent": {
 				Method:  "POST",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: CopyEvent,
 			},
 		},
@@ -51,7 +50,7 @@ func init() {
 			},
 			"GetMyLastCreatedEvents": {
 				Method:  "GET",
-				Pattern: "last-created-events/{count}",
+				Pattern: "last-created-events/:count",
 				Handler: GetMyLastCreatedEvents,
 			},
 		},
@@ -905,19 +904,14 @@ func GetMyLastCreatedEvents(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	parts := SplitURL(req.URL())
-	if len(parts) < 2 {
-		return nil, NewError(Internal, "", fmt.Errorf("Unexpected URL: %s", req.URL()))
+	count, err := req.GetInt("count")
+	if err != nil {
+		return nil, err
 	}
-	countStr := parts[len(parts)-1] // int string
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
-	}
-	count, err := strconv.ParseInt(countStr, 10, 0)
-	if err != nil {
-		return nil, NewError(InvalidArgument, "invalid 'count', must be integer", err)
 	}
 
 	pipeline := []scal.M{

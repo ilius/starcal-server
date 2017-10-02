@@ -30,22 +30,22 @@ func init() {
 			},
 			"GetAllDayTask": {
 				Method:  "GET",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: GetAllDayTask,
 			},
 			"UpdateAllDayTask": {
 				Method:  "PUT",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: UpdateAllDayTask,
 			},
 			"PatchAllDayTask": {
 				Method:  "PATCH",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: PatchAllDayTask,
 			},
 			"MergeAllDayTask": {
 				Method:  "POST",
-				Pattern: "{eventId}/merge",
+				Pattern: ":eventId/merge",
 				Handler: MergeAllDayTask,
 			},
 			// functions of following operations are defined in handlers.go
@@ -55,57 +55,57 @@ func init() {
 			// we don't use eventType in these functions
 			"DeleteEvent_allDayTask": {
 				Method:  "DELETE",
-				Pattern: "{eventId}",
+				Pattern: ":eventId",
 				Handler: DeleteEvent,
 			},
 			"SetEventGroupId_allDayTask": {
 				Method:  "PUT",
-				Pattern: "{eventId}/group",
+				Pattern: ":eventId/group",
 				Handler: SetEventGroupId,
 			},
 			"GetEventOwner_allDayTask": {
 				Method:  "GET",
-				Pattern: "{eventId}/owner",
+				Pattern: ":eventId/owner",
 				Handler: GetEventOwner,
 			},
 			"SetEventOwner_allDayTask": {
 				Method:  "PUT",
-				Pattern: "{eventId}/owner",
+				Pattern: ":eventId/owner",
 				Handler: SetEventOwner,
 			},
 			"GetEventMeta_allDayTask": {
 				Method:  "GET",
-				Pattern: "{eventId}/meta",
+				Pattern: ":eventId/meta",
 				Handler: GetEventMeta,
 			},
 			"GetEventAccess_allDayTask": {
 				Method:  "GET",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: GetEventAccess,
 			},
 			"SetEventAccess_allDayTask": {
 				Method:  "PUT",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: SetEventAccess,
 			},
 			"AppendEventAccess_allDayTask": {
 				Method:  "POST",
-				Pattern: "{eventId}/access",
+				Pattern: ":eventId/access",
 				Handler: AppendEventAccess,
 			},
 			"JoinEvent_allDayTask": {
 				Method:  "GET",
-				Pattern: "{eventId}/join",
+				Pattern: ":eventId/join",
 				Handler: JoinEvent,
 			},
 			"LeaveEvent_allDayTask": {
 				Method:  "GET",
-				Pattern: "{eventId}/leave",
+				Pattern: ":eventId/leave",
 				Handler: LeaveEvent,
 			},
 			"InviteToEvent_allDayTask": {
 				Method:  "POST",
-				Pattern: "{eventId}/invite",
+				Pattern: ":eventId/invite",
 				Handler: InviteToEvent,
 			},
 		},

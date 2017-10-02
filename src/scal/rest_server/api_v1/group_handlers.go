@@ -1,8 +1,6 @@
 package api_v1
 
 import (
-	"fmt"
-	"strconv"
 	"time"
 
 	. "github.com/ilius/restpc"
@@ -33,42 +31,42 @@ func init() {
 			},
 			"UpdateGroup": {
 				Method:  "PUT",
-				Pattern: "{groupId}",
+				Pattern: ":groupId",
 				Handler: UpdateGroup,
 			},
 			"GetGroup": {
 				Method:  "GET",
-				Pattern: "{groupId}",
+				Pattern: ":groupId",
 				Handler: GetGroup,
 			},
 			"DeleteGroup": {
 				Method:  "DELETE",
-				Pattern: "{groupId}",
+				Pattern: ":groupId",
 				Handler: DeleteGroup,
 			},
 			"GetGroupEventList": {
 				Method:  "GET",
-				Pattern: "{groupId}/events",
+				Pattern: ":groupId/events",
 				Handler: GetGroupEventList,
 			},
 			"GetGroupEventListWithSha1": {
 				Method:  "GET",
-				Pattern: "{groupId}/events-sha1",
+				Pattern: ":groupId/events-sha1",
 				Handler: GetGroupEventListWithSha1,
 			},
 			"GetGroupModifiedEvents": {
 				Method:  "GET",
-				Pattern: "{groupId}/modified-events/{sinceDateTime}",
+				Pattern: ":groupId/modified-events/:sinceDateTime",
 				Handler: GetGroupModifiedEvents,
 			},
 			"GetGroupMovedEvents": {
 				Method:  "GET",
-				Pattern: "{groupId}/moved-events/{sinceDateTime}",
+				Pattern: ":groupId/moved-events/:sinceDateTime",
 				Handler: GetGroupMovedEvents,
 			},
 			"GetGroupLastCreatedEvents": {
 				Method:  "GET",
-				Pattern: "{groupId}/last-created-events/{count}",
+				Pattern: ":groupId/last-created-events/:count",
 				Handler: GetGroupLastCreatedEvents,
 			},
 		},
@@ -447,43 +445,32 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 	// 	return nil, err
 	// }
 	// if groupId==nil { return }
-	parts := SplitURL(req.URL())
-	if len(parts) < 3 {
-		return nil, NewError(Internal, "", fmt.Errorf("Unexpected URL: %s", req.URL()))
+	groupIdHex, err := req.GetString("groupId")
+	if err != nil {
+		return nil, err
 	}
-	groupIdHex := parts[len(parts)-3]
-	sinceStr := parts[len(parts)-1] // datetime string
+	since, err := req.GetTime("sinceDateTime")
+	if err != nil {
+		return nil, err
+	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
-	if groupIdHex == "" {
-		return nil, NewError(MissingArgument, "missing 'groupId'", nil)
-	}
-	if !bson.IsObjectIdHex(groupIdHex) {
+	if !bson.IsObjectIdHex(*groupIdHex) {
 		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
 		// to avoid panic!
 	}
 	groupModel, err := event_lib.LoadGroupModelByIdHex(
 		"groupId",
 		db,
-		groupIdHex,
+		*groupIdHex,
 	)
 	if err != nil {
 		return nil, err
 	}
 	groupId := groupModel.Id
-
-	since, err := time.Parse(time.RFC3339, sinceStr)
-	if err != nil {
-		return nil, NewError(
-			InvalidArgument,
-			fmt.Sprintf("invalid timestamp '%v': ", sinceStr, err.Error()),
-			err,
-		)
-	}
-	//json.NewEncoder(w).Encode(scal.M{"sinceDateTime": since})
 
 	pipeline := []scal.M{
 		{"$match": scal.M{
@@ -550,26 +537,28 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	// groupId, err := ObjectIdFromURL(req, "groupId", 2)
+	// groupId, err := ObjectIdFromURL(req, "groupId)
 	// if err != nil {
 	// 	return nil, err
 	// }
 	// if groupId==nil { return }
-	parts := SplitURL(req.URL())
-	if len(parts) < 3 {
-		return nil, NewError(Internal, "", fmt.Errorf("Unexpected URL: %s", req.URL()))
+	groupIdHex, err := req.GetString("groupId")
+	if err != nil {
+		return nil, err
 	}
-	groupIdHex := parts[len(parts)-3]
-	sinceStr := parts[len(parts)-1] // datetime string
+	since, err := req.GetTime("sinceDateTime")
+	if err != nil {
+		return nil, err
+	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
-	if groupIdHex == "" {
+	if *groupIdHex == "" {
 		return nil, NewError(MissingArgument, "missing 'groupId'", nil)
 	}
-	if !bson.IsObjectIdHex(groupIdHex) {
+	if !bson.IsObjectIdHex(*groupIdHex) {
 		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
 		// to avoid panic!
 	}
@@ -577,21 +566,12 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 	groupModel, err := event_lib.LoadGroupModelByIdHex(
 		"groupId",
 		db,
-		groupIdHex,
+		*groupIdHex,
 	)
 	if err != nil {
 		return nil, err
 	}
 	groupId := groupModel.Id
-
-	since, err := time.Parse(time.RFC3339, sinceStr)
-	if err != nil {
-		return nil, NewError(
-			InvalidArgument,
-			fmt.Sprintf("invalid timestamp '%v': ", sinceStr, err.Error()),
-			err,
-		)
-	}
 
 	pipeline := []scal.M{
 		{"$match": scal.M{
@@ -667,38 +647,32 @@ func GetGroupLastCreatedEvents(req Request) (*Response, error) {
 	// 	return nil, err
 	// }
 	// if groupId==nil { return }
-	parts := SplitURL(req.URL())
-	if len(parts) < 3 {
-		return nil, NewError(Internal, "", fmt.Errorf("Unexpected URL: %s", req.URL()))
+	groupIdHex, err := req.GetString("groupId")
+	if err != nil {
+		return nil, err
 	}
-	groupIdHex := parts[len(parts)-3]
-	countStr := parts[len(parts)-1] // int string
+	count, err := req.GetInt("count")
+	if err != nil {
+		return nil, err
+	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
-	if groupIdHex == "" {
-		return nil, NewError(MissingArgument, "missing 'groupId'", nil)
-	}
-	if !bson.IsObjectIdHex(groupIdHex) {
+	if !bson.IsObjectIdHex(*groupIdHex) {
 		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
 		// to avoid panic!
 	}
 	groupModel, err := event_lib.LoadGroupModelByIdHex(
 		"groupId",
 		db,
-		groupIdHex,
+		*groupIdHex,
 	)
 	if err != nil {
 		return nil, err
 	}
 	groupId := groupModel.Id
-
-	count, err := strconv.ParseInt(countStr, 10, 0)
-	if err != nil {
-		return nil, NewError(InvalidArgument, "invalid 'count', must be integer", err)
-	}
 
 	pipeline := []scal.M{
 		{"$match": scal.M{
