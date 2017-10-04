@@ -13,6 +13,7 @@ import (
 type UserModel struct {
 	Id             bson.ObjectId  `bson:"_id,omitempty" json:"-"` // FIXME
 	Email          string         `bson:"email" json:"email"`
+	EmailConfirmed bool           `bson:"emailConfirmed" json:"emailConfirmed"`
 	Password       string         `bson:"password" json:"password"`
 	FullName       string         `bson:"fullName" json:"fullName"`
 	Locked         bool           `bson:"locked" json:"-"`

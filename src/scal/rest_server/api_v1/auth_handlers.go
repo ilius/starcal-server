@@ -3,6 +3,8 @@ package api_v1
 import (
 	"bytes"
 	"fmt"
+	"log"
+	"net/url"
 	"scal"
 	"scal/event_lib"
 	"scal/settings"
@@ -12,6 +14,7 @@ import (
 	"text/template"
 	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	. "github.com/ilius/restpc"
 
 	"gopkg.in/mgo.v2/bson"
@@ -51,6 +54,16 @@ func init() {
 				Pattern: "reset-password-action",
 				Handler: ResetPasswordAction,
 			},
+			"ConfirmEmailRequest": {
+				Method:  "POST",
+				Pattern: "confirm-email-request",
+				Handler: ConfirmEmailRequest,
+			},
+			"ConfirmEmailAction": {
+				Method:  "GET",
+				Pattern: "confirm-email-action",
+				Handler: ConfirmEmailAction,
+			},
 		},
 	})
 }
@@ -69,7 +82,7 @@ func RegisterUser(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	userModel := UserModel{
+	userModel := &UserModel{
 		Email:    *email,
 		Password: *password,
 	}
@@ -128,10 +141,18 @@ func RegisterUser(req Request) (*Response, error) {
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
-	signedToken := NewSignedToken(&userModel)
+
+	err = sendEmailConfirmation(req, userModel)
+	if err != nil {
+		// FIXME: call error dispatcher (to save to mongo), but don't return error
+		log.Println(err)
+	}
+
+	signedToken := NewSignedToken(userModel)
 	return &Response{
 		Data: map[string]interface{}{
-			"token": signedToken,
+			"token":   signedToken,
+			"message": "an email confirmation is sent to your email address",
 		},
 	}, nil
 }
@@ -462,5 +483,155 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
+	return &Response{}, nil
+}
+
+func sendEmailConfirmation(req Request, userModel *UserModel) error {
+	email := userModel.Email
+	remoteIp, err := req.RemoteIP()
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+	exp := now.Add(time.Duration(60) * time.Minute)
+	tokenStr, _ := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"email":    email,
+			"remoteIp": remoteIp,
+			"iat":      now.Unix(),
+			"exp":      exp.Unix(),
+		},
+	).SignedString([]byte(
+		settings.CONFIRM_EMAIL_SECRET,
+	))
+
+	values := url.Values{}
+	values.Add("token", tokenStr)
+	confirmationURL := "http://" + req.Host() + "/auth/confirm-email-action?" + values.Encode()
+
+	tplText := settings.CONFIRM_EMAIL_EMAIL_TEMPLATE
+	tpl, err := template.New("ConfirmEmailRequest " + email).Parse(tplText)
+	if err != nil {
+		return NewError(Internal, "", err)
+	}
+	buf := bytes.NewBufferString("")
+	tplParams := struct {
+		Name            string
+		ConfirmationURL string
+		ExpirationTime  string
+	}{
+		Name:            userModel.FullName,
+		ConfirmationURL: confirmationURL,
+		ExpirationTime:  exp.Format(time.RFC1123),
+	}
+	err = tpl.Execute(buf, tplParams)
+	if err != nil {
+		return NewError(Internal, "", err)
+	}
+	emailBody := buf.String()
+	fmt.Println(emailBody)
+	err = scal.SendEmail(
+		email,
+		"StarCalendar Email Confirmation",
+		false, // isHtml
+		emailBody,
+	)
+	if err != nil {
+		return NewError(Unavailable, "", err)
+	}
+	return nil
+}
+
+func ConfirmEmailRequest(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	if userModel.EmailConfirmed {
+		return &Response{
+			Data: scal.M{
+				"message": "Your email address has been ALREADY CONFIRMED",
+			},
+		}, nil
+	}
+	err = sendEmailConfirmation(req, userModel)
+	if err != nil {
+		return nil, err
+	}
+	return &Response{}, nil
+}
+
+func ConfirmEmailAction(req Request) (*Response, error) {
+	remoteIp, err := req.RemoteIP()
+	if err != nil {
+		return nil, err
+	}
+	tokenStr, err := req.GetString("token")
+	if err != nil {
+		return nil, err
+	}
+	token, err := jwt.Parse(
+		*tokenStr,
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(settings.CONFIRM_EMAIL_SECRET), nil
+		},
+	)
+	if err != nil {
+		return nil, ForbiddenError("invalid email confirmation token", err)
+	}
+
+	expectedAlg := JWT_SIGNING_METHOD.Alg()
+	tokenAlg := token.Header["alg"]
+	if expectedAlg != tokenAlg {
+		return nil, ForbiddenError("invalid email confirmation token", fmt.Errorf(
+			"Expected %s signing method but token specified %s",
+			expectedAlg,
+			tokenAlg,
+		))
+	}
+
+	if !token.Valid {
+		return nil, ForbiddenError("invalid email confirmation token", fmt.Errorf("token.Valid == false"))
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, ForbiddenError("invalid email confirmation token", errClaimsNotFound)
+	}
+	tokenEmail := claims["email"]
+	tokenRemoteIp := claims["remoteIp"]
+
+	if tokenRemoteIp != remoteIp {
+		return nil, ForbiddenError(
+			"invalid email confirmation token",
+			fmt.Errorf("MISMATCH REMOTE IP %#v != %#v", tokenRemoteIp, remoteIp),
+		)
+	}
+	email, ok := tokenEmail.(string)
+	if !ok {
+		return nil, ForbiddenError("invalid email confirmation token", fmt.Errorf("tokenEmail = %#v", tokenEmail))
+	}
+	if email == "" {
+		return nil, ForbiddenError("invalid email confirmation token", nil)
+	}
+	db, err := storage.GetDB()
+	if err != nil {
+		return nil, NewError(Unavailable, "", err)
+	}
+	userModel := UserModelByEmail(email, db)
+	if userModel == nil {
+		return nil, ForbiddenError(
+			"invalid email confirmation token",
+			fmt.Errorf("no user found with email %#v", email),
+		)
+	}
+	userModel.EmailConfirmed = true
+	err = db.Update(userModel)
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
+
 	return &Response{}, nil
 }

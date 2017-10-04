@@ -30,6 +30,9 @@ func init() {
 	if settings.JWT_TOKEN_SECRET == "" {
 		panic("settings.JWT_TOKEN_SECRET can not be empty, build again")
 	}
+	if settings.CONFIRM_EMAIL_SECRET == "" {
+		panic("settings.CONFIRM_EMAIL_SECRET can not be empty, build again")
+	}
 }
 
 func TokenFromHeader(authHeader string) (*jwt.Token, error) {

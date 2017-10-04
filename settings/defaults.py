@@ -44,3 +44,17 @@ Click on this link to join the event:
 This invitation Email is sent via StarCalendar by one of the users
 Have fun using StarCalendar
 """
+
+CONFIRM_EMAIL_SECRET = os.getenv("STARCAL_CONFIRM_EMAIL_SECRET", "")
+
+
+CONFIRM_EMAIL_EMAIL_TEMPLATE = """Hi {{.Name}}
+
+Please open this link in your browser to confirm your email address:
+{{.ConfirmationURL}}
+
+The link above will be expired on {{.ExpirationTime}}
+You also need to open the link with the same IP address as you requested with.
+
+Have fun using StarCalendar
+"""

@@ -248,6 +248,7 @@ func GetUserInfo(req Request) (*Response, error) {
 			"defaultGroupId": userModel.DefaultGroupId,
 			//"locked": userModel.Locked,
 			"lastLogoutTime": userModel.LastLogoutTime,
+			"emailConfirmed": userModel.EmailConfirmed,
 		},
 	}, nil
 }
