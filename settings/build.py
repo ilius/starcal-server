@@ -65,13 +65,14 @@ else:
 	print('No settings file found for host %r' % hostName)
 
 
-if not settingsDict.get("JWT_TOKEN_SECRET"):
-	sys.stderr.write(
-		"JWT_TOKEN_SECRET can not be empty\n" +
-		"Set (and export) environment variable STARCAL_JWT_TOKEN_SECRET\n" +
-		"Or define JWT_TOKEN_SECRET in host settings file\n"
-	)
-	sys.exit(1)
+for param, value in settingsDict.items():
+	if "SECRET" in param and value == "":
+		sys.stderr.write(
+			"%s can not be empty\n" % param +
+			"Set (and export) environment variable STARCAL_%s\n" % param +
+			"Or define %s in host settings file\n" % param
+		)
+		sys.exit(1)
 
 
 hostOS = settingsDict.pop("OS")
