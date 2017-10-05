@@ -627,11 +627,29 @@ func ConfirmEmailAction(req Request) (*Response, error) {
 			fmt.Errorf("no user found with email %#v", email),
 		)
 	}
+	if userModel.EmailConfirmed {
+		return &Response{
+			Data: scal.M{"message": "Your email address is already confirmed."},
+		}, nil
+	}
 	userModel.EmailConfirmed = true
+
+	err = db.Insert(UserChangeLogModel{
+		Time:           time.Now(),
+		RequestEmail:   email,
+		RemoteIp:       remoteIp,
+		FuncName:       "ConfirmEmailAction",
+		EmailConfirmed: &[2]bool{false, true},
+	})
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
 	err = db.Update(userModel)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
 
-	return &Response{}, nil
+	return &Response{
+		Data: scal.M{"message": "Your email address is now confirmed."},
+	}, nil
 }

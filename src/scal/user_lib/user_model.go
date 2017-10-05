@@ -51,6 +51,7 @@ type UserChangeLogModel struct {
 	FuncName     string    `bson:"funcName"`
 
 	Email          *[2]*string        `bson:"email,omitempty"`
+	EmailConfirmed *[2]bool           `bson:"emailConfirmed,omitempty"`
 	Password       *[2]string         `bson:"password,omitempty"`
 	FullName       *[2]*string        `bson:"fullName,omitempty"`
 	Locked         *[2]bool           `bson:"locked,omitempty"`
