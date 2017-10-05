@@ -12,7 +12,6 @@ import defaults
 
 secretSettingsParams = {
 	"MONGO_PASSWORD",
-	"JWT_TOKEN_SECRET",
 	"PASSWORD_SALT",
 }
 myDir = dirname(abspath(__file__))
@@ -98,8 +97,11 @@ for param, value in sorted(settingsDict.items()):
 		)
 		# valueRepr = str(value)
 		# varLines.append("\t%s = %s" % (param, valueRepr))
-	if param not in secretSettingsParams:
-		printLines.append('\tfmt.Printf("%s=%%#v\\n", %s)' % (param, param))
+	if "SECRET" in param:
+		continue
+	if param in secretSettingsParams:
+		continue
+	printLines.append('\tfmt.Printf("%s=%%#v\\n", %s)' % (param, param))
 
 
 constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
