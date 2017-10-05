@@ -666,6 +666,10 @@ func JoinEvent(req Request) (*Response, error) {
 		return nil, err
 	}
 
+	if !userModel.EmailConfirmed {
+		return nil, ForbiddenError("you need to confirm your email address before joining an event", nil)
+	}
+
 	db, err := storage.GetDB()
 	if err != nil {
 		return nil, NewError(Internal, "", err)
