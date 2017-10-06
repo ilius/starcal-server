@@ -296,12 +296,16 @@ func (self *EventMetaModel) Invite(
 			EventId:      self.EventId,
 		})
 
-		scal.SendEmail(
+		err = scal.SendEmail(
 			inviteEmail,
 			subject,
 			false, // isHtml
 			emailBody,
 		)
+		if err != nil {
+			fmt.Println("Failed to send email:", err)
+			fmt.Println(emailBody)
+		}
 	}
 	return nil
 }
