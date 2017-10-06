@@ -16,7 +16,12 @@ import (
 
 const TOKEN_CONTEXT = "user"
 
-var JWT_SIGNING_METHOD = jwt.SigningMethodHS256
+func init() {
+	jwtSigningMethod := jwt.GetSigningMethod(settings.JWT_ALG)
+	if jwtSigningMethod == nil {
+		panic(fmt.Sprintf("invalid settings.JWT_ALG = %#v", settings.JWT_ALG))
+	}
+}
 
 var (
 	errTokenNotFound       = errors.New("JWT Authorization token not found")
@@ -55,7 +60,7 @@ func TokenFromHeader(authHeader string) (*jwt.Token, error) {
 		return nil, fmt.Errorf("Error parsing token: %v", err)
 	}
 
-	expectedAlg := JWT_SIGNING_METHOD.Alg()
+	expectedAlg := settings.JWT_ALG
 	tokenAlg := token.Header["alg"]
 	if expectedAlg != tokenAlg {
 		return nil, fmt.Errorf(

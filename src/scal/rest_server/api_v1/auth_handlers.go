@@ -582,7 +582,7 @@ func ConfirmEmailAction(req Request) (*Response, error) {
 		return nil, ForbiddenError("invalid email confirmation token", err)
 	}
 
-	expectedAlg := JWT_SIGNING_METHOD.Alg()
+	expectedAlg := settings.JWT_ALG
 	tokenAlg := token.Header["alg"]
 	if expectedAlg != tokenAlg {
 		return nil, ForbiddenError("invalid email confirmation token", fmt.Errorf(
