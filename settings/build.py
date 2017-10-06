@@ -74,6 +74,14 @@ for param, value in settingsDict.items():
 		)
 		sys.exit(1)
 
+if not settingsDict.get("PASSWORD_SALT"):
+	sys.stderr.write(
+		"PASSWORD_SALT can not be empty\n" +
+		"Set (and export) environment variable STARCAL_PASSWORD_SALT\n" +
+		"Or define PASSWORD_SALT in host settings file\n"
+	)
+	sys.exit(1)
+
 
 hostOS = settingsDict.pop("OS")
 hostArch = settingsDict.pop("ARCH")
