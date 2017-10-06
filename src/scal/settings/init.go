@@ -20,4 +20,7 @@ func init() {
 	if CONFIRM_EMAIL_SECRET == JWT_TOKEN_SECRET {
 		panic("settings.CONFIRM_EMAIL_SECRET can not be the same as settings.JWT_TOKEN_SECRET, build again")
 	}
+	if PASSWORD_SALT == "" {
+		panic("settings.PASSWORD_SALT can not be empty, build again")
+	}
 }
