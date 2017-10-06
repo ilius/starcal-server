@@ -16,13 +16,6 @@ import (
 
 const TOKEN_CONTEXT = "user"
 
-func init() {
-	jwtSigningMethod := jwt.GetSigningMethod(settings.JWT_ALG)
-	if jwtSigningMethod == nil {
-		panic(fmt.Sprintf("invalid settings.JWT_ALG = %#v", settings.JWT_ALG))
-	}
-}
-
 var (
 	errTokenNotFound       = errors.New("JWT Authorization token not found")
 	errTokenBadFormat      = errors.New("JWT Authorization header format must be 'Bearer {token}'")
@@ -30,15 +23,6 @@ var (
 	errClaimsNotFound      = errors.New("JWT claims not found")
 	errClaimsEmailNotFound = errors.New("Email not found in JWT claims")
 )
-
-func init() {
-	if settings.JWT_TOKEN_SECRET == "" {
-		panic("settings.JWT_TOKEN_SECRET can not be empty, build again")
-	}
-	if settings.CONFIRM_EMAIL_SECRET == "" {
-		panic("settings.CONFIRM_EMAIL_SECRET can not be empty, build again")
-	}
-}
 
 func TokenFromHeader(authHeader string) (*jwt.Token, error) {
 	authHeaderParts := strings.Split(authHeader, " ")
