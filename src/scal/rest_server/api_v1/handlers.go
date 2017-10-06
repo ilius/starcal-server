@@ -650,9 +650,43 @@ func AppendEventAccess(req Request) (*Response, error) {
 	return &Response{}, nil
 }
 
+func joinEventWithToken(tokenStr string, eventId *bson.ObjectId) (*Response, error) {
+	email, err := event_lib.CheckEventInvitationToken(tokenStr, eventId)
+	if err != nil {
+		return nil, ForbiddenError("invalid event invitation token", err)
+	}
+
+	db, err := storage.GetDB()
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
+
+	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
+	if err != nil {
+		if db.IsNotFound(err) {
+			return nil, NewError(NotFound, "event not found", err)
+		}
+		return nil, NewError(Internal, "", err)
+	}
+	err = eventMeta.Join(db, *email)
+	if err != nil {
+		return nil, ForbiddenError(err.Error(), err)
+	}
+
+	return &Response{}, nil
+}
+
 func JoinEvent(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
+		tokenPtr, _ := req.GetString("token")
+		if tokenPtr != nil {
+			eventId, err := ObjectIdFromURL(req, "eventId", 1)
+			if err != nil {
+				return nil, err
+			}
+			return joinEventWithToken(*tokenPtr, eventId)
+		}
 		return nil, err
 	}
 	email := userModel.Email

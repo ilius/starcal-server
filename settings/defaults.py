@@ -36,11 +36,15 @@ Have fun using StarCalendar
 
 ALLOW_MISMATCH_EVENT_TYPE = False
 
+EVENT_INVITE_SECRET = os.getenv("STARCAL_EVENT_INVITE_SECRET", "")
+EVENT_INVITE_TOKEN_EXP_SECONDS = 7 * 24 * 3600
+EVENT_INVITE_TOKEN_ALG = "HS256"
+
 EVENT_INVITE_EMAIL_TEMPLATE = """Hi {{.Name}}
 
 You are invited to event "{{.EventModel.Summary}}", by {{.SenderName}} <{{.SenderEmail}}>
 Click on this link to join the event:
-{{.Host}}/event/{{.EventType}}/{{.EventId}}/join
+{{.Host}}/event/{{.EventType}}/{{.EventId}}/join?token={{.TokenEscaped}}
 
 This invitation Email is sent via StarCalendar by one of the users
 Have fun using StarCalendar

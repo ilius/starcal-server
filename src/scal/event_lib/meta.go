@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/url"
 	"text/template"
 	"time"
 
@@ -48,14 +49,15 @@ type EventMetaModel struct {
 }
 
 type InviteEmailTemplateParams struct {
-	EventModel  *BaseEventModel
-	SenderEmail string
-	SenderName  string
-	Email       string
-	Name        string
-	EventType   string
-	EventId     string
-	Host        string
+	EventModel   *BaseEventModel
+	SenderEmail  string
+	SenderName   string
+	Email        string
+	Name         string
+	EventType    string
+	EventId      string
+	TokenEscaped string
+	Host         string
 }
 
 func (self EventMetaModel) UniqueM() scal.M {
@@ -283,6 +285,14 @@ func (self *EventMetaModel) Invite(
 			EventId:     self.EventId.Hex(),
 			Host:        host,
 		}
+
+		{
+			token, _ := newEventInvitationToken(eventModel.Id, inviteEmail)
+			tokenEscaped := url.QueryEscape(token) // Go < 1.8
+			// tokenEscaped := url.PathEscape(token) // Go 1.8
+			tplParams.TokenEscaped = tokenEscaped
+		}
+
 		buf := bytes.NewBufferString("")
 		err = tpl.Execute(buf, tplParams)
 		if err != nil {
