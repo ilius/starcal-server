@@ -3,6 +3,7 @@ package event_lib
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
 	"text/template"
 	"time"
@@ -52,7 +53,9 @@ type InviteEmailTemplateParams struct {
 	SenderName  string
 	Email       string
 	Name        string
-	JoinURL     string
+	EventType   string
+	EventId     string
+	Host        string
 }
 
 func (self EventMetaModel) UniqueM() scal.M {
@@ -254,11 +257,6 @@ func (self *EventMetaModel) Invite(
 		return restpc.NewError(restpc.NotFound, "user not found", nil)
 		// FIXME: or Internal?
 	}
-	eventUrl := host +
-		"/event/" +
-		self.EventType + "/" +
-		self.EventId.Hex() + "/"
-	joinURL := eventUrl + "join"
 	for _, inviteEmail := range inviteEmails {
 		subject := "Invitation to event: " + eventModel.Summary
 		tpl, err := template.New(subject).Parse(tplText)
@@ -281,7 +279,9 @@ func (self *EventMetaModel) Invite(
 			SenderName:  user.FullName,
 			Email:       inviteEmail,
 			Name:        inviteName,
-			JoinURL:     joinURL,
+			EventType:   self.EventType,
+			EventId:     self.EventId.Hex(),
+			Host:        host,
 		}
 		buf := bytes.NewBufferString("")
 		err = tpl.Execute(buf, tplParams)

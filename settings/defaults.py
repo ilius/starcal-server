@@ -39,7 +39,7 @@ EVENT_INVITE_EMAIL_TEMPLATE = """Hi {{.Name}}
 
 You are invited to event "{{.EventModel.Summary}}", by {{.SenderName}} <{{.SenderEmail}}>
 Click on this link to join the event:
-{{.JoinURL}}
+{{.Host}}/event/{{.EventType}}/{{.EventId}}/join
 
 This invitation Email is sent via StarCalendar by one of the users
 Have fun using StarCalendar
