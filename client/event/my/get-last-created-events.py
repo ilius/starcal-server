@@ -14,11 +14,19 @@ if not token:
 	print("Please set and export STARCAL_TOKEN")
 	sys.exit(1)
 
-count = sys.argv[1]
-count = int(count)
+try:
+	maxCount = sys.argv[1]
+except IndexError:
+	maxCount = None
+else:
+	maxCount = int(maxCount)
+
+url = "http://%s:9001/event/my/last-created-events/" % host
+if maxCount is not None:
+	url += "?maxCount=%s" % maxCount
 
 r = requests.get(
-	"http://%s:9001/event/my/last-created-events/%s/" % (host, count),
+	url,
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

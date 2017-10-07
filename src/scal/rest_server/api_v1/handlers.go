@@ -51,7 +51,7 @@ func init() {
 			},
 			"GetMyLastCreatedEvents": {
 				Method:  "GET",
-				Pattern: "last-created-events/:count",
+				Pattern: "last-created-events",
 				Handler: GetMyLastCreatedEvents,
 			},
 		},
@@ -954,7 +954,7 @@ func GetMyLastCreatedEvents(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	count, err := req.GetInt("count")
+	maxCount, err := req.GetIntDefault("maxCount", 100)
 	if err != nil {
 		return nil, err
 	}
@@ -969,7 +969,7 @@ func GetMyLastCreatedEvents(req Request) (*Response, error) {
 			"ownerEmail": email,
 		}},
 		{"$sort": scal.M{"creationTime": -1}},
-		{"$limit": count},
+		{"$limit": maxCount},
 		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
@@ -1011,7 +1011,7 @@ func GetMyLastCreatedEvents(req Request) (*Response, error) {
 
 	return &Response{
 		Data: scal.M{
-			"maxCount":          count,
+			"maxCount":          maxCount,
 			"lastCreatedEvents": results,
 		},
 	}, nil

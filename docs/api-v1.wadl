@@ -203,7 +203,7 @@
 					</response>
 				</method>
 			</resource>
-			<resource path="last-created-events/{maxCount}/">
+			<resource path="last-created-events/?maxCount={maxCount}">
 				<param name="maxCount" type="xs:int"/>
 				<method name="GET" id="getMyLastCreatedEvents">
 					<response>
