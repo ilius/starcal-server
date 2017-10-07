@@ -287,7 +287,7 @@ func (self *EventMetaModel) Invite(
 		}
 
 		{
-			token, _ := newEventInvitationToken(eventModel.Id, inviteEmail)
+			token, _ := newEventInvitationToken(self.EventId, inviteEmail)
 			tokenEscaped := url.QueryEscape(token) // Go < 1.8
 			// tokenEscaped := url.PathEscape(token) // Go 1.8
 			tplParams.TokenEscaped = tokenEscaped
