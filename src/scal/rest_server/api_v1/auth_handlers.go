@@ -366,12 +366,15 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	emailBody := buf.String()
-	scal.SendEmail(
+	err = scal.SendEmail(
 		*email,
 		"StarCalendar Password Reset",
 		false, // isHtml
 		emailBody,
 	)
+	if err != nil {
+		return nil, NewError(Unavailable, "error in sending email", err)
+	}
 	return &Response{
 		Data: scal.M{
 			"description": "Reset Password Token is sent to your email",
