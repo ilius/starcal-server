@@ -66,7 +66,7 @@ func init() {
 			},
 			"GetGroupLastCreatedEvents": {
 				Method:  "GET",
-				Pattern: ":groupId/last-created-events/:count",
+				Pattern: ":groupId/last-created-events",
 				Handler: GetGroupLastCreatedEvents,
 			},
 		},
@@ -651,7 +651,7 @@ func GetGroupLastCreatedEvents(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	count, err := req.GetInt("count")
+	maxCount, err := req.GetIntDefault("maxCount", 100)
 	if err != nil {
 		return nil, err
 	}
@@ -685,7 +685,7 @@ func GetGroupLastCreatedEvents(req Request) (*Response, error) {
 	}
 	pipeline = append(pipeline, []scal.M{
 		{"$sort": scal.M{"creationTime": -1}},
-		{"$limit": count},
+		{"$limit": maxCount},
 		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
@@ -740,7 +740,7 @@ func GetGroupLastCreatedEvents(req Request) (*Response, error) {
 	return &Response{
 		Data: scal.M{
 			"groupId":           groupModel.Id,
-			"maxCount":          count,
+			"maxCount":          maxCount,
 			"lastCreatedEvents": results,
 		},
 	}, nil
