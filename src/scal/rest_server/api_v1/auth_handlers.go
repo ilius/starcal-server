@@ -511,7 +511,7 @@ func sendEmailConfirmation(req Request, userModel *UserModel) error {
 	now := time.Now()
 	exp := now.Add(time.Duration(60) * time.Minute)
 	tokenStr, _ := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
+		jwt.GetSigningMethod(settings.JWT_ALG),
 		jwt.MapClaims{
 			"email":    email,
 			"remoteIp": remoteIp,

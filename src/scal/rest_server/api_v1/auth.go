@@ -167,7 +167,7 @@ func NewSignedToken(userModel *UserModel) string {
 	now := time.Now()
 	exp := now.Add(settings.JWT_TOKEN_EXP_SECONDS * time.Second)
 	token := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
+		jwt.GetSigningMethod(settings.JWT_ALG),
 		jwt.MapClaims{
 			"email": userModel.Email,
 			"iat":   now.Unix(),

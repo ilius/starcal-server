@@ -76,7 +76,7 @@ func newEventInvitationToken(eventId bson.ObjectId, email string) (string, time.
 	now := time.Now()
 	exp := now.Add(time.Duration(settings.EVENT_INVITE_TOKEN_EXP_SECONDS) * time.Second)
 	tokenStr, _ := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
+		jwt.GetSigningMethod(settings.EVENT_INVITE_TOKEN_ALG),
 		jwt.MapClaims{
 			"eventId": eventIdHex,
 			"email":   email,
