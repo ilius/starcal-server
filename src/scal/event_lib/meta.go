@@ -145,8 +145,11 @@ func (self *EventMetaModel) AttendingStatusCount(
 	)
 }
 func (self *EventMetaModel) Join(db storage.Database, email string) error {
-	// does not make any changes on self
 	if self.GetAttending(db, email) == YES {
+		// does not make any changes on `self`
+		if settings.ALLOW_REJOIN_EVENT {
+			return nil
+		}
 		return errors.New("you have already joined this event")
 	}
 	if !self.CanReadFull(email) {

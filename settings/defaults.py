@@ -51,6 +51,8 @@ This invitation Email is sent via StarCalendar by one of the users
 Have fun using StarCalendar
 """
 
+ALLOW_REJOIN_EVENT = False
+
 CONFIRM_EMAIL_SECRET = os.getenv("STARCAL_CONFIRM_EMAIL_SECRET", "")
 
 
