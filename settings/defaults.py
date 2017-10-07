@@ -15,6 +15,7 @@ PASSWORD_SALT = os.getenv("STARCAL_PASSWORD_SALT", "")
 
 RESET_PASSWORD_TOKEN_LENGTH = 32
 RESET_PASSWORD_EXP_SECONDS = 30 * 60
+RESET_PASSWORD_REJECT_SECONDS = 60
 RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE = """You or someone else has requested a password reset for your StarCalendar account
 
 If it was you, you can use the following token to reset your password:

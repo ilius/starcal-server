@@ -315,7 +315,6 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		return nil, NewError(InvalidArgument, "bad 'email'", nil)
 	}
 	now := time.Now()
-	expDuration := settings.RESET_PASSWORD_EXP_SECONDS * time.Second
 	lastToken := ResetPasswordTokenModel{}
 	err = db.First(
 		scal.M{
@@ -325,10 +324,11 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		&lastToken,
 	)
 	if err == nil {
-		if now.Sub(lastToken.IssueTime) < expDuration {
+		if now.Sub(lastToken.IssueTime) < settings.RESET_PASSWORD_REJECT_SECONDS*time.Second {
 			return nil, NewError(
 				PermissionDenied,
-				"There has been a Reset Password request for this email recently. Check your email inbox or wait more",
+				"There has been a Reset Password request for this email recently."+
+					" Check your email inbox, or wait a little bit and re-send this request.",
 				nil,
 			)
 		}
@@ -336,7 +336,7 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 
-	expTime := now.Add(expDuration)
+	expTime := now.Add(settings.RESET_PASSWORD_EXP_SECONDS * time.Second)
 	token, err := utils.GenerateRandomBase64String(
 		settings.RESET_PASSWORD_TOKEN_LENGTH,
 	)
@@ -414,11 +414,23 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	if tokenModel.Email != *email {
-		return nil, ForbiddenError("invalid 'resetPasswordToken'", nil)
+		return nil, ForbiddenError(
+			"invalid 'resetPasswordToken'",
+			fmt.Errorf("MISMATCH Email: %#v != %#v", tokenModel.Email, *email),
+		)
+	}
+	if tokenModel.ExpireTime.Before(time.Now()) {
+		return nil, ForbiddenError(
+			"invalid 'resetPasswordToken'",
+			fmt.Errorf("token expired, ExpireTime=%v", tokenModel.ExpireTime),
+		)
 	}
 	userModel := UserModelByEmail(*email, db)
 	if userModel == nil {
-		return nil, ForbiddenError("invalid 'resetPasswordToken'", nil)
+		return nil, ForbiddenError(
+			"invalid 'resetPasswordToken'",
+			fmt.Errorf("no user found with email=%#v", *email),
+		)
 	}
 	if userModel.Locked {
 		return nil, ForbiddenError("user is locked", nil)
