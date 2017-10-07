@@ -236,15 +236,24 @@ func AddLifeTime(req Request) (*Response, error) {
 }
 
 func GetLifeTime(req Request) (*Response, error) {
-	userModel, err := CheckAuth(req)
-	if err != nil {
-		return nil, err
-	}
-	email := userModel.Email
-	// -----------------------------------------------
 	eventId, err := ObjectIdFromURL(req, "eventId", 0)
 	if err != nil {
 		return nil, err
+	}
+	var email string
+	userModel, err := CheckAuth(req)
+	if err == nil {
+		email = userModel.Email
+	} else {
+		tokenStr, _ := req.GetString("token")
+		if tokenStr == nil || *tokenStr == "" {
+			return nil, err
+		}
+		emailPtr, err := event_lib.CheckEventInvitationToken(*tokenStr, eventId)
+		if err != nil || emailPtr == nil {
+			return nil, ForbiddenError("invalid event invitation token", err)
+		}
+		email = *emailPtr
 	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()

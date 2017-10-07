@@ -2,6 +2,7 @@ package api_v1
 
 import (
 	"fmt"
+	"net/url"
 	"reflect"
 	"time"
 
@@ -650,7 +651,7 @@ func AppendEventAccess(req Request) (*Response, error) {
 	return &Response{}, nil
 }
 
-func joinEventWithToken(tokenStr string, eventId *bson.ObjectId) (*Response, error) {
+func joinEventWithToken(req Request, tokenStr string, eventId *bson.ObjectId) (*Response, error) {
 	email, err := event_lib.CheckEventInvitationToken(tokenStr, eventId)
 	if err != nil {
 		return nil, ForbiddenError("invalid event invitation token", err)
@@ -673,7 +674,18 @@ func joinEventWithToken(tokenStr string, eventId *bson.ObjectId) (*Response, err
 		return nil, ForbiddenError(err.Error(), err)
 	}
 
-	return &Response{}, nil
+	values := url.Values{}
+	values.Add("token", tokenStr)
+	eventPath := fmt.Sprintf(
+		"/event/%v/%v/?%v",
+		eventMeta.EventType,
+		eventMeta.EventId.Hex(),
+		values.Encode(),
+	)
+	fmt.Println("eventPath:", eventPath)
+	return &Response{
+		RedirectPath: eventPath,
+	}, nil
 }
 
 func JoinEvent(req Request) (*Response, error) {
@@ -685,7 +697,7 @@ func JoinEvent(req Request) (*Response, error) {
 			if err != nil {
 				return nil, err
 			}
-			return joinEventWithToken(*tokenPtr, eventId)
+			return joinEventWithToken(req, *tokenPtr, eventId)
 		}
 		return nil, err
 	}
