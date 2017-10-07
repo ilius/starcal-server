@@ -373,6 +373,7 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		emailBody,
 	)
 	if err != nil {
+		log.Println("Failed to send email:\n", emailBody)
 		return nil, NewError(Unavailable, "error in sending email", err)
 	}
 	return &Response{
