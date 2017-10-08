@@ -13,3 +13,4 @@ r = requests.get(
 	"http://%s:9001/util/api-version/" % host,
 )
 print(r.text)
+print(r.headers)
