@@ -7,7 +7,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func ObjectIdFromURL(req Request, name string, indexFromEnd int) (*bson.ObjectId, error) {
+func ObjectIdFromURL(req Request, name string) (*bson.ObjectId, error) {
 	objIdHex, err := req.GetString(name)
 	if err != nil {
 		return nil, err

@@ -239,7 +239,7 @@ func AddWeekly(req Request) (*Response, error) {
 }
 
 func GetWeekly(req Request) (*Response, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -326,7 +326,7 @@ func UpdateWeekly(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.WeeklyEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -519,7 +519,7 @@ func PatchWeekly(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -815,7 +815,7 @@ func MergeWeekly(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}

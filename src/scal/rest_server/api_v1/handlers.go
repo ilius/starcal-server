@@ -70,7 +70,7 @@ func DeleteEvent(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func CopyEvent(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	oldEventId, err := ObjectIdFromURL(req, "eventId", 0)
+	oldEventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func SetEventGroupId(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -319,7 +319,7 @@ func GetEventOwner(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -356,7 +356,7 @@ func SetEventOwner(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -415,7 +415,7 @@ func SetEventOwner(req Request) (*Response, error) {
 }
 
 func GetEventMetaModelFromRequest(req Request, email string) (*event_lib.EventMetaModel, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -504,7 +504,7 @@ func SetEventAccess(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -601,7 +601,7 @@ func AppendEventAccess(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -693,7 +693,7 @@ func JoinEvent(req Request) (*Response, error) {
 	if err != nil {
 		tokenPtr, _ := req.GetString("token")
 		if tokenPtr != nil {
-			eventId, err := ObjectIdFromURL(req, "eventId", 1)
+			eventId, err := ObjectIdFromURL(req, "eventId")
 			if err != nil {
 				return nil, err
 			}
@@ -707,7 +707,7 @@ func JoinEvent(req Request) (*Response, error) {
 	// if err != nil {
 	// 	return nil, err
 	// }
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -745,7 +745,7 @@ func LeaveEvent(req Request) (*Response, error) {
 	// if err != nil {
 	// 	return nil, err
 	// }
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -779,7 +779,7 @@ func InviteToEvent(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	eventId, err := ObjectIdFromURL(req, "eventId", 1)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}

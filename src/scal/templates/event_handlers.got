@@ -236,7 +236,7 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 }
 
 func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -323,7 +323,7 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.{{.CAP_EVENT_TYPE}}EventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -469,7 +469,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -652,7 +652,7 @@ func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}

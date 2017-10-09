@@ -238,7 +238,7 @@ func AddCustom(req Request) (*Response, error) {
 }
 
 func GetCustom(req Request) (*Response, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +325,7 @@ func UpdateCustom(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.CustomEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -495,7 +495,7 @@ func PatchCustom(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -733,7 +733,7 @@ func MergeCustom(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId", 0)
+	eventId, err := ObjectIdFromURL(req, "eventId")
 	if err != nil {
 		return nil, err
 	}

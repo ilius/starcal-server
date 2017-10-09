@@ -158,7 +158,7 @@ func UpdateGroup(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	groupId, err := ObjectIdFromURL(req, "groupId", 0)
+	groupId, err := ObjectIdFromURL(req, "groupId")
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +204,7 @@ func GetGroup(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	groupId, err := ObjectIdFromURL(req, "groupId", 0)
+	groupId, err := ObjectIdFromURL(req, "groupId")
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func DeleteGroup(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	groupId, err := ObjectIdFromURL(req, "groupId", 0)
+	groupId, err := ObjectIdFromURL(req, "groupId")
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +325,7 @@ func GetGroupEventList(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	groupId, err := ObjectIdFromURL(req, "groupId", 1)
+	groupId, err := ObjectIdFromURL(req, "groupId")
 	if err != nil {
 		return nil, err
 	}
@@ -379,7 +379,7 @@ func GetGroupEventListWithSha1(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	groupId, err := ObjectIdFromURL(req, "groupId", 1)
+	groupId, err := ObjectIdFromURL(req, "groupId")
 	if err != nil {
 		return nil, err
 	}
@@ -440,7 +440,7 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	// groupId, err := ObjectIdFromURL(req, "groupId", 2)
+	// groupId, err := ObjectIdFromURL(req, "groupId")
 	// if err != nil {
 	// 	return nil, err
 	// }
@@ -642,7 +642,7 @@ func GetGroupLastCreatedEvents(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	// groupId, err := ObjectIdFromURL(req, "groupId", 2)
+	// groupId, err := ObjectIdFromURL(req, "groupId")
 	// if err != nil {
 	// 	return nil, err
 	// }
