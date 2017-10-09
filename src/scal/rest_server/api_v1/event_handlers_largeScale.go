@@ -238,7 +238,7 @@ func AddLargeScale(req Request) (*Response, error) {
 }
 
 func GetLargeScale(req Request) (*Response, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +325,7 @@ func UpdateLargeScale(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.LargeScaleEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -511,7 +511,7 @@ func PatchLargeScale(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -786,7 +786,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}

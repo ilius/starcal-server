@@ -238,7 +238,7 @@ func AddUniversityExam(req Request) (*Response, error) {
 }
 
 func GetUniversityExam(req Request) (*Response, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +325,7 @@ func UpdateUniversityExam(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.UniversityExamEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -511,7 +511,7 @@ func PatchUniversityExam(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -790,7 +790,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}

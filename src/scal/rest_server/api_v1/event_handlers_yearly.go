@@ -238,7 +238,7 @@ func AddYearly(req Request) (*Response, error) {
 }
 
 func GetYearly(req Request) (*Response, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +325,7 @@ func UpdateYearly(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.YearlyEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -511,7 +511,7 @@ func PatchYearly(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -789,7 +789,7 @@ func MergeYearly(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}

@@ -235,7 +235,7 @@ func AddDailyNote(req Request) (*Response, error) {
 }
 
 func GetDailyNote(req Request) (*Response, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -322,7 +322,7 @@ func UpdateDailyNote(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.DailyNoteEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -487,7 +487,7 @@ func PatchDailyNote(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -715,7 +715,7 @@ func MergeDailyNote(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}

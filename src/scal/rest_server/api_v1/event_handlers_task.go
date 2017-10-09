@@ -237,7 +237,7 @@ func AddTask(req Request) (*Response, error) {
 }
 
 func GetTask(req Request) (*Response, error) {
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -324,7 +324,7 @@ func UpdateTask(req Request) (*Response, error) {
 	// -----------------------------------------------
 	eventModel := event_lib.TaskEventModel{} // DYNAMIC
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -503,7 +503,7 @@ func PatchTask(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
@@ -773,7 +773,7 @@ func MergeTask(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventId, err := ObjectIdFromURL(req, "eventId")
+	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
