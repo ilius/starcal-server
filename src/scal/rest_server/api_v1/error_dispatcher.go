@@ -32,16 +32,17 @@ func SetMongoErrorDispatcher() {
 		panic(err)
 	}
 	restpc.SetErrorDispatcher(func(request restpc.Request, rpcErr restpc.RPCError) {
-		traceback := rpcErr.Traceback()
+		handlerName := request.HandlerName()
+		traceback := rpcErr.Traceback(handlerName)
 		errorModel := &ErrorModel{
 			Time:        time.Now().UTC(),
-			HandlerName: request.HandlerName(),
+			HandlerName: handlerName,
 			URL:         request.URL().String(),
 			Code:        rpcErr.Code().String(),
 			Message:     rpcErr.Message(),
 			Details:     rpcErr.Details(),
 			Request:     request.FullMap(),
-			Traceback:   traceback.MapRecords(request.HandlerName()),
+			Traceback:   traceback.MapRecords(),
 		}
 		privateErr := rpcErr.Private()
 		if privateErr != nil {
