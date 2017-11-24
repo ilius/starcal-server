@@ -6,9 +6,9 @@
 	path = src/gopkg.in/mgo.v2
 	url = https://gopkg.in/mgo.v2
 
-[submodule "src/github.com/ilius/restpc"]
-	path = src/github.com/ilius/restpc
-	url = git@github.com:ilius/restpc
+[submodule "src/github.com/ilius/ripo"]
+	path = src/github.com/ilius/ripo
+	url = git@github.com:ilius/ripo
 
 [submodule "src/github.com/golang/mock"]
 	path = src/github.com/golang/mock

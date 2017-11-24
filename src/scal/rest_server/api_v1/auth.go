@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	. "github.com/ilius/restpc"
+	. "github.com/ilius/ripo"
 )
 
 const TOKEN_CONTEXT = "user"

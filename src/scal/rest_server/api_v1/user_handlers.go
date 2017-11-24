@@ -3,7 +3,7 @@ package api_v1
 import (
 	"time"
 
-	. "github.com/ilius/restpc"
+	. "github.com/ilius/ripo"
 	"gopkg.in/mgo.v2/bson"
 
 	"scal"

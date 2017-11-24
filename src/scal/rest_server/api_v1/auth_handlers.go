@@ -15,7 +15,7 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	. "github.com/ilius/restpc"
+	. "github.com/ilius/ripo"
 
 	"gopkg.in/mgo.v2/bson"
 )

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	. "github.com/ilius/restpc"
+	. "github.com/ilius/ripo"
 	"gopkg.in/mgo.v2/bson"
 
 	"scal"

@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ilius/restpc"
+	"github.com/ilius/ripo"
 	"github.com/julienschmidt/httprouter"
 )
 
 type Route struct {
 	Method      string
 	Pattern     string
-	Handler     restpc.Handler
+	Handler     ripo.Handler
 	HandlerFunc http.HandlerFunc // used only in util_handlers.go
 }
 
 func (route Route) GetHandlerFunc() http.HandlerFunc {
 	if route.Handler != nil {
-		return restpc.TranslateHandler(route.Handler)
+		return ripo.TranslateHandler(route.Handler)
 	}
 	if route.HandlerFunc != nil {
 		return route.HandlerFunc

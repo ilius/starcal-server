@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 	"reflect"
 
-	. "github.com/ilius/restpc"
+	. "github.com/ilius/ripo"
 	"gopkg.in/mgo.v2/bson"
 
 	"scal/event_lib"

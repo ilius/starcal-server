@@ -6,7 +6,7 @@ import (
 	"scal/storage"
 	"time"
 
-	"github.com/ilius/restpc"
+	"github.com/ilius/ripo"
 )
 
 type ErrorModel struct {
@@ -31,7 +31,7 @@ func SetMongoErrorDispatcher() {
 	if err != nil {
 		panic(err)
 	}
-	restpc.SetErrorDispatcher(func(request restpc.Request, rpcErr restpc.RPCError) {
+	ripo.SetErrorDispatcher(func(request ripo.Request, rpcErr ripo.RPCError) {
 		handlerName := request.HandlerName()
 		traceback := rpcErr.Traceback(handlerName)
 		errorModel := &ErrorModel{

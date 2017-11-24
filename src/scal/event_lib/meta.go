@@ -9,7 +9,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/ilius/restpc"
+	"github.com/ilius/ripo"
 	//"net/url"
 
 	"gopkg.in/mgo.v2/bson"
@@ -195,7 +195,7 @@ func (self *EventMetaModel) Invite(
 ) error {
 	var err error
 	if len(inviteEmails) == 0 {
-		return restpc.NewError(restpc.InvalidArgument, "missing 'inviteEmails'", nil)
+		return ripo.NewError(ripo.InvalidArgument, "missing 'inviteEmails'", nil)
 	}
 
 	now := time.Now()
@@ -203,7 +203,7 @@ func (self *EventMetaModel) Invite(
 	fullAc := self.CanReadFull(email)
 	public := self.PublicCanJoin()
 	if !(fullAc || public) {
-		return restpc.NewError(restpc.PermissionDenied, "not allowed to invite to this event", nil)
+		return ripo.NewError(ripo.PermissionDenied, "not allowed to invite to this event", nil)
 	}
 	if fullAc {
 		accessEmailsMap := make(map[string]bool)
@@ -236,37 +236,37 @@ func (self *EventMetaModel) Invite(
 		self.AccessEmails = newAccessEmails
 		err = db.Insert(metaChangeLog)
 		if err != nil {
-			return restpc.NewError(restpc.Internal, "", err)
+			return ripo.NewError(ripo.Internal, "", err)
 		}
 		err = db.Update(self)
 		if err != nil {
-			return restpc.NewError(restpc.Internal, "", err)
+			return ripo.NewError(ripo.Internal, "", err)
 		}
 	}
 
 	eventRev, err := LoadLastRevisionModel(db, &self.EventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return restpc.NewError(restpc.NotFound, "event not found", err)
+			return ripo.NewError(ripo.NotFound, "event not found", err)
 		}
-		return restpc.NewError(restpc.Internal, "", err)
+		return ripo.NewError(ripo.Internal, "", err)
 	}
 	eventModel, err := LoadBaseEventModel(db, eventRev.Sha1)
 	if err != nil {
-		return restpc.NewError(restpc.Internal, "", err)
+		return ripo.NewError(ripo.Internal, "", err)
 	}
 
 	tplText := settings.EVENT_INVITE_EMAIL_TEMPLATE
 	user := UserModelByEmail(email, db)
 	if user == nil {
-		return restpc.NewError(restpc.NotFound, "user not found", nil)
+		return ripo.NewError(ripo.NotFound, "user not found", nil)
 		// FIXME: or Internal?
 	}
 	for _, inviteEmail := range inviteEmails {
 		subject := "Invitation to event: " + eventModel.Summary
 		tpl, err := template.New(subject).Parse(tplText)
 		if err != nil {
-			return restpc.NewError(restpc.Internal, "", err)
+			return ripo.NewError(ripo.Internal, "", err)
 		}
 		var inviteName string
 		inviteUser := UserModelByEmail(inviteEmail, db)
@@ -299,7 +299,7 @@ func (self *EventMetaModel) Invite(
 		buf := bytes.NewBufferString("")
 		err = tpl.Execute(buf, tplParams)
 		if err != nil {
-			return restpc.NewError(restpc.Internal, "", err)
+			return ripo.NewError(ripo.Internal, "", err)
 		}
 		emailBody := buf.String()
 		db.Insert(EventInvitationModel{

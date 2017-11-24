@@ -3,7 +3,7 @@ package api_v1
 import (
 	"net/http"
 
-	. "github.com/ilius/restpc"
+	. "github.com/ilius/ripo"
 )
 
 func init() {
