@@ -10,6 +10,10 @@
 	path = src/github.com/ilius/ripo
 	url = git@github.com:ilius/ripo
 
+[submodule "src/github.com/mitchellh/mapstructure"]
+	path = src/github.com/mitchellh/mapstructure
+	url = git@github.com:mitchellh/mapstructure
+
 [submodule "src/github.com/golang/mock"]
 	path = src/github.com/golang/mock
 	url = git@github.com:golang/mock
