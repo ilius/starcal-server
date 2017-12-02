@@ -205,7 +205,7 @@ func Login(req Request) (*Response, error) {
 }
 
 func Logout(req Request) (*Response, error) {
-	if req.GetHeader("Authorization") == "" {
+	if req.Header("Authorization") == "" {
 		return &Response{}, nil
 	}
 	userModel, err := CheckAuth(req)

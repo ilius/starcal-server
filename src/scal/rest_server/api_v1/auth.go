@@ -78,7 +78,7 @@ func ForbiddenError(publicMsg string, err error) RPCError {
 }
 
 func CheckAuth(req Request) (*UserModel, error) {
-	authHeader := req.GetHeader("Authorization")
+	authHeader := req.Header("Authorization")
 	if authHeader == "" {
 		return nil, AuthError(errTokenNotFound)
 	}
