@@ -524,7 +524,8 @@ func PatchMonthly(req Request) (*Response, error) {
 		return nil, err
 	}
 	// -----------------------------------------------
-	patchMap, err := req.BodyMap()
+	patchMap := map[string]interface{}{}
+	err = req.BodyTo(&patchMap)
 	if err != nil {
 		// msg := err.Error()
 		// if strings.Contains(msg, "invalid ObjectId in JSON") {

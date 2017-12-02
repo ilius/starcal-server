@@ -31,7 +31,7 @@ func SetMongoErrorDispatcher() {
 	if err != nil {
 		panic(err)
 	}
-	ripo.SetErrorDispatcher(func(request ripo.Request, rpcErr ripo.RPCError) {
+	ripo.SetErrorDispatcher(func(request ripo.ExtendedRequest, rpcErr ripo.RPCError) {
 		handlerName := request.HandlerName()
 		traceback := rpcErr.Traceback(handlerName)
 		errorModel := &ErrorModel{
