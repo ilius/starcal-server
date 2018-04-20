@@ -49,8 +49,6 @@ var MonthNamesAb = []string{
 
 // ###### Other Globals  #######
 
-const GREGORIAN_EPOCH = 1721426 // used in 33-year algorithm
-
 var monthLen = []int{31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30}
 var monthLenSum = []int{0, 31, 62, 93, 124, 155, 186, 216, 246, 276, 306, 336, 366}
 
