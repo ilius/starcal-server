@@ -1,20 +1,21 @@
 package api_v1
 
 import (
-	"crypto/sha512"
 	"errors"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	. "github.com/ilius/ripo"
+	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"scal/settings"
 	. "scal/user_lib"
 	"strings"
 	"time"
-
-	"github.com/dgrijalva/jwt-go"
-	. "github.com/ilius/ripo"
 )
 
 const TOKEN_CONTEXT = "user"
+
+const PASSWORD_HASH_COST = 14
 
 var (
 	errTokenNotFound       = errors.New("JWT Authorization token not found")
@@ -147,20 +148,34 @@ VERY OLD:
 	}
 */
 
-func GetPasswordHash(email string, password string) string {
-	return fmt.Sprintf(
-		"%x",
-		sha512.Sum512(
-			[]byte(
-				fmt.Sprintf(
-					"%s:%s:%s",
-					email,
-					settings.PASSWORD_SALT,
-					password,
-				),
+func GetPasswordHash(email string, password string) (string, error) {
+	pwHash, err := bcrypt.GenerateFromPassword(
+		[]byte(
+			fmt.Sprintf(
+				"%s:%s:%s",
+				email,
+				settings.PASSWORD_SALT,
+				password,
+			),
+		),
+		PASSWORD_HASH_COST,
+	)
+	return string(pwHash), err
+}
+
+func CheckPasswordHash(email string, password string, pwHash string) bool {
+	err := bcrypt.CompareHashAndPassword(
+		[]byte(pwHash),
+		[]byte(
+			fmt.Sprintf(
+				"%s:%s:%s",
+				email,
+				settings.PASSWORD_SALT,
+				password,
 			),
 		),
 	)
+	return err == nil
 }
 
 func NewSignedToken(userModel *UserModel) string {

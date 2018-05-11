@@ -100,11 +100,16 @@ func RegisterUser(req Request) (*Response, error) {
 		)
 	}
 
-	// add new field userModel.PasswordHash, FIXME
-	userModel.Password = GetPasswordHash(
+	passwordHash, err := GetPasswordHash(
 		userModel.Email,
 		userModel.Password,
 	)
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
+
+	// add new field userModel.PasswordHash, FIXME
+	userModel.Password = passwordHash
 	defaultGroup := event_lib.EventGroupModel{
 		Id:         bson.NewObjectId(),
 		Title:      userModel.Email,
@@ -177,7 +182,7 @@ func Login(req Request) (*Response, error) {
 	if userModel == nil {
 		return nil, AuthError(fmt.Errorf("no user was found with this email"))
 	}
-	if GetPasswordHash(*email, *password) != userModel.Password {
+	if !CheckPasswordHash(*email, *password, userModel.Password) {
 		return nil, AuthError(fmt.Errorf("wrong password"))
 	}
 	if userModel.Locked {
@@ -265,16 +270,19 @@ func ChangePassword(req Request) (*Response, error) {
 	if userModel == nil {
 		return nil, AuthError(fmt.Errorf("no user was found with this email"))
 	}
-	if GetPasswordHash(*email, *password) != userModel.Password {
+	if !CheckPasswordHash(*email, *password, userModel.Password) {
 		return nil, AuthError(fmt.Errorf("wrong password"))
 	}
 	if userModel.Locked {
 		return nil, ForbiddenError("user is locked", nil)
 	}
-	newPasswordHash := GetPasswordHash(
+	newPasswordHash, err := GetPasswordHash(
 		userModel.Email,
 		*newPassword,
 	)
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
 	err = db.Insert(UserChangeLogModel{
 		Time:         time.Now(),
 		RequestEmail: "", // FIXME
@@ -450,10 +458,13 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
-	newPasswordHash := GetPasswordHash(
+	newPasswordHash, err := GetPasswordHash(
 		userModel.Email,
 		*newPassword,
 	)
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
 	err = db.Insert(UserChangeLogModel{
 		Time:         now,
 		RequestEmail: "", // FIXME

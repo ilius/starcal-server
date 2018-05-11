@@ -25,3 +25,6 @@
 [submodule "src/github.com/julienschmidt/httprouter"]
 	path = src/github.com/julienschmidt/httprouter
 	url = git@github.com:julienschmidt/httprouter
+[submodule "src/golang.org/x/crypto"]
+	path = src/golang.org/x/crypto
+	url = https://github.com/golang/crypto
