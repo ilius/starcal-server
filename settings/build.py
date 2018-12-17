@@ -152,7 +152,7 @@ status = subprocess.call([
 	"server.go",
 ])
 
-if "--no-remove" not in sys.argv:
+if hostName != "localhost" and "--no-remove" not in sys.argv:
 	os.remove(goSettingsFile)
 
 sys.exit(status)
