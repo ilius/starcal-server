@@ -330,6 +330,11 @@ func UpdateUniversityClass(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	failed, unlock := resLock.Event(*eventId)
+	if failed {
+		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+	}
+	defer unlock()
 	// -----------------------------------------------
 	err = req.BodyTo(&eventModel)
 	if err != nil {
@@ -523,6 +528,11 @@ func PatchUniversityClass(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	failed, unlock := resLock.Event(*eventId)
+	if failed {
+		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+	}
+	defer unlock()
 	// -----------------------------------------------
 	patchMap := map[string]interface{}{}
 	err = req.BodyTo(&patchMap)
@@ -818,6 +828,11 @@ func MergeUniversityClass(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	failed, unlock := resLock.Event(*eventId)
+	if failed {
+		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+	}
+	defer unlock()
 	// -----------------------------------------------
 	inputStruct := struct {
 		Event event_lib.UniversityClassEventModel `json:"event"` // DYNAMIC

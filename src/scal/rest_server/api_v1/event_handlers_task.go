@@ -328,6 +328,11 @@ func UpdateTask(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	failed, unlock := resLock.Event(*eventId)
+	if failed {
+		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+	}
+	defer unlock()
 	// -----------------------------------------------
 	err = req.BodyTo(&eventModel)
 	if err != nil {
@@ -507,6 +512,11 @@ func PatchTask(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	failed, unlock := resLock.Event(*eventId)
+	if failed {
+		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+	}
+	defer unlock()
 	// -----------------------------------------------
 	patchMap := map[string]interface{}{}
 	err = req.BodyTo(&patchMap)
@@ -778,6 +788,11 @@ func MergeTask(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	failed, unlock := resLock.Event(*eventId)
+	if failed {
+		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+	}
+	defer unlock()
 	// -----------------------------------------------
 	inputStruct := struct {
 		Event event_lib.TaskEventModel `json:"event"` // DYNAMIC
