@@ -3,14 +3,15 @@ package api_v1
 import (
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	. "github.com/ilius/ripo"
-	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"scal/settings"
 	. "scal/user_lib"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	. "github.com/ilius/ripo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const TOKEN_CONTEXT = "user"
