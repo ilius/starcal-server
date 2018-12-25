@@ -25,6 +25,7 @@ function scal_check_api {
 			echo "API version mismatch: '$V' != '$API_VERSION'"
 			return 1
 		fi
+		echo "OK: api v$API_VERSION"
 	done
 	return 0
 }
