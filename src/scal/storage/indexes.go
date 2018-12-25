@@ -3,11 +3,12 @@ package storage
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"scal/settings"
 	"strings"
 	"time"
+
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func EnsureIndexes() {
