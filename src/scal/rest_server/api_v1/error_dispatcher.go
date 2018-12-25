@@ -53,6 +53,6 @@ func SetMongoErrorDispatcher() {
 		if err != nil {
 			log.Println(err)
 		}
-		log.Println(rpcErr.Code(), rpcErr.Error(), rpcErr.Details())
+		log.Println(rpcErr.Code(), rpcErr.Error(), rpcErr.Details(), privateErr)
 	})
 }
