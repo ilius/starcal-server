@@ -4,6 +4,7 @@ package storage
 const (
 	C_user               = "users"
 	C_userChangeLog      = "user_change_log"
+	C_userLogins         = "user_logins"
 	C_group              = "event_group"
 	C_eventMeta          = "event_meta"
 	C_attending          = "event_attending"

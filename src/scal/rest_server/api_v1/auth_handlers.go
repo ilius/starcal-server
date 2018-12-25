@@ -9,6 +9,7 @@ import (
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
+	"scal/user_lib"
 	. "scal/user_lib"
 	"scal/utils"
 	"text/template"
@@ -162,6 +163,55 @@ func RegisterUser(req Request) (*Response, error) {
 	}, nil
 }
 
+func failedLogin(req Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
+	if settings.STORE_FAILED_LOGINS {
+		now := time.Now()
+		err := db.Insert(UserLoginAttemptModel{
+			Time:       now,
+			UserId:     userModel.Id,
+			Email:      userModel.Email,
+			RemoteIp:   remoteIP,
+			Successful: false,
+		})
+		if err != nil {
+			DispatchError(req, NewError(Internal, "", err))
+		}
+	}
+}
+
+func successfulLogin(req Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
+	if settings.STORE_SUCCESSFUL_LOGINS {
+		now := time.Now()
+		err := db.Insert(UserLoginAttemptModel{
+			Time:       now,
+			UserId:     userModel.Id,
+			Email:      userModel.Email,
+			RemoteIp:   remoteIP,
+			Successful: true,
+		})
+		if err != nil {
+			DispatchError(req, NewError(Internal, "", err))
+		}
+	}
+}
+
+func lockedSuccessfulLogin(req Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
+	if settings.STORE_LOCKED_SUCCESSFUL_LOGINS {
+		now := time.Now()
+		err := db.Insert(UserLoginAttemptModel{
+			Time:       now,
+			UserId:     userModel.Id,
+			Email:      userModel.Email,
+			RemoteIp:   remoteIP,
+			Successful: true,
+			Locked:     true,
+		})
+		if err != nil {
+			DispatchError(req, NewError(Internal, "", err))
+		}
+	}
+}
+
 func Login(req Request) (*Response, error) {
 	// Expires the token and cookie in 30 days
 	//expireToken := time.Now().Add(30 * time.Day)
@@ -170,6 +220,19 @@ func Login(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	// ----------------------
+	remoteIP, err := req.RemoteIP()
+	if err != nil {
+		return nil, err
+	}
+	// ----------------------
+	failed, unlock := resLock.UserLogin(*email, remoteIP)
+	if failed {
+		time.Sleep(1 * time.Second)
+		return nil, NewError(ResourceLocked, "someone else with your IP is trying to login", nil)
+	}
+	defer unlock()
+	// ----------------------
 	password, err := req.GetString("password", FromBody) // only from json
 	if err != nil {
 		return nil, err
@@ -183,11 +246,16 @@ func Login(req Request) (*Response, error) {
 		return nil, AuthError(fmt.Errorf("no user was found with this email"))
 	}
 	if !CheckPasswordHash(*email, *password, userModel.Password) {
+		failedLogin(req, db, userModel, remoteIP)
 		return nil, AuthError(fmt.Errorf("wrong password"))
 	}
+
 	if userModel.Locked {
+		lockedSuccessfulLogin(req, db, userModel, remoteIP)
 		return nil, ForbiddenError("user is locked", nil)
 	}
+
+	successfulLogin(req, db, userModel, remoteIP)
 
 	signedToken := NewSignedToken(userModel)
 

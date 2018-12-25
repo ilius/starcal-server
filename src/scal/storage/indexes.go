@@ -54,6 +54,26 @@ func EnsureIndexes() {
 	if err != nil {
 		panic(err)
 	}
+	err = db.C(C_userLogins).EnsureIndex(mgo.Index{
+		Key:        []string{"email"},
+		Unique:     false,
+		DropDups:   false,
+		Background: false,
+		Sparse:     false,
+	})
+	if err != nil {
+		panic(err)
+	}
+	err = db.C(C_userLogins).EnsureIndex(mgo.Index{
+		Key:        []string{"time"},
+		Unique:     false,
+		DropDups:   false,
+		Background: false,
+		Sparse:     false,
+	})
+	if err != nil {
+		panic(err)
+	}
 
 	err = db.C(C_group).EnsureIndex(mgo.Index{
 		Key:        []string{"ownerEmail"},

@@ -3,12 +3,13 @@ package api_v1
 import (
 	"scal"
 	"scal/event_lib"
+	"scal/user_lib"
 	"time"
 
 	. "github.com/ilius/ripo"
 	"gopkg.in/mgo.v2/bson"
 
-	//"scal/settings"
+	"scal/settings"
 	"scal/storage"
 	. "scal/user_lib"
 )
@@ -31,6 +32,11 @@ func init() {
 				Method:  "GET",
 				Pattern: "info",
 				Handler: GetUserInfo,
+			},
+			"GetUserLoginHistory": {
+				Method:  "GET",
+				Pattern: "login-history",
+				Handler: GetUserLoginHistory,
 			},
 			"SetUserDefaultGroupId": {
 				Method:  "PUT",
@@ -254,6 +260,26 @@ func UnsetUserDefaultGroupId(req Request) (*Response, error) {
 	return &Response{}, nil
 }
 
+func loadLastLogins(req Request, userModel *user_lib.UserModel, limit int) ([]*user_lib.UserLoginAttemptModel, error) {
+	result := []*user_lib.UserLoginAttemptModel{}
+	db, err := storage.GetDB()
+	if err != nil {
+		return nil, NewError(Unavailable, "", err)
+	}
+	err = db.FindAll(&result, &storage.FindInput{
+		Collection: storage.C_userLogins,
+		Cond: scal.M{
+			"userId": userModel.Id,
+		},
+		SortBy: "-time",
+		Limit:  limit,
+	})
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
+	return result, nil
+}
+
 func GetUserInfo(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
@@ -261,14 +287,47 @@ func GetUserInfo(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
+	lastLogins, err := loadLastLogins(req, userModel, settings.USER_INFO_LAST_LOGINS_LIMIT)
+	if err != nil {
+		return nil, err
+	}
 	return &Response{
 		Data: scal.M{
 			"email":          email,
 			"fullName":       userModel.FullName,
 			"defaultGroupId": userModel.DefaultGroupId,
-			//"locked": userModel.Locked,
-			"lastLogoutTime": userModel.LastLogoutTime,
 			"emailConfirmed": userModel.EmailConfirmed,
+			//"locked": userModel.Locked,
+
+			"lastLogoutTime": userModel.LastLogoutTime,
+
+			"lastLogins": lastLogins,
+		},
+	}, nil
+}
+
+func GetUserLoginHistory(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	// -----------------------------------------------
+	const defaultLimit = settings.USER_LOGIN_HISTORY_DEFAULT_LIMIT
+	limit, err := req.GetIntDefault("limit", defaultLimit)
+	if err != nil {
+		return nil, err
+	}
+	if limit <= 0 {
+		limit = defaultLimit
+		// otherwise db will return everything
+	}
+	lastLogins, err := loadLastLogins(req, userModel, limit)
+	if err != nil {
+		return nil, err
+	}
+	return &Response{
+		Data: scal.M{
+			"lastLogins": lastLogins,
 		},
 	}, nil
 }

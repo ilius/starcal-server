@@ -92,6 +92,37 @@
 						<param name="fullName" type="xs:string"/>
 						<param name="defaultGroupId" type="xs:string"/>
 						<param name="lastLogoutTime" type="xsd:dateTime" nillable="true" description="dateTime or none"/>
+						<param name="lastLogins" type="xs:list" itemType="xs:complexType">
+							<item type="xs:complexType">
+								<element name="time" type="xsd:dateTime"/>
+								<element name="userId" type="xs:string"/>
+								<element name="email" type="xs:string"/>
+								<element name="remoteIp" type="xs:string"/>
+								<element name="successful" type="xs:bool" description="password was correct"/>
+								<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
+							</item>
+						</param>
+					</response>
+				</method>
+			</resource>
+			<resource path="login-history/">
+				<method name="GET" id="getUserInfo">
+					<request>
+						<representation mediaType="app/json"/>
+						<param name="limit" type="xs:int" required="false" description="there is a default limit"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="lastLogins" type="xs:list" itemType="xs:complexType">
+							<item type="xs:complexType">
+								<element name="time" type="xsd:dateTime"/>
+								<element name="userId" type="xs:string"/>
+								<element name="email" type="xs:string"/>
+								<element name="remoteIp" type="xs:string"/>
+								<element name="successful" type="xs:bool" description="password was correct"/>
+								<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
+							</item>
+						</param>
 					</response>
 				</method>
 			</resource>

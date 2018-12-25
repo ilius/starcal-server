@@ -89,3 +89,22 @@ type ResetPasswordLogModel struct {
 func (model ResetPasswordLogModel) Collection() string {
 	return storage.C_resetPwLog
 }
+
+type UserLoginAttemptModel struct {
+	Time time.Time `bson:"time" json:"time"`
+
+	UserId bson.ObjectId `bson:"userId" json:"userId"`
+	Email  string        `bson:"email" json:"email"`
+
+	RemoteIp string `bson:"remoteIp" json:"remoteIp"`
+
+	// password was correct
+	Successful bool `bson:"successful" json:"successful"`
+
+	// password was correct but login was rejected because user was locked
+	Locked bool `bson:"locked" json:"locked,omitempty"`
+}
+
+func (model UserLoginAttemptModel) Collection() string {
+	return storage.C_userLogins
+}
