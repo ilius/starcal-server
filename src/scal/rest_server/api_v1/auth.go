@@ -111,20 +111,21 @@ func CheckAuth(req Request) (*UserModel, error) {
 	if userModel.Locked {
 		return nil, ForbiddenError("user is locked", nil)
 	}
+	issuedAtI, ok := claims["iat"]
+	if !ok {
+		return nil, AuthError(fmt.Errorf("Error parsing token: Missing 'iat'"))
+	}
+	issuedAtFloat, ok := issuedAtI.(float64)
+	if !ok {
+		return nil, AuthError(fmt.Errorf("Error parsing token: Bad 'iat'"))
+	}
+	issuedAt := time.Unix(int64(issuedAtFloat), 0)
 	if userModel.LastLogoutTime != nil {
-		issuedAtI, ok := claims["iat"]
-		if !ok {
-			return nil, AuthError(fmt.Errorf("Error parsing token: Missing 'iat'"))
-		}
-		issuedAtFloat, ok := issuedAtI.(float64)
-		if !ok {
-			return nil, AuthError(fmt.Errorf("Error parsing token: Bad 'iat'"))
-		}
-		issuedAt := time.Unix(int64(issuedAtFloat), 0)
 		if userModel.LastLogoutTime.After(issuedAt) {
 			return nil, AuthError(fmt.Errorf("Error parsing token: Token is expired"))
 		}
 	}
+	userModel.TokenIssuedAt = &issuedAt
 	return userModel, nil
 }
 

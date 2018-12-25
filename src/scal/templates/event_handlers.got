@@ -175,7 +175,10 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	err = db.Insert(event_lib.EventMetaChangeLogModel{
 		Time:     now,
 		Email:    email,
-		RemoteIp: remoteIp,
+
+		RemoteIp:      remoteIp,
+		TokenIssuedAt: *userModel.TokenIssuedAt,
+
 		EventId:  eventId,
 		FuncName: "Add{{.CAP_EVENT_TYPE}}",
 		OwnerEmail: &[2]*string{

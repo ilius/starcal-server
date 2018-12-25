@@ -388,11 +388,14 @@ func LoadEventMetaModel(
 }
 
 type EventMetaChangeLogModel struct {
-	Time     time.Time     `bson:"time"`
-	Email    string        `bson:"email"`
-	RemoteIp string        `bson:"remoteIp"`
-	EventId  bson.ObjectId `bson:"eventId"`
-	FuncName string        `bson:"funcName"`
+	Time    time.Time     `bson:"time"`
+	Email   string        `bson:"email"`
+	EventId bson.ObjectId `bson:"eventId"`
+
+	RemoteIp      string    `bson:"remoteIp"`
+	TokenIssuedAt time.Time `bson:"tokenIssuedAt"`
+
+	FuncName string `bson:"funcName"`
 
 	GroupId        *[2]*bson.ObjectId `bson:"groupId,omitempty"`
 	OwnerEmail     *[2]*string        `bson:"ownerEmail,omitempty"`

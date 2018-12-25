@@ -173,9 +173,12 @@ func AddAllDayTask(req Request) (*Response, error) {
 	}
 	now := time.Now()
 	err = db.Insert(event_lib.EventMetaChangeLogModel{
-		Time:     now,
-		Email:    email,
-		RemoteIp: remoteIp,
+		Time:  now,
+		Email: email,
+
+		RemoteIp:      remoteIp,
+		TokenIssuedAt: *userModel.TokenIssuedAt,
+
 		EventId:  eventId,
 		FuncName: "AddAllDayTask",
 		OwnerEmail: &[2]*string{

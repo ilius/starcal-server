@@ -82,10 +82,11 @@ func SetUserFullName(req Request) (*Response, error) {
 	}
 
 	err = db.Insert(UserChangeLogModel{
-		Time:         time.Now(),
-		RequestEmail: email,
-		RemoteIp:     remoteIp,
-		FuncName:     "SetUserFullName",
+		Time:          time.Now(),
+		RequestEmail:  email,
+		RemoteIp:      remoteIp,
+		TokenIssuedAt: *userModel.TokenIssuedAt,
+		FuncName:      "SetUserFullName",
 		FullName: &[2]*string{
 			&userModel.FullName,
 			attrValue,
@@ -127,10 +128,11 @@ func UnsetUserFullName(req Request) (*Response, error) {
 	}
 
 	err = db.Insert(UserChangeLogModel{
-		Time:         time.Now(),
-		RequestEmail: email,
-		RemoteIp:     remoteIp,
-		FuncName:     "UnsetUserFullName",
+		Time:          time.Now(),
+		RequestEmail:  email,
+		RemoteIp:      remoteIp,
+		TokenIssuedAt: *userModel.TokenIssuedAt,
+		FuncName:      "UnsetUserFullName",
 		FullName: &[2]*string{
 			&userModel.FullName,
 			nil,
@@ -193,10 +195,11 @@ func SetUserDefaultGroupId(req Request) (*Response, error) {
 	}
 
 	err = db.Insert(UserChangeLogModel{
-		Time:         time.Now(),
-		RequestEmail: email,
-		RemoteIp:     remoteIp,
-		FuncName:     "SetUserDefaultGroupId",
+		Time:          time.Now(),
+		RequestEmail:  email,
+		RemoteIp:      remoteIp,
+		TokenIssuedAt: *userModel.TokenIssuedAt,
+		FuncName:      "SetUserDefaultGroupId",
 		DefaultGroupId: &[2]*bson.ObjectId{
 			userModel.DefaultGroupId,
 			&groupId,
@@ -238,10 +241,11 @@ func UnsetUserDefaultGroupId(req Request) (*Response, error) {
 	}
 
 	err = db.Insert(UserChangeLogModel{
-		Time:         time.Now(),
-		RequestEmail: email,
-		RemoteIp:     remoteIp,
-		FuncName:     "UnsetUserDefaultGroupId",
+		Time:          time.Now(),
+		RequestEmail:  email,
+		RemoteIp:      remoteIp,
+		TokenIssuedAt: *userModel.TokenIssuedAt,
+		FuncName:      "UnsetUserDefaultGroupId",
 		DefaultGroupId: &[2]*bson.ObjectId{
 			userModel.DefaultGroupId,
 			nil,

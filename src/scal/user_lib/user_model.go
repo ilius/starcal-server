@@ -19,6 +19,8 @@ type UserModel struct {
 	Locked         bool           `bson:"locked" json:"-"`
 	DefaultGroupId *bson.ObjectId `bson:"defaultGroupId" json:"defaultGroupId"`
 	LastLogoutTime *time.Time     `bson:"lastLogoutTime" json:"-"`
+
+	TokenIssuedAt *time.Time `bson:"-" json:"-"`
 }
 
 func (self UserModel) UniqueM() scal.M {
@@ -45,10 +47,11 @@ func UserModelByEmail(email string, db storage.Database) *UserModel {
 }
 
 type UserChangeLogModel struct {
-	Time         time.Time `bson:"time"`
-	RequestEmail string    `bson:"requestEmail"`
-	RemoteIp     string    `bson:"remoteIp"`
-	FuncName     string    `bson:"funcName"`
+	Time          time.Time `bson:"time"`
+	RequestEmail  string    `bson:"requestEmail"`
+	RemoteIp      string    `bson:"remoteIp"`
+	TokenIssuedAt time.Time `bson:"tokenIssuedAt"`
+	FuncName      string    `bson:"funcName"`
 
 	Email          *[2]*string        `bson:"email,omitempty"`
 	EmailConfirmed *[2]bool           `bson:"emailConfirmed,omitempty"`
