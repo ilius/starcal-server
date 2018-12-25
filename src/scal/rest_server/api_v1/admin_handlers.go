@@ -13,6 +13,11 @@ func init() {
 				Pattern: "stats",
 				Handler: AdminGetStats,
 			},
+			"AdminListLockedResources": {
+				Method:  "GET",
+				Pattern: "locked-resources",
+				Handler: AdminListLockedResources,
+			},
 		},
 	})
 }
@@ -26,5 +31,15 @@ func AdminGetStats(req Request) (*Response, error) {
 		Data: map[string]interface{}{
 			"locked_resource_count": resLock.CountLocked(),
 		},
+	}, nil
+}
+
+func AdminListLockedResources(req Request) (*Response, error) {
+	_, err := AdminCheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	return &Response{
+		Data: resLock.ListLocked(),
 	}, nil
 }
