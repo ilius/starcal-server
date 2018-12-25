@@ -82,6 +82,13 @@ func (db *MongoDatabase) FindAll(result interface{}, in *FindInput) error {
 	if in.Limit > 0 {
 		q = q.Limit(in.Limit)
 	}
+	if len(in.Fields) > 0 {
+		selector := scal.M{}
+		for _, field := range in.Fields {
+			selector[field] = 1
+		}
+		q = q.Select(selector)
+	}
 	return q.All(result)
 }
 func (db *MongoDatabase) PipeAll(
