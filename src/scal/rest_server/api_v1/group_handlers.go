@@ -591,12 +591,12 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 		}},
 		{"$sort": scal.M{"time": -1}},
 	}
-	accessPl := groupModel.GetLookupMetaAccessPipeline(
+	accessPipeline := groupModel.GetLookupMetaAccessPipeline(
 		email,
 		"eventId", // localField for storage.C_eventMetaChangeLog
 	)
-	if len(accessPl) > 0 {
-		pipeline = append(pipeline, accessPl...)
+	if len(accessPipeline) > 0 {
+		pipeline = append(pipeline, accessPipeline...)
 	}
 	pipeline = append(pipeline, scal.M{
 		"$group": scal.M{
