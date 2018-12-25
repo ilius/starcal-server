@@ -39,8 +39,7 @@
 				</method>
 			</resource>
 			<resource path="logout/">
-				<method name="POST" id="logout"
-					description="invalidates/expires all valid tokens">
+				<method name="POST" id="logout" description="invalidates/expires all valid tokens">
 					<response>
 						<representation mediaType="app/json"/>
 					</response>
@@ -92,8 +91,7 @@
 						<param name="email" type="xs:string"/>
 						<param name="fullName" type="xs:string"/>
 						<param name="defaultGroupId" type="xs:string"/>
-						<param name="lastLogoutTime" type="xsd:dateTime"
-							nillable="true" description="dateTime or none"/>
+						<param name="lastLogoutTime" type="xsd:dateTime" nillable="true" description="dateTime or none"/>
 					</response>
 				</method>
 			</resource>
@@ -180,8 +178,7 @@
 									<element name="isPublic" type="xs:boolean"/>
 									<element name="creationTime" type="xsd:dateTime"/>
 								</element>
-								<element name="data" type="xs:complexType"
-									description="extra elements are present depending on {eventType},
+								<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
 									only the common elements are documented">
 									<element name="summary" type="xs:string"/>
 									<element name="description" type="xs:string"/>
@@ -232,8 +229,7 @@
 									<element name="isPublic" type="xs:boolean"/>
 									<element name="creationTime" type="xsd:dateTime"/>
 								</element>
-								<element name="data" type="xs:complexType"
-									description="extra elements are present depending on {eventType},
+								<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
 									only the common elements are documented">
 									<element name="summary" type="xs:string"/>
 									<element name="description" type="xs:string"/>
@@ -286,20 +282,16 @@
 						<param name="groupId" type="xs:string"/>
 						<param name="title" type="xs:string"/>
 						<param name="ownerEmail" type="xs:string"/>
-						<param name="addAccessEmails" type="xs:list" itemType="xs:string"
-							required="false" description="missing if it's empty"/>
-						<param name="readAccessEmails" type="xs:list" itemType="xs:string"
-							required="false" description="missing if it's empty"/>
+						<param name="addAccessEmails" type="xs:list" itemType="xs:string" required="false" description="missing if it's empty"/>
+						<param name="readAccessEmails" type="xs:list" itemType="xs:string" required="false" description="missing if it's empty"/>
 					</response>
 				</method>
 				<method name="PUT" id="updateGroup">
 					<request>
 						<representation mediaType="app/json"/>
 						<param name="title" type="xs:string" required="true"/>
-						<param name="addAccessEmails" type="xs:list" itemType="xs:string"
-							required="false" description="supposed empty if missing"/>
-						<param name="readAccessEmails" type="xs:list" itemType="xs:string"
-							required="false" description="supposed empty if missing"/>
+						<param name="addAccessEmails" type="xs:list" itemType="xs:string" required="false" description="supposed empty if missing"/>
+						<param name="readAccessEmails" type="xs:list" itemType="xs:string" required="false" description="supposed empty if missing"/>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
@@ -359,8 +351,7 @@
 					</method>
 				</resource>
 				<resource path="modified-events/{dateTime}/">
-					<param name="dateTime" type="xsd:dateTime"
-						description="filters out modifications before this {dateTime}
+					<param name="dateTime" type="xsd:dateTime" description="filters out modifications before this {dateTime}
 						this should be the time of last sync on this client"/>
 					<method name="GET" id="getGroupModifiedEvents">
 						<response>
@@ -390,8 +381,7 @@
 										<element name="isPublic" type="xs:boolean"/>
 										<element name="creationTime" type="xsd:dateTime"/>
 									</element>
-									<element name="data" type="xs:complexType"
-										description="extra elements are present depending on {eventType},
+									<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
 										only the common elements are documented">
 										<element name="summary" type="xs:string"/>
 										<element name="description" type="xs:string"/>
@@ -414,8 +404,7 @@
 					</method>
 				</resource>
 				<resource path="last-created-events/?maxCount={maxCount}">
-					<param name="maxCount" type="xs:int"
-						description="maximum number of records"/>
+					<param name="maxCount" type="xs:int" description="maximum number of records"/>
 					<method name="GET" id="getGroupLastCreatedEvents">
 						<response>
 							<representation mediaType="app/json"/>
@@ -444,8 +433,7 @@
 										<element name="isPublic" type="xs:boolean"/>
 										<element name="creationTime" type="xsd:dateTime"/>
 									</element>
-									<element name="data" type="xs:complexType"
-										description="extra elements are present depending on {eventType},
+									<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
 										only the common elements are documented">
 										<element name="summary" type="xs:string"/>
 										<element name="description" type="xs:string"/>
@@ -468,8 +456,7 @@
 					</method>
 				</resource>
 				<resource path="moved-events/{dateTime}/">
-					<param name="dateTime" type="xsd:dateTime"
-						description="filters out events moved before this {dateTime}
+					<param name="dateTime" type="xsd:dateTime" description="filters out events moved before this {dateTime}
 						this should be the time of last sync on this client"/>
 					<method name="GET" id="getGroupMovedEvents">
 						<response>
@@ -794,8 +781,7 @@
 								<option value="weekNumMode"/>
 								<option value="year"/>
 							</element>
-							<element name="value" type="xs:string"
-								description="format depends on rule type"/>
+							<element name="value" type="xs:string" description="format depends on rule type"/>
 						</item>
 					</param>
 				</request>
@@ -872,8 +858,7 @@
 									<option value="weekNumMode"/>
 									<option value="year"/>
 								</element>
-								<element name="value" type="xs:string"
-									description="format depends on rule type"/>
+								<element name="value" type="xs:string" description="format depends on rule type"/>
 							</item>
 						</param>
 					</response>
@@ -918,8 +903,7 @@
 									<option value="weekNumMode"/>
 									<option value="year"/>
 								</element>
-								<element name="value" type="xs:string"
-									description="format depends on rule type"/>
+								<element name="value" type="xs:string" description="format depends on rule type"/>
 							</item>
 						</param>
 					</request>
@@ -969,8 +953,7 @@
 									<option value="weekNumMode"/>
 									<option value="year"/>
 								</element>
-								<element name="value" type="xs:string"
-									description="format depends on rule type"/>
+								<element name="value" type="xs:string" description="format depends on rule type"/>
 							</item>
 						</param>
 					</request>
@@ -1670,8 +1653,7 @@
 						<option value="odd"/>
 						<option value="even"/>
 					</param>
-					<param name="weekDayList" type="xs:list" itemType="xs:int"
-						required="true" description="0=Sunday, 6=Saturday"/>
+					<param name="weekDayList" type="xs:list" itemType="xs:int" required="true" description="0=Sunday, 6=Saturday"/>
 					<param name="dayStartSeconds" type="xs:int" required="true"/>
 					<param name="dayEndSeconds" type="xs:int" required="true"/>
 					<param name="courseId" type="xs:int" required="true"/>
@@ -1731,8 +1713,7 @@
 							<option value="odd"/>
 							<option value="even"/>
 						</param>
-						<param name="weekDayList" type="xs:list" itemType="xs:int"
-							description="0=Sunday, 6=Saturday"/>
+						<param name="weekDayList" type="xs:list" itemType="xs:int" description="0=Sunday, 6=Saturday"/>
 						<param name="dayStartSeconds" type="xs:int"/>
 						<param name="dayEndSeconds" type="xs:int"/>
 						<param name="courseId" type="xs:int"/>
@@ -1760,8 +1741,7 @@
 							<option value="odd"/>
 							<option value="even"/>
 						</param>
-						<param name="weekDayList" type="xs:list" itemType="xs:int"
-							required="true" description="0=Sunday, 6=Saturday"/>
+						<param name="weekDayList" type="xs:list" itemType="xs:int" required="true" description="0=Sunday, 6=Saturday"/>
 						<param name="dayStartSeconds" type="xs:int" required="true"/>
 						<param name="dayEndSeconds" type="xs:int" required="true"/>
 						<param name="courseId" type="xs:int" required="true"/>
@@ -1794,8 +1774,7 @@
 							<option value="odd"/>
 							<option value="even"/>
 						</param>
-						<param name="weekDayList" type="xs:list" itemType="xs:int"
-							required="false" description="0=Sunday, 6=Saturday"/>
+						<param name="weekDayList" type="xs:list" itemType="xs:int" required="false" description="0=Sunday, 6=Saturday"/>
 						<param name="dayStartSeconds" type="xs:int" required="false"/>
 						<param name="dayEndSeconds" type="xs:int" required="false"/>
 						<param name="courseId" type="xs:int" required="false"/>
