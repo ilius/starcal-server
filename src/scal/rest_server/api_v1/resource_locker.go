@@ -1,8 +1,9 @@
 package api_v1
 
 import (
-	"gopkg.in/mgo.v2/bson"
 	"sync"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -11,9 +12,14 @@ const (
 	restype_group int = 2
 )
 
-var resLock = &ResourceLocker{
-	mutexes:    [3]sync.RWMutex{},
-	lockedMaps: [3]map[string]bool{},
+var resLock = NewResourceLocker()
+
+func NewResourceLocker() *ResourceLocker {
+	rl := &ResourceLocker{}
+	for i := 0; i < len(rl.lockedMaps); i++ {
+		rl.lockedMaps[i] = map[string]bool{}
+	}
+	return rl
 }
 
 type ResourceLocker struct {
@@ -21,20 +27,20 @@ type ResourceLocker struct {
 	lockedMaps [3]map[string]bool
 }
 
-func (rl *ResourceLocker) CountLocked() (counts [3]int) {
-	for resType:=0; resType<3; resType++ {
-		counts[resType] = rl.CountLockedResource(resType)
+func (rl *ResourceLocker) CountLocked() map[string]int {
+	return map[string]int{
+		"user":  rl.CountLockedResource(restype_user),
+		"event": rl.CountLockedResource(restype_event),
+		"group": rl.CountLockedResource(restype_group),
 	}
-	return
 }
 
-func (rl *ResourceLocker) CountLockedResource(resType int) (int) {
+func (rl *ResourceLocker) CountLockedResource(resType int) int {
 	mutex := rl.mutexes[resType]
 	mutex.RLock()
 	defer mutex.RUnlock()
 	return len(rl.lockedMaps[resType])
 }
-
 
 // returns failed, unlock
 func (rl *ResourceLocker) Resource(resType int, resId string) (bool, func()) {
