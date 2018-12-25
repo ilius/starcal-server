@@ -7,7 +7,7 @@ import (
 	"scal/settings"
 	"time"
 
-	"gopkg.in/mgo.v2"
+	mgo "gopkg.in/mgo.v2"
 )
 
 type hasHex interface {
