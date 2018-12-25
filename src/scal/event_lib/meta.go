@@ -335,6 +335,7 @@ func (self *EventMetaModel) GetEmailsByAttendingStatus(
 			"eventId":   self.EventId,
 			"attending": attending,
 		},
+		"",
 		&emailStructs,
 	)
 	if err != nil {

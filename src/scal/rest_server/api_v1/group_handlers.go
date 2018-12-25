@@ -98,6 +98,7 @@ func GetGroupList(req Request) (*Response, error) {
 				scal.M{"readAccessEmails": email},
 			},
 		},
+		"",
 		&results,
 	)
 	if err != nil {
@@ -288,6 +289,7 @@ func DeleteGroup(req Request) (*Response, error) {
 		scal.M{
 			"groupId": groupId,
 		},
+		"",
 		&eventMetaModels,
 	)
 	if err != nil {
@@ -367,6 +369,7 @@ func GetGroupEventList(req Request) (*Response, error) {
 	err = db.FindAll(
 		storage.C_eventMeta,
 		cond,
+		"",
 		&results,
 	)
 	if err != nil {

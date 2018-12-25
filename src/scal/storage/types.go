@@ -22,7 +22,7 @@ type Database interface {
 	Get(model hasCollectionUniqueM) error
 	First(scal.M, string, hasCollection) error
 	FindCount(string, scal.M) (int, error)
-	FindAll(string, scal.M, interface{}) error
+	FindAll(collectionName string, cond scal.M, sortBy string, result interface{}) error
 	PipeAll(string, *[]scal.M, interface{}) error
 	PipeIter(string, *[]scal.M) <-chan scal.MErr
 }

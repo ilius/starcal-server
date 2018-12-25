@@ -836,6 +836,7 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 			"ownerEmail": email,
 			"groupId":    nil,
 		},
+		"",
 		&events,
 	)
 	if events == nil {
@@ -872,6 +873,7 @@ func GetMyEventList(req Request) (*Response, error) {
 		scal.M{
 			"ownerEmail": email,
 		},
+		"",
 		&results,
 	)
 	if err != nil {
