@@ -7,7 +7,12 @@ from os.path import join, isfile, isdir, dirname, abspath
 import json
 import subprocess
 from pprint import pprint
-from typing import Tuple
+
+from typing import (
+	Tuple,
+	Optional,
+	List,
+)
 
 import defaults
 
@@ -37,15 +42,62 @@ defaultsDict = {
 
 settingsDict = defaultsDict.copy()
 
+class GoExpr(object):
+	def __init__(
+		self,
+		pyType: type,
+		goType: str,
+		expr: str,
+		imports: Optional[List[str]] = None,
+	) -> None:
+		self._pyType = pyType
+		self._goType = goType
+		self._expr = expr
+		self._imports = imports
+
+	def getGoType(self) -> str:
+		return self._goType
+
+	def getPyType(self) -> type:
+		return self._pyType
+
+	def getExpr(self) -> str:
+		return self._expr
+
+	def getImports(self) -> List[str]:
+		if not self._imports:
+			return []
+		return self._imports
+
+
+
+def goGetenv(varName: str) -> GoExpr:
+	return GoExpr(
+		str,
+		"string",
+		"os.Getenv(%s)" % json.dumps(varName),
+		imports=["os"],
+	)
+
+
+
+hostGlobalsCommon = {
+	"GoExpr": GoExpr,
+	"goGetenv": goGetenv,
+}
+
 hostModulePath = join(myDir, "hosts", hostName + ".py")
 if isfile(hostModulePath):
 	with open(hostModulePath, encoding="utf-8") as hostFp:
 		hostModuleCode = hostFp.read()
-	hostGlobals = {}
+
+	hostGlobals = dict(hostGlobalsCommon)
 	exec(hostModuleCode, hostGlobals)
 	# exec(object[, globals[, locals]])
 	# If only globals is given, locals defaults to it
 	for param, value in hostGlobals.items():
+		if param in hostGlobalsCommon:
+			continue
 		if param.startswith("_"):
 			continue
 		if param.upper() != param:
@@ -54,12 +106,15 @@ if isfile(hostModulePath):
 		if param not in defaultsDict:
 			print("skipping unknown parameter %r" % param)
 			continue
-		valueType = type(defaultsDict[param])
-		if type(value) != valueType:
+		valueTypeExpected = type(defaultsDict[param])
+		valueTypeActual = type(value)
+		if isinstance(value, GoExpr):
+			valueTypeActual = value.getPyType()
+		if valueTypeActual != valueTypeExpected:
 			raise ValueError(
 				"invalid type for parameter %r, " % param +
-				"must be %s, " % valueType.__name__ +
-				"not %s" % type(value).__name__
+				"must be %s, " % valueTypeExpected.__name__ +
+				"not %s" % valueTypeActual.__name__
 			)
 		settingsDict[param] = value
 else:
@@ -108,12 +163,19 @@ def encodeGoValue(v) -> Tuple[str, str]:
 		return "float64", str(v)
 	elif t == bool:
 		return "bool", json.dumps(v)
+	elif isinstance(v, GoExpr):
+		return v.getGoType(), v.getExpr()
 	return "", str(v)
+
+importLines = set(["fmt"])
 
 for param, value in sorted(settingsDict.items()):
 	valueType = type(value)
 	if valueType in (str, int, float, bool):
 		constLines.append("\t%s = %s" % (param, json.dumps(value)))
+	elif isinstance(value, GoExpr):
+		varLines.append("\t%s = %s" % (param, value.getExpr()))
+		importLines.update(set(value.getImports()))
 	elif valueType == list:
 		itemTypes = set()
 		itemValuesGo = []
@@ -173,7 +235,7 @@ for param, value in sorted(settingsDict.items()):
 	else:
 		# FIXME
 		print(
-			"skipping unknown (non-const) value type %s" % valueType +
+			"skipping unknown value type %s" % valueType +
 			", param %s" % param
 		)
 		# valueRepr = str(value)
@@ -183,6 +245,12 @@ for param, value in sorted(settingsDict.items()):
 	if param in secretSettingsParams:
 		continue
 	printLines.append('\tfmt.Printf("%s=%%#v\\n", %s)' % (param, param))
+
+
+
+importBlock = "import (\n" + "\n".join(
+	'\t"' + line + '"' for line in importLines
+) + "\n)\n"
 
 
 constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
@@ -199,13 +267,14 @@ if not isdir(goSettingsDir):
 with open(goSettingsFile, "w") as goFp:
 	goFp.write("""// This is an auto-generated code. DO NOT MODIFY
 package settings
-import "fmt"
+%s
 
 %s
 
 %s
 
 %s""" % (
+	importBlock,
 	constBlock,
 	varBlock,
 	printFunc,
