@@ -90,17 +90,15 @@ func GetGroupList(req Request) (*Response, error) {
 		OwnerEmail string        `bson:"ownerEmail" json:"ownerEmail"`
 	}
 	var results []resultModel
-	err = db.FindAll(
-		storage.C_group,
-		scal.M{
+	err = db.FindAll(&results, &storage.FindInput{
+		Collection: storage.C_group,
+		Cond: scal.M{
 			"$or": []scal.M{
 				scal.M{"ownerEmail": email},
 				scal.M{"readAccessEmails": email},
 			},
 		},
-		"",
-		&results,
-	)
+	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -284,14 +282,12 @@ func DeleteGroup(req Request) (*Response, error) {
 	}
 
 	var eventMetaModels []event_lib.EventMetaModel
-	err = db.FindAll(
-		storage.C_eventMeta,
-		scal.M{
+	err = db.FindAll(&eventMetaModels, &storage.FindInput{
+		Collection: storage.C_eventMeta,
+		Cond: scal.M{
 			"groupId": groupId,
 		},
-		"",
-		&eventMetaModels,
-	)
+	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -366,12 +362,10 @@ func GetGroupEventList(req Request) (*Response, error) {
 	cond := groupModel.GetAccessCond(email)
 	cond["groupId"] = groupId
 	var results []resultModel
-	err = db.FindAll(
-		storage.C_eventMeta,
-		cond,
-		"",
-		&results,
-	)
+	err = db.FindAll(&results, &storage.FindInput{
+		Collection: storage.C_eventMeta,
+		Cond:       cond,
+	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}

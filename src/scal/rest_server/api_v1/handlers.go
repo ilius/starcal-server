@@ -830,15 +830,13 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 		EventType string        `bson:"eventType" json:"eventType"`
 	}
 	var events []eventModel
-	err = db.FindAll(
-		storage.C_eventMeta,
-		scal.M{
+	err = db.FindAll(&events, &storage.FindInput{
+		Collection: storage.C_eventMeta,
+		Cond: scal.M{
 			"ownerEmail": email,
 			"groupId":    nil,
 		},
-		"",
-		&events,
-	)
+	})
 	if events == nil {
 		events = make([]eventModel, 0)
 	}
@@ -868,14 +866,12 @@ func GetMyEventList(req Request) (*Response, error) {
 	}
 
 	var results []resultModel
-	err = db.FindAll(
-		storage.C_eventMeta,
-		scal.M{
+	err = db.FindAll(&results, &storage.FindInput{
+		Collection: storage.C_eventMeta,
+		Cond: scal.M{
 			"ownerEmail": email,
 		},
-		"",
-		&results,
-	)
+	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
