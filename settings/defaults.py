@@ -66,3 +66,5 @@ You also need to open the link with the same IP address as you requested with.
 
 Have fun using StarCalendar
 """
+
+ADMIN_EMAILS = [""] # type: List[str]
