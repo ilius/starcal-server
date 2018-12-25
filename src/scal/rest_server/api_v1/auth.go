@@ -149,6 +149,29 @@ VERY OLD:
 	}
 */
 
+func EmailIsAdmin(email string) bool {
+	for _, adminEmail := range settings.ADMIN_EMAILS {
+		if email == adminEmail {
+			return true
+		}
+	}
+	return false
+}
+
+func AdminCheckAuth(req Request) (*UserModel, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	if !EmailIsAdmin(userModel.Email) {
+		return nil, NewError(PermissionDenied, "you are not admin", nil)
+	}
+	if !userModel.EmailConfirmed {
+		return nil, NewError(PermissionDenied, "email is not confirmed", nil)
+	}
+	return userModel, nil
+}
+
 func GetPasswordHash(email string, password string) (string, error) {
 	pwHash, err := bcrypt.GenerateFromPassword(
 		[]byte(
