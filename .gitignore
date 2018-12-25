@@ -7,3 +7,6 @@ src/scal/settings/settings.go
 src/scal/rest_server/gen
 __pycache__
 *.pyc
+bin/
+src/github.com/mdempsky/
+src/golang.org/x/tools/
