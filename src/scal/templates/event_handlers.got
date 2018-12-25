@@ -456,7 +456,7 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 			}
 		{{ end }}
 	{{ end }}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -647,7 +647,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 			return nil, NewError(Internal, "", err)
 		}
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -769,7 +769,7 @@ func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		}
 	}()
 	{{ end }}
-	// err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	// err = db.Update(eventMeta) // just for FieldsMtime
 	// if err != nil {
 	// 	SetHttpErrorInternal(w, err)
 	// 	return

@@ -508,7 +508,7 @@ func UpdateMonthly(req Request) (*Response, error) {
 	) {
 		eventMeta.FieldsMtime["dayEndSeconds"] = now
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -810,7 +810,7 @@ func PatchMonthly(req Request) (*Response, error) {
 			return nil, NewError(Internal, "", err)
 		}
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -1160,7 +1160,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
-	// err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	// err = db.Update(eventMeta) // just for FieldsMtime
 	// if err != nil {
 	// 	SetHttpErrorInternal(w, err)
 	// 	return

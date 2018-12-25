@@ -500,7 +500,7 @@ func UpdateUniversityExam(req Request) (*Response, error) {
 	) {
 		eventMeta.FieldsMtime["courseId"] = now
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -785,7 +785,7 @@ func PatchUniversityExam(req Request) (*Response, error) {
 			return nil, NewError(Internal, "", err)
 		}
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -1112,7 +1112,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
-	// err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	// err = db.Update(eventMeta) // just for FieldsMtime
 	// if err != nil {
 	// 	SetHttpErrorInternal(w, err)
 	// 	return

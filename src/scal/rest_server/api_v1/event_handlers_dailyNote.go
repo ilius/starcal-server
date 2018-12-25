@@ -476,7 +476,7 @@ func UpdateDailyNote(req Request) (*Response, error) {
 	) {
 		eventMeta.FieldsMtime["jd"] = now
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -710,7 +710,7 @@ func PatchDailyNote(req Request) (*Response, error) {
 			return nil, NewError(Internal, "", err)
 		}
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -968,7 +968,7 @@ func MergeDailyNote(req Request) (*Response, error) {
 			return
 		}
 	}()
-	// err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	// err = db.Update(eventMeta) // just for FieldsMtime
 	// if err != nil {
 	// 	SetHttpErrorInternal(w, err)
 	// 	return

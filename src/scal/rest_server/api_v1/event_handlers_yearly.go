@@ -500,7 +500,7 @@ func UpdateYearly(req Request) (*Response, error) {
 	) {
 		eventMeta.FieldsMtime["startYearEnable"] = now
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -784,7 +784,7 @@ func PatchYearly(req Request) (*Response, error) {
 			return nil, NewError(Internal, "", err)
 		}
 	}
-	err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -1111,7 +1111,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
-	// err = db.Update(eventMeta) // just for FieldsMtime, is it safe? FIXME
+	// err = db.Update(eventMeta) // just for FieldsMtime
 	// if err != nil {
 	// 	SetHttpErrorInternal(w, err)
 	// 	return
