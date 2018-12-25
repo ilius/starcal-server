@@ -79,6 +79,9 @@ func (db *MongoDatabase) FindAll(result interface{}, in *FindInput) error {
 	if in.SortBy != "" {
 		q = q.Sort(in.SortBy)
 	}
+	if in.Limit > 0 {
+		q = q.Limit(in.Limit)
+	}
 	return q.All(result)
 }
 func (db *MongoDatabase) PipeAll(

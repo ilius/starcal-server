@@ -17,6 +17,7 @@ type FindInput struct {
 	Collection string
 	Cond       scal.M
 	SortBy     string
+	Limit      int
 }
 
 type Database interface {
