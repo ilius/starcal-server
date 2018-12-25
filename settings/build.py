@@ -79,11 +79,18 @@ def goGetenv(varName: str) -> GoExpr:
 		imports=["os"],
 	)
 
+def passwordStore(*args) -> str:
+	from subprocess import Popen, PIPE
+	cmd = Popen(["pass"] + list(args), stdout=PIPE)
+	stdout, stderr = cmd.communicate()
+	lastLine = stdout.decode("utf-8").strip().split("\n")[-1]
+	return lastLine
 
 
 hostGlobalsCommon = {
 	"GoExpr": GoExpr,
 	"goGetenv": goGetenv,
+	"passwordStore": passwordStore,
 }
 
 hostModulePath = join(myDir, "hosts", hostName + ".py")
