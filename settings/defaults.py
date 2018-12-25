@@ -76,3 +76,21 @@ STORE_LOCKED_SUCCESSFUL_LOGINS = True
 USER_INFO_LAST_LOGINS_LIMIT = 5
 
 USER_LOGIN_HISTORY_DEFAULT_LIMIT = 20
+
+API_PAGE_LIMITS_DEFAULT = 50
+API_PAGE_LIMITS = {
+	"GetGroupEventList": 150, # ~60 bytes -> eventId, eventType
+	"GetGroupEventListWithSha1": 100, # ~115 bytes -> eventId, eventType, lastSha1
+	"GetGroupModifiedEvents": 20, # ~550 bytes -> Full Event
+	"GetGroupMovedEvents": 60, # ~160 bytes -> eventId, oldGroupId, newGroupId, time
+	"GetGroupLastCreatedEvents": 100, # ~550 bytes -> Full Event
+
+	"GetUngroupedEvents": 150, # ~60 bytes -> eventId, eventType
+	"GetMyEventList": 150, # ~60 bytes -> eventId, eventType
+	"GetMyEventsFull": 20, # ~550 bytes -> Full Event
+	"GetMyLastCreatedEvents": 20, # ~550 bytes -> Full Event
+
+	"GetGroupList": 100, # ~100 bytes -> groupId, ownerEmail, title
+
+	"GetUserLoginHistory": 70, # ~150 bytes
+}
