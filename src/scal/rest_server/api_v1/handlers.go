@@ -825,20 +825,17 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 
-	type eventModel struct {
-		EventId   bson.ObjectId `bson:"_id" json:"eventId"`
-		EventType string        `bson:"eventType" json:"eventType"`
-	}
-	var events []eventModel
+	var events []*event_lib.ListEventsRow
 	err = db.FindAll(&events, &storage.FindInput{
 		Collection: storage.C_eventMeta,
 		Conditions: scal.M{
 			"ownerEmail": email,
 			"groupId":    nil,
 		},
+		Fields: []string{"_id", "eventType"},
 	})
 	if events == nil {
-		events = make([]eventModel, 0)
+		events = make([]*event_lib.ListEventsRow, 0)
 	}
 	return &Response{
 		Data: scal.M{
@@ -859,17 +856,16 @@ func GetMyEventList(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 
-	type resultModel struct {
-		EventId   bson.ObjectId `bson:"_id" json:"eventId"`
-		EventType string        `bson:"eventType" json:"eventType"`
-		//GroupId *bson.ObjectId    `bson:"groupId" json:"groupId"`
-	}
-
-	var results []resultModel
+	var results []*event_lib.ListEventsRow
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_eventMeta,
 		Conditions: scal.M{
 			"ownerEmail": email,
+		},
+		Fields: []string{
+			"_id",
+			"eventType",
+			// "groupId",
 		},
 	})
 	if err != nil {
@@ -877,7 +873,7 @@ func GetMyEventList(req Request) (*Response, error) {
 	}
 
 	if results == nil {
-		results = make([]resultModel, 0)
+		results = make([]*event_lib.ListEventsRow, 0)
 	}
 	return &Response{
 		Data: scal.M{

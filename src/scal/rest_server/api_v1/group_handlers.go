@@ -84,12 +84,8 @@ func GetGroupList(req Request) (*Response, error) {
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
-	type resultModel struct {
-		GroupId    bson.ObjectId `bson:"_id" json:"groupId"`
-		Title      string        `bson:"title" json:"title"`
-		OwnerEmail string        `bson:"ownerEmail" json:"ownerEmail"`
-	}
-	var results []resultModel
+
+	var results []event_lib.ListGroupsRow
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_group,
 		Conditions: scal.M{
@@ -103,7 +99,7 @@ func GetGroupList(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	if results == nil {
-		results = make([]resultModel, 0)
+		results = make([]event_lib.ListGroupsRow, 0)
 	}
 	return &Response{
 		Data: scal.M{
@@ -352,25 +348,23 @@ func GetGroupEventList(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	type resultModel struct {
-		EventId   bson.ObjectId `bson:"_id" json:"eventId"`
-		EventType string        `bson:"eventType" json:"eventType"`
-		//OwnerEmail string         `bson:"ownerEmail" json:"ownerEmail"`
-		//GroupId *bson.ObjectId    `bson:"groupId" json:"groupId"`
-	}
-
 	cond := groupModel.GetAccessCond(email)
 	cond["groupId"] = groupId
-	var results []resultModel
+	var results []*event_lib.ListEventsRow
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_eventMeta,
 		Conditions: cond,
+		Fields: []string{
+			"_id",
+			"eventType",
+			// "ownerEmail",
+		},
 	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
 	if results == nil {
-		results = make([]resultModel, 0)
+		results = make([]*event_lib.ListEventsRow, 0)
 	}
 	return &Response{
 		Data: scal.M{
@@ -611,14 +605,7 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 		},
 	})
 
-	type resultModel struct {
-		EventId    bson.ObjectId `bson:"_id" json:"eventId"`
-		OldGroupId interface{}   `bson:"oldGroupId" json:"oldGroupId"`
-		NewGroupId interface{}   `bson:"newGroupId" json:"newGroupId"`
-		Time       time.Time     `bson:"time" json:"time"`
-	}
-
-	results := []resultModel{}
+	results := []event_lib.MovedEventsRow{}
 	err = db.PipeAll(
 		storage.C_eventMetaChangeLog,
 		&pipeline,
