@@ -6,7 +6,7 @@ srcDir=`dirname "$scalDir"`
 rootDir=`dirname "$srcDir"`
 
 if [ ! -f $srcDir/scal/settings/settings.go ] ; then
-	STARCAL_HOST=localhost $rootDir/settings/build.py --no-build || exit $?
+	$rootDir/settings/build.py --no-build || exit $?
 fi
 
 function dir_mtime() {
