@@ -86,11 +86,20 @@ def passwordStore(*args) -> str:
 	lastLine = stdout.decode("utf-8").strip().split("\n")[-1]
 	return lastLine
 
+def goSecretCBC(valueEncBase64: str) -> GoExpr:
+	from base64 import b64decode
+	b64decode(valueEncBase64) # just to validate
+	return GoExpr(
+		str,
+		"string",
+		"secretCBC(%s)" % json.dumps(valueEncBase64),
+	)
 
 hostGlobalsCommon = {
 	"GoExpr": GoExpr,
 	"goGetenv": goGetenv,
 	"passwordStore": passwordStore,
+	"goSecretCBC": goSecretCBC,
 }
 
 hostModulePath = join(myDir, "hosts", hostName + ".py")
