@@ -116,10 +116,11 @@ func CheckAuth(req Request) (*UserModel, error) {
 		if !ok {
 			return nil, AuthError(fmt.Errorf("Error parsing token: Missing 'iat'"))
 		}
-		issuedAt, err := time.Parse(time.RFC3339, issuedAtI.(string))
-		if err != nil {
+		issuedAtFloat, ok := issuedAtI.(float64)
+		if !ok {
 			return nil, AuthError(fmt.Errorf("Error parsing token: Bad 'iat'"))
 		}
+		issuedAt := time.Unix(int64(issuedAtFloat), 0)
 		if userModel.LastLogoutTime.After(issuedAt) {
 			return nil, AuthError(fmt.Errorf("Error parsing token: Token is expired"))
 		}
