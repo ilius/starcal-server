@@ -7,7 +7,10 @@ import (
 	_ "scal/init/cal_types_init"
 )
 
+var port = "9001"
+
 func StartAPIv1Server() {
 	router := GetRouter()
-	log.Fatal(http.ListenAndServe(":9001", router))
+	log.Printf("Starting to serve api v1 on port %v\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
