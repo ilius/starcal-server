@@ -94,6 +94,7 @@ func GetGroupList(req Request) (*Response, error) {
 				scal.M{"readAccessEmails": email},
 			},
 		},
+		SortBy: "_id",
 	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
@@ -354,6 +355,7 @@ func GetGroupEventList(req Request) (*Response, error) {
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_eventMeta,
 		Conditions: cond,
+		SortBy:     "_id",
 		Fields: []string{
 			"_id",
 			"eventType",

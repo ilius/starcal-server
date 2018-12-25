@@ -832,6 +832,7 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 			"ownerEmail": email,
 			"groupId":    nil,
 		},
+		SortBy: "_id",
 		Fields: []string{"_id", "eventType"},
 	})
 	if events == nil {
@@ -862,6 +863,7 @@ func GetMyEventList(req Request) (*Response, error) {
 		Conditions: scal.M{
 			"ownerEmail": email,
 		},
+		SortBy: "_id",
 		Fields: []string{
 			"_id",
 			"eventType",
@@ -928,6 +930,7 @@ func GetMyEventsFull(req Request) (*Response, error) {
 			"as":           "data",
 		}},
 		{"$unwind": "$data"},
+		{"$sort": scal.M{"_id": 1}},
 	}
 
 	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
