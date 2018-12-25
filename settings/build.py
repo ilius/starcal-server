@@ -91,6 +91,7 @@ hostArch = settingsDict.pop("ARCH")
 constLines = [
 	"\tHOST = %s" % json.dumps(hostName),
 ]
+varLines = []
 printLines = [
 	'\tfmt.Printf("HOST=%#v\\n", HOST)'
 ]
@@ -98,6 +99,28 @@ for param, value in sorted(settingsDict.items()):
 	valueType = type(value)
 	if valueType in (str, int, float, bool):
 		constLines.append("\t%s = %s" % (param, json.dumps(value)))
+	elif valueType == list:
+		itemTypeGo = ""
+		itemValuesGo = []
+		if len(value) == 0:
+			print("Empty list %s, assuming list of strings" % param)
+			itemTypeGo = "string"
+		else:
+			itemType = type(value[0])
+			if itemType == str:
+				itemTypeGo = "string"
+				itemValuesGo = [json.dumps(x) for x in value]
+			elif itemType == int:
+				itemTypeGo = "int"
+				itemValuesGo = [str(x) for x in value]
+			elif itemType == float:
+				itemTypeGo = "float64"
+				itemValuesGo = [str(x) for x in value]
+			elif itemType == bool:
+				itemTypeGo = "bool"
+				itemValuesGo = [json.dumps(x) for x in value]
+		valueGo = "[]" + itemTypeGo + "{" + ", ".join(itemValuesGo) + "}"
+		varLines.append("\t%s = %s" % (param, valueGo))
 	else:
 		# FIXME
 		print(
@@ -114,6 +137,7 @@ for param, value in sorted(settingsDict.items()):
 
 
 constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
+varBlock = "var (\n" + "\n".join(varLines) + "\n)\n"
 printFunc = "func PrintSettings() {\n%s\n}" % "\n".join(printLines)
 
 #print(constBlock)
@@ -130,8 +154,11 @@ import "fmt"
 
 %s
 
+%s
+
 %s""" % (
 	constBlock,
+	varBlock,
 	printFunc,
 ))
 
