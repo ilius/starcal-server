@@ -9,6 +9,8 @@ import (
 	"github.com/ilius/ripo"
 )
 
+var errorDispatcher func(request ripo.ExtendedRequest, rpcErr ripo.RPCError)
+
 type ErrorModel struct {
 	Time           time.Time                `bson:"time"`
 	HandlerName    string                   `bson:"handlerName"`
@@ -26,12 +28,8 @@ func (m *ErrorModel) Collection() string {
 	return "errors_" + m.Code
 }
 
-func SetMongoErrorDispatcher() {
-	db, err := storage.GetDB()
-	if err != nil {
-		panic(err)
-	}
-	ripo.SetErrorDispatcher(func(request ripo.ExtendedRequest, rpcErr ripo.RPCError) {
+func newErrorDispatcher(db storage.Database) func(request ripo.ExtendedRequest, rpcErr ripo.RPCError) {
+	return func(request ripo.ExtendedRequest, rpcErr ripo.RPCError) {
 		handlerName := request.HandlerName()
 		traceback := rpcErr.Traceback(handlerName)
 		errorModel := &ErrorModel{
@@ -54,5 +52,26 @@ func SetMongoErrorDispatcher() {
 			log.Println(err)
 		}
 		log.Println(rpcErr.Code(), rpcErr.Error(), rpcErr.Details(), privateErr)
-	})
+	}
+}
+
+func DispatchError(request ripo.Request, rpcErr ripo.RPCError) {
+	requestExt, ok := request.(ripo.ExtendedRequest)
+	if !ok {
+		log.Println(rpcErr)
+		log.Println("CRTITICAL: DispatchError: request is not ExtendedRequest")
+		return
+	}
+	errorDispatcher(requestExt, rpcErr)
+}
+
+func SetMongoErrorDispatcher() {
+	if errorDispatcher == nil {
+		db, err := storage.GetDB()
+		if err != nil {
+			panic(err)
+		}
+		errorDispatcher = newErrorDispatcher(db)
+	}
+	ripo.SetErrorDispatcher(errorDispatcher)
 }
