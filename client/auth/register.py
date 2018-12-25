@@ -11,7 +11,12 @@ import requests
 from pprint import pprint
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
-email, password = sys.argv[1:3]
+
+email = os.getenv("STARCAL_EMAIL")
+password = os.getenv("STARCAL_PASSWORD")
+
+if not email:
+	email, password = sys.argv[1:3]
 
 try:
 	fullName = sys.argv[3]
