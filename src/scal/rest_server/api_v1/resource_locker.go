@@ -1,8 +1,8 @@
 package api_v1
 
 import (
-	"sync"
 	"gopkg.in/mgo.v2/bson"
+	"sync"
 )
 
 const (
@@ -12,14 +12,29 @@ const (
 )
 
 var resLock = &ResourceLocker{
-	mutexes:    [3]sync.Mutex{},
+	mutexes:    [3]sync.RWMutex{},
 	lockedMaps: [3]map[string]bool{},
 }
 
 type ResourceLocker struct {
-	mutexes    [3]sync.Mutex
+	mutexes    [3]sync.RWMutex
 	lockedMaps [3]map[string]bool
 }
+
+func (rl *ResourceLocker) CountLocked() (counts [3]int) {
+	for resType:=0; resType<3; resType++ {
+		counts[resType] = rl.CountLockedResource(resType)
+	}
+	return
+}
+
+func (rl *ResourceLocker) CountLockedResource(resType int) (int) {
+	mutex := rl.mutexes[resType]
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return len(rl.lockedMaps[resType])
+}
+
 
 // returns failed, unlock
 func (rl *ResourceLocker) Resource(resType int, resId string) (bool, func()) {
