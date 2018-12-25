@@ -7,6 +7,7 @@ from os.path import join, isfile, isdir, dirname, abspath
 import json
 import subprocess
 from pprint import pprint
+from typing import Tuple
 
 import defaults
 
@@ -95,31 +96,79 @@ varLines = []
 printLines = [
 	'\tfmt.Printf("HOST=%#v\\n", HOST)'
 ]
+
+# returns (goTypeStr, goValueStr)
+def encodeGoValue(v) -> Tuple[str, str]:
+	t = type(v)
+	if t == str:
+		return "string", json.dumps(v)
+	elif t == int:
+		return "int", str(v)
+	elif t == float:
+		return "float64", str(v)
+	elif t == bool:
+		return "bool", json.dumps(v)
+	return "", str(v)
+
 for param, value in sorted(settingsDict.items()):
 	valueType = type(value)
 	if valueType in (str, int, float, bool):
 		constLines.append("\t%s = %s" % (param, json.dumps(value)))
 	elif valueType == list:
-		itemTypeGo = ""
+		itemTypes = set()
 		itemValuesGo = []
 		if len(value) == 0:
 			print("Empty list %s, assuming list of strings" % param)
-			itemTypeGo = "string"
+			itemTypes.add("string")
 		else:
-			itemType = type(value[0])
-			if itemType == str:
-				itemTypeGo = "string"
-				itemValuesGo = [json.dumps(x) for x in value]
-			elif itemType == int:
-				itemTypeGo = "int"
-				itemValuesGo = [str(x) for x in value]
-			elif itemType == float:
-				itemTypeGo = "float64"
-				itemValuesGo = [str(x) for x in value]
-			elif itemType == bool:
-				itemTypeGo = "bool"
-				itemValuesGo = [json.dumps(x) for x in value]
-		valueGo = "[]" + itemTypeGo + "{" + ", ".join(itemValuesGo) + "}"
+			for item in value:
+				itemType, itemValueGo = encodeGoValue(item)
+				if not itemType:
+					print("Unsupported type for %r in list %s" %(item, param))
+					sys.exit(1)
+				itemTypes.add(itemType)
+				itemValuesGo.append(itemValueGo)
+
+		if len(itemTypes) > 1:
+			print("List %s has more than one item type: %r" % (param, list(itemTypes)))
+			sys.exit(1)
+
+		valueGo = "[]" + itemTypes.pop() + "{" + ", ".join(itemValuesGo) + "}"
+		varLines.append("\t%s = %s" % (param, valueGo))
+	elif valueType == dict:
+		keysValuesGo = {}
+		keyTypes = set()
+		valueTypes = set()
+		if len(value) == 0:
+			print("Empty dict %s, assuming generic: map[string]interface{}" % param)
+			keyTypes.add("string")
+			valueTypes.add("interface{}")
+		else:
+			for k, v in value.items():
+				k_type, k_value = encodeGoValue(k)
+				if not k_type:
+					print("Unsupported type for key %r in dict %s" %(k, param))
+					sys.exit(1)
+				v_type, v_value = encodeGoValue(v)
+				if not v_type:
+					print("Unsupported type for key %r in dict %s" %(v, param))
+					sys.exit(1)
+				keyTypes.add(k_type)
+				valueTypes.add(v_type)
+				keysValuesGo[k_value] = v_value
+
+		if len(keyTypes) > 1:
+			print("Dict %s has more than one key type: %r" % (param, list(keyTypes)))
+			sys.exit(1)
+		if len(valueTypes) > 1:
+			print("Dict %s has more than one key type: %r" % (param, list(valueTypes)))
+			sys.exit(1)
+		
+		typeGo = "map[%s]%s" % (keyTypes.pop(), valueTypes.pop())
+		valueGo = typeGo + "{" + "".join(
+			"\n\t\t" + k + ": " + v + ","
+			for k, v in keysValuesGo.items()
+		) + "\n\t}"
 		varLines.append("\t%s = %s" % (param, valueGo))
 	else:
 		# FIXME
