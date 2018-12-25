@@ -2202,5 +2202,35 @@
 				</method>
 			</resource>
 		</resource>
+		<resource path="admin/">
+			<resource path="stats/">
+				<method name="GET" id="adminGetStats">
+					<request>
+						<representation mediaType="app/json"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="locked_resource_count" type="xs:complexType">
+							<element name="event" type="xs:int"/>
+							<element name="group" type="xs:int"/>
+							<element name="user" type="xs:int"/>
+						</param>
+					</response>
+				</method>
+			</resource>
+			<resource path="locked-resources/">
+				<method name="GET" id="adminListLockedResources">
+					<request>
+						<representation mediaType="app/json"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="event" type="xs:list" comment="list of locked event IDs"/>
+						<param name="group" type="xs:list" comment="list of locked group IDs"/>
+						<param name="user" type="xs:list" comment="list of locked users emails"/>
+					</response>
+				</method>
+			</resource>
+		</resource>
 	</resources>
 </application> 
