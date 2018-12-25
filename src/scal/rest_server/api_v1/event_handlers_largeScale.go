@@ -331,7 +331,7 @@ func UpdateLargeScale(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -522,7 +522,7 @@ func PatchLargeScale(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -803,7 +803,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------

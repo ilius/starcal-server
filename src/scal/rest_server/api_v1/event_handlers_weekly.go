@@ -332,7 +332,7 @@ func UpdateWeekly(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -530,7 +530,7 @@ func PatchWeekly(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -832,7 +832,7 @@ func MergeWeekly(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------

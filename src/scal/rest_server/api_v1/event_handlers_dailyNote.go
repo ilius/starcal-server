@@ -328,7 +328,7 @@ func UpdateDailyNote(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -498,7 +498,7 @@ func PatchDailyNote(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -732,7 +732,7 @@ func MergeDailyNote(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------

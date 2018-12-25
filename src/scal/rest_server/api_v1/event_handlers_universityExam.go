@@ -331,7 +331,7 @@ func UpdateUniversityExam(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -522,7 +522,7 @@ func PatchUniversityExam(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -807,7 +807,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------

@@ -329,7 +329,7 @@ func UpdateLifeTime(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -506,7 +506,7 @@ func PatchLifeTime(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -757,7 +757,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", err)
+		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------

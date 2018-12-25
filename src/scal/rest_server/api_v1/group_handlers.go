@@ -163,7 +163,7 @@ func UpdateGroup(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Group(*groupId)
 	if failed {
-		return nil, NewError(ResourceLocked, "group is locked by another request", err)
+		return nil, NewError(ResourceLocked, "group is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -246,7 +246,7 @@ func DeleteGroup(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Group(*groupId)
 	if failed {
-		return nil, NewError(ResourceLocked, "group is locked by another request", err)
+		return nil, NewError(ResourceLocked, "group is locked by another request", nil)
 	}
 	defer unlock()
 	remoteIp, err := req.RemoteIP()

@@ -54,7 +54,7 @@ func SetUserFullName(req Request) (*Response, error) {
 	email := userModel.Email
 	failed, unlock := resLock.User(email)
 	if failed {
-		return nil, NewError(ResourceLocked, "user is being modified by another request", err)
+		return nil, NewError(ResourceLocked, "user is being modified by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -106,7 +106,7 @@ func UnsetUserFullName(req Request) (*Response, error) {
 	email := userModel.Email
 	failed, unlock := resLock.User(email)
 	if failed {
-		return nil, NewError(ResourceLocked, "user is being modified by another request", err)
+		return nil, NewError(ResourceLocked, "user is being modified by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -151,7 +151,7 @@ func SetUserDefaultGroupId(req Request) (*Response, error) {
 	email := userModel.Email
 	failed, unlock := resLock.User(email)
 	if failed {
-		return nil, NewError(ResourceLocked, "user is being modified by another request", err)
+		return nil, NewError(ResourceLocked, "user is being modified by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -217,7 +217,7 @@ func UnsetUserDefaultGroupId(req Request) (*Response, error) {
 	email := userModel.Email
 	failed, unlock := resLock.User(email)
 	if failed {
-		return nil, NewError(ResourceLocked, "user is being modified by another request", err)
+		return nil, NewError(ResourceLocked, "user is being modified by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
