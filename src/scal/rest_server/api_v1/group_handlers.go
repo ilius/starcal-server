@@ -92,7 +92,7 @@ func GetGroupList(req Request) (*Response, error) {
 	var results []resultModel
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_group,
-		Cond: scal.M{
+		Conditions: scal.M{
 			"$or": []scal.M{
 				scal.M{"ownerEmail": email},
 				scal.M{"readAccessEmails": email},
@@ -284,7 +284,7 @@ func DeleteGroup(req Request) (*Response, error) {
 	var eventMetaModels []event_lib.EventMetaModel
 	err = db.FindAll(&eventMetaModels, &storage.FindInput{
 		Collection: storage.C_eventMeta,
-		Cond: scal.M{
+		Conditions: scal.M{
 			"groupId": groupId,
 		},
 	})
@@ -364,7 +364,7 @@ func GetGroupEventList(req Request) (*Response, error) {
 	var results []resultModel
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_eventMeta,
-		Cond:       cond,
+		Conditions: cond,
 	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)

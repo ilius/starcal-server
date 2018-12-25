@@ -75,7 +75,7 @@ func (db *MongoDatabase) FindCount(colName string, cond scal.M) (int, error) {
 }
 
 func (db *MongoDatabase) FindAll(result interface{}, in *FindInput) error {
-	q := db.C(in.Collection).Find(in.Cond)
+	q := db.C(in.Collection).Find(in.Conditions)
 	if in.SortBy != "" {
 		q = q.Sort(in.SortBy)
 	}

@@ -331,7 +331,7 @@ func (self *EventMetaModel) GetEmailsByAttendingStatus(
 	}{}
 	err := db.FindAll(&emailStructs, &storage.FindInput{
 		Collection: storage.C_attending,
-		Cond: scal.M{
+		Conditions: scal.M{
 			"eventId":   self.EventId,
 			"attending": attending,
 		},

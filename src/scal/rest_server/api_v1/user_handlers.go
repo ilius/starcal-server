@@ -268,7 +268,7 @@ func loadLastLogins(req Request, userModel *user_lib.UserModel, limit int) ([]*u
 	}
 	err = db.FindAll(&result, &storage.FindInput{
 		Collection: storage.C_userLogins,
-		Cond: scal.M{
+		Conditions: scal.M{
 			"userId": userModel.Id,
 		},
 		SortBy: "-time",

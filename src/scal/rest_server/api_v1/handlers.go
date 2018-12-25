@@ -832,7 +832,7 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 	var events []eventModel
 	err = db.FindAll(&events, &storage.FindInput{
 		Collection: storage.C_eventMeta,
-		Cond: scal.M{
+		Conditions: scal.M{
 			"ownerEmail": email,
 			"groupId":    nil,
 		},
@@ -868,7 +868,7 @@ func GetMyEventList(req Request) (*Response, error) {
 	var results []resultModel
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_eventMeta,
-		Cond: scal.M{
+		Conditions: scal.M{
 			"ownerEmail": email,
 		},
 	})

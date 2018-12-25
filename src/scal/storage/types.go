@@ -15,7 +15,7 @@ type hasCollectionUniqueM interface {
 
 type FindInput struct {
 	Collection string
-	Cond       scal.M
+	Conditions scal.M
 	SortBy     string
 	Limit      int
 }
