@@ -2,6 +2,7 @@ package settings
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
@@ -76,5 +77,6 @@ func secretCBC(valueEncBase64 string) string {
 	if err != nil {
 		panic(fmt.Errorf("bad ecrypted secret: %v", err))
 	}
+	valueB = bytes.TrimRight(valueB, "\x00")
 	return string(valueB)
 }
