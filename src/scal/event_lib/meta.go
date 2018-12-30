@@ -423,7 +423,7 @@ func (model EventInvitationModel) Collection() string {
 func GetEventMetaPipeResults(
 	db storage.Database,
 	pipeline *[]scal.M,
-) (*[]scal.M, error) {
+) ([]scal.M, error) {
 	results := []scal.M{}
 	for res := range db.PipeIter(storage.C_eventMeta, pipeline) {
 		if err := res.Err; err != nil {
@@ -440,5 +440,5 @@ func GetEventMetaPipeResults(
 		}
 		results = append(results, res.M)
 	}
-	return &results, nil
+	return results, nil
 }

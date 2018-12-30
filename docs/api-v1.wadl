@@ -14,7 +14,6 @@
 			<resource path="register/">
 				<method name="POST" id="registerUser">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="email" type="xs:string" required="true"/>
 						<param name="password" type="xs:string" required="true"/>
 						<param name="fullName" type="xs:string" required="false"/>
@@ -28,7 +27,6 @@
 			<resource path="login/">
 				<method name="POST" id="login">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="email" type="xs:string" required="true"/>
 						<param name="password" type="xs:string" required="true"/>
 					</request>
@@ -48,7 +46,6 @@
 			<resource path="change-password/">
 				<method name="POST" id="changePassword">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="email" type="xs:string" required="true"/>
 						<param name="password" type="xs:string" required="true"/>
 						<param name="newPassword" type="xs:string" required="true"/>
@@ -61,7 +58,6 @@
 			<resource path="reset-password-request/">
 				<method name="POST" id="resetPasswordRequest">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="email" type="xs:string" required="true"/>
 					</request>
 					<response>
@@ -72,7 +68,6 @@
 			<resource path="reset-password-action/">
 				<method name="POST" id="resetPasswordAction">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="email" type="xs:string" required="true"/>
 						<param name="resetPasswordToken" type="xs:string" required="true"/>
 						<param name="newPassword" type="xs:string" required="true"/>
@@ -108,7 +103,6 @@
 			<resource path="login-history/">
 				<method name="GET" id="getUserInfo">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="limit" type="xs:int" required="false" description="there is a default limit"/>
 					</request>
 					<response>
@@ -129,7 +123,6 @@
 			<resource path="full-name/">
 				<method name="PUT" id="setUserFullName">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="fullName" type="xs:string"/>
 					</request>
 					<response>
@@ -159,8 +152,14 @@
 		<resource path="event/my/">
 			<resource path="events/">
 				<method name="GET" id="getMyEventsList">
+					<request>
+						<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
+						<param name="limit" type="xs:int" description="maximum number of events in page"/>
+						<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
+					</request>
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="lastId" type="xs:str" description="the last eventId in this page"/>
 						<param name="events" type="xs:list" itemType="xs:complexType">
 							<item type="xs:complexType">
 								<element name="eventId" type="xs:string"/>
@@ -184,60 +183,15 @@
 			</resource>
 			<resource path="events-full/">
 				<method name="GET" id="getMyEventsFull">
+					<request>
+						<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
+						<param name="limit" type="xs:int" description="maximum number of events in page"/>
+						<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
+					</request>
 					<response>
 						<representation mediaType="app/json"/>
+						<param name="lastId" type="xs:str" description="the last eventId in this page"/>
 						<param name="eventsFull" type="xs:list" itemType="xs:complexType">
-							<item type="xs:complexType">
-								<element name="eventId" type="xs:string"/>
-								<element name="eventType" type="xs:string">
-									<option value="allDayTask"/>
-									<option value="custom"/>
-									<option value="dailyNote"/>
-									<option value="largeScale"/>
-									<option value="lifeTime"/>
-									<option value="monthly"/>
-									<option value="task"/>
-									<option value="universityClass"/>
-									<option value="universityExam"/>
-									<option value="weekly"/>
-									<option value="yearly"/>
-								</element>
-								<element name="lastModifiedTime" type="xsd:dateTime"/>
-								<element name="lastSha1" type="xs:string"/>
-								<element name="meta" type="xs:complexType">
-									<element name="ownerEmail" type="xs:string"/>
-									<element name="isPublic" type="xs:boolean"/>
-									<element name="creationTime" type="xsd:dateTime"/>
-								</element>
-								<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
-									only the common elements are documented">
-									<element name="summary" type="xs:string"/>
-									<element name="description" type="xs:string"/>
-									<element name="calType" type="xs:string">
-										<option value="gregorian"/>
-										<option value="jalali"/>
-										<option value="hijri"/>
-										<option value="indian_national"/>
-										<option value="julian"/>
-										<option value="ethiopian"/>
-										<option value="gregorian_proleptic"/>
-									</element>
-									<element name="icon" type="xs:string"/>
-									<element name="timeZone" type="xs:string"/>
-									<element name="timeZoneEnable" type="xs:boolean"/>
-								</element>
-							</item>
-						</param>
-					</response>
-				</method>
-			</resource>
-			<resource path="last-created-events/?maxCount={maxCount}">
-				<param name="maxCount" type="xs:int"/>
-				<method name="GET" id="getMyLastCreatedEvents">
-					<response>
-						<representation mediaType="app/json"/>
-						<param name="maxCount" type="xs:int"/>
-						<param name="lastCreatedEvents" type="xs:list" itemType="xs:complexType">
 							<item type="xs:complexType">
 								<element name="eventId" type="xs:string"/>
 								<element name="eventType" type="xs:string">
@@ -298,7 +252,6 @@
 			</method>
 			<method name="POST" id="addGroup">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="title" type="xs:string"/>
 				</request>
 				<response>
@@ -319,7 +272,6 @@
 				</method>
 				<method name="PUT" id="updateGroup">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="title" type="xs:string" required="true"/>
 						<param name="addAccessEmails" type="xs:list" itemType="xs:string" required="false" description="supposed empty if missing"/>
 						<param name="readAccessEmails" type="xs:list" itemType="xs:string" required="false" description="supposed empty if missing"/>
@@ -332,8 +284,14 @@
 				</method>
 				<resource path="events/">
 					<method name="GET" id="getGroupEvents">
+						<request>
+							<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
+							<param name="limit" type="xs:int" description="maximum number of events in page"/>
+							<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
+						</request>
 						<response>
 							<representation mediaType="app/json"/>
+							<param name="lastId" type="xs:str" description="the last eventId in this page"/>
 							<param name="events" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
 									<element name="eventId" type="xs:string"/>
@@ -357,8 +315,14 @@
 				</resource>
 				<resource path="events-sha1/">
 					<method name="GET" id="getGroupEventsWithSha1">
+						<request>
+							<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
+							<param name="limit" type="xs:int" description="maximum number of events in page"/>
+							<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
+						</request>
 						<response>
 							<representation mediaType="app/json"/>
+							<param name="lastId" type="xs:str" description="the last eventId in this page"/>
 							<param name="events" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
 									<element name="eventId" type="xs:string"/>
@@ -385,63 +349,15 @@
 					<param name="dateTime" type="xsd:dateTime" description="filters out modifications before this {dateTime}
 						this should be the time of last sync on this client"/>
 					<method name="GET" id="getGroupModifiedEvents">
+						<request>
+							<param name="limit" type="xs:int" required="false" description="maximum number of events in response"/>
+						</request>
 						<response>
 							<representation mediaType="app/json"/>
 							<param name="groupId" type="xs:string"/>
 							<param name="sinceDatetime" type="xsd:dateTime"/>
+							<param name="limit" type="xs:int"/>
 							<param name="modifiedEvents" type="xs:list" itemType="xs:complexType">
-								<item type="xs:complexType">
-									<element name="eventId" type="xs:string"/>
-									<element name="eventType" type="xs:string">
-										<option value="allDayTask"/>
-										<option value="custom"/>
-										<option value="dailyNote"/>
-										<option value="largeScale"/>
-										<option value="lifeTime"/>
-										<option value="monthly"/>
-										<option value="task"/>
-										<option value="universityClass"/>
-										<option value="universityExam"/>
-										<option value="weekly"/>
-										<option value="yearly"/>
-									</element>
-									<element name="lastModifiedTime" type="xsd:dateTime"/>
-									<element name="lastSha1" type="xs:string"/>
-									<element name="meta" type="xs:complexType">
-										<element name="ownerEmail" type="xs:string"/>
-										<element name="isPublic" type="xs:boolean"/>
-										<element name="creationTime" type="xsd:dateTime"/>
-									</element>
-									<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
-										only the common elements are documented">
-										<element name="summary" type="xs:string"/>
-										<element name="description" type="xs:string"/>
-										<element name="calType" type="xs:string">
-											<option value="gregorian"/>
-											<option value="jalali"/>
-											<option value="hijri"/>
-											<option value="indian_national"/>
-											<option value="julian"/>
-											<option value="ethiopian"/>
-											<option value="gregorian_proleptic"/>
-										</element>
-										<element name="icon" type="xs:string"/>
-										<element name="timeZone" type="xs:string"/>
-										<element name="timeZoneEnable" type="xs:boolean"/>
-									</element>
-								</item>
-							</param>
-						</response>
-					</method>
-				</resource>
-				<resource path="last-created-events/?maxCount={maxCount}">
-					<param name="maxCount" type="xs:int" description="maximum number of records"/>
-					<method name="GET" id="getGroupLastCreatedEvents">
-						<response>
-							<representation mediaType="app/json"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="maxCount" type="xs:int"/>
-							<param name="lastCreatedEvents" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
 									<element name="eventId" type="xs:string"/>
 									<element name="eventType" type="xs:string">
@@ -490,10 +406,14 @@
 					<param name="dateTime" type="xsd:dateTime" description="filters out events moved before this {dateTime}
 						this should be the time of last sync on this client"/>
 					<method name="GET" id="getGroupMovedEvents">
+						<request>
+							<param name="limit" type="xs:int" required="false" description="maximum number of events in response"/>
+						</request>
 						<response>
 							<representation mediaType="app/json"/>
 							<param name="groupId" type="xs:string"/>
 							<param name="sinceDatetime" type="xsd:dateTime"/>
+							<param name="limit" type="xs:int"/>
 							<param name="movedEvents" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
 									<element name="eventId" type="xs:string"/>
@@ -549,7 +469,6 @@
 			<resource path="group/">
 				<method name="PUT" id="setEventGroupId">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="newGroupId" type="xs:string"/>
 					</request>
 					<response>
@@ -566,7 +485,6 @@
 				</method>
 				<method name="PUT" id="setEventOwner">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="newOwnerEmail" type="xs:string"/>
 					</request>
 					<response>
@@ -586,7 +504,6 @@
 				</method>
 				<method name="PUT" id="setEventAccess">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="isPublic" type="xs:boolean" required="true"/>
 						<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
 						<param name="publicJoinOpen" type="xs:boolean" required="true"/>
@@ -598,7 +515,6 @@
 				</method>
 				<method name="POST" id="appendEventAccess">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="toAddEmail" type="xs:string"/>
 					</request>
 					<response>
@@ -641,7 +557,6 @@
 		<resource path="event/allDayTask/">
 			<method name="POST" id="add_allDayTask">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -717,7 +632,6 @@
 				</method>
 				<method name="PUT" id="update_allDayTask">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -744,7 +658,6 @@
 				</method>
 				<method name="PATCH" id="patch_allDayTask">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -774,7 +687,6 @@
 		<resource path="event/custom/">
 			<method name="POST" id="add_custom">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -896,7 +808,6 @@
 				</method>
 				<method name="PUT" id="update_custom">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -946,7 +857,6 @@
 				</method>
 				<method name="PATCH" id="patch_custom">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -999,7 +909,6 @@
 		<resource path="event/dailyNote/">
 			<method name="POST" id="add_dailyNote">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1071,7 +980,6 @@
 				</method>
 				<method name="PUT" id="update_dailyNote">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1096,7 +1004,6 @@
 				</method>
 				<method name="PATCH" id="patch_dailyNote">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1124,7 +1031,6 @@
 		<resource path="event/largeScale/">
 			<method name="POST" id="add_largeScale">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1202,7 +1108,6 @@
 				</method>
 				<method name="PUT" id="update_largeScale">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1230,7 +1135,6 @@
 				</method>
 				<method name="PATCH" id="patch_largeScale">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1261,7 +1165,6 @@
 		<resource path="event/lifeTime/">
 			<method name="POST" id="add_lifeTime">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1335,7 +1238,6 @@
 				</method>
 				<method name="PUT" id="update_lifeTime">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1361,7 +1263,6 @@
 				</method>
 				<method name="PATCH" id="patch_lifeTime">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1390,7 +1291,6 @@
 		<resource path="event/monthly/">
 			<method name="POST" id="add_monthly">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1470,7 +1370,6 @@
 				</method>
 				<method name="PUT" id="update_monthly">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1499,7 +1398,6 @@
 				</method>
 				<method name="PATCH" id="patch_monthly">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1531,7 +1429,6 @@
 		<resource path="event/task/">
 			<method name="POST" id="add_task">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1607,7 +1504,6 @@
 				</method>
 				<method name="PUT" id="update_task">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1634,7 +1530,6 @@
 				</method>
 				<method name="PATCH" id="patch_task">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1664,7 +1559,6 @@
 		<resource path="event/universityClass/">
 			<method name="POST" id="add_universityClass">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1752,7 +1646,6 @@
 				</method>
 				<method name="PUT" id="update_universityClass">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1785,7 +1678,6 @@
 				</method>
 				<method name="PATCH" id="patch_universityClass">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1821,7 +1713,6 @@
 		<resource path="event/universityExam/">
 			<method name="POST" id="add_universityExam">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1899,7 +1790,6 @@
 				</method>
 				<method name="PUT" id="update_universityExam">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1927,7 +1817,6 @@
 				</method>
 				<method name="PATCH" id="patch_universityExam">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1958,7 +1847,6 @@
 		<resource path="event/weekly/">
 			<method name="POST" id="add_weekly">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -2038,7 +1926,6 @@
 				</method>
 				<method name="PUT" id="update_weekly">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -2067,7 +1954,6 @@
 				</method>
 				<method name="PATCH" id="patch_weekly">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -2099,7 +1985,6 @@
 		<resource path="event/yearly/">
 			<method name="POST" id="add_yearly">
 				<request>
-					<representation mediaType="app/json"/>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
 					<param name="calType" type="xs:string" required="true">
@@ -2177,7 +2062,6 @@
 				</method>
 				<method name="PUT" id="update_yearly">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
 						<param name="calType" type="xs:string" required="true">
@@ -2205,7 +2089,6 @@
 				</method>
 				<method name="PATCH" id="patch_yearly">
 					<request>
-						<representation mediaType="app/json"/>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
 						<param name="calType" type="xs:string" required="false">
@@ -2237,7 +2120,6 @@
 			<resource path="stats/">
 				<method name="GET" id="adminGetStats">
 					<request>
-						<representation mediaType="app/json"/>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
@@ -2252,7 +2134,6 @@
 			<resource path="locked-resources/">
 				<method name="GET" id="adminListLockedResources">
 					<request>
-						<representation mediaType="app/json"/>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>

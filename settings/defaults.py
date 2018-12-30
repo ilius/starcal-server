@@ -77,20 +77,32 @@ USER_INFO_LAST_LOGINS_LIMIT = 5
 
 USER_LOGIN_HISTORY_DEFAULT_LIMIT = 20
 
-API_PAGE_LIMITS_DEFAULT = 50
+API_PAGE_LIMIT_DEFAULT = 50
 API_PAGE_LIMITS = {
-	"GetGroupEventList": 150, # ~60 bytes -> eventId, eventType
-	"GetGroupEventListWithSha1": 100, # ~115 bytes -> eventId, eventType, lastSha1
-	"GetGroupModifiedEvents": 20, # ~550 bytes -> Full Event
-	"GetGroupMovedEvents": 60, # ~160 bytes -> eventId, oldGroupId, newGroupId, time
-	"GetGroupLastCreatedEvents": 100, # ~550 bytes -> Full Event
+	"api_v1.GetGroupEventList": 150, # ~60 bytes -> eventId, eventType
+	"api_v1.GetGroupEventListWithSha1": 100, # ~115 bytes -> eventId, eventType, lastSha1
+	"api_v1.GetGroupModifiedEvents": 20, # ~550 bytes -> Full Event
+	"api_v1.GetGroupMovedEvents": 60, # ~160 bytes -> eventId, oldGroupId, newGroupId, time
 
-	"GetUngroupedEvents": 150, # ~60 bytes -> eventId, eventType
-	"GetMyEventList": 150, # ~60 bytes -> eventId, eventType
-	"GetMyEventsFull": 20, # ~550 bytes -> Full Event
-	"GetMyLastCreatedEvents": 20, # ~550 bytes -> Full Event
+	"api_v1.GetUngroupedEvents": 150, # ~60 bytes -> eventId, eventType
+	"api_v1.GetMyEventList": 150, # ~60 bytes -> eventId, eventType
+	"api_v1.GetMyEventsFull": 20, # ~550 bytes -> Full Event
 
-	"GetGroupList": 100, # ~100 bytes -> groupId, ownerEmail, title
+	"api_v1.GetGroupList": 100, # ~100 bytes -> groupId, ownerEmail, title
 
-	"GetUserLoginHistory": 70, # ~150 bytes
+	"api_v1.GetUserLoginHistory": 70, # ~150 bytes
 }
+
+# 5.0 means that user can specify the page limit up to 5 times the default limit
+API_PAGE_LIMIT_MAX_RATIO = 5.0
+
+# Code	Test	Doc		File	Method
+# [x]	[x]		[x]		group_handlers.go	GetGroupEventList
+# [x]	[x]		[x]		group_handlers.go	GetGroupEventListWithSha1
+# [x]	[x]		[x]		group_handlers.go	GetGroupModifiedEvents		(just "limit" param)
+# [x]	[x]		[x]		group_handlers.go	GetGroupMovedEvents			(just "limit" param)
+# [x]	[x]		[-]		handlers.go			GetUngroupedEvents
+# [x]	[x]		[x]		handlers.go			GetMyEventList
+# [x]	[x]		[x]		handlers.go			GetMyEventsFull
+# [ ]	[ ]		[ ]		GetGroupList
+# [ ]	[ ]		[ ]		GetUserLoginHistory

@@ -17,19 +17,44 @@ if not token:
 
 groupId = sys.argv[1]
 
-r = requests.get(
-	"http://%s:9001/event/groups/%s/events/" % (host, groupId),
-	headers={"Authorization": "bearer " + token},
-)
-print(r)
-try:
-	data = r.json()
-except:
-	print("data is not json")
-	print(r.text)
-else:
+limit = 0
+if len(sys.argv) == 3:
+	limit = int(sys.argv[2])
+
+baseUrl = "http://%s:9001/event/groups/%s/events/" % (host, groupId)
+
+count = 0
+
+exStartId = ""
+while True:
+	url = baseUrl + "?limit=%d&exStartId=%s" % (limit, exStartId)
+	print(url)
+	r = requests.get(
+		url,
+		headers={"Authorization": "bearer " + token},
+	)
+	print(r)
+	try:
+		data = r.json()
+	except:
+		print("data is not json")
+		print(r.text)
+		break
 	error = data.get("error", "")
 	if error:
 		print(error)
-	else:
-		pprint(data, width=80)
+		break
+
+	pageCount = len(data.get("events", []))
+	
+	#pprint(data, width=80)
+	print(pageCount)
+	count += pageCount
+
+	lastId = data.get("lastId", "")
+	if not lastId:
+		break
+	exStartId = lastId
+	print("--------------------")
+	
+print("Total count:", count)

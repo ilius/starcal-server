@@ -19,14 +19,29 @@ if not token:
 
 groupId, sinceDateTimeInput = sys.argv[1:3]
 
-sinceDateTime = parseDatetime(sinceDateTimeInput)
+if "T" in sinceDateTimeInput:
+	sinceDateTimeStr = sinceDateTimeInput
+else:
+	sinceDateTimeStr = parseDatetime(sinceDateTimeInput).isoformat()
+
+if "Z" not in sinceDateTimeStr and "+" not in sinceDateTimeStr:
+	sinceDateTimeStr += "Z"
+
+
+print("sinceDateTimeStr =", sinceDateTimeStr)
+
+limit = 10
+
+baseUrl = "http://%s:9001/event/groups/%s/modified-events/%s/" % (
+	host,
+	groupId,
+	sinceDateTimeStr,
+)
+
+url = baseUrl + "?limit=%d" % limit
 
 r = requests.get(
-	"http://%s:9001/event/groups/%s/modified-events/%s/" % (
-		host,
-		groupId,
-		sinceDateTime.strftime("%Y-%m-%dT%H:%M:%SZ"),
-	),
+	url,
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

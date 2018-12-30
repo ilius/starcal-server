@@ -9,6 +9,7 @@ import os
 import requests
 
 from pprint import pprint
+from datetime import datetime
 from dateutil.parser import parse as parseDatetime
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
@@ -19,14 +20,25 @@ if not token:
 
 groupId, sinceDateTimeInput = sys.argv[1:3]
 
-sinceDateTime = parseDatetime(sinceDateTimeInput)
+try:
+	sinceDateTime = datetime.strptime(sinceDateTimeInput, "%Y-%m-%dT%H:%M:%SZ")
+except:
+	sinceDateTime = parseDatetime(sinceDateTimeInput)
+
+sinceDateTimeStr = sinceDateTime.isoformat()
+print("sinceDateTimeStr =", sinceDateTimeStr)
+
+limit = 100
+
+
+baseUrl = "http://%s:9001/event/groups/%s/moved-events/%s/" % (
+	host,
+	groupId,
+	sinceDateTimeStr,
+)
 
 r = requests.get(
-	"http://%s:9001/event/groups/%s/moved-events/%s/" % (
-		host,
-		groupId,
-		sinceDateTime.strftime("%Y-%m-%dT%H:%M:%SZ"),
-	),
+	baseUrl + "?limit=%d"%limit,
 	headers={"Authorization": "bearer " + token},
 )
 print(r)
@@ -41,3 +53,5 @@ else:
 		print(error)
 	else:
 		pprint(data, width=80)
+		# for event in data["movedEvents"]:
+		#	print(event["time"])

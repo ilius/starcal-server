@@ -64,11 +64,6 @@ func init() {
 				Pattern: ":groupId/moved-events/:sinceDateTime",
 				Handler: GetGroupMovedEvents,
 			},
-			"GetGroupLastCreatedEvents": {
-				Method:  "GET",
-				Pattern: ":groupId/last-created-events",
-				Handler: GetGroupLastCreatedEvents,
-			},
 		},
 	})
 }
@@ -334,6 +329,10 @@ func GetGroupEventList(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	pageOpts, err := GetPageOptions(req)
+	if err != nil {
+		return nil, err
+	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
@@ -351,11 +350,14 @@ func GetGroupEventList(req Request) (*Response, error) {
 
 	cond := groupModel.GetAccessCond(email)
 	cond["groupId"] = groupId
+	pageOpts.AddStartIdCond(cond)
+
 	var results []*event_lib.ListEventsRow
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_eventMeta,
 		Conditions: cond,
-		SortBy:     "_id",
+		SortBy:     pageOpts.SortBy(),
+		Limit:      pageOpts.Limit,
 		Fields: []string{
 			"_id",
 			"eventType",
@@ -368,10 +370,14 @@ func GetGroupEventList(req Request) (*Response, error) {
 	if results == nil {
 		results = make([]*event_lib.ListEventsRow, 0)
 	}
+	output := scal.M{
+		"events": results,
+	}
+	if len(results) > 0 {
+		output["lastId"] = results[len(results)-1].EventId
+	}
 	return &Response{
-		Data: scal.M{
-			"events": results,
-		},
+		Data: output,
 	}, nil
 }
 
@@ -383,6 +389,10 @@ func GetGroupEventListWithSha1(req Request) (*Response, error) {
 	email := userModel.Email
 	// -----------------------------------------------
 	groupId, err := ObjectIdFromRequest(req, "groupId")
+	if err != nil {
+		return nil, err
+	}
+	pageOpts, err := GetPageOptions(req)
 	if err != nil {
 		return nil, err
 	}
@@ -400,16 +410,16 @@ func GetGroupEventListWithSha1(req Request) (*Response, error) {
 		return nil, err
 	}
 
+	cond := groupModel.GetAccessCond(email)
+	cond["groupId"] = groupId
+	pageOpts.AddStartIdCond(cond)
+
+	sortMap := pageOpts.SortByMap()
+
 	pipeline := []scal.M{
-		{"$match": scal.M{
-			"groupId": groupId,
-		}},
-	}
-	aCond := groupModel.GetAccessCond(email)
-	if len(aCond) > 0 {
-		pipeline = append(pipeline, scal.M{"$match": aCond})
-	}
-	pipeline = append(pipeline, []scal.M{
+		{"$match": cond},
+		sortMap,
+		{"$limit": pageOpts.Limit},
 		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
@@ -422,18 +432,22 @@ func GetGroupEventListWithSha1(req Request) (*Response, error) {
 			"eventType": scal.M{"$first": "$eventType"},
 			"lastSha1":  scal.M{"$first": "$revision.sha1"},
 		}},
-	}...)
+		sortMap,
+	}
 
 	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
+	output := scal.M{
+		"events": results,
+	}
+	if len(results) > 0 {
+		output["lastId"] = results[len(results)-1]["eventId"]
+	}
 	return &Response{
-		Data: scal.M{
-			"events": results,
-		},
+		Data: output,
 	}, nil
-
 }
 
 func GetGroupModifiedEvents(req Request) (*Response, error) {
@@ -456,6 +470,10 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	limit, err := GetPageLimit(req)
+	if err != nil {
+		return nil, err
+	}
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
@@ -475,16 +493,10 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 	}
 	groupId := groupModel.Id
 
+	cond := groupModel.GetAccessCond(email)
+	cond["groupId"] = groupId
 	pipeline := []scal.M{
-		{"$match": scal.M{
-			"groupId": groupId,
-		}},
-	}
-	aCond := groupModel.GetAccessCond(email)
-	if len(aCond) > 0 {
-		pipeline = append(pipeline, scal.M{"$match": aCond})
-	}
-	pipeline = append(pipeline, []scal.M{
+		{"$match": cond},
 		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
@@ -498,6 +510,7 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 			},
 		}},
 		{"$sort": scal.M{"revision.time": -1}},
+		{"$limit": limit},
 		{"$group": scal.M{
 			"_id":       "$_id",
 			"eventType": scal.M{"$first": "$eventType"},
@@ -511,6 +524,7 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 			"lastModifiedTime": scal.M{"$first": "$revision.time"},
 			"lastSha1":         scal.M{"$first": "$revision.sha1"},
 		}},
+		{"$sort": scal.M{"lastModifiedTime": -1}},
 		{"$lookup": scal.M{
 			"from":         storage.C_eventData,
 			"localField":   "lastSha1",
@@ -518,18 +532,21 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 			"as":           "data",
 		}},
 		{"$unwind": "$data"},
-	}...)
+	}
 
 	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
+
+	output := scal.M{
+		"groupId":        groupModel.Id,
+		"sinceDatetime":  since,
+		"limit":          limit,
+		"modifiedEvents": results,
+	}
 	return &Response{
-		Data: scal.M{
-			"groupId":        groupModel.Id,
-			"sinceDatetime":  since,
-			"modifiedEvents": results,
-		},
+		Data: output,
 	}, nil
 }
 
@@ -550,6 +567,10 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 		return nil, err
 	}
 	since, err := req.GetTime("sinceDateTime")
+	if err != nil {
+		return nil, err
+	}
+	limit, err := GetPageLimit(req)
 	if err != nil {
 		return nil, err
 	}
@@ -579,13 +600,12 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 	pipeline := []scal.M{
 		{"$match": scal.M{
 			"groupId": groupId,
-		}},
-		{"$match": scal.M{
 			"time": scal.M{
 				"$gt": since,
 			},
 		}},
 		{"$sort": scal.M{"time": -1}},
+		{"$limit": limit},
 	}
 	accessPipeline := groupModel.GetLookupMetaAccessPipeline(
 		email,
@@ -606,6 +626,7 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 			}},
 		},
 	})
+	pipeline = append(pipeline, scal.M{"$sort": scal.M{"time": -1}})
 
 	results := []event_lib.MovedEventsRow{}
 	err = db.PipeAll(
@@ -626,118 +647,8 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 		Data: scal.M{
 			"groupId":       groupModel.Id,
 			"sinceDatetime": since,
+			"limit":         limit,
 			"movedEvents":   results,
-		},
-	}, nil
-}
-
-func GetGroupLastCreatedEvents(req Request) (*Response, error) {
-	userModel, err := CheckAuth(req)
-	if err != nil {
-		return nil, err
-	}
-	email := userModel.Email
-	// -----------------------------------------------
-	// groupId, err := ObjectIdFromRequest(req, "groupId")
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// if groupId==nil { return }
-	groupIdHex, err := req.GetString("groupId")
-	if err != nil {
-		return nil, err
-	}
-	maxCount, err := req.GetIntDefault("maxCount", 100)
-	if err != nil {
-		return nil, err
-	}
-	// -----------------------------------------------
-	db, err := storage.GetDB()
-	if err != nil {
-		return nil, NewError(Unavailable, "", err)
-	}
-	if !bson.IsObjectIdHex(*groupIdHex) {
-		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
-		// to avoid panic!
-	}
-	groupModel, err := event_lib.LoadGroupModelByIdHex(
-		"groupId",
-		db,
-		*groupIdHex,
-	)
-	if err != nil {
-		return nil, err
-	}
-	groupId := groupModel.Id
-
-	pipeline := []scal.M{
-		{"$match": scal.M{
-			"groupId": groupId,
-		}},
-	}
-	aCond := groupModel.GetAccessCond(email)
-	if len(aCond) > 0 {
-		pipeline = append(pipeline, scal.M{"$match": aCond})
-	}
-	pipeline = append(pipeline, []scal.M{
-		{"$sort": scal.M{"creationTime": -1}},
-		{"$limit": maxCount},
-		{"$lookup": scal.M{
-			"from":         storage.C_revision,
-			"localField":   "_id",
-			"foreignField": "eventId",
-			"as":           "revision",
-		}},
-		{"$unwind": "$revision"},
-		{"$group": scal.M{
-			"_id":       "$_id",
-			"eventType": scal.M{"$first": "$eventType"},
-			"meta": scal.M{
-				"$first": scal.M{
-					"ownerEmail":   "$ownerEmail",
-					"isPublic":     "$isPublic",
-					"creationTime": "$creationTime",
-				},
-			},
-			"lastModifiedTime": scal.M{"$first": "$revision.time"},
-			"lastSha1":         scal.M{"$first": "$revision.sha1"},
-		}},
-		{"$lookup": scal.M{
-			"from":         storage.C_eventData,
-			"localField":   "lastSha1",
-			"foreignField": "sha1",
-			"as":           "data",
-		}},
-		{"$unwind": "$data"},
-		{"$sort": scal.M{"meta.creationTime": -1}},
-	}...)
-
-	results := []scal.M{}
-	err = db.PipeAll(
-		storage.C_eventMeta,
-		&pipeline,
-		&results,
-	)
-	if err != nil {
-		return nil, NewError(Internal, "", err)
-	}
-	for _, res := range results {
-		if eventId, ok := res["_id"]; ok {
-			res["eventId"] = eventId
-			delete(res, "_id")
-		}
-		if dataI, ok := res["data"]; ok {
-			data := dataI.(scal.M)
-			delete(data, "_id")
-			res["data"] = data
-		}
-	}
-
-	return &Response{
-		Data: scal.M{
-			"groupId":           groupModel.Id,
-			"maxCount":          maxCount,
-			"lastCreatedEvents": results,
 		},
 	}, nil
 }

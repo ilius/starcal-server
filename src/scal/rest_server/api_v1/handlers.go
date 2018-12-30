@@ -49,11 +49,6 @@ func init() {
 				Pattern: "events-full",
 				Handler: GetMyEventsFull,
 			},
-			"GetMyLastCreatedEvents": {
-				Method:  "GET",
-				Pattern: "last-created-events",
-				Handler: GetMyLastCreatedEvents,
-			},
 		},
 	})
 }
@@ -824,24 +819,35 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
+	pageOpts, err := GetPageOptions(req)
+	if err != nil {
+		return nil, err
+	}
+	cond := scal.M{
+		"ownerEmail": email,
+		"groupId":    nil,
+	}
+	pageOpts.AddStartIdCond(cond)
 
-	var events []*event_lib.ListEventsRow
-	err = db.FindAll(&events, &storage.FindInput{
+	var results []*event_lib.ListEventsRow
+	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_eventMeta,
-		Conditions: scal.M{
-			"ownerEmail": email,
-			"groupId":    nil,
-		},
-		SortBy: "_id",
-		Fields: []string{"_id", "eventType"},
+		Conditions: cond,
+		SortBy:     pageOpts.SortBy(),
+		Limit:      pageOpts.Limit,
+		Fields:     []string{"_id", "eventType"},
 	})
-	if events == nil {
-		events = make([]*event_lib.ListEventsRow, 0)
+	if results == nil {
+		results = make([]*event_lib.ListEventsRow, 0)
+	}
+	output := scal.M{
+		"events": results,
+	}
+	if len(results) > 0 {
+		output["lastId"] = results[len(results)-1].EventId
 	}
 	return &Response{
-		Data: scal.M{
-			"events": events,
-		},
+		Data: output,
 	}, nil
 }
 
@@ -856,14 +862,21 @@ func GetMyEventList(req Request) (*Response, error) {
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
+	pageOpts, err := GetPageOptions(req)
+	if err != nil {
+		return nil, err
+	}
+	cond := scal.M{
+		"ownerEmail": email,
+	}
+	pageOpts.AddStartIdCond(cond)
 
 	var results []*event_lib.ListEventsRow
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_eventMeta,
-		Conditions: scal.M{
-			"ownerEmail": email,
-		},
-		SortBy: "_id",
+		Conditions: cond,
+		SortBy:     pageOpts.SortBy(),
+		Limit:      pageOpts.Limit,
 		Fields: []string{
 			"_id",
 			"eventType",
@@ -877,10 +890,15 @@ func GetMyEventList(req Request) (*Response, error) {
 	if results == nil {
 		results = make([]*event_lib.ListEventsRow, 0)
 	}
+	output := scal.M{
+		"events": results,
+	}
+	if len(results) > 0 {
+		output["lastId"] = results[len(results)-1].EventId
+	}
+
 	return &Response{
-		Data: scal.M{
-			"events": results,
-		},
+		Data: output,
 	}, nil
 }
 
@@ -895,10 +913,21 @@ func GetMyEventsFull(req Request) (*Response, error) {
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
+	pageOpts, err := GetPageOptions(req)
+	if err != nil {
+		return nil, err
+	}
+	cond := scal.M{
+		"ownerEmail": email,
+	}
+	pageOpts.AddStartIdCond(cond)
+	sortMap := pageOpts.SortByMap()
+
+	// FIXME: do we really need to sort twice?
 	pipeline := []scal.M{
-		{"$match": scal.M{
-			"ownerEmail": email,
-		}},
+		{"$match": cond},
+		sortMap,
+		{"$limit": pageOpts.Limit},
 		{"$lookup": scal.M{
 			"from":         storage.C_revision,
 			"localField":   "_id",
@@ -930,87 +959,20 @@ func GetMyEventsFull(req Request) (*Response, error) {
 			"as":           "data",
 		}},
 		{"$unwind": "$data"},
-		{"$sort": scal.M{"_id": 1}},
+		sortMap,
 	}
 
 	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
+	output := scal.M{
+		"eventsFull": results,
+	}
+	if len(results) > 0 {
+		output["lastId"] = results[len(results)-1]["eventId"]
+	}
 	return &Response{
-		Data: scal.M{
-			"eventsFull": results,
-		},
+		Data: output,
 	}, nil
-}
-
-func GetMyLastCreatedEvents(req Request) (*Response, error) {
-	userModel, err := CheckAuth(req)
-	if err != nil {
-		return nil, err
-	}
-	email := userModel.Email
-	// -----------------------------------------------
-	maxCount, err := req.GetIntDefault("maxCount", 100)
-	if err != nil {
-		return nil, err
-	}
-	// -----------------------------------------------
-	db, err := storage.GetDB()
-	if err != nil {
-		return nil, NewError(Unavailable, "", err)
-	}
-
-	pipeline := []scal.M{
-		{"$match": scal.M{
-			"ownerEmail": email,
-		}},
-		{"$sort": scal.M{"creationTime": -1}},
-		{"$limit": maxCount},
-		{"$lookup": scal.M{
-			"from":         storage.C_revision,
-			"localField":   "_id",
-			"foreignField": "eventId",
-			"as":           "revision",
-		}},
-		{"$unwind": "$revision"},
-		{"$group": scal.M{
-			"_id":       "$_id",
-			"eventType": scal.M{"$first": "$eventType"},
-			"groupId":   scal.M{"$first": "$groupId"},
-			"meta": scal.M{
-				"$first": scal.M{
-					"ownerEmail":     "$ownerEmail",
-					"isPublic":       "$isPublic",
-					"creationTime":   "$creationTime",
-					"accessEmails":   "$accessEmails",
-					"publicJoinOpen": "$publicJoinOpen",
-					"maxAttendees":   "$maxAttendees",
-				},
-			},
-			"lastModifiedTime": scal.M{"$first": "$revision.time"},
-			"lastSha1":         scal.M{"$first": "$revision.sha1"},
-		}},
-		{"$lookup": scal.M{
-			"from":         storage.C_eventData,
-			"localField":   "lastSha1",
-			"foreignField": "sha1",
-			"as":           "data",
-		}},
-		{"$unwind": "$data"},
-		{"$sort": scal.M{"meta.creationTime": -1}},
-	}
-
-	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
-	if err != nil {
-		return nil, NewError(Internal, "", err)
-	}
-
-	return &Response{
-		Data: scal.M{
-			"maxCount":          maxCount,
-			"lastCreatedEvents": results,
-		},
-	}, nil
-
 }

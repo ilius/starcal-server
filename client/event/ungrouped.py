@@ -14,20 +14,43 @@ if not token:
 	print("Please set and export STARCAL_TOKEN")
 	sys.exit(1)
 
+limit = 0
+if len(sys.argv) == 2:
+	limit = int(sys.argv[1])
 
-r = requests.get(
-	"http://%s:9001/event/ungrouped" % host,
-	headers={"Authorization": "bearer " + token},
-)
-print(r)
-try:
-	data = r.json()
-except:
-	print("non-json data")
-	print(r.text)
-else:
+count = 0
+
+exStartId = ""
+
+while True:
+	url = "http://%s:9001/event/ungrouped/?limit=%d&exStartId=%s" % (host, limit, exStartId)
+	print(url)
+	r = requests.get(
+		url,
+		headers={"Authorization": "bearer " + token},
+	)
+	print(r)
+	try:
+		data = r.json()
+	except:
+		print("non-json data")
+		print(r.text)
+		break
 	error = data.get("error", "")
 	if error:
 		print(error)
-	else:
-		pprint(data, width=80)
+		break
+	
+	pageCount = len(data.get("events", []))
+	count += pageCount
+
+	# pprint(data, width=80)
+	print(pageCount)
+
+	lastId = data.get("lastId", "")
+	if not lastId:
+		break
+	exStartId = lastId
+	print("--------------------")
+
+print("Total count:", count)
