@@ -134,6 +134,9 @@ func AddGroup(req Request) (*Response, error) {
 	groupModel.ReadAccessEmails = readAccessEmails
 
 	err = db.Insert(groupModel)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Response{
 		Data: map[string]string{

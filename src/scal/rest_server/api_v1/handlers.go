@@ -837,6 +837,9 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 		Limit:      pageOpts.Limit,
 		Fields:     []string{"_id", "eventType"},
 	})
+	if err != nil {
+		return nil, err
+	}
 	if results == nil {
 		results = make([]*event_lib.ListEventsRow, 0)
 	}
