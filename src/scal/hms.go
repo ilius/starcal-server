@@ -23,26 +23,26 @@ type HMSRange struct {
 	End   HMS
 }
 
-func (self HMS) String() string {
-	return fmt.Sprintf("%.2d:%.2d:%.2d", self.Hour, self.Minute, self.Second)
+func (hms HMS) String() string {
+	return fmt.Sprintf("%.2d:%.2d:%.2d", hms.Hour, hms.Minute, hms.Second)
 }
-func (self HMS) GetTotalSeconds() int {
-	return self.Hour*3600 + self.Minute*60 + self.Second
+func (hms HMS) GetTotalSeconds() int {
+	return hms.Hour*3600 + hms.Minute*60 + hms.Second
 }
-func (self HMS) GetFloatHour() float64 {
-	return float64(self.Hour) + float64(self.Minute)/60.0 + float64(self.Second)/3600.0
+func (hms HMS) GetFloatHour() float64 {
+	return float64(hms.Hour) + float64(hms.Minute)/60.0 + float64(hms.Second)/3600.0
 }
 
-func (self HMS) IsValid() bool {
-	return self.Hour >= 0 && self.Hour < 24 &&
-		self.Minute >= 0 && self.Minute < 60 &&
-		self.Second >= 0 && self.Second < 60
+func (hms HMS) IsValid() bool {
+	return hms.Hour >= 0 && hms.Hour < 24 &&
+		hms.Minute >= 0 && hms.Minute < 60 &&
+		hms.Second >= 0 && hms.Second < 60
 }
-func (self DHMS) IsValid() bool {
-	return self.HMS.IsValid() && self.Days >= 0
+func (hms DHMS) IsValid() bool {
+	return hms.HMS.IsValid() && hms.Days >= 0
 }
-func (self HMSRange) IsValid() bool {
-	return self.Start.IsValid() && self.End.IsValid()
+func (hms HMSRange) IsValid() bool {
+	return hms.Start.IsValid() && hms.End.IsValid()
 }
 
 func ParseHMS(str string) (HMS, error) {

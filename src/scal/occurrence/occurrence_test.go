@@ -16,23 +16,23 @@ import (
 //const time_format = "2006-01-02 15:04:05";
 const time_format = "2006-01-02 15:04"
 
-func (self JdOccurSet) String() string {
-	strList := make([]string, 0, self.Len())
-	for jdI := range self.JdSet.Iter() {
+func (occur JdOccurSet) String() string {
+	strList := make([]string, 0, occur.Len())
+	for jdI := range occur.JdSet.Iter() {
 		jd := jdI.(int)
 		date := gregorian.JdTo(jd)
 		strList = append(strList, date.String())
 	}
 	return fmt.Sprintf(
 		"JdOccurSet{EventId:%v, Dates: %v}",
-		self.Event.Id(),
+		occur.Event.Id(),
 		strings.Join(strList, ", "),
 	)
 }
 
-func (self IntervalOccurSet) String() string {
-	strList := make([]string, 0, self.Len())
-	for _, interval := range self.List {
+func (occur IntervalOccurSet) String() string {
+	strList := make([]string, 0, occur.Len())
+	for _, interval := range occur.List {
 		strList = append(strList, fmt.Sprintf(
 			"\n    %v - %v",
 			time.Unix(interval.Start, 0).Format(time_format),
@@ -41,7 +41,7 @@ func (self IntervalOccurSet) String() string {
 	}
 	return fmt.Sprintf(
 		"IntervalOccurSet{EventId:%v, Dates: %v}",
-		self.Event.Id(),
+		occur.Event.Id(),
 		strings.Join(strList, ","),
 	)
 }

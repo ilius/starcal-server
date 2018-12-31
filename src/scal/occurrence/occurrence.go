@@ -52,13 +52,13 @@ type JdOccurSet struct {
 	JdSet Set
 }
 
-func (self JdOccurSet) GetName() string { return "jd" }
-func (self JdOccurSet) GetEvent() Event { return self.Event }
-func (self JdOccurSet) Len() int {
-	return self.JdSet.Cardinality()
+func (occur JdOccurSet) GetName() string { return "jd" }
+func (occur JdOccurSet) GetEvent() Event { return occur.Event }
+func (occur JdOccurSet) Len() int {
+	return occur.JdSet.Cardinality()
 }
-func (self JdOccurSet) GetStartJd() int {
-	jds := self.JdSet.ToSlice()
+func (occur JdOccurSet) GetStartJd() int {
+	jds := occur.JdSet.ToSlice()
 	start := jds[0].(int)
 	for _, jdI := range jds {
 		jd := jdI.(int)
@@ -68,8 +68,8 @@ func (self JdOccurSet) GetStartJd() int {
 	}
 	return start
 }
-func (self JdOccurSet) GetEndJd() int {
-	jds := self.JdSet.ToSlice()
+func (occur JdOccurSet) GetEndJd() int {
+	jds := occur.JdSet.ToSlice()
 	end := jds[0].(int)
 	for _, jdI := range jds {
 		jd := jdI.(int)
@@ -79,11 +79,11 @@ func (self JdOccurSet) GetEndJd() int {
 	}
 	return end
 }
-func (self JdOccurSet) Intersection(other OccurSet) (OccurSet, error) {
+func (occur JdOccurSet) Intersection(other OccurSet) (OccurSet, error) {
 	if other.GetName() == "jd" {
 		return JdOccurSet{
-			self.GetEvent(),
-			self.JdSet.Intersect(other.(JdOccurSet).JdSet),
+			occur.GetEvent(),
+			occur.JdSet.Intersect(other.(JdOccurSet).JdSet),
 		}, nil
 	} else {
 		/*
@@ -94,21 +94,21 @@ func (self JdOccurSet) Intersection(other OccurSet) (OccurSet, error) {
 		       ))
 		   }
 		*/
-		list, err := self.GetEpochIntervalList().Intersection(other.GetEpochIntervalList())
-		return IntervalOccurSet{self.GetEvent(), list}, err
+		list, err := occur.GetEpochIntervalList().Intersection(other.GetEpochIntervalList())
+		return IntervalOccurSet{occur.GetEvent(), list}, err
 	}
 }
-func (self JdOccurSet) GetDaysJdList() []int {
-	return IntListBySet(self.JdSet)
+func (occur JdOccurSet) GetDaysJdList() []int {
+	return IntListBySet(occur.JdSet)
 }
-func (self JdOccurSet) GetEpochIntervalList() IntervalList {
-	loc := self.GetEvent().Location()
-	//self.JdSet.RLock()
-	list := make(IntervalList, 0, self.Len())
-	for jdI := range self.JdSet.Iter() {
+func (occur JdOccurSet) GetEpochIntervalList() IntervalList {
+	loc := occur.GetEvent().Location()
+	//occur.JdSet.RLock()
+	list := make(IntervalList, 0, occur.Len())
+	for jdI := range occur.JdSet.Iter() {
 		list = append(list, IntervalByJd(jdI.(int), loc))
 	}
-	//self.JdSet.RUnlock()
+	//occur.JdSet.RUnlock()
 	return list
 }
 
@@ -123,41 +123,41 @@ type IntervalOccurSet struct {
 	List  IntervalList
 }
 
-func (self IntervalOccurSet) GetName() string { return "interval" }
-func (self IntervalOccurSet) GetEvent() Event { return self.Event }
-func (self IntervalOccurSet) Len() int {
-	return len(self.List)
+func (occur IntervalOccurSet) GetName() string { return "interval" }
+func (occur IntervalOccurSet) GetEvent() Event { return occur.Event }
+func (occur IntervalOccurSet) Len() int {
+	return len(occur.List)
 }
-func (self IntervalOccurSet) GetStartJd() int {
-	loc := self.GetEvent().Location()
-	startEpoch := self.List[0].Start
-	for _, interval := range self.List {
+func (occur IntervalOccurSet) GetStartJd() int {
+	loc := occur.GetEvent().Location()
+	startEpoch := occur.List[0].Start
+	for _, interval := range occur.List {
 		if interval.Start < startEpoch {
 			startEpoch = interval.Start
 		}
 	}
 	return GetJdByEpoch(startEpoch, loc)
 }
-func (self IntervalOccurSet) GetEndJd() int {
-	loc := self.GetEvent().Location()
-	endEpoch := self.List[0].End
-	for _, interval := range self.List {
+func (occur IntervalOccurSet) GetEndJd() int {
+	loc := occur.GetEvent().Location()
+	endEpoch := occur.List[0].End
+	for _, interval := range occur.List {
 		if interval.End > endEpoch {
 			endEpoch = interval.End
 		}
 	}
 	return GetJdByEpoch(endEpoch, loc)
 }
-func (self IntervalOccurSet) Intersection(other OccurSet) (OccurSet, error) {
-	list, err := self.List.Intersection(other.GetEpochIntervalList())
-	return IntervalOccurSet{self.GetEvent(), list}, err
+func (occur IntervalOccurSet) Intersection(other OccurSet) (OccurSet, error) {
+	list, err := occur.List.Intersection(other.GetEpochIntervalList())
+	return IntervalOccurSet{occur.GetEvent(), list}, err
 }
-func (self IntervalOccurSet) GetDaysJdList() []int {
-	loc := self.GetEvent().Location()
+func (occur IntervalOccurSet) GetDaysJdList() []int {
+	loc := occur.GetEvent().Location()
 	/*
-	   inCount = len(self.List)
+	   inCount = len(occur.List)
 	   jdCountMax := 3 + int(
-	       (self.List[inCount-1].End - self.List[0].Start) / int64(24*3600)
+	       (occur.List[inCount-1].End - occur.List[0].Start) / int64(24*3600)
 	   )
 	   if jdCountMax > inCount {
 	       jdCountMax = inCount
@@ -166,7 +166,7 @@ func (self IntervalOccurSet) GetDaysJdList() []int {
 	*/
 	jdSet := NewSet()
 	var tmpStartJd, tmpEndJd int
-	for _, interval := range self.List {
+	for _, interval := range occur.List {
 		tmpStartJd = GetJdByEpoch(interval.Start, loc)
 		if interval.ClosedEnd {
 			tmpEndJd = GetJdByEpoch(interval.End, loc)
@@ -179,6 +179,6 @@ func (self IntervalOccurSet) GetDaysJdList() []int {
 	}
 	return IntListBySet(jdSet)
 }
-func (self IntervalOccurSet) GetEpochIntervalList() IntervalList {
-	return self.List
+func (occur IntervalOccurSet) GetEpochIntervalList() IntervalList {
+	return occur.List
 }

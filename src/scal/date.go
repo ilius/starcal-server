@@ -13,14 +13,14 @@ type Date struct {
 	Day   int
 }
 
-func (self Date) String() string {
-	return fmt.Sprintf("%.4d/%.2d/%.2d", self.Year, self.Month, self.Day)
+func (date Date) String() string {
+	return fmt.Sprintf("%.4d/%.2d/%.2d", date.Year, date.Month, date.Day)
 }
-func (self Date) Repr() string {
-	return fmt.Sprintf("scal.Date{%d, %d, %d}", self.Year, self.Month, self.Day)
+func (date Date) Repr() string {
+	return fmt.Sprintf("scal.Date{%d, %d, %d}", date.Year, date.Month, date.Day)
 }
-func (self Date) IsValid() bool {
-	return self.Month > 0 && self.Month < 13 && self.Day > 0 && self.Day < 40
+func (date Date) IsValid() bool {
+	return date.Month > 0 && date.Month < 13 && date.Day > 0 && date.Day < 40
 }
 
 func ParseDate(str string) (Date, error) {
@@ -65,14 +65,14 @@ type DateHMS struct {
 	HMS
 }
 
-func (self DateHMS) String() string {
-	return self.Date.String() + " " + self.HMS.String()
+func (dt DateHMS) String() string {
+	return dt.Date.String() + " " + dt.HMS.String()
 }
-func (self DateHMS) Repr() string {
-	return fmt.Sprintf("scal.DateHMS{{%s}, {%s}}", self.Date, self.HMS)
+func (dt DateHMS) Repr() string {
+	return fmt.Sprintf("scal.DateHMS{{%s}, {%s}}", dt.Date, dt.HMS)
 }
-func (self DateHMS) IsValid() bool {
-	return self.Date.IsValid() && self.HMS.IsValid()
+func (dt DateHMS) IsValid() bool {
+	return dt.Date.IsValid() && dt.HMS.IsValid()
 }
 func ParseDateHMS(str string) (DateHMS, error) {
 	parts := strings.Split(str, " ")

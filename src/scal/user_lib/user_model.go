@@ -23,12 +23,12 @@ type UserModel struct {
 	TokenIssuedAt *time.Time `bson:"-" json:"-"`
 }
 
-func (self UserModel) UniqueM() scal.M {
+func (m UserModel) UniqueM() scal.M {
 	return scal.M{
-		"email": self.Email,
+		"email": m.Email,
 	}
 }
-func (self UserModel) Collection() string {
+func (UserModel) Collection() string {
 	return storage.C_user
 }
 
