@@ -1,3 +1,5 @@
+// Package cal_types_init loads / registers calendar types
+
 package cal_types_init
 
 import _ "scal/cal_types/gregorian"

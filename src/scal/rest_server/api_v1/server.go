@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	// to load / register calendar types
 	_ "scal/init/cal_types_init"
 )
 
