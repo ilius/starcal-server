@@ -18,7 +18,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	. "github.com/ilius/ripo"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 )
 
 func init() {

@@ -2,9 +2,9 @@
 	path = src/github.com/dgrijalva/jwt-go
 	url = git@github.com:dgrijalva/jwt-go
 
-[submodule "src/gopkg.in/mgo.v2"]
-	path = src/gopkg.in/mgo.v2
-	url = https://gopkg.in/mgo.v2
+[submodule "src/github.com/globalsign/mgo"]
+	path = src/github.com/globalsign/mgo
+	url = https://github.com/ilius/mgo
 
 [submodule "src/github.com/ilius/ripo"]
 	path = src/github.com/ilius/ripo

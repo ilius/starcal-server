@@ -12,7 +12,7 @@ import (
 	"github.com/ilius/ripo"
 	//"net/url"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 
 	"scal"
 	"scal/settings"

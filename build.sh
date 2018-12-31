@@ -5,7 +5,7 @@ if [ -z $STARCAL_HOST ] ; then
 	exit 1
 fi
 
-GOPATH=$PWD go install gopkg.in/mgo.v2
+#GOPATH=$PWD go install github.com/globalsign/mgo
 #GOPATH=$PWD go install golang.org/x/crypto/bcrypt
 #GOPATH=$PWD go install golang.org/x/net/context
 

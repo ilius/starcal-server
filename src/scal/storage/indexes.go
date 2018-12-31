@@ -2,13 +2,10 @@ package storage
 
 import (
 	"errors"
-	"fmt"
 	"scal/settings"
-	"strings"
 	"time"
 
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	mgo "github.com/globalsign/mgo"
 )
 
 func EnsureIndexes() {
@@ -308,7 +305,7 @@ func EnsureIndexes() {
 		Sparse:     false,
 	})
 
-	err = db.C(C_resetPwToken).EnsureIndex(mgo.Index{
+	err = EnsureIndexWithTTL(db.Database, C_resetPwToken, mgo.Index{
 		Key:         []string{"-issueTime"},
 		Unique:      false,
 		DropDups:    false,
@@ -317,29 +314,6 @@ func EnsureIndexes() {
 		ExpireAfter: time.Second * settings.RESET_PASSWORD_EXP_SECONDS,
 	})
 	if err != nil {
-		// if settings.RESET_PASSWORD_EXP_SECONDS is changed, we need to drop
-		// and re-create the index, unless we use `collMod` added in 2.3.2
-		// https://jira.mongodb.org/browse/SERVER-6700
-		if strings.Contains(
-			err.Error(),
-			"already exists with different options",
-		) {
-			fmt.Printf(
-				"Updating expireAfterSeconds on collection '%s'\n",
-				C_resetPwToken,
-			)
-			err = db.Run(bson.D{
-				{"collMod", C_resetPwToken},
-				{"index", bson.M{
-					"keyPattern":         bson.M{"issueTime": -1},
-					"expireAfterSeconds": settings.RESET_PASSWORD_EXP_SECONDS,
-				}},
-			}, nil)
-			if err != nil {
-				panic(err)
-			}
-		} else {
-			panic(err)
-		}
+		panic(err)
 	}
 }

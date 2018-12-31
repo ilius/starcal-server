@@ -11,8 +11,8 @@ import (
 	"encoding/json"
 	"reflect"
 
+	"github.com/globalsign/mgo/bson"
 	. "github.com/ilius/ripo"
-	"gopkg.in/mgo.v2/bson"
 
 	"scal/event_lib"
 	"scal/settings"

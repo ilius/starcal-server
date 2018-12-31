@@ -12,7 +12,7 @@ import (
 	"reflect"
 
 	. "github.com/ilius/ripo"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 
 	"scal/event_lib"
 	"scal/settings"

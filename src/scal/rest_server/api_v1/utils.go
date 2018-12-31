@@ -9,7 +9,7 @@ import (
 	"scal/settings"
 
 	. "github.com/ilius/ripo"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 )
 
 func ObjectIdFromRequest(req Request, name string, sources ...FromX) (*bson.ObjectId, error) {

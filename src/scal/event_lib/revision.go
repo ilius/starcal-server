@@ -1,7 +1,7 @@
 package event_lib
 
 import "time"
-import "gopkg.in/mgo.v2/bson"
+import "github.com/globalsign/mgo/bson"
 
 import "scal"
 import "scal/storage"

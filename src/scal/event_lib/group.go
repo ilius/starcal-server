@@ -3,7 +3,7 @@ package event_lib
 import (
 	"github.com/ilius/ripo"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 
 	"scal"
 	"scal/storage"
