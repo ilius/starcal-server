@@ -50,7 +50,7 @@ func init() {
 			},
 			// functions of following operations are defined in handlers.go
 			// because their definition does not depend on event type
-			// but their URL still contains eventType for sake of compatibilty
+			// but their URL still contains eventType for sake of compatibility
 			// so we will have to register their routes for each event type
 			// we don't use eventType in these functions
 			"DeleteEvent_dailyNote": {

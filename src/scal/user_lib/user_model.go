@@ -39,7 +39,7 @@ func UserModelByEmail(email string, db storage.Database) *UserModel {
 	err := db.Get(&user)
 	if err != nil {
 		if !db.IsNotFound(err) {
-			log.Print("unkown error in fetching user model:", err)
+			log.Print("unknown error in fetching user model:", err)
 		}
 		return nil
 	}

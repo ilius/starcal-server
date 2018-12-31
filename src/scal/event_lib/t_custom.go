@@ -26,16 +26,16 @@ dayTimeRange    "%H:%M:%S %H:%M:%S"
 cycleLen        "%{days} %H:%M:%S"
 cycleDays       int
 cycleWeeks      int
-weekDay         space-seperated integers (0 to 6)
-year            space-seperated ranges of integers
+weekDay         space-separated integers (0 to 6)
+year            space-separated ranges of integers
                 "1380-1383 1393 1396" = "1380 1381 1382 1383 1390 1393 1396"
-ex_year         space-seperated ranges of integers, like `year`
-month           space-seperated ranges of integers (1 to 12)
+ex_year         space-separated ranges of integers, like `year`
+month           space-separated ranges of integers (1 to 12)
                 example: "1-6 10 12"
-ex_month        space-seperated ranges of integers (1 to 12), like `month`
-day             space-seperated ranges of integers (1 to 39)
+ex_month        space-separated ranges of integers (1 to 12), like `month`
+day             space-separated ranges of integers (1 to 39)
                 example: "1-10 20 30-33"
-ex_day          space-seperated ranges of integers (1 to 39), like `day`
+ex_day          space-separated ranges of integers (1 to 39), like `day`
 weekNumMode     "any | "odd" | "even"
 weekMonth       json: `{"weekIndex": 4, "weekDay": 6, "month": 12}`
 
