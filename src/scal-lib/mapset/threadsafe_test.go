@@ -136,7 +136,7 @@ func Test_ContainsConcurrent(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	for _ = range ints {
+	for range ints {
 		go func() {
 			s.Contains(interfaces...)
 		}()
@@ -157,7 +157,7 @@ func Test_DifferenceConcurrent(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	for _ = range ints {
+	for range ints {
 		go func() {
 			s.Difference(ss)
 		}()
@@ -178,7 +178,7 @@ func Test_EqualConcurrent(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	for _ = range ints {
+	for range ints {
 		go func() {
 			s.Equal(ss)
 		}()
@@ -199,7 +199,7 @@ func Test_IntersectConcurrent(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	for _ = range ints {
+	for range ints {
 		go func() {
 			s.Intersect(ss)
 		}()
@@ -220,7 +220,7 @@ func Test_IsSubsetConcurrent(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	for _ = range ints {
+	for range ints {
 		go func() {
 			s.IsSubset(ss)
 		}()
@@ -241,7 +241,7 @@ func Test_IsSupersetConcurrent(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	for _ = range ints {
+	for range ints {
 		go func() {
 			s.IsSuperset(ss)
 		}()
@@ -259,7 +259,7 @@ func Test_IterConcurrent(t *testing.T) {
 	}
 
 	cs := make([]<-chan interface{}, 0)
-	for _ = range ints {
+	for range ints {
 		cs = append(cs, s.Iter())
 	}
 
@@ -278,7 +278,7 @@ func Test_IterConcurrent(t *testing.T) {
 		close(c)
 	}()
 
-	for _ = range c {
+	for range c {
 	}
 }
 
@@ -317,7 +317,7 @@ func Test_StringConcurrent(t *testing.T) {
 
 	var wg sync.WaitGroup
 	wg.Add(len(ints))
-	for _ = range ints {
+	for range ints {
 		go func() {
 			s.String()
 			wg.Done()
@@ -339,7 +339,7 @@ func Test_SymmetricDifferenceConcurrent(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	for _ = range ints {
+	for range ints {
 		go func() {
 			s.SymmetricDifference(ss)
 		}()

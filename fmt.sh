@@ -1,3 +1,3 @@
 #!/bin/bash
 # GOPATH=$PWD go fmt scal/...
-find ./src/scal -name '*.go' -exec gofmt -s -w '{}' \;
+find ./src/scal* -name '*.go' -exec gofmt -s -w '{}' \;
