@@ -20,13 +20,14 @@ var resLock = NewResourceLocker()
 func NewResourceLocker() *ResourceLocker {
 	rl := &ResourceLocker{}
 	for i := 0; i < restype_COUNT; i++ {
+		rl.mutexes[i] = &sync.RWMutex{}
 		rl.lockedMaps[i] = map[string]bool{}
 	}
 	return rl
 }
 
 type ResourceLocker struct {
-	mutexes    [restype_COUNT]sync.RWMutex
+	mutexes    [restype_COUNT]*sync.RWMutex
 	lockedMaps [restype_COUNT]map[string]bool
 }
 
