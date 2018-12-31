@@ -92,7 +92,7 @@ func ToJd(date scal.Date) int {
 	// Then add on the required days
 	// The first month has 30 or 31 days depending on if it is a Leap Year (determined above)
 	// The second to sixth months have 31 days each
-	// The seventh to twelth months have 30 days each
+	// The seventh to twelfth months have 30 days each
 	// Note: could be expressed more efficiently, but I think this is clearer
 	var jd int
 	if date.Month == 1 {
