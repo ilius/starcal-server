@@ -85,8 +85,8 @@ func GetGroupList(req Request) (*Response, error) {
 		Collection: storage.C_group,
 		Conditions: scal.M{
 			"$or": []scal.M{
-				scal.M{"ownerEmail": email},
-				scal.M{"readAccessEmails": email},
+				{"ownerEmail": email},
+				{"readAccessEmails": email},
 			},
 		},
 		SortBy: "_id",

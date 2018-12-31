@@ -54,9 +54,9 @@ func (self *EventGroupModel) GetAccessCond(email string) scal.M {
 	} else {
 		return scal.M{
 			"$or": []scal.M{
-				scal.M{"ownerEmail": email},
-				scal.M{"isPublic": true},
-				scal.M{"accessEmails": email},
+				{"ownerEmail": email},
+				{"isPublic": true},
+				{"accessEmails": email},
 			},
 		}
 	}
@@ -78,9 +78,9 @@ func (self *EventGroupModel) GetLookupMetaAccessPipeline(
 			{"$unwind": "$meta"},
 			{"$match": scal.M{
 				"$or": []scal.M{
-					scal.M{"meta.ownerEmail": email},
-					scal.M{"meta.isPublic": true},
-					scal.M{"meta.accessEmails": email},
+					{"meta.ownerEmail": email},
+					{"meta.isPublic": true},
+					{"meta.accessEmails": email},
 				},
 			}},
 		}
