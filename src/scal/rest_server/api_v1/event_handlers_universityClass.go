@@ -760,7 +760,7 @@ func PatchUniversityClass(req Request) (*Response, error) {
 	}
 	if len(patchMap) > 0 {
 		extraNames := []string{}
-		for param, _ := range patchMap {
+		for param := range patchMap {
 			extraNames = append(extraNames, param)
 		}
 		return nil, NewError(
