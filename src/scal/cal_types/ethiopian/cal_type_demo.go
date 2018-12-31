@@ -4,8 +4,8 @@ import "fmt"
 
 import "scal"
 
-func PrintIsLeap(start_year int, end_year int) {
-	for year := start_year; year < end_year; year++ {
+func PrintIsLeap(startYear int, endYear int) {
+	for year := startYear; year < endYear; year++ {
 		fmt.Printf(
 			"        %v: %v,\n",
 			year,
@@ -14,10 +14,10 @@ func PrintIsLeap(start_year int, end_year int) {
 	}
 }
 
-func PrintToJd(start_year int, end_year int) {
+func PrintToJd(startYear int, endYear int) {
 	var date scal.Date
 	var jd int
-	for year := start_year; year < end_year; year++ {
+	for year := startYear; year < endYear; year++ {
 		for month := 1; month <= 12; month++ {
 			date = scal.Date{year, month, 1}
 			jd = ToJd(date)

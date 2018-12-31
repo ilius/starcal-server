@@ -101,9 +101,9 @@ func TestToJd(t *testing.T) {
 }
 
 func TestConvert(t *testing.T) {
-	start_year := 1350
-	end_year := 1450
-	for year := start_year; year < end_year; year++ {
+	startYear := 1350
+	endYear := 1450
+	for year := startYear; year < endYear; year++ {
 		for month := 1; month <= 12; month++ {
 			var monthLen = GetMonthLen(year, month)
 			for day := 1; day <= monthLen; day++ {
