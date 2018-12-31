@@ -3,8 +3,8 @@ package api_v1
 import (
 	"time"
 
-	. "github.com/ilius/ripo"
 	"github.com/globalsign/mgo/bson"
+	. "github.com/ilius/ripo"
 
 	"scal"
 	"scal/event_lib"

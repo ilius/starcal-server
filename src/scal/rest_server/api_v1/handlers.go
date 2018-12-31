@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"time"
 
-	. "github.com/ilius/ripo"
 	"github.com/globalsign/mgo/bson"
+	. "github.com/ilius/ripo"
 
 	"scal"
 	"scal/event_lib"

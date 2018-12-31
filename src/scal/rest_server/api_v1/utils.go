@@ -8,8 +8,8 @@ import (
 
 	"scal/settings"
 
-	. "github.com/ilius/ripo"
 	"github.com/globalsign/mgo/bson"
+	. "github.com/ilius/ripo"
 )
 
 func ObjectIdFromRequest(req Request, name string, sources ...FromX) (*bson.ObjectId, error) {

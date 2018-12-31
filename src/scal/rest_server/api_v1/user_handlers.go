@@ -6,8 +6,8 @@ import (
 	"scal/user_lib"
 	"time"
 
-	. "github.com/ilius/ripo"
 	"github.com/globalsign/mgo/bson"
+	. "github.com/ilius/ripo"
 
 	"scal/settings"
 	"scal/storage"
