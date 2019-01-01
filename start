@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
 
-./build.sh "$@"
+time ./build.sh "$@"
+
+echo
+echo "Running ./server-$STARCAL_HOST"
 ./server-$STARCAL_HOST
