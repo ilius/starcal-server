@@ -25,7 +25,7 @@ type ErrorModel struct {
 }
 
 func (m *ErrorModel) Collection() string {
-	return "errors_" + m.Code
+	return storage.C_errorsPrefix + m.Code
 }
 
 func newErrorDispatcher(db storage.Database) func(request ripo.ExtendedRequest, rpcErr ripo.RPCError) {

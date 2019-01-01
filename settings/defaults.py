@@ -106,3 +106,27 @@ API_PAGE_LIMIT_MAX_RATIO = 5.0
 # [x]	[x]		[x]		handlers.go			GetMyEventsFull
 # [ ]	[ ]		[ ]		GetGroupList
 # [ ]	[ ]		[ ]		GetUserLoginHistory
+
+day = 24 * 3600
+
+# 0 means never expire
+ERRORS_EXPIRE_AFTER_SECONDS = {
+	"Internal": 			365 * day,
+	"Unknown": 				365 * day,
+	"Unavailable": 			180 * day,
+	"ResourceLocked": 		30 * day, # extra code
+	"PermissionDenied": 	180 * day,
+	"Unauthenticated": 		30 * day,
+	"DataLoss": 			180 * day,
+	"DeadlineExceeded":		10 * day,
+	"ResourceExhausted":	10 * day,
+	"Aborted": 				10 * day,
+	"FailedPrecondition": 	10 * day,
+	"OutOfRange": 			10 * day,
+	"Canceled": 			10 * day,
+	"AlreadyExists": 		1 * day,
+	"Unimplemented": 		1 * day,
+	"NotFound": 			1 * day,
+	"InvalidArgument": 		1 * day,
+	"MissingArgument": 		1 * day, # extra code
+}

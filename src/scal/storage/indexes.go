@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"log"
+	"scal"
 	"scal/settings"
 	"time"
 
@@ -259,4 +261,20 @@ func EnsureIndexes() {
 		Sparse:      false,
 		ExpireAfter: time.Second * settings.RESET_PASSWORD_EXP_SECONDS,
 	})
+
+	for codeStr, seconds := range settings.ERRORS_EXPIRE_AFTER_SECONDS {
+		_, ok := scal.ErrorCodeByName[codeStr]
+		if !ok {
+			log.Printf("invalid error code %#v in settings.ERRORS_EXPIRE_AFTER_SECONDS", codeStr)
+			continue
+		}
+		db.EnsureIndexWithTTL(C_errorsPrefix+codeStr, mgo.Index{
+			Key:         []string{"-time"},
+			Unique:      false,
+			DropDups:    false,
+			Background:  false,
+			Sparse:      false,
+			ExpireAfter: time.Second * time.Duration(seconds),
+		})
+	}
 }
