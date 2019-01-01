@@ -95,6 +95,12 @@ def goSecretCBC(valueEncBase64: str) -> GoExpr:
 		"secretCBC(%s)" % json.dumps(valueEncBase64),
 	)
 
+# variables that are not converted to Go code
+# only change the behavior of build
+hostMetaParams = {
+	"keepSettingsGo": False,
+}
+
 hostGlobalsCommon = {
 	"GoExpr": GoExpr,
 	"goGetenv": goGetenv,
@@ -113,6 +119,9 @@ if isfile(hostModulePath):
 	# If only globals is given, locals defaults to it
 	for param, value in hostGlobals.items():
 		if param in hostGlobalsCommon:
+			continue
+		if param in hostMetaParams:
+			hostMetaParams[param] = value
 			continue
 		if param.startswith("_"):
 			continue
@@ -313,7 +322,7 @@ status = subprocess.call([
 	"server.go",
 ])
 
-if hostName != "localhost" and "--no-remove" not in sys.argv:
+if not hostMetaParams["keepSettingsGo"] and "--no-remove" not in sys.argv:
 	os.remove(goSettingsFile)
 
 sys.exit(status)
