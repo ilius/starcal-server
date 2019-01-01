@@ -34,6 +34,33 @@ if not hostName:
 		"For example: export STARCAL_HOST=localhost",
 	)
 
+goSettingsDir = join(srcDir, "scal", "settings")
+goSettingsFile = join(goSettingsDir, "settings.go")
+
+def goBuildAndExit(keepSettingsGo: bool):
+	os.putenv("GOPATH", rootDir)
+	status = subprocess.call([
+		"go",
+		"build",
+		"-o", "server-%s" % hostName,
+		"server.go",
+	])
+
+	if keepSettingsGo:
+		print("Keeping settings.go file")
+	else:
+		os.remove(goSettingsFile)
+
+	sys.exit(status)
+
+
+if isfile(goSettingsFile):
+	defaultsFile = join(myDir, "defaults.py")
+	hostFile = join(myDir, "hosts", hostName + ".py")
+	if os.stat(goSettingsFile).st_mtime - max(os.stat(defaultsFile).st_mtime, os.stat(hostFile).st_mtime) >= 0:
+		print("Re-using existing settings.go")
+		goBuildAndExit(True)
+
 defaultsDict = {
 	key: value for key, value in
 	defaults.__dict__.items()
@@ -284,8 +311,6 @@ printFunc = "func PrintSettings() {\n%s\n}" % "\n".join(printLines)
 
 #print(constBlock)
 
-goSettingsDir = join(srcDir, "scal", "settings")
-goSettingsFile = join(goSettingsDir, "settings.go")
 
 if not isdir(goSettingsDir):
 	os.mkdir(goSettingsDir)
@@ -314,15 +339,5 @@ if hostArch:
 if "--no-build" in sys.argv:
 	sys.exit(0)
 
-os.putenv("GOPATH", rootDir)
-status = subprocess.call([
-	"go",
-	"build",
-	"-o", "server-%s" % hostName,
-	"server.go",
-])
-
-if not hostMetaParams["keepSettingsGo"] and "--no-remove" not in sys.argv:
-	os.remove(goSettingsFile)
-
-sys.exit(status)
+keepSettingsGo = hostMetaParams["keepSettingsGo"] or "--no-remove" in sys.argv
+goBuildAndExit(keepSettingsGo)
