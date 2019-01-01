@@ -4,6 +4,9 @@ import os
 OS = "" # "linux", "freebsd", "darwin", "android", ...
 ARCH = "" # "amd64", "386", "arm64", "arm", ...
 
+# keepSettingsGo=False means the generated settings.go will be deleted after compile
+keepSettingsGo = False
+
 MONGO_HOST = "127.0.0.1:27017"
 MONGO_DB_NAME = "starcal"
 MONGO_USERNAME = ""

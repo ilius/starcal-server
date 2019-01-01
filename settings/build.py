@@ -125,7 +125,7 @@ def goSecretCBC(valueEncBase64: str) -> GoExpr:
 # variables that are not converted to Go code
 # only change the behavior of build
 hostMetaParams = {
-	"keepSettingsGo": False,
+	"keepSettingsGo": defaults.keepSettingsGo,
 }
 
 hostGlobalsCommon = {
