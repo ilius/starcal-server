@@ -425,20 +425,26 @@ func GetEventMetaPipeResults(
 	pipeline *[]scal.M,
 ) ([]scal.M, error) {
 	results := []scal.M{}
-	for res := range db.PipeIter(storage.C_eventMeta, pipeline) {
-		if err := res.Err; err != nil {
+	next, close := db.PipeIter(storage.C_eventMeta, pipeline)
+	defer close()
+	for {
+		row, err := next()
+		if err != nil {
+			if err.Error() == "EOF" {
+				break
+			}
 			return nil, err
 		}
-		if eventId, ok := res.M["_id"]; ok {
-			res.M["eventId"] = eventId
-			delete(res.M, "_id")
+		if eventId, ok := row["_id"]; ok {
+			row["eventId"] = eventId
+			delete(row, "_id")
 		}
-		if dataI, ok := res.M["data"]; ok {
+		if dataI, ok := row["data"]; ok {
 			data := dataI.(scal.M)
 			delete(data, "_id")
-			res.M["data"] = data
+			row["data"] = data
 		}
-		results = append(results, res.M)
+		results = append(results, row)
 	}
 	return results, nil
 }

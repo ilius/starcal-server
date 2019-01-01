@@ -31,6 +31,6 @@ type Database interface {
 	First(scal.M, string, hasCollection) error
 	FindCount(string, scal.M) (int, error)
 	FindAll(result interface{}, input *FindInput) error
-	PipeAll(string, *[]scal.M, interface{}) error
-	PipeIter(string, *[]scal.M) <-chan scal.MErr
+	PipeAll(collection string, pipeline *[]scal.M, result interface{}) error
+	PipeIter(collection string, pipeline *[]scal.M) (next func() (scal.M, error), close func())
 }

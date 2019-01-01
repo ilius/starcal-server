@@ -2,6 +2,7 @@ package storage
 
 import (
 	"errors"
+	"io"
 	"log"
 	"scal"
 	"scal/settings"
@@ -102,25 +103,26 @@ func (db *MongoDatabase) PipeAll(
 func (db *MongoDatabase) PipeIter(
 	colName string,
 	pipeline *[]scal.M,
-) <-chan scal.MErr {
-	ch := make(chan scal.MErr)
+) (func() (scal.M, error), func()) {
 	iter := db.C(colName).Pipe(pipeline).Iter()
-	go func() {
-		defer iter.Close()
-		defer close(ch)
-		resM := scal.M{}
-		for iter.Next(&resM) {
-			ch <- scal.MErr{M: resM}
-			resM = scal.M{}
+	return func() (scal.M, error) {
+			resM := scal.M{}
+			if iter.Next(&resM) {
+				return resM, nil
+			}
+			if err := iter.Err(); err != nil {
+				return nil, err
+			}
+			if iter.Timeout() {
+				return nil, errors.New("timeout")
+			}
+			return nil, io.EOF
+		}, func() {
+			err := iter.Close()
+			if err != nil {
+				log.Println("error in closing mongo iter:", err)
+			}
 		}
-		if err := iter.Err(); err != nil {
-			ch <- scal.MErr{Err: err}
-		}
-		if iter.Timeout() {
-			ch <- scal.MErr{Err: errors.New("timeout")}
-		}
-	}()
-	return ch
 }
 
 // creates / checks index, panics on error
