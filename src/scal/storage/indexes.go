@@ -2,11 +2,11 @@ package storage
 
 import (
 	"log"
-	"scal"
 	"scal/settings"
 	"time"
 
 	mgo "github.com/globalsign/mgo"
+	"github.com/ilius/ripo"
 )
 
 func EnsureIndexes() {
@@ -263,7 +263,7 @@ func EnsureIndexes() {
 	})
 
 	for codeStr, seconds := range settings.ERRORS_EXPIRE_AFTER_SECONDS {
-		_, ok := scal.ErrorCodeByName[codeStr]
+		_, ok := ripo.ErrorCodeByName[codeStr]
 		if !ok {
 			log.Printf("invalid error code %#v in settings.ERRORS_EXPIRE_AFTER_SECONDS", codeStr)
 			continue
