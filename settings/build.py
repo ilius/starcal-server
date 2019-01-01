@@ -125,7 +125,7 @@ def goSecretCBC(valueEncBase64: str) -> GoExpr:
 # variables that are not converted to Go code
 # only change the behavior of build
 hostMetaParams = {
-	"keepSettingsGo": defaults.keepSettingsGo,
+	"KEEP_SETTINGS_GO": defaults.KEEP_SETTINGS_GO,
 }
 
 hostGlobalsCommon = {
@@ -339,5 +339,5 @@ if hostArch:
 if "--no-build" in sys.argv:
 	sys.exit(0)
 
-keepSettingsGo = hostMetaParams["keepSettingsGo"] or "--no-remove" in sys.argv
+keepSettingsGo = hostMetaParams["KEEP_SETTINGS_GO"] or "--no-remove" in sys.argv
 goBuildAndExit(keepSettingsGo)
