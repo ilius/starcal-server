@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"errors"
 	"scal/settings"
 	"time"
 
@@ -9,13 +8,13 @@ import (
 )
 
 func EnsureIndexes() {
-	dbI, err := GetDB()
-	if err != nil {
-		panic(err)
-	}
-	db, ok := dbI.(*MongoDatabase)
-	if !ok {
-		panic(errors.New("could not de-interface Database object"))
+	var db *MongoDatabase
+	{
+		dbI, err := GetDB()
+		if err != nil {
+			panic(err)
+		}
+		db = dbI.(*MongoDatabase)
 	}
 	/*
 		With DropDups set to true, documents with the
@@ -31,238 +30,184 @@ func EnsureIndexes() {
 		will be included in the index. When using a sparse index for sorting,
 		only indexed documents will be returned.
 	*/
-	err = db.C(C_user).EnsureIndex(mgo.Index{
+	db.EnsureIndex(C_user, mgo.Index{
 		Key:        []string{"email"},
 		Unique:     true,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_userChangeLog).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_userChangeLog, mgo.Index{
 		Key:        []string{"email"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_userLogins).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_userLogins, mgo.Index{
 		Key:        []string{"email"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_userLogins).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_userLogins, mgo.Index{
 		Key:        []string{"time"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
 
-	err = db.C(C_group).EnsureIndex(mgo.Index{
+	db.EnsureIndex(C_group, mgo.Index{
 		Key:        []string{"ownerEmail"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     true,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_group).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_group, mgo.Index{
 		Key:        []string{"readAccessEmails"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     true,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_eventMeta).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_eventMeta, mgo.Index{
 		Key:        []string{"ownerEmail"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_eventMeta).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_eventMeta, mgo.Index{
 		Key:        []string{"groupId"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_eventMeta).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_eventMeta, mgo.Index{
 		Key:        []string{"creationTime"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_attending).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_attending, mgo.Index{
 		Key:        []string{"eventId", "email"},
 		Unique:     true,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_attending).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_attending, mgo.Index{
 		Key:        []string{"eventId", "attending"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_attending).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_attending, mgo.Index{
 		Key:        []string{"eventId"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	/*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
-		Key: []string{"time"},
-		Unique: false,
-		DropDups: false,
-		Background: false,
-		Sparse: false,
-	})
-	if err != nil {
-		panic(err)
-	}*/
-	/*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
-		Key: []string{"email"},
-		Unique: false,
-		DropDups: false,
-		Background: false,
-		Sparse: false,
-	})
-	if err != nil {
-		panic(err)
-	}*/
-	/*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
-		Key: []string{"eventId"},
-		Unique: false,
-		DropDups: false,
-		Background: false,
-		Sparse: false,
-	})
-	if err != nil {
-		panic(err)
-	}*/
-	/*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
-		Key: []string{"eventType"},
-		Unique: false,
-		DropDups: false,
-		Background: false,
-		Sparse: false,
-	})
-	if err != nil {
-		panic(err)
-	}*/
-	/*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
-		Key: []string{"ownerEmail"},
-		Unique: false,
-		DropDups: false,
-		Background: false,
-		Sparse: false,
-	})
-	if err != nil {
-		panic(err)
-	}*/
-	/*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
-		Key: []string{"groupId"},
-		Unique: false,
-		DropDups: false,
-		Background: false,
-		Sparse: false,
-	})
-	if err != nil {
-		panic(err)
-	}*/
-	/*db.C(C_eventMetaChangeLog).EnsureIndex(mgo.Index{
-		Key: []string{"accessEmails"},
-		Unique: false,
-		DropDups: false,
-		Background: false,
-		Sparse: false,
-	})
-	if err != nil {
-		panic(err)
-	}*/
-	err = db.C(C_revision).EnsureIndex(mgo.Index{
+
+	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
+	// 	Key:        []string{"time"},
+	// 	Unique:     false,
+	// 	DropDups:   false,
+	// 	Background: false,
+	// 	Sparse:     false,
+	// })
+	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
+	// 	Key:        []string{"email"},
+	// 	Unique:     false,
+	// 	DropDups:   false,
+	// 	Background: false,
+	// 	Sparse:     false,
+	// })
+	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
+	// 	Key:        []string{"eventId"},
+	// 	Unique:     false,
+	// 	DropDups:   false,
+	// 	Background: false,
+	// 	Sparse:     false,
+	// })
+	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
+	// 	Key:        []string{"eventType"},
+	// 	Unique:     false,
+	// 	DropDups:   false,
+	// 	Background: false,
+	// 	Sparse:     false,
+	// })
+	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
+	// 	Key:        []string{"ownerEmail"},
+	// 	Unique:     false,
+	// 	DropDups:   false,
+	// 	Background: false,
+	// 	Sparse:     false,
+	// })
+	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
+	// 	Key:        []string{"groupId"},
+	// 	Unique:     false,
+	// 	DropDups:   false,
+	// 	Background: false,
+	// 	Sparse:     false,
+	// })
+	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
+	// 	Key:        []string{"accessEmails"},
+	// 	Unique:     false,
+	// 	DropDups:   false,
+	// 	Background: false,
+	// 	Sparse:     false,
+	// })
+
+	db.EnsureIndex(C_revision, mgo.Index{
 		Key:        []string{"sha1"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_revision).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_revision, mgo.Index{
 		Key:        []string{"eventId"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
-	err = db.C(C_revision).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_revision, mgo.Index{
 		Key:        []string{"time"},
 		Unique:     false,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
 
-	err = db.C(C_eventData).EnsureIndex(mgo.Index{
+	db.EnsureIndex(C_eventData, mgo.Index{
 		Key:        []string{"sha1"},
 		Unique:     true,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	if err != nil {
-		panic(err)
-	}
+
 	/*
 		for _, colName := range []string{
 			"events_allDayTask",
@@ -290,14 +235,15 @@ func EnsureIndexes() {
 		}
 	*/
 
-	db.C(C_resetPwToken).EnsureIndex(mgo.Index{
+	db.EnsureIndex(C_resetPwToken, mgo.Index{
 		Key:        []string{"token"},
 		Unique:     true,
 		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
-	db.C(C_resetPwToken).EnsureIndex(mgo.Index{
+
+	db.EnsureIndex(C_resetPwToken, mgo.Index{
 		Key:        []string{"email"},
 		Unique:     false,
 		DropDups:   false,
@@ -305,7 +251,7 @@ func EnsureIndexes() {
 		Sparse:     false,
 	})
 
-	err = EnsureIndexWithTTL(db.Database, C_resetPwToken, mgo.Index{
+	db.EnsureIndexWithTTL(C_resetPwToken, mgo.Index{
 		Key:         []string{"-issueTime"},
 		Unique:      false,
 		DropDups:    false,
@@ -313,7 +259,4 @@ func EnsureIndexes() {
 		Sparse:      false,
 		ExpireAfter: time.Second * settings.RESET_PASSWORD_EXP_SECONDS,
 	})
-	if err != nil {
-		panic(err)
-	}
 }

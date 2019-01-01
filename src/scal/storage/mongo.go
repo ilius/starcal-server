@@ -123,6 +123,22 @@ func (db *MongoDatabase) PipeIter(
 	return ch
 }
 
+// creates / checks index, panics on error
+func (db *MongoDatabase) EnsureIndex(collection string, index mgo.Index) {
+	err := db.Database.C(collection).EnsureIndex(index)
+	if err != nil {
+		panic(err)
+	}
+}
+
+// creates / checks index with TTL, panics on error
+func (db *MongoDatabase) EnsureIndexWithTTL(collection string, index mgo.Index) {
+	err := EnsureIndexWithTTL(db.Database, collection, index)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func GetDB() (Database, error) {
 	if db != nil {
 		return db, nil
