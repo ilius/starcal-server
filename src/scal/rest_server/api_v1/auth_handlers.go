@@ -442,12 +442,12 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	emailBody := buf.String()
-	err = scal.SendEmail(
-		*email,
-		"StarCalendar Password Reset",
-		false, // isHtml
-		emailBody,
-	)
+	err = scal.SendEmail(&scal.SendEmailInput{
+		To:      *email,
+		Subject: "StarCalendar Password Reset",
+		IsHtml:  false,
+		Body:    emailBody,
+	})
 	if err != nil {
 		log.Println("Failed to send email:\n", emailBody)
 		return nil, NewError(Unavailable, "error in sending email", err)
@@ -569,12 +569,12 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	emailBody := buf.String()
-	err = scal.SendEmail(
-		*email,
-		"StarCalendar Password Reset",
-		false, // isHtml
-		emailBody,
-	)
+	err = scal.SendEmail(&scal.SendEmailInput{
+		To:      *email,
+		Subject: "StarCalendar Password Reset",
+		IsHtml:  false,
+		Body:    emailBody,
+	})
 	if err != nil {
 		return nil, NewError(Unavailable, "", err)
 	}
@@ -627,12 +627,12 @@ func sendEmailConfirmation(req Request, userModel *UserModel) error {
 	}
 	emailBody := buf.String()
 	fmt.Println(emailBody)
-	err = scal.SendEmail(
+	err = scal.SendEmail(&scal.SendEmailInput{
 		email,
 		"StarCalendar Email Confirmation",
 		false, // isHtml
 		emailBody,
-	)
+	})
 	if err != nil {
 		return NewError(Unavailable, "", err)
 	}
