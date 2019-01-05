@@ -129,6 +129,7 @@ hostMetaParams = {
 }
 
 hostGlobalsCommon = {
+	"host": hostName,
 	"GoExpr": GoExpr,
 	"goGetenv": goGetenv,
 	"passwordStore": passwordStore,
