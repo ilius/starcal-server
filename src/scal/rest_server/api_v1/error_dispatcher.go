@@ -42,7 +42,7 @@ func newErrorDispatcher(db storage.Database) func(request ripo.ExtendedRequest, 
 			Request:     request.FullMap(),
 			Traceback:   traceback.MapRecords(),
 		}
-		privateErr := rpcErr.Private()
+		privateErr := rpcErr.Cause()
 		if privateErr != nil {
 			errorModel.PrivateMessage = privateErr.Error()
 			errorModel.PrivateType = fmt.Sprintf("%T", privateErr)
