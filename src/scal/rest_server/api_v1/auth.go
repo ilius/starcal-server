@@ -204,9 +204,9 @@ func CheckPasswordHash(email string, password string, pwHash string) bool {
 	return err == nil
 }
 
-func NewSignedToken(userModel *UserModel) string {
+func NewSignedToken(userModel *UserModel) (string, time.Time) {
 	now := time.Now()
-	exp := now.Add(settings.JWT_TOKEN_EXP_SECONDS * time.Second)
+	exp := now.Add(settings.JWT_TOKEN_EXP_SECONDS * time.Second).UTC()
 	token := jwt.NewWithClaims(
 		jwt.GetSigningMethod(settings.JWT_ALG),
 		jwt.MapClaims{
@@ -224,5 +224,5 @@ func NewSignedToken(userModel *UserModel) string {
 	signedToken, _ := token.SignedString([]byte(
 		settings.JWT_TOKEN_SECRET,
 	))
-	return signedToken
+	return signedToken, exp
 }

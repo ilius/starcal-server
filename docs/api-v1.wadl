@@ -33,6 +33,7 @@
 					<response>
 						<representation mediaType="app/json"/>
 						<param name="token" type="xs:string" required="true"/>
+						<param name="expiration" type="xsd:dateTime" required="true"/>
 					</response>
 				</method>
 			</resource>

@@ -154,11 +154,12 @@ func RegisterUser(req Request) (*Response, error) {
 		log.Println(err)
 	}
 
-	signedToken := NewSignedToken(userModel)
+	signedToken, exp := NewSignedToken(userModel)
 	return &Response{
 		Data: map[string]interface{}{
-			"token":   signedToken,
-			"message": "an email confirmation is sent to your email address",
+			"token":      signedToken,
+			"expiration": exp.Format(time.RFC3339),
+			"message":    "an email confirmation is sent to your email address",
 		},
 	}, nil
 }
@@ -257,7 +258,7 @@ func Login(req Request) (*Response, error) {
 
 	successfulLogin(req, db, userModel, remoteIP)
 
-	signedToken := NewSignedToken(userModel)
+	signedToken, exp := NewSignedToken(userModel)
 
 	/*
 		// Place the token in the client's cookie
@@ -272,7 +273,8 @@ func Login(req Request) (*Response, error) {
 
 	return &Response{
 		Data: scal.M{
-			"token": signedToken,
+			"token":      signedToken,
+			"expiration": exp.Format(time.RFC3339),
 		},
 	}, nil
 }
