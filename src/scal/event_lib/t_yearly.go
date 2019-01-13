@@ -4,10 +4,10 @@ import "scal/storage"
 
 type YearlyEventModel struct {
 	BaseEventModel  `bson:",inline" json:",inline"`
-	Month           int  `bson:"month" json:"month"`
-	Day             int  `bson:"day" json:"day"`
-	StartYear       int  `bson:"startYear" json:"startYear"`
-	StartYearEnable bool `bson:"startYearEnable" json:"startYearEnable"`
+	Month           uint8 `bson:"month" json:"month"`
+	Day             uint8 `bson:"day" json:"day"`
+	StartYear       int   `bson:"startYear" json:"startYear"`
+	StartYearEnable bool  `bson:"startYearEnable" json:"startYearEnable"`
 }
 
 func (self YearlyEventModel) Type() string {
@@ -26,8 +26,8 @@ func LoadYearlyEventModel(db storage.Database, sha1 string) (
 
 type YearlyEvent struct {
 	BaseEvent
-	month           int
-	day             int
+	month           uint8
+	day             uint8
 	startYear       int
 	startYearEnable bool
 }
@@ -35,10 +35,10 @@ type YearlyEvent struct {
 func (self YearlyEvent) Type() string {
 	return "yearly"
 }
-func (self YearlyEvent) Month() int {
+func (self YearlyEvent) Month() uint8 {
 	return self.month
 }
-func (self YearlyEvent) Day() int {
+func (self YearlyEvent) Day() uint8 {
 	return self.day
 }
 func (self YearlyEvent) StartYear() int {

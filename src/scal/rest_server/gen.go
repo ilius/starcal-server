@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/kardianos/osext"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -15,6 +14,8 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+
+	"github.com/kardianos/osext"
 )
 
 var enableGoFmt = true
@@ -74,6 +75,21 @@ type ParamRow struct {
 	PARAM      string
 	CAP_PARAM  string
 	PARAM_TYPE string
+	PARAM_KIND string
+	PARAM_INT  bool
+}
+
+var intKinds = map[reflect.Kind]bool{
+	reflect.Int:    true,
+	reflect.Int8:   true,
+	reflect.Int16:  true,
+	reflect.Int32:  true,
+	reflect.Int64:  true,
+	reflect.Uint:   true,
+	reflect.Uint8:  true,
+	reflect.Uint16: true,
+	reflect.Uint32: true,
+	reflect.Uint64: true,
 }
 
 func extractModelParams(model interface{}) []ParamRow {
@@ -81,7 +97,11 @@ func extractModelParams(model interface{}) []ParamRow {
 	params := make([]ParamRow, modelType.NumField())
 	for i := 0; i < modelType.NumField(); i++ {
 		field := modelType.Field(i)
+
 		paramType := field.Type.String()
+		paramKind := field.Type.Kind()
+		paramInt := intKinds[paramKind]
+
 		paramCap := field.Name
 
 		if paramType == "event_lib.BaseEventModel" {
@@ -93,6 +113,8 @@ func extractModelParams(model interface{}) []ParamRow {
 			PARAM:      param,
 			CAP_PARAM:  upperFirstLetter(param),
 			PARAM_TYPE: paramType,
+			PARAM_KIND: paramKind.String(),
+			PARAM_INT:  paramInt,
 		}
 	}
 	return params

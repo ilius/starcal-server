@@ -430,49 +430,49 @@ func UpdateCustom(req Request) (*Response, error) {
 			return nil, NewError(Internal, "", err)
 		}
 	}
-	// PARAM="timeZone", PARAM_TYPE="string"
+	// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.TimeZone,
 		lastEventModel.TimeZone,
 	) {
 		eventMeta.FieldsMtime["timeZone"] = now
 	}
-	// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+	// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.TimeZoneEnable,
 		lastEventModel.TimeZoneEnable,
 	) {
 		eventMeta.FieldsMtime["timeZoneEnable"] = now
 	}
-	// PARAM="calType", PARAM_TYPE="string"
+	// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.CalType,
 		lastEventModel.CalType,
 	) {
 		eventMeta.FieldsMtime["calType"] = now
 	}
-	// PARAM="summary", PARAM_TYPE="string"
+	// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Summary,
 		lastEventModel.Summary,
 	) {
 		eventMeta.FieldsMtime["summary"] = now
 	}
-	// PARAM="description", PARAM_TYPE="string"
+	// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Description,
 		lastEventModel.Description,
 	) {
 		eventMeta.FieldsMtime["description"] = now
 	}
-	// PARAM="icon", PARAM_TYPE="string"
+	// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Icon,
 		lastEventModel.Icon,
 	) {
 		eventMeta.FieldsMtime["icon"] = now
 	}
-	// PARAM="rules", PARAM_TYPE="event_lib.EventRuleModelList"
+	// PARAM="rules", PARAM_TYPE="event_lib.EventRuleModelList", PARAM_INT=false
 	lastEvent, err := lastEventModel.GetEvent() // for comparing rules
 	if err != nil {
 		return nil, NewError(Internal, "", err)
@@ -826,7 +826,7 @@ func MergeCustom(req Request) (*Response, error) {
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
 	func() {
-		// PARAM="timeZone", PARAM_TYPE="string"
+		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
 		lastValue := lastEventModel.TimeZone
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -849,7 +849,7 @@ func MergeCustom(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
 		lastValue := lastEventModel.TimeZoneEnable
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -872,7 +872,7 @@ func MergeCustom(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="calType", PARAM_TYPE="string"
+		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
 		lastValue := lastEventModel.CalType
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -895,7 +895,7 @@ func MergeCustom(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="summary", PARAM_TYPE="string"
+		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
 		lastValue := lastEventModel.Summary
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -918,7 +918,7 @@ func MergeCustom(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="description", PARAM_TYPE="string"
+		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
 		lastValue := lastEventModel.Description
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -941,7 +941,7 @@ func MergeCustom(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="icon", PARAM_TYPE="string"
+		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
 		lastValue := lastEventModel.Icon
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -964,7 +964,7 @@ func MergeCustom(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="rules", PARAM_TYPE="event_lib.EventRuleModelList"
+		// PARAM="rules", PARAM_TYPE="event_lib.EventRuleModelList", PARAM_INT=false
 		inputValue := inputEventModel.Rules
 		lastValue := lastEventModel.Rules
 		if reflect.DeepEqual(inputValue, lastValue) {

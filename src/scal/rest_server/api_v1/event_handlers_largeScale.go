@@ -430,70 +430,70 @@ func UpdateLargeScale(req Request) (*Response, error) {
 			return nil, NewError(Internal, "", err)
 		}
 	}
-	// PARAM="timeZone", PARAM_TYPE="string"
+	// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.TimeZone,
 		lastEventModel.TimeZone,
 	) {
 		eventMeta.FieldsMtime["timeZone"] = now
 	}
-	// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+	// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.TimeZoneEnable,
 		lastEventModel.TimeZoneEnable,
 	) {
 		eventMeta.FieldsMtime["timeZoneEnable"] = now
 	}
-	// PARAM="calType", PARAM_TYPE="string"
+	// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.CalType,
 		lastEventModel.CalType,
 	) {
 		eventMeta.FieldsMtime["calType"] = now
 	}
-	// PARAM="summary", PARAM_TYPE="string"
+	// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Summary,
 		lastEventModel.Summary,
 	) {
 		eventMeta.FieldsMtime["summary"] = now
 	}
-	// PARAM="description", PARAM_TYPE="string"
+	// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Description,
 		lastEventModel.Description,
 	) {
 		eventMeta.FieldsMtime["description"] = now
 	}
-	// PARAM="icon", PARAM_TYPE="string"
+	// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Icon,
 		lastEventModel.Icon,
 	) {
 		eventMeta.FieldsMtime["icon"] = now
 	}
-	// PARAM="scale", PARAM_TYPE="int64"
+	// PARAM="scale", PARAM_TYPE="int64", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.Scale,
 		lastEventModel.Scale,
 	) {
 		eventMeta.FieldsMtime["scale"] = now
 	}
-	// PARAM="start", PARAM_TYPE="int64"
+	// PARAM="start", PARAM_TYPE="int64", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.Start,
 		lastEventModel.Start,
 	) {
 		eventMeta.FieldsMtime["start"] = now
 	}
-	// PARAM="end", PARAM_TYPE="int64"
+	// PARAM="end", PARAM_TYPE="int64", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.End,
 		lastEventModel.End,
 	) {
 		eventMeta.FieldsMtime["end"] = now
 	}
-	// PARAM="durationEnable", PARAM_TYPE="bool"
+	// PARAM="durationEnable", PARAM_TYPE="bool", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.DurationEnable,
 		lastEventModel.DurationEnable,
@@ -670,7 +670,8 @@ func PatchLargeScale(req Request) (*Response, error) {
 	{
 		rawValue, ok := patchMap["scale"]
 		if ok {
-			value, typeOk := rawValue.(int64)
+			// json Unmarshal converts int64 to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				return nil, NewError(
 					InvalidArgument,
@@ -678,7 +679,7 @@ func PatchLargeScale(req Request) (*Response, error) {
 					nil,
 				)
 			}
-			eventModel.Scale = value
+			eventModel.Scale = int64(value)
 			delete(patchMap, "scale")
 			eventMeta.FieldsMtime["scale"] = now
 		}
@@ -686,7 +687,8 @@ func PatchLargeScale(req Request) (*Response, error) {
 	{
 		rawValue, ok := patchMap["start"]
 		if ok {
-			value, typeOk := rawValue.(int64)
+			// json Unmarshal converts int64 to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				return nil, NewError(
 					InvalidArgument,
@@ -694,7 +696,7 @@ func PatchLargeScale(req Request) (*Response, error) {
 					nil,
 				)
 			}
-			eventModel.Start = value
+			eventModel.Start = int64(value)
 			delete(patchMap, "start")
 			eventMeta.FieldsMtime["start"] = now
 		}
@@ -702,7 +704,8 @@ func PatchLargeScale(req Request) (*Response, error) {
 	{
 		rawValue, ok := patchMap["end"]
 		if ok {
-			value, typeOk := rawValue.(int64)
+			// json Unmarshal converts int64 to float64
+			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				return nil, NewError(
 					InvalidArgument,
@@ -710,7 +713,7 @@ func PatchLargeScale(req Request) (*Response, error) {
 					nil,
 				)
 			}
-			eventModel.End = value
+			eventModel.End = int64(value)
 			delete(patchMap, "end")
 			eventMeta.FieldsMtime["end"] = now
 		}
@@ -879,7 +882,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
 	func() {
-		// PARAM="timeZone", PARAM_TYPE="string"
+		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
 		lastValue := lastEventModel.TimeZone
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -902,7 +905,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
 		lastValue := lastEventModel.TimeZoneEnable
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -925,7 +928,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="calType", PARAM_TYPE="string"
+		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
 		lastValue := lastEventModel.CalType
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -948,7 +951,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="summary", PARAM_TYPE="string"
+		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
 		lastValue := lastEventModel.Summary
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -971,7 +974,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="description", PARAM_TYPE="string"
+		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
 		lastValue := lastEventModel.Description
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -994,7 +997,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="icon", PARAM_TYPE="string"
+		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
 		lastValue := lastEventModel.Icon
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1017,7 +1020,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="scale", PARAM_TYPE="int64"
+		// PARAM="scale", PARAM_TYPE="int64", PARAM_INT=true
 		inputValue := inputEventModel.Scale
 		lastValue := lastEventModel.Scale
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1040,7 +1043,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="start", PARAM_TYPE="int64"
+		// PARAM="start", PARAM_TYPE="int64", PARAM_INT=true
 		inputValue := inputEventModel.Start
 		lastValue := lastEventModel.Start
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1063,7 +1066,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="end", PARAM_TYPE="int64"
+		// PARAM="end", PARAM_TYPE="int64", PARAM_INT=true
 		inputValue := inputEventModel.End
 		lastValue := lastEventModel.End
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1086,7 +1089,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="durationEnable", PARAM_TYPE="bool"
+		// PARAM="durationEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.DurationEnable
 		lastValue := lastEventModel.DurationEnable
 		if reflect.DeepEqual(inputValue, lastValue) {

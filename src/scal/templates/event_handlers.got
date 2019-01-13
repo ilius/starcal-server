@@ -434,7 +434,7 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 
 	{{ range .EVENT_PATCH_PARAMS }}
-		// PARAM="{{.PARAM}}", PARAM_TYPE="{{.PARAM_TYPE}}"
+		// PARAM="{{.PARAM}}", PARAM_TYPE="{{.PARAM_TYPE}}", PARAM_INT={{.PARAM_INT}}
 		{{ if eq .PARAM "rules" }}
 			lastEvent, err := lastEventModel.GetEvent() // for comparing rules
 			if err != nil {
@@ -550,8 +550,8 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 					)
 				}
 			{{ else }}
-				{{ if eq .PARAM_TYPE "int" }}
-					// json Unmarshal converts int to float64
+				{{ if .PARAM_INT }}
+					// json Unmarshal converts {{.PARAM_TYPE}} to float64
 					value, typeOk := rawValue.(float64)
 				{{ else if eq .PARAM_TYPE "*time.Time" }}
 					value, typeOk := rawValue.(string)
@@ -566,8 +566,8 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 					)
 				}
 			{{ end }}
-			{{ if eq .PARAM_TYPE "int" }}
-				eventModel.{{.CAP_PARAM}} = int(value)
+			{{ if .PARAM_INT }}
+				eventModel.{{.CAP_PARAM}} = {{.PARAM_TYPE}}(value)
 			{{ else if eq .PARAM_TYPE "*time.Time" }}
 				timeValue, err := time.Parse(time.RFC3339, value)
 				if err != nil {
@@ -746,7 +746,7 @@ func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	now := time.Now()
 	{{ range .EVENT_PATCH_PARAMS }}
 	func(){
-		// PARAM="{{.PARAM}}", PARAM_TYPE="{{.PARAM_TYPE}}"
+		// PARAM="{{.PARAM}}", PARAM_TYPE="{{.PARAM_TYPE}}", PARAM_INT={{.PARAM_INT}}
 		inputValue := inputEventModel.{{.CAP_PARAM}}
 		lastValue := lastEventModel.{{.CAP_PARAM}}
 		if reflect.DeepEqual(inputValue, lastValue) {

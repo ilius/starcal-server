@@ -431,77 +431,77 @@ func UpdateUniversityClass(req Request) (*Response, error) {
 			return nil, NewError(Internal, "", err)
 		}
 	}
-	// PARAM="timeZone", PARAM_TYPE="string"
+	// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.TimeZone,
 		lastEventModel.TimeZone,
 	) {
 		eventMeta.FieldsMtime["timeZone"] = now
 	}
-	// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+	// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.TimeZoneEnable,
 		lastEventModel.TimeZoneEnable,
 	) {
 		eventMeta.FieldsMtime["timeZoneEnable"] = now
 	}
-	// PARAM="calType", PARAM_TYPE="string"
+	// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.CalType,
 		lastEventModel.CalType,
 	) {
 		eventMeta.FieldsMtime["calType"] = now
 	}
-	// PARAM="summary", PARAM_TYPE="string"
+	// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Summary,
 		lastEventModel.Summary,
 	) {
 		eventMeta.FieldsMtime["summary"] = now
 	}
-	// PARAM="description", PARAM_TYPE="string"
+	// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Description,
 		lastEventModel.Description,
 	) {
 		eventMeta.FieldsMtime["description"] = now
 	}
-	// PARAM="icon", PARAM_TYPE="string"
+	// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.Icon,
 		lastEventModel.Icon,
 	) {
 		eventMeta.FieldsMtime["icon"] = now
 	}
-	// PARAM="weekNumMode", PARAM_TYPE="string"
+	// PARAM="weekNumMode", PARAM_TYPE="string", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.WeekNumMode,
 		lastEventModel.WeekNumMode,
 	) {
 		eventMeta.FieldsMtime["weekNumMode"] = now
 	}
-	// PARAM="weekDayList", PARAM_TYPE="[]int"
+	// PARAM="weekDayList", PARAM_TYPE="[]int", PARAM_INT=false
 	if !reflect.DeepEqual(
 		eventModel.WeekDayList,
 		lastEventModel.WeekDayList,
 	) {
 		eventMeta.FieldsMtime["weekDayList"] = now
 	}
-	// PARAM="dayStartSeconds", PARAM_TYPE="int"
+	// PARAM="dayStartSeconds", PARAM_TYPE="int", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.DayStartSeconds,
 		lastEventModel.DayStartSeconds,
 	) {
 		eventMeta.FieldsMtime["dayStartSeconds"] = now
 	}
-	// PARAM="dayEndSeconds", PARAM_TYPE="int"
+	// PARAM="dayEndSeconds", PARAM_TYPE="int", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.DayEndSeconds,
 		lastEventModel.DayEndSeconds,
 	) {
 		eventMeta.FieldsMtime["dayEndSeconds"] = now
 	}
-	// PARAM="courseId", PARAM_TYPE="int"
+	// PARAM="courseId", PARAM_TYPE="int", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.CourseId,
 		lastEventModel.CourseId,
@@ -906,7 +906,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
 	func() {
-		// PARAM="timeZone", PARAM_TYPE="string"
+		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
 		lastValue := lastEventModel.TimeZone
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -929,7 +929,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="timeZoneEnable", PARAM_TYPE="bool"
+		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
 		lastValue := lastEventModel.TimeZoneEnable
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -952,7 +952,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="calType", PARAM_TYPE="string"
+		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
 		lastValue := lastEventModel.CalType
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -975,7 +975,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="summary", PARAM_TYPE="string"
+		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
 		lastValue := lastEventModel.Summary
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -998,7 +998,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="description", PARAM_TYPE="string"
+		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
 		lastValue := lastEventModel.Description
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1021,7 +1021,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="icon", PARAM_TYPE="string"
+		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
 		lastValue := lastEventModel.Icon
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1044,7 +1044,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="weekNumMode", PARAM_TYPE="string"
+		// PARAM="weekNumMode", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.WeekNumMode
 		lastValue := lastEventModel.WeekNumMode
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1067,7 +1067,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="weekDayList", PARAM_TYPE="[]int"
+		// PARAM="weekDayList", PARAM_TYPE="[]int", PARAM_INT=false
 		inputValue := inputEventModel.WeekDayList
 		lastValue := lastEventModel.WeekDayList
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1090,7 +1090,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="dayStartSeconds", PARAM_TYPE="int"
+		// PARAM="dayStartSeconds", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.DayStartSeconds
 		lastValue := lastEventModel.DayStartSeconds
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1113,7 +1113,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="dayEndSeconds", PARAM_TYPE="int"
+		// PARAM="dayEndSeconds", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.DayEndSeconds
 		lastValue := lastEventModel.DayEndSeconds
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1136,7 +1136,7 @@ func MergeUniversityClass(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="courseId", PARAM_TYPE="int"
+		// PARAM="courseId", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.CourseId
 		lastValue := lastEventModel.CourseId
 		if reflect.DeepEqual(inputValue, lastValue) {
