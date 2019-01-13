@@ -487,21 +487,21 @@ func UpdateWeekly(req Request) (*Response, error) {
 	) {
 		eventMeta.FieldsMtime["endJd"] = now
 	}
-	// PARAM="cycleWeeks", PARAM_TYPE="int", PARAM_INT=true
+	// PARAM="cycleWeeks", PARAM_TYPE="uint", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.CycleWeeks,
 		lastEventModel.CycleWeeks,
 	) {
 		eventMeta.FieldsMtime["cycleWeeks"] = now
 	}
-	// PARAM="dayStartSeconds", PARAM_TYPE="int", PARAM_INT=true
+	// PARAM="dayStartSeconds", PARAM_TYPE="uint32", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.DayStartSeconds,
 		lastEventModel.DayStartSeconds,
 	) {
 		eventMeta.FieldsMtime["dayStartSeconds"] = now
 	}
-	// PARAM="dayEndSeconds", PARAM_TYPE="int", PARAM_INT=true
+	// PARAM="dayEndSeconds", PARAM_TYPE="uint32", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.DayEndSeconds,
 		lastEventModel.DayEndSeconds,
@@ -712,7 +712,7 @@ func PatchWeekly(req Request) (*Response, error) {
 	{
 		rawValue, ok := patchMap["cycleWeeks"]
 		if ok {
-			// json Unmarshal converts int to float64
+			// json Unmarshal converts uint to float64
 			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				return nil, NewError(
@@ -721,7 +721,7 @@ func PatchWeekly(req Request) (*Response, error) {
 					nil,
 				)
 			}
-			eventModel.CycleWeeks = int(value)
+			eventModel.CycleWeeks = uint(value)
 			delete(patchMap, "cycleWeeks")
 			eventMeta.FieldsMtime["cycleWeeks"] = now
 		}
@@ -729,7 +729,7 @@ func PatchWeekly(req Request) (*Response, error) {
 	{
 		rawValue, ok := patchMap["dayStartSeconds"]
 		if ok {
-			// json Unmarshal converts int to float64
+			// json Unmarshal converts uint32 to float64
 			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				return nil, NewError(
@@ -738,7 +738,7 @@ func PatchWeekly(req Request) (*Response, error) {
 					nil,
 				)
 			}
-			eventModel.DayStartSeconds = int(value)
+			eventModel.DayStartSeconds = uint32(value)
 			delete(patchMap, "dayStartSeconds")
 			eventMeta.FieldsMtime["dayStartSeconds"] = now
 		}
@@ -746,7 +746,7 @@ func PatchWeekly(req Request) (*Response, error) {
 	{
 		rawValue, ok := patchMap["dayEndSeconds"]
 		if ok {
-			// json Unmarshal converts int to float64
+			// json Unmarshal converts uint32 to float64
 			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				return nil, NewError(
@@ -755,7 +755,7 @@ func PatchWeekly(req Request) (*Response, error) {
 					nil,
 				)
 			}
-			eventModel.DayEndSeconds = int(value)
+			eventModel.DayEndSeconds = uint32(value)
 			delete(patchMap, "dayEndSeconds")
 			eventMeta.FieldsMtime["dayEndSeconds"] = now
 		}
@@ -1092,7 +1092,7 @@ func MergeWeekly(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="cycleWeeks", PARAM_TYPE="int", PARAM_INT=true
+		// PARAM="cycleWeeks", PARAM_TYPE="uint", PARAM_INT=true
 		inputValue := inputEventModel.CycleWeeks
 		lastValue := lastEventModel.CycleWeeks
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1115,7 +1115,7 @@ func MergeWeekly(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="dayStartSeconds", PARAM_TYPE="int", PARAM_INT=true
+		// PARAM="dayStartSeconds", PARAM_TYPE="uint32", PARAM_INT=true
 		inputValue := inputEventModel.DayStartSeconds
 		lastValue := lastEventModel.DayStartSeconds
 		if reflect.DeepEqual(inputValue, lastValue) {
@@ -1138,7 +1138,7 @@ func MergeWeekly(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="dayEndSeconds", PARAM_TYPE="int", PARAM_INT=true
+		// PARAM="dayEndSeconds", PARAM_TYPE="uint32", PARAM_INT=true
 		inputValue := inputEventModel.DayEndSeconds
 		lastValue := lastEventModel.DayEndSeconds
 		if reflect.DeepEqual(inputValue, lastValue) {

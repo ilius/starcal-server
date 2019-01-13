@@ -5,12 +5,14 @@ import . "scal/utils"
 import "scal/storage"
 
 type WeeklyEventModel struct {
-	BaseEventModel  `bson:",inline" json:",inline"`
-	StartJd         int `bson:"startJd" json:"startJd"`
-	EndJd           int `bson:"endJd" json:"endJd"`
-	CycleWeeks      int `bson:"cycleWeeks" json:"cycleWeeks"`
-	DayStartSeconds int `bson:"dayStartSeconds" json:"dayStartSeconds"`
-	DayEndSeconds   int `bson:"dayEndSeconds" json:"dayEndSeconds"`
+	BaseEventModel `bson:",inline" json:",inline"`
+
+	StartJd int `bson:"startJd" json:"startJd"`
+	EndJd   int `bson:"endJd" json:"endJd"`
+
+	CycleWeeks      uint   `bson:"cycleWeeks" json:"cycleWeeks"`
+	DayStartSeconds uint32 `bson:"dayStartSeconds" json:"dayStartSeconds"`
+	DayEndSeconds   uint32 `bson:"dayEndSeconds" json:"dayEndSeconds"`
 }
 
 func (self WeeklyEventModel) Type() string {
@@ -31,9 +33,9 @@ type WeeklyEvent struct {
 	BaseEvent
 	startJd         int
 	endJd           int
-	cycleWeeks      int
-	dayStartSeconds int
-	dayEndSeconds   int
+	cycleWeeks      uint
+	dayStartSeconds uint32
+	dayEndSeconds   uint32
 }
 
 func (self WeeklyEvent) Type() string {
@@ -45,20 +47,20 @@ func (self WeeklyEvent) StartJd() int {
 func (self WeeklyEvent) EndJd() int {
 	return self.endJd
 }
-func (self WeeklyEvent) CycleWeeks() int {
+func (self WeeklyEvent) CycleWeeks() uint {
 	return self.cycleWeeks
 }
-func (self WeeklyEvent) DayStartSeconds() int {
+func (self WeeklyEvent) DayStartSeconds() uint32 {
 	return self.dayStartSeconds
 }
-func (self WeeklyEvent) DayEndSeconds() int {
+func (self WeeklyEvent) DayEndSeconds() uint32 {
 	return self.dayEndSeconds
 }
 func (self WeeklyEvent) DayStartHMS() scal.HMS {
-	return GetHmsBySeconds(self.dayStartSeconds)
+	return GetHmsBySeconds(int(self.dayStartSeconds))
 }
 func (self WeeklyEvent) DayEndHMS() scal.HMS {
-	return GetHmsBySeconds(self.dayEndSeconds)
+	return GetHmsBySeconds(int(self.dayEndSeconds))
 }
 
 func (self WeeklyEvent) Model() WeeklyEventModel {
