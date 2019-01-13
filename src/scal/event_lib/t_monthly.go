@@ -5,12 +5,15 @@ import . "scal/utils"
 import "scal/storage"
 
 type MonthlyEventModel struct {
-	BaseEventModel  `bson:",inline" json:",inline"`
-	StartJd         int `bson:"startJd" json:"startJd"`
-	EndJd           int `bson:"endJd" json:"endJd"`
-	Day             int `bson:"day" json:"day"`
-	DayStartSeconds int `bson:"dayStartSeconds" json:"dayStartSeconds"`
-	DayEndSeconds   int `bson:"dayEndSeconds" json:"dayEndSeconds"`
+	BaseEventModel `bson:",inline" json:",inline"`
+
+	StartJd int `bson:"startJd" json:"startJd"`
+	EndJd   int `bson:"endJd" json:"endJd"`
+
+	Day uint8 `bson:"day" json:"day"`
+
+	DayStartSeconds uint32 `bson:"dayStartSeconds" json:"dayStartSeconds"`
+	DayEndSeconds   uint32 `bson:"dayEndSeconds" json:"dayEndSeconds"`
 }
 
 func (self MonthlyEventModel) Type() string {
@@ -31,9 +34,9 @@ type MonthlyEvent struct {
 	BaseEvent
 	startJd         int
 	endJd           int
-	day             int
-	dayStartSeconds int
-	dayEndSeconds   int
+	day             uint8
+	dayStartSeconds uint32
+	dayEndSeconds   uint32
 }
 
 func (self MonthlyEvent) Type() string {
@@ -45,20 +48,20 @@ func (self MonthlyEvent) StartJd() int {
 func (self MonthlyEvent) EndJd() int {
 	return self.endJd
 }
-func (self MonthlyEvent) Day() int {
+func (self MonthlyEvent) Day() uint8 {
 	return self.day
 }
-func (self MonthlyEvent) DayStartSeconds() int {
+func (self MonthlyEvent) DayStartSeconds() uint32 {
 	return self.dayStartSeconds
 }
-func (self MonthlyEvent) DayEndSeconds() int {
+func (self MonthlyEvent) DayEndSeconds() uint32 {
 	return self.dayEndSeconds
 }
 func (self MonthlyEvent) DayStartHMS() scal.HMS {
-	return GetHmsBySeconds(self.dayStartSeconds)
+	return GetHmsBySeconds(int(self.dayStartSeconds))
 }
 func (self MonthlyEvent) DayEndHMS() scal.HMS {
-	return GetHmsBySeconds(self.dayEndSeconds)
+	return GetHmsBySeconds(int(self.dayEndSeconds))
 }
 
 func (self MonthlyEvent) Model() MonthlyEventModel {
