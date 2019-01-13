@@ -10,3 +10,4 @@ __pycache__
 bin/
 src/github.com/mdempsky/
 src/golang.org/x/tools/
+.vscode
