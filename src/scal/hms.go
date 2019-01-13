@@ -8,14 +8,14 @@ import (
 )
 
 type HMS struct {
-	Hour   int
-	Minute int
-	Second int
+	Hour   uint8
+	Minute uint8
+	Second uint8
 }
 
 type DHMS struct {
 	HMS
-	Days int
+	Days uint
 }
 
 type HMSRange struct {
@@ -26,9 +26,11 @@ type HMSRange struct {
 func (hms HMS) String() string {
 	return fmt.Sprintf("%.2d:%.2d:%.2d", hms.Hour, hms.Minute, hms.Second)
 }
+
 func (hms HMS) GetTotalSeconds() int {
-	return hms.Hour*3600 + hms.Minute*60 + hms.Second
+	return int(hms.Hour)*3600 + int(hms.Minute)*60 + int(hms.Second)
 }
+
 func (hms HMS) GetFloatHour() float64 {
 	return float64(hms.Hour) + float64(hms.Minute)/60.0 + float64(hms.Second)/3600.0
 }
@@ -38,9 +40,15 @@ func (hms HMS) IsValid() bool {
 		hms.Minute >= 0 && hms.Minute < 60 &&
 		hms.Second >= 0 && hms.Second < 60
 }
-func (hms DHMS) IsValid() bool {
-	return hms.HMS.IsValid() && hms.Days >= 0
+
+func (dhms DHMS) IsValid() bool {
+	return dhms.HMS.IsValid() && dhms.Days >= 0
 }
+
+func (dhms DHMS) String() string {
+	return fmt.Sprintf("%d %s", dhms.Days, dhms.HMS.String())
+}
+
 func (hms HMSRange) IsValid() bool {
 	return hms.Start.IsValid() && hms.End.IsValid()
 }
@@ -69,7 +77,7 @@ func ParseHMS(str string) (HMS, error) {
 	} else {
 		s = 0
 	}
-	return HMS{int(h), int(m), int(s)}, nil
+	return HMS{uint8(h), uint8(m), uint8(s)}, nil
 }
 
 func ParseDHMS(str string) (DHMS, error) {
@@ -89,7 +97,7 @@ func ParseDHMS(str string) (DHMS, error) {
 	}
 	return DHMS{
 		HMS:  hms,
-		Days: int(days),
+		Days: uint(days),
 	}, nil
 }
 
@@ -112,10 +120,10 @@ func ParseHMSRange(str string) (HMSRange, error) {
 }
 
 func FloatHourToHMS(fh float64) HMS {
-	hourInt := int(fh)
+	hourInt := uint8(fh)
 	hourPortion := fh - float64(hourInt)
 	minuteFloat := hourPortion * 60.0
-	minuteInt := int(minuteFloat)
+	minuteInt := uint8(minuteFloat)
 	minutePortion := minuteFloat - float64(minuteInt)
 	if minutePortion > 0.98 {
 		minutePortion = 0.0
@@ -126,7 +134,7 @@ func FloatHourToHMS(fh float64) HMS {
 		}
 	}
 	secondFloat := minutePortion * 60
-	secondInt := int(secondFloat)
+	secondInt := uint8(secondFloat)
 	secondPortion := secondFloat - float64(secondInt)
 	if secondPortion > 0.98 {
 		//secondPortion = 0.0

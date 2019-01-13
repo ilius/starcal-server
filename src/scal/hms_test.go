@@ -37,6 +37,6 @@ func TestParseDHMS(t *testing.T) {
 		t.Error(err)
 	}
 	if obj.String() != str {
-		t.Error("Failed to parse DHMS:", obj)
+		t.Errorf("Failed to parse DHMS: obj = %v", obj)
 	}
 }

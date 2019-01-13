@@ -179,17 +179,21 @@ func GetJdRangeFromEpochRange(startEpoch int64, endEpoch int64, loc *time.Locati
 }
 
 func GetHmsBySeconds(second int) scal.HMS {
-	return scal.HMS{second / 3600, second / 60, second % 60}
+	return scal.HMS{uint8(second / 3600), uint8(second / 60), uint8(second % 60)}
 }
 
 func GetJhmsByEpoch(epoch int64, loc *time.Location) (int, scal.HMS) {
 	// return (jd, hour, minute, second)
 	t := time.Unix(epoch, 0).In(loc) // .In useful? FIXME
 	return gregorian.ToJd(scal.Date{
-		t.Year(),
-		uint8(t.Month()),
-		uint8(t.Day()),
-	}), scal.HMS{t.Hour(), t.Minute(), t.Second()}
+			t.Year(),
+			uint8(t.Month()),
+			uint8(t.Day()),
+		}), scal.HMS{
+			uint8(t.Hour()),
+			uint8(t.Minute()),
+			uint8(t.Second()),
+		}
 }
 
 func GetEpochByJhms(jd int, hms scal.HMS, loc *time.Location) int64 {
@@ -198,9 +202,9 @@ func GetEpochByJhms(jd int, hms scal.HMS, loc *time.Location) int64 {
 		gdate.Year,
 		time.Month(gdate.Month), // gdate.Month is uint8
 		int(gdate.Day),
-		hms.Hour,
-		hms.Minute,
-		hms.Second,
+		int(hms.Hour),
+		int(hms.Minute),
+		int(hms.Second),
 		0,   // nsec
 		loc, // location
 	)
