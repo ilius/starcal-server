@@ -26,12 +26,14 @@ import (
 // ###### Common Globals #######
 
 const (
-	Name        = "gregorian"
-	Desc        = "Gregorian"
-	Epoch       = 1721426
-	MinMonthLen = 29
-	MaxMonthLen = 31
-	AvgYearLen  = 365.2425 // FIXME
+	Name  = "gregorian"
+	Desc  = "Gregorian"
+	Epoch = 1721426
+
+	MinMonthLen uint8 = 29
+	MaxMonthLen uint8 = 31
+
+	AvgYearLen = 365.2425 // FIXME
 )
 
 var MonthNames = []string{
@@ -75,7 +77,7 @@ func ToJd(date scal.Date) int {
 	t := time.Date(
 		date.Year,
 		time.Month(date.Month),
-		date.Day,
+		int(date.Day),
 		0, 0, 0,
 		0,
 		time.UTC,
@@ -90,15 +92,15 @@ func JdTo(jd int) scal.Date {
 	)
 	return scal.Date{
 		t.Year(),
-		int(t.Month()),
-		t.Day(),
+		uint8(t.Month()),
+		uint8(t.Day()),
 	}
 }
 
-func GetMonthLen(year int, month int) int {
+func GetMonthLen(year int, month uint8) uint8 {
 	if month == 12 {
-		return ToJd(scal.Date{year + 1, 1, 1}) - ToJd(scal.Date{year, 12, 1})
+		return uint8(ToJd(scal.Date{year + 1, 1, 1}) - ToJd(scal.Date{year, 12, 1}))
 	} else {
-		return ToJd(scal.Date{year, month + 1, 1}) - ToJd(scal.Date{year, month, 1})
+		return uint8(ToJd(scal.Date{year, month + 1, 1}) - ToJd(scal.Date{year, month, 1}))
 	}
 }

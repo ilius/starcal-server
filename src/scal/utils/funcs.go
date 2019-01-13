@@ -97,7 +97,7 @@ func GetUtcOffsetByGDate(gdate scal.Date, loc *time.Location) int {
 	t := time.Date(
 		gdate.Year,
 		time.Month(gdate.Month), // gdate.Month is int
-		gdate.Day,
+		int(gdate.Day),
 		0,   // hour
 		0,   // min
 		0,   // sec
@@ -127,8 +127,8 @@ func GetUtcOffsetCurrent(loc *time.Location) int {
 func GetEpochByGDate(gdate scal.Date, loc *time.Location) int64 {
 	t := time.Date(
 		gdate.Year,
-		time.Month(gdate.Month), // gdate.Month is int
-		gdate.Day,
+		time.Month(int(gdate.Month)), // gdate.Month is uint8
+		int(gdate.Day),
 		0,   // hour
 		0,   // min
 		0,   // sec
@@ -187,8 +187,8 @@ func GetJhmsByEpoch(epoch int64, loc *time.Location) (int, scal.HMS) {
 	t := time.Unix(epoch, 0).In(loc) // .In useful? FIXME
 	return gregorian.ToJd(scal.Date{
 		t.Year(),
-		int(t.Month()),
-		t.Day(),
+		uint8(t.Month()),
+		uint8(t.Day()),
 	}), scal.HMS{t.Hour(), t.Minute(), t.Second()}
 }
 
@@ -196,8 +196,8 @@ func GetEpochByJhms(jd int, hms scal.HMS, loc *time.Location) int64 {
 	gdate := gregorian.JdTo(jd)
 	t := time.Date(
 		gdate.Year,
-		time.Month(gdate.Month), // gdate.Month is int
-		gdate.Day,
+		time.Month(gdate.Month), // gdate.Month is uint8
+		int(gdate.Day),
 		hms.Hour,
 		hms.Minute,
 		hms.Second,
@@ -216,7 +216,7 @@ func GetJdAndSecondsFromEpoch(epoch int64, loc *time.Location) (int, int) {
 func GetCurrentDate(calTypeName string) (scal.Date, error) {
 	t := time.Now() // .In(loc)
 	if calTypeName == "gregorian" {
-		return scal.Date{t.Year(), int(t.Month()), t.Day()}, nil
+		return scal.Date{t.Year(), uint8(t.Month()), uint8(t.Day())}, nil
 	}
 	calType, ok := cal_types.CalTypesMap[calTypeName]
 	if !ok {

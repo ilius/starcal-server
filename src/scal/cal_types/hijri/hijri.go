@@ -27,12 +27,14 @@ import (
 // ###### Common Globals #######
 
 const (
-	Name        = "hijri"
-	Desc        = "Hijri(Islamic)"
-	Epoch       = 1948440
-	MinMonthLen = 29
-	MaxMonthLen = 30
-	AvgYearLen  = 354.3666 // FIXME
+	Name  = "hijri"
+	Desc  = "Hijri(Islamic)"
+	Epoch = 1948440
+
+	MinMonthLen uint8 = 29
+	MaxMonthLen uint8 = 30
+
+	AvgYearLen = 354.3666 // FIXME
 )
 
 var MonthNames = []string{
@@ -74,7 +76,7 @@ func IsLeap(year int) bool {
 }
 
 func ToJd(date scal.Date) int {
-	return (date.Day +
+	return (int(date.Day) +
 		int(math.Ceil(29.5*float64(date.Month-1))) +
 		(date.Year-1)*354 +
 		(11*date.Year+3)/30 +
@@ -84,17 +86,17 @@ func ToJd(date scal.Date) int {
 func JdTo(jd int) scal.Date {
 	// jdf := jd + 0.5
 	year := (30*(jd-1-Epoch) + 10646) / 10631
-	month := utils.IntMin(
+	month := uint8(utils.IntMin(
 		12,
 		int(math.Ceil(
 			(float64(jd)+0.5-float64(ToJd(scal.Date{year, 1, 1})))/29.5,
 		)),
-	)
-	day := jd - ToJd(scal.Date{year, month, 1}) + 1
+	))
+	day := uint8(jd - ToJd(scal.Date{year, month, 1}) + 1)
 	return scal.Date{year, month, day}
 }
 
-func GetMonthLen(year int, month int) int {
+func GetMonthLen(year int, month uint8) uint8 {
 	if month%2 == 1 {
 		return 30
 	}

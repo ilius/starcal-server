@@ -104,9 +104,9 @@ func TestConvert(t *testing.T) {
 	startYear := 1970
 	endYear := 2050
 	for year := startYear; year < endYear; year++ {
-		for month := 1; month <= 12; month++ {
+		for month := uint8(1); month <= 12; month++ {
 			var monthLen = GetMonthLen(year, month)
-			for day := 1; day <= monthLen; day++ {
+			for day := uint8(1); day <= monthLen; day++ {
 				var date = scal.Date{year, month, day}
 				var jd = ToJd(date)
 				var ndate = JdTo(jd)

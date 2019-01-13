@@ -51,7 +51,7 @@ var MonthNamesAb = []string{
 
 // #############################
 
-var monthLen = []int{
+var monthLen = []uint8{
 	31,
 	28, // (leap years: 29)
 	31,
@@ -60,7 +60,7 @@ var monthLen = []int{
 	31, 30, 31,
 }
 
-/*var monthLenSum = []int{
+/*var monthLenSum = []uint8{
 	0, 31, 59,
 	90, 120, 151,
 	181, 212, 243,
@@ -120,10 +120,10 @@ func ToJd(date scal.Date) int {
 		y += 1
 	}
 
-	m := date.Month + 12*a - 3
+	m := int(date.Month) + 12*a - 3
 
 	return (365*y + y/4 - y/100 + y/400 - 32045 +
-		(153*m+2)/5 + date.Day)
+		(153*m+2)/5 + int(date.Day))
 }
 
 func JdTo(jd int) scal.Date {
@@ -139,8 +139,8 @@ func JdTo(jd int) scal.Date {
 	d := (4*c + 3) / 1461
 	e := c - 1461*d/4
 	m := (5*e + 2) / 153
-	day := e - (153*m+2)/5 + 1
-	month := m + 3 - 12*(m/10)
+	day := uint8(e - (153*m+2)/5 + 1)
+	month := uint8(m + 3 - 12*(m/10))
 	year := 100*b + d - 4800 + (m / 10)
 	// If year is -ve then is BC. In Gregorian there is no year 0,
 	// but the maths is easier if we pretend there is,
@@ -151,7 +151,7 @@ func JdTo(jd int) scal.Date {
 	return scal.Date{year, month, day}
 }
 
-func GetMonthLen(year int, month int) int {
+func GetMonthLen(year int, month uint8) uint8 {
 	if month == 2 {
 		if IsLeap(year) {
 			return 29

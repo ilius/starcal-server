@@ -113,7 +113,7 @@ func TestToJd(t *testing.T) {
 }
 
 func TestMonthLen(t *testing.T) {
-	testMap := map[[2]int]int{
+	testMap := map[[2]int]uint8{
 		{1436, 1}:  30,
 		{1436, 2}:  29,
 		{1436, 3}:  30,
@@ -164,7 +164,7 @@ func TestMonthLen(t *testing.T) {
 		{1439, 12}: 30,
 	}
 	for ym, mLen := range testMap {
-		if mLen != GetMonthLen(ym[0], ym[1]) {
+		if mLen != GetMonthLen(ym[0], uint8(ym[1])) {
 			t.Errorf("Wrong: mLen=%v, year=%v, month=%v", mLen, ym[0], ym[1])
 		}
 	}
@@ -174,9 +174,9 @@ func TestConvert(t *testing.T) {
 	startYear := 1390
 	endYear := 1480
 	for year := startYear; year < endYear; year++ {
-		for month := 1; month <= 12; month++ {
+		for month := uint8(1); month <= 12; month++ {
 			var monthLen = GetMonthLen(year, month)
-			for day := 1; day <= monthLen; day++ {
+			for day := uint8(1); day <= monthLen; day++ {
 				var date = scal.Date{year, month, day}
 				var jd = ToJd(date)
 				var ndate = JdTo(jd)

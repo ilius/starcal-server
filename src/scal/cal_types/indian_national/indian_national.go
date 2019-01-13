@@ -27,12 +27,14 @@ import "scal/cal_types/gregorian"
 // ###### Common Globals #######
 
 const (
-	Name        = "indian_national"
-	Desc        = "Indian National"
-	Epoch       = 1749994
-	MinMonthLen = 30
-	MaxMonthLen = 31
-	AvgYearLen  = 365.2425 // FIXME
+	Name  = "indian_national"
+	Desc  = "Indian National"
+	Epoch = 1749994
+
+	MinMonthLen uint8 = 30
+	MaxMonthLen uint8 = 31
+
+	AvgYearLen = 365.2425 // FIXME
 )
 
 var MonthNames = []string{
@@ -96,11 +98,11 @@ func ToJd(date scal.Date) int {
 	// Note: could be expressed more efficiently, but I think this is clearer
 	var jd int
 	if date.Month == 1 {
-		jd = jdFirstDayOfYear + date.Day - 1
+		jd = jdFirstDayOfYear + int(date.Day) - 1
 	} else if date.Month <= 6 {
-		jd = jdFirstDayOfYear + daysInMonth1 + (date.Month-2)*31 + date.Day - 1
+		jd = jdFirstDayOfYear + daysInMonth1 + (int(date.Month)-2)*31 + int(date.Day) - 1
 	} else { // date.Month > 6
-		jd = jdFirstDayOfYear + daysInMonth1 + 5*31 + (date.Month-7)*30 + date.Day - 1
+		jd = jdFirstDayOfYear + daysInMonth1 + 5*31 + (int(date.Month)-7)*30 + int(date.Day) - 1
 	}
 	return jd
 
@@ -155,10 +157,10 @@ func JdTo(jd int) scal.Date {
 		month = (indianDayOfYear-daysInMonth1-5*31-1)/30 + 7
 		day = indianDayOfYear - daysInMonth1 - 5*31 - (month-7)*30
 	}
-	return scal.Date{year, month, day}
+	return scal.Date{year, uint8(month), uint8(day)}
 }
 
-func GetMonthLen(year int, month int) int {
+func GetMonthLen(year int, month uint8) uint8 {
 	if month == 1 {
 		if IsLeap(year) {
 			return 31

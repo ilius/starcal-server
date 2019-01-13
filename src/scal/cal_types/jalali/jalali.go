@@ -30,12 +30,14 @@ import "scal/cal_types"
 // ###### Common Globals #######
 
 const (
-	Name        = "jalali"
-	Desc        = "Jalali"
-	Epoch       = 1948321
-	MinMonthLen = 29
-	MaxMonthLen = 31
-	AvgYearLen  = 365.2425 // FIXME
+	Name  = "jalali"
+	Desc  = "Jalali"
+	Epoch = 1948321
+
+	MinMonthLen uint8 = 29
+	MaxMonthLen uint8 = 31
+
+	AvgYearLen = 365.2425 // FIXME
 )
 
 var MonthNames = []string{
@@ -49,7 +51,7 @@ var MonthNamesAb = []string{
 
 // ###### Other Globals  #######
 
-var monthLen = []int{31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30}
+var monthLen = []uint8{31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30}
 var monthLenSum = []int{0, 31, 62, 93, 124, 155, 186, 216, 246, 276, 306, 336, 366}
 
 // #############################
@@ -92,8 +94,9 @@ func ToJd(date scal.Date) int {
 		epbase = 473
 	}
 	epyear := 474 + epbase%2820
-	jd := date.Day +
-		(date.Month-1)*30 + IntMin(6, date.Month-1) +
+	mm := int(date.Month - 1)
+	jd := int(date.Day) +
+		mm*30 + IntMin(6, mm) +
 		(epyear*682-110)/2816 +
 		(epyear-1)*365 +
 		epbase/2820*1029983 +
@@ -118,12 +121,12 @@ func JdTo(jd int) scal.Date {
 		year--
 	}
 	yday := jd - ToJd(scal.Date{year, 1, 1}) + 1
-	month := BisectLeft(monthLenSum, yday)
-	day := yday - monthLenSum[month-1]
+	month := uint8(BisectLeft(monthLenSum, yday))
+	day := uint8(yday - monthLenSum[month-1])
 	return scal.Date{year, month, day}
 }
 
-func GetMonthLen(year int, month int) int {
+func GetMonthLen(year int, month uint8) uint8 {
 	if month == 12 {
 		if IsLeap(year) {
 			return 30

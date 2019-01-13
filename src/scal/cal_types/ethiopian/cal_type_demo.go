@@ -18,7 +18,7 @@ func PrintToJd(startYear int, endYear int) {
 	var date scal.Date
 	var jd int
 	for year := startYear; year < endYear; year++ {
-		for month := 1; month <= 12; month++ {
+		for month := uint8(1); month <= 12; month++ {
 			date = scal.Date{year, month, 1}
 			jd = ToJd(date)
 			fmt.Printf(

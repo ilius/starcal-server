@@ -28,12 +28,14 @@ import (
 // ###### Common Globals #######
 
 const (
-	Name        = "julian"
-	Desc        = "Julian"
-	Epoch       = 1721058
-	MinMonthLen = 28
-	MaxMonthLen = 32
-	AvgYearLen  = 365.25
+	Name  = "julian"
+	Desc  = "Julian"
+	Epoch = 1721058
+
+	MinMonthLen uint8 = 28
+	MaxMonthLen uint8 = 32
+
+	AvgYearLen = 365.25
 )
 
 var MonthNames = []string{
@@ -51,7 +53,7 @@ var MonthNamesAb = []string{
 
 // #############################
 
-var monthLen = []int{
+var monthLen = []uint8{
 	31,
 	28, // (leap years: 29)
 	31,
@@ -95,7 +97,7 @@ func IsLeap(year int) bool {
 	return year%4 == 0
 }
 
-func getYearDays(month int, leap bool) int {
+func getYearDays(month uint8, leap bool) int {
 	// month: 1..13
 	ydays := monthLenSum[month-1]
 	if leap && month < 3 {
@@ -104,13 +106,13 @@ func getYearDays(month int, leap bool) int {
 	return ydays
 }
 
-func getMonthDayFromYdays(yDays int, leap bool) (int, int) {
+func getMonthDayFromYdays(yDays int, leap bool) (uint8, uint8) {
 	// yDays: int, number of days in year
-	month := 1
+	month := uint8(1)
 	for month < 12 && yDays > getYearDays(month+1, leap) {
 		month += 1
 	}
-	day := yDays - getYearDays(month, leap)
+	day := uint8(yDays - getYearDays(month, leap))
 	return month, day
 }
 
@@ -120,7 +122,7 @@ func ToJd(date scal.Date) int {
 		1461*quadCount +
 		365*yMode +
 		getYearDays(date.Month, yMode == 0) +
-		date.Day)
+		int(date.Day))
 }
 
 func JdTo(jd int) scal.Date {
@@ -139,7 +141,7 @@ func JdTo(jd int) scal.Date {
 	return scal.Date{year, month, day}
 }
 
-func GetMonthLen(year int, month int) int {
+func GetMonthLen(year int, month uint8) uint8 {
 	if month == 2 {
 		if IsLeap(year) {
 			return 29

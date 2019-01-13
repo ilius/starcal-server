@@ -27,30 +27,30 @@ type CalType interface {
 	Name() string
 	Desc() string
 	Epoch() int
-	MinMonthLen() int
-	MaxMonthLen() int
+	MinMonthLen() uint8
+	MaxMonthLen() uint8
 	AvgYearLen() float64
 	MonthNames() []string
 	MonthNamesAb() []string
 	IsLeap(year int) bool
 	ToJd(date scal.Date) int
 	JdTo(jd int) scal.Date
-	GetMonthLen(year int, month int) int
+	GetMonthLen(year int, month uint8) uint8
 }
 
 type calTypeStruct struct {
 	name         string
 	desc         string
 	epoch        int
-	minMonthLen  int
-	maxMonthLen  int
+	minMonthLen  uint8
+	maxMonthLen  uint8
 	avgYearLen   float64
 	monthNames   []string
 	monthNamesAb []string
 	isLeap       func(year int) bool
 	toJd         func(date scal.Date) int
 	jdTo         func(jd int) scal.Date
-	getMonthLen  func(year int, month int) int
+	getMonthLen  func(year int, month uint8) uint8
 }
 
 func (ct *calTypeStruct) Name() string {
@@ -62,10 +62,10 @@ func (ct *calTypeStruct) Desc() string {
 func (ct *calTypeStruct) Epoch() int {
 	return ct.epoch
 }
-func (ct *calTypeStruct) MinMonthLen() int {
+func (ct *calTypeStruct) MinMonthLen() uint8 {
 	return ct.minMonthLen
 }
-func (ct *calTypeStruct) MaxMonthLen() int {
+func (ct *calTypeStruct) MaxMonthLen() uint8 {
 	return ct.maxMonthLen
 }
 func (ct *calTypeStruct) AvgYearLen() float64 {
@@ -86,7 +86,7 @@ func (ct *calTypeStruct) ToJd(date scal.Date) int {
 func (ct *calTypeStruct) JdTo(jd int) scal.Date {
 	return ct.jdTo(jd)
 }
-func (ct *calTypeStruct) GetMonthLen(year int, month int) int {
+func (ct *calTypeStruct) GetMonthLen(year int, month uint8) uint8 {
 	return ct.getMonthLen(year, month)
 }
 
@@ -97,15 +97,15 @@ func RegisterCalType(
 	name string,
 	desc string,
 	epoch int,
-	minMonthLen int,
-	maxMonthLen int,
+	minMonthLen uint8,
+	maxMonthLen uint8,
 	avgYearLen float64,
 	monthNames []string,
 	monthNamesAb []string,
 	isLeap func(year int) bool,
 	toJd func(date scal.Date) int,
 	jdTo func(jd int) scal.Date,
-	getMonthLen func(year int, month int) int,
+	getMonthLen func(year int, month uint8) uint8,
 ) {
 	calType := &calTypeStruct{
 		name:         name,

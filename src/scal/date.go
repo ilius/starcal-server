@@ -9,8 +9,8 @@ import (
 
 type Date struct {
 	Year  int
-	Month int
-	Day   int
+	Month uint8
+	Day   uint8
 }
 
 func (date Date) String() string {
@@ -43,7 +43,7 @@ func ParseDate(str string) (Date, error) {
 	if err != nil {
 		return Date{}, err
 	}
-	return Date{int(y), int(m), int(d)}, nil
+	return Date{int(y), uint8(m), uint8(d)}, nil
 
 }
 
