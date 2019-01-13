@@ -28,8 +28,8 @@ func TestTimeZone(t *testing.T) {
 		gdate := gregorian.JdTo(jd)
 		tm := time.Date(
 			gdate.Year,
-			time.Month(gdate.Month), // date.Month is int
-			gdate.Day,
+			time.Month(gdate.Month), // date.Month is uint8
+			int(gdate.Day),
 			0,   // hour
 			0,   // min
 			0,   // sec
