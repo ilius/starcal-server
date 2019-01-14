@@ -6,10 +6,10 @@ import "scal/storage"
 
 type UniversityExamEventModel struct {
 	BaseEventModel  `bson:",inline" json:",inline"`
-	Jd              int `bson:"jd" json:"jd"`
-	DayStartSeconds int `bson:"dayStartSeconds" json:"dayStartSeconds"`
-	DayEndSeconds   int `bson:"dayEndSeconds" json:"dayEndSeconds"`
-	CourseId        int `bson:"courseId" json:"courseId"`
+	Jd              int    `bson:"jd" json:"jd"`
+	DayStartSeconds uint32 `bson:"dayStartSeconds" json:"dayStartSeconds"`
+	DayEndSeconds   uint32 `bson:"dayEndSeconds" json:"dayEndSeconds"`
+	CourseId        int    `bson:"courseId" json:"courseId"`
 }
 
 func (self UniversityExamEventModel) Type() string {
@@ -29,25 +29,25 @@ func LoadUniversityExamEventModel(db storage.Database, sha1 string) (
 type UniversityExamEvent struct {
 	BaseEvent
 	jd              int
-	dayStartSeconds int
-	dayEndSeconds   int
+	dayStartSeconds uint32
+	dayEndSeconds   uint32
 	courseId        int
 }
 
 func (self UniversityExamEvent) Type() string {
 	return "universityExam"
 }
-func (self UniversityExamEvent) DayStartSeconds() int {
+func (self UniversityExamEvent) DayStartSeconds() uint32 {
 	return self.dayStartSeconds
 }
-func (self UniversityExamEvent) DayEndSeconds() int {
+func (self UniversityExamEvent) DayEndSeconds() uint32 {
 	return self.dayEndSeconds
 }
 func (self UniversityExamEvent) DayStartHMS() scal.HMS {
-	return GetHmsBySeconds(self.dayStartSeconds)
+	return GetHmsBySeconds(int(self.dayStartSeconds))
 }
 func (self UniversityExamEvent) DayEndHMS() scal.HMS {
-	return GetHmsBySeconds(self.dayEndSeconds)
+	return GetHmsBySeconds(int(self.dayEndSeconds))
 }
 
 func (self UniversityExamEvent) Model() UniversityExamEventModel {
