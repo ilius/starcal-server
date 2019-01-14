@@ -19,7 +19,7 @@ type TaskEventModel struct {
 	BaseEventModel `bson:",inline" json:",inline"`
 	StartTime      *time.Time `bson:"startTime" json:"startTime"`
 	EndTime        *time.Time `bson:"endTime" json:"endTime"`
-	DurationUnit   int        `bson:"durationUnit" json:"durationUnit"`
+	DurationUnit   uint       `bson:"durationUnit" json:"durationUnit"`
 }
 
 func (self TaskEventModel) Type() string {
@@ -40,7 +40,7 @@ type TaskEvent struct {
 	BaseEvent
 	startTime    time.Time
 	endTime      time.Time
-	durationUnit int
+	durationUnit uint
 }
 
 func (self TaskEvent) Type() string {
@@ -58,7 +58,7 @@ func (self TaskEvent) EndTime() time.Time {
 	}
 	return self.endTime
 }
-func (self TaskEvent) DurationUnit() int {
+func (self TaskEvent) DurationUnit() uint {
 	return self.durationUnit
 }
 func (self TaskEvent) String() string {

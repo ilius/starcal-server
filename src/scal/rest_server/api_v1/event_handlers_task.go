@@ -485,7 +485,7 @@ func UpdateTask(req Request) (*Response, error) {
 	) {
 		eventMeta.FieldsMtime["endTime"] = now
 	}
-	// PARAM="durationUnit", PARAM_TYPE="int", PARAM_INT=true
+	// PARAM="durationUnit", PARAM_TYPE="uint", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.DurationUnit,
 		lastEventModel.DurationUnit,
@@ -704,7 +704,7 @@ func PatchTask(req Request) (*Response, error) {
 	{
 		rawValue, ok := patchMap["durationUnit"]
 		if ok {
-			// json Unmarshal converts int to float64
+			// json Unmarshal converts uint to float64
 			value, typeOk := rawValue.(float64)
 			if !typeOk {
 				return nil, NewError(
@@ -713,7 +713,7 @@ func PatchTask(req Request) (*Response, error) {
 					nil,
 				)
 			}
-			eventModel.DurationUnit = int(value)
+			eventModel.DurationUnit = uint(value)
 			delete(patchMap, "durationUnit")
 			eventMeta.FieldsMtime["durationUnit"] = now
 		}
@@ -1050,7 +1050,7 @@ func MergeTask(req Request) (*Response, error) {
 		}
 	}()
 	func() {
-		// PARAM="durationUnit", PARAM_TYPE="int", PARAM_INT=true
+		// PARAM="durationUnit", PARAM_TYPE="uint", PARAM_INT=true
 		inputValue := inputEventModel.DurationUnit
 		lastValue := lastEventModel.DurationUnit
 		if reflect.DeepEqual(inputValue, lastValue) {
