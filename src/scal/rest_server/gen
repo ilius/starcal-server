@@ -10,7 +10,7 @@ if [ ! -f $srcDir/scal/settings/settings.go ] ; then
 fi
 
 function dir_mtime() {
-	find $1 -exec stat -c "%Y" '{}' \; | sort -n -r | head -1
+	find $1 -exec stat -c "%Y" '{}' \; | /usr/bin/sort -n -r | head -1
 }
 
 function need_build_gen() {
