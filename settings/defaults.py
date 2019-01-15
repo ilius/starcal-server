@@ -114,6 +114,8 @@ day = 24 * 3600
 
 ERRORS_CHANNEL_SIZE = 1000
 
+ERRORS_LOOP_SLEEP_DURATION_SECONDS = 10
+
 # 0 means never expire
 ERRORS_EXPIRE_AFTER_SECONDS = {
 	"Internal": 			365 * day,

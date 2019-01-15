@@ -12,8 +12,6 @@ import (
 
 var errorChan = make(chan *errorChanItem, settings.ERRORS_CHANNEL_SIZE)
 
-var errorLoopSleepDuration time.Duration = 10 * time.Second
-
 type errorChanItem struct {
 	Time    time.Time
 	Request ripo.ExtendedRequest
@@ -109,7 +107,7 @@ func saveErrors(byCode map[ripo.Code][]*errorChanItem) {
 
 func ErrorSaverLoop() {
 	byCode := map[ripo.Code][]*errorChanItem{}
-	ticker := time.NewTicker(errorLoopSleepDuration)
+	ticker := time.NewTicker(settings.ERRORS_LOOP_SLEEP_DURATION_SECONDS * time.Second)
 	for {
 		select {
 		case item := <-errorChan:
