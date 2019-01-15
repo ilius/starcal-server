@@ -10,7 +10,7 @@ type YearlyEventModel struct {
 	StartYearEnable bool  `bson:"startYearEnable" json:"startYearEnable"`
 }
 
-func (self YearlyEventModel) Type() string {
+func (YearlyEventModel) Type() string {
 	return "yearly"
 }
 
@@ -32,41 +32,42 @@ type YearlyEvent struct {
 	startYearEnable bool
 }
 
-func (self YearlyEvent) Type() string {
+func (YearlyEvent) Type() string {
 	return "yearly"
 }
-func (self YearlyEvent) Month() uint8 {
-	return self.month
+func (event YearlyEvent) Month() uint8 {
+	return event.month
 }
-func (self YearlyEvent) Day() uint8 {
-	return self.day
+func (event YearlyEvent) Day() uint8 {
+	return event.day
 }
-func (self YearlyEvent) StartYear() int {
-	return self.startYear
+func (event YearlyEvent) StartYear() int {
+	return event.startYear
 }
-func (self YearlyEvent) StartYearEnable() bool {
-	return self.startYearEnable
+func (event YearlyEvent) StartYearEnable() bool {
+	return event.startYearEnable
 }
 
-func (self YearlyEvent) Model() YearlyEventModel {
+func (event YearlyEvent) Model() YearlyEventModel {
 	return YearlyEventModel{
-		BaseEventModel:  self.BaseModel(),
-		Month:           self.month,
-		Day:             self.day,
-		StartYear:       self.startYear,
-		StartYearEnable: self.startYearEnable,
+		BaseEventModel:  event.BaseModel(),
+		Month:           event.month,
+		Day:             event.day,
+		StartYear:       event.startYear,
+		StartYearEnable: event.startYearEnable,
 	}
 }
-func (self YearlyEventModel) GetEvent() (YearlyEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+
+func (model YearlyEventModel) GetEvent() (YearlyEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return YearlyEvent{}, err
 	}
 	return YearlyEvent{
 		BaseEvent:       baseEvent,
-		month:           self.Month,
-		day:             self.Day,
-		startYear:       self.StartYear,
-		startYearEnable: self.StartYearEnable,
+		month:           model.Month,
+		day:             model.Day,
+		startYear:       model.StartYear,
+		startYearEnable: model.StartYearEnable,
 	}, nil
 }

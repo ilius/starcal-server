@@ -8,7 +8,7 @@ type LifeTimeEventModel struct {
 	EndJd          int `bson:"endJd" json:"endJd"`
 }
 
-func (self LifeTimeEventModel) Type() string {
+func (LifeTimeEventModel) Type() string {
 	return "lifeTime"
 }
 
@@ -28,31 +28,32 @@ type LifeTimeEvent struct {
 	endJd   int
 }
 
-func (self LifeTimeEvent) Type() string {
+func (event LifeTimeEvent) Type() string {
 	return "lifeTime"
 }
-func (self LifeTimeEvent) StartJd() int {
-	return self.startJd
+func (event LifeTimeEvent) StartJd() int {
+	return event.startJd
 }
-func (self LifeTimeEvent) EndJd() int {
-	return self.endJd
+func (event LifeTimeEvent) EndJd() int {
+	return event.endJd
 }
 
-func (self LifeTimeEvent) Model() LifeTimeEventModel {
+func (event LifeTimeEvent) Model() LifeTimeEventModel {
 	return LifeTimeEventModel{
-		BaseEventModel: self.BaseModel(),
-		StartJd:        self.startJd,
-		EndJd:          self.endJd,
+		BaseEventModel: event.BaseModel(),
+		StartJd:        event.startJd,
+		EndJd:          event.endJd,
 	}
 }
-func (self LifeTimeEventModel) GetEvent() (LifeTimeEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+
+func (model LifeTimeEventModel) GetEvent() (LifeTimeEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return LifeTimeEvent{}, err
 	}
 	return LifeTimeEvent{
 		BaseEvent: baseEvent,
-		startJd:   self.StartJd,
-		endJd:     self.EndJd,
+		startJd:   model.StartJd,
+		endJd:     model.EndJd,
 	}, nil
 }

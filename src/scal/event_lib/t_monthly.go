@@ -16,7 +16,7 @@ type MonthlyEventModel struct {
 	DayEndSeconds   uint32 `bson:"dayEndSeconds" json:"dayEndSeconds"`
 }
 
-func (self MonthlyEventModel) Type() string {
+func (MonthlyEventModel) Type() string {
 	return "monthly"
 }
 
@@ -39,52 +39,53 @@ type MonthlyEvent struct {
 	dayEndSeconds   uint32
 }
 
-func (self MonthlyEvent) Type() string {
+func (MonthlyEvent) Type() string {
 	return "monthly"
 }
-func (self MonthlyEvent) StartJd() int {
-	return self.startJd
+func (event MonthlyEvent) StartJd() int {
+	return event.startJd
 }
-func (self MonthlyEvent) EndJd() int {
-	return self.endJd
+func (event MonthlyEvent) EndJd() int {
+	return event.endJd
 }
-func (self MonthlyEvent) Day() uint8 {
-	return self.day
+func (event MonthlyEvent) Day() uint8 {
+	return event.day
 }
-func (self MonthlyEvent) DayStartSeconds() uint32 {
-	return self.dayStartSeconds
+func (event MonthlyEvent) DayStartSeconds() uint32 {
+	return event.dayStartSeconds
 }
-func (self MonthlyEvent) DayEndSeconds() uint32 {
-	return self.dayEndSeconds
+func (event MonthlyEvent) DayEndSeconds() uint32 {
+	return event.dayEndSeconds
 }
-func (self MonthlyEvent) DayStartHMS() scal.HMS {
-	return GetHmsBySeconds(int(self.dayStartSeconds))
+func (event MonthlyEvent) DayStartHMS() scal.HMS {
+	return GetHmsBySeconds(int(event.dayStartSeconds))
 }
-func (self MonthlyEvent) DayEndHMS() scal.HMS {
-	return GetHmsBySeconds(int(self.dayEndSeconds))
+func (event MonthlyEvent) DayEndHMS() scal.HMS {
+	return GetHmsBySeconds(int(event.dayEndSeconds))
 }
 
-func (self MonthlyEvent) Model() MonthlyEventModel {
+func (event MonthlyEvent) Model() MonthlyEventModel {
 	return MonthlyEventModel{
-		BaseEventModel:  self.BaseModel(),
-		StartJd:         self.startJd,
-		EndJd:           self.endJd,
-		Day:             self.day,
-		DayStartSeconds: self.dayStartSeconds,
-		DayEndSeconds:   self.dayEndSeconds,
+		BaseEventModel:  event.BaseModel(),
+		StartJd:         event.startJd,
+		EndJd:           event.endJd,
+		Day:             event.day,
+		DayStartSeconds: event.dayStartSeconds,
+		DayEndSeconds:   event.dayEndSeconds,
 	}
 }
-func (self MonthlyEventModel) GetEvent() (MonthlyEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+
+func (model MonthlyEventModel) GetEvent() (MonthlyEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return MonthlyEvent{}, err
 	}
 	return MonthlyEvent{
 		BaseEvent:       baseEvent,
-		startJd:         self.StartJd,
-		endJd:           self.EndJd,
-		day:             self.Day,
-		dayStartSeconds: self.DayStartSeconds,
-		dayEndSeconds:   self.DayEndSeconds,
+		startJd:         model.StartJd,
+		endJd:           model.EndJd,
+		day:             model.Day,
+		dayStartSeconds: model.DayStartSeconds,
+		dayEndSeconds:   model.DayEndSeconds,
 	}, nil
 }

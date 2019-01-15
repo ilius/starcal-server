@@ -19,25 +19,25 @@ type EventAttendingModel struct {
 	ModifiedTime time.Time     `bson:"modifiedTime"`
 }
 
-func (self EventAttendingModel) UniqueM() scal.M {
+func (model EventAttendingModel) UniqueM() scal.M {
 	return scal.M{
-		"eventId": self.EventId,
-		"email":   self.Email,
+		"eventId": model.EventId,
+		"email":   model.Email,
 	}
 }
-func (self EventAttendingModel) Collection() string {
+func (EventAttendingModel) Collection() string {
 	return storage.C_attending
 }
-func (self *EventAttendingModel) Save(db storage.Database) error {
-	if self.Attending == UNKNOWN {
-		return db.Remove(self)
+func (model *EventAttendingModel) Save(db storage.Database) error {
+	if model.Attending == UNKNOWN {
+		return db.Remove(model)
 	}
-	return db.Upsert(self)
-	/*if self.Id == nil {
-	      return db.Insert(self)
-	  } else {
-	      return db.Update(self)
-	  }*/
+	return db.Upsert(model)
+	// if model.Id == nil {
+	// 	return db.Insert(model)
+	// } else {
+	// 	return db.Update(model)
+	// }
 }
 
 func LoadEventAttendingModel(

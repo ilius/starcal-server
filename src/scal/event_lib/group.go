@@ -17,30 +17,30 @@ type EventGroupModel struct {
 	ReadAccessEmails []string      `bson:"readAccessEmails,omitempty" json:"readAccessEmails,omitempty"`
 }
 
-func (self EventGroupModel) UniqueM() scal.M {
+func (model EventGroupModel) UniqueM() scal.M {
 	return scal.M{
-		"_id": self.Id,
+		"_id": model.Id,
 	}
 }
-func (self EventGroupModel) Collection() string {
+func (EventGroupModel) Collection() string {
 	return storage.C_group
 }
-func (self EventGroupModel) EmailCanAdd(email string) bool {
-	if email == self.OwnerEmail {
+func (model EventGroupModel) EmailCanAdd(email string) bool {
+	if email == model.OwnerEmail {
 		return true
 	}
-	for _, aEmail := range self.AddAccessEmails {
+	for _, aEmail := range model.AddAccessEmails {
 		if email == aEmail {
 			return true
 		}
 	}
 	return false
 }
-func (self EventGroupModel) CanRead(email string) bool {
-	if email == self.OwnerEmail {
+func (model EventGroupModel) CanRead(email string) bool {
+	if email == model.OwnerEmail {
 		return true
 	}
-	for _, aEmail := range self.ReadAccessEmails {
+	for _, aEmail := range model.ReadAccessEmails {
 		if email == aEmail {
 			return true
 		}
@@ -48,8 +48,8 @@ func (self EventGroupModel) CanRead(email string) bool {
 	return false
 }
 
-func (self *EventGroupModel) GetAccessCond(email string) scal.M {
-	if self.CanRead(email) {
+func (model *EventGroupModel) GetAccessCond(email string) scal.M {
+	if model.CanRead(email) {
 		return scal.M{}
 	} else {
 		return scal.M{
@@ -61,11 +61,12 @@ func (self *EventGroupModel) GetAccessCond(email string) scal.M {
 		}
 	}
 }
-func (self *EventGroupModel) GetLookupMetaAccessPipeline(
+
+func (model *EventGroupModel) GetLookupMetaAccessPipeline(
 	email string,
 	localField string,
 ) []scal.M {
-	if self.CanRead(email) {
+	if model.CanRead(email) {
 		return []scal.M{}
 	} else {
 		return []scal.M{

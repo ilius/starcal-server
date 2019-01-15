@@ -11,7 +11,7 @@ type AllDayTaskEventModel struct {
 	DurationEnable bool `bson:"durationEnable" json:"durationEnable"`
 }
 
-func (self AllDayTaskEventModel) Type() string {
+func (AllDayTaskEventModel) Type() string {
 	return "allDayTask"
 }
 
@@ -32,36 +32,40 @@ type AllDayTaskEvent struct {
 	durationEnable bool
 }
 
-func (self AllDayTaskEvent) Type() string {
+func (AllDayTaskEvent) Type() string {
 	return "allDayTask"
 }
-func (self AllDayTaskEvent) StartJd() int {
-	return self.startJd
-}
-func (self AllDayTaskEvent) EndJd() int {
-	return self.endJd
-}
-func (self AllDayTaskEvent) DurationEnable() bool {
-	return self.durationEnable
+
+func (event AllDayTaskEvent) StartJd() int {
+	return event.startJd
 }
 
-func (self AllDayTaskEvent) Model() AllDayTaskEventModel {
+func (event AllDayTaskEvent) EndJd() int {
+	return event.endJd
+}
+
+func (event AllDayTaskEvent) DurationEnable() bool {
+	return event.durationEnable
+}
+
+func (event AllDayTaskEvent) Model() AllDayTaskEventModel {
 	return AllDayTaskEventModel{
-		BaseEventModel: self.BaseModel(),
-		StartJd:        self.startJd,
-		EndJd:          self.endJd,
-		DurationEnable: self.durationEnable,
+		BaseEventModel: event.BaseModel(),
+		StartJd:        event.startJd,
+		EndJd:          event.endJd,
+		DurationEnable: event.durationEnable,
 	}
 }
-func (self AllDayTaskEventModel) GetEvent() (AllDayTaskEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+
+func (model AllDayTaskEventModel) GetEvent() (AllDayTaskEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return AllDayTaskEvent{}, err
 	}
 	return AllDayTaskEvent{
 		BaseEvent:      baseEvent,
-		startJd:        self.StartJd,
-		endJd:          self.EndJd,
-		durationEnable: self.DurationEnable,
+		startJd:        model.StartJd,
+		endJd:          model.EndJd,
+		durationEnable: model.DurationEnable,
 	}, nil
 }

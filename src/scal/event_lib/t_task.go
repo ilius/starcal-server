@@ -22,7 +22,7 @@ type TaskEventModel struct {
 	DurationUnit   uint       `bson:"durationUnit" json:"durationUnit"`
 }
 
-func (self TaskEventModel) Type() string {
+func (TaskEventModel) Type() string {
 	return "task"
 }
 
@@ -43,58 +43,59 @@ type TaskEvent struct {
 	durationUnit uint
 }
 
-func (self TaskEvent) Type() string {
+func (TaskEvent) Type() string {
 	return "task"
 }
-func (self TaskEvent) StartTime() time.Time {
-	if self.locEnable && self.loc != nil {
-		return self.startTime.In(self.loc)
+func (event TaskEvent) StartTime() time.Time {
+	if event.locEnable && event.loc != nil {
+		return event.startTime.In(event.loc)
 	}
-	return self.startTime
+	return event.startTime
 }
-func (self TaskEvent) EndTime() time.Time {
-	if self.locEnable && self.loc != nil {
-		return self.endTime.In(self.loc)
+func (event TaskEvent) EndTime() time.Time {
+	if event.locEnable && event.loc != nil {
+		return event.endTime.In(event.loc)
 	}
-	return self.endTime
+	return event.endTime
 }
-func (self TaskEvent) DurationUnit() uint {
-	return self.durationUnit
+func (event TaskEvent) DurationUnit() uint {
+	return event.durationUnit
 }
-func (self TaskEvent) String() string {
+func (event TaskEvent) String() string {
 	const time_format = "2006-01-02 15:04:05"
 	return fmt.Sprintf(
 		"Task: %v - %v",
-		self.StartTime().Format(time_format),
-		self.EndTime().Format(time_format),
+		event.StartTime().Format(time_format),
+		event.EndTime().Format(time_format),
 	)
 }
 
-func (self TaskEvent) Model() TaskEventModel {
-	startTime := self.startTime
-	endTime := self.endTime
+func (event TaskEvent) Model() TaskEventModel {
+	startTime := event.startTime
+	endTime := event.endTime
 	return TaskEventModel{
-		BaseEventModel: self.BaseModel(),
+		BaseEventModel: event.BaseModel(),
 		StartTime:      &startTime,
 		EndTime:        &endTime,
-		DurationUnit:   self.durationUnit,
+		DurationUnit:   event.durationUnit,
 	}
 }
-func (self TaskEventModel) GetEvent() (TaskEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+
+func (model TaskEventModel) GetEvent() (TaskEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return TaskEvent{}, err
 	}
-	if self.StartTime == nil {
+	if model.StartTime == nil {
 		return TaskEvent{}, errors.New("missing 'startTime'")
 	}
-	if self.EndTime == nil {
+	if model.EndTime == nil {
 		return TaskEvent{}, errors.New("missing 'endTime'")
 	}
 	return TaskEvent{
 		BaseEvent:    baseEvent,
-		startTime:    *self.StartTime,
-		endTime:      *self.EndTime,
-		durationUnit: self.DurationUnit,
+		startTime:    *model.StartTime,
+		endTime:      *model.EndTime,
+		durationUnit: model.DurationUnit,
 	}, nil
 }

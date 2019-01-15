@@ -12,7 +12,7 @@ type UniversityExamEventModel struct {
 	CourseId        int    `bson:"courseId" json:"courseId"`
 }
 
-func (self UniversityExamEventModel) Type() string {
+func (UniversityExamEventModel) Type() string {
 	return "universityExam"
 }
 
@@ -34,41 +34,42 @@ type UniversityExamEvent struct {
 	courseId        int
 }
 
-func (self UniversityExamEvent) Type() string {
+func (UniversityExamEvent) Type() string {
 	return "universityExam"
 }
-func (self UniversityExamEvent) DayStartSeconds() uint32 {
-	return self.dayStartSeconds
+func (event UniversityExamEvent) DayStartSeconds() uint32 {
+	return event.dayStartSeconds
 }
-func (self UniversityExamEvent) DayEndSeconds() uint32 {
-	return self.dayEndSeconds
+func (event UniversityExamEvent) DayEndSeconds() uint32 {
+	return event.dayEndSeconds
 }
-func (self UniversityExamEvent) DayStartHMS() scal.HMS {
-	return GetHmsBySeconds(int(self.dayStartSeconds))
+func (event UniversityExamEvent) DayStartHMS() scal.HMS {
+	return GetHmsBySeconds(int(event.dayStartSeconds))
 }
-func (self UniversityExamEvent) DayEndHMS() scal.HMS {
-	return GetHmsBySeconds(int(self.dayEndSeconds))
+func (event UniversityExamEvent) DayEndHMS() scal.HMS {
+	return GetHmsBySeconds(int(event.dayEndSeconds))
 }
 
-func (self UniversityExamEvent) Model() UniversityExamEventModel {
+func (event UniversityExamEvent) Model() UniversityExamEventModel {
 	return UniversityExamEventModel{
-		BaseEventModel:  self.BaseModel(),
-		Jd:              self.jd,
-		DayStartSeconds: self.dayStartSeconds,
-		DayEndSeconds:   self.dayEndSeconds,
-		CourseId:        self.courseId,
+		BaseEventModel:  event.BaseModel(),
+		Jd:              event.jd,
+		DayStartSeconds: event.dayStartSeconds,
+		DayEndSeconds:   event.dayEndSeconds,
+		CourseId:        event.courseId,
 	}
 }
-func (self UniversityExamEventModel) GetEvent() (UniversityExamEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+
+func (model UniversityExamEventModel) GetEvent() (UniversityExamEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return UniversityExamEvent{}, err
 	}
 	return UniversityExamEvent{
 		BaseEvent:       baseEvent,
-		jd:              self.Jd,
-		dayStartSeconds: self.DayStartSeconds,
-		dayEndSeconds:   self.DayEndSeconds,
-		courseId:        self.CourseId,
+		jd:              model.Jd,
+		dayStartSeconds: model.DayStartSeconds,
+		dayEndSeconds:   model.DayEndSeconds,
+		courseId:        model.CourseId,
 	}, nil
 }

@@ -7,7 +7,7 @@ type DailyNoteEventModel struct {
 	Jd             int `bson:"jd" json:"jd"`
 }
 
-func (self DailyNoteEventModel) Type() string {
+func (DailyNoteEventModel) Type() string {
 	return "dailyNote"
 }
 
@@ -26,26 +26,26 @@ type DailyNoteEvent struct {
 	jd int
 }
 
-func (self DailyNoteEvent) Type() string {
+func (DailyNoteEvent) Type() string {
 	return "dailyNote"
 }
-func (self DailyNoteEvent) Jd() int {
-	return self.jd
+func (event DailyNoteEvent) Jd() int {
+	return event.jd
 }
 
-func (self DailyNoteEvent) Model() DailyNoteEventModel {
+func (event DailyNoteEvent) Model() DailyNoteEventModel {
 	return DailyNoteEventModel{
-		BaseEventModel: self.BaseModel(),
-		Jd:             self.jd,
+		BaseEventModel: event.BaseModel(),
+		Jd:             event.jd,
 	}
 }
-func (self DailyNoteEventModel) GetEvent() (DailyNoteEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+func (model DailyNoteEventModel) GetEvent() (DailyNoteEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return DailyNoteEvent{}, err
 	}
 	return DailyNoteEvent{
 		BaseEvent: baseEvent,
-		jd:        self.Jd,
+		jd:        model.Jd,
 	}, nil
 }

@@ -15,7 +15,7 @@ type LargeScaleEventModel struct {
 	DurationEnable bool  `bson:"durationEnable" json:"durationEnable"`
 }
 
-func (self LargeScaleEventModel) Type() string {
+func (LargeScaleEventModel) Type() string {
 	return "largeScale"
 }
 
@@ -37,63 +37,64 @@ type LargeScaleEvent struct {
 	durationEnable bool
 }
 
-func (self LargeScaleEvent) Type() string {
+func (LargeScaleEvent) Type() string {
 	return "largeScale"
 }
-func (self LargeScaleEvent) Scale() int64 {
-	return self.scale
+func (event LargeScaleEvent) Scale() int64 {
+	return event.scale
 }
-func (self LargeScaleEvent) Start() int64 {
-	return self.start
+func (event LargeScaleEvent) Start() int64 {
+	return event.start
 }
-func (self LargeScaleEvent) End() int64 {
-	return self.end
+func (event LargeScaleEvent) End() int64 {
+	return event.end
 }
-func (self LargeScaleEvent) DurationEnable() bool {
-	return self.durationEnable
+func (event LargeScaleEvent) DurationEnable() bool {
+	return event.durationEnable
 }
-func (self LargeScaleEvent) StartYear() int64 {
-	return self.start * self.scale
+func (event LargeScaleEvent) StartYear() int64 {
+	return event.start * event.scale
 }
-func (self LargeScaleEvent) EndYear() int64 {
-	return self.end * self.scale
+func (event LargeScaleEvent) EndYear() int64 {
+	return event.end * event.scale
 }
 
 /*
-func (self LargeScaleEvent) StartJd() int64 {
-    return int64(self.calType.ToJd(scal.Date{
-        int(self.start * self.scale),
+func (event LargeScaleEvent) StartJd() int64 {
+    return int64(event.calType.ToJd(scal.Date{
+        int(event.start * event.scale),
         1,
         1,
     }))
 }
-func (self LargeScaleEvent) EndJd() int64 {
-    return int64(self.calType.ToJd(scal.Date{
-        int(self.end * self.scale),
+func (event LargeScaleEvent) EndJd() int64 {
+    return int64(event.calType.ToJd(scal.Date{
+        int(event.end * event.scale),
         1,
         1,
     }))
 }*/
 
-func (self LargeScaleEvent) Model() LargeScaleEventModel {
+func (event LargeScaleEvent) Model() LargeScaleEventModel {
 	return LargeScaleEventModel{
-		BaseEventModel: self.BaseModel(),
-		Scale:          self.scale,
-		Start:          self.start,
-		End:            self.end,
-		DurationEnable: self.durationEnable,
+		BaseEventModel: event.BaseModel(),
+		Scale:          event.scale,
+		Start:          event.start,
+		End:            event.end,
+		DurationEnable: event.durationEnable,
 	}
 }
-func (self LargeScaleEventModel) GetEvent() (LargeScaleEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+
+func (model LargeScaleEventModel) GetEvent() (LargeScaleEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return LargeScaleEvent{}, err
 	}
 	return LargeScaleEvent{
 		BaseEvent:      baseEvent,
-		scale:          self.Scale,
-		start:          self.Start,
-		end:            self.End,
-		durationEnable: self.DurationEnable,
+		scale:          model.Scale,
+		start:          model.Start,
+		end:            model.End,
+		durationEnable: model.DurationEnable,
 	}, nil
 }

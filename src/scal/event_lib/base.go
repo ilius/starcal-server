@@ -2,8 +2,9 @@ package event_lib
 
 import (
 	"fmt"
-	"github.com/globalsign/mgo/bson"
 	"time"
+
+	"github.com/globalsign/mgo/bson"
 
 	"scal"
 	"scal/cal_types"
@@ -26,12 +27,12 @@ type BaseEventModel struct {
 	Meta    scal.M `bson:"-" json:"meta"`
 }
 
-func (self BaseEventModel) Collection() string {
+func (BaseEventModel) Collection() string {
 	return storage.C_eventData
 }
-func (self BaseEventModel) UniqueM() scal.M {
+func (model BaseEventModel) UniqueM() scal.M {
 	return scal.M{
-		"sha1": self.Sha1,
+		"sha1": model.Sha1,
 	}
 }
 
@@ -57,85 +58,86 @@ type BaseEvent struct {
 	notifyBefore int // seconds
 }
 
-func (self BaseEvent) String() string {
+func (event BaseEvent) String() string {
 	return fmt.Sprintf(
 		"Event(id: %x, summary: %v, loc: %v, locEnable: %v)",
-		self.id,
-		self.summary,
-		self.loc,
-		self.locEnable,
+		event.id,
+		event.summary,
+		event.loc,
+		event.locEnable,
 	)
 }
-func (self BaseEvent) Id() string {
-	return self.id
+func (event BaseEvent) Id() string {
+	return event.id
 }
 
-//func (self BaseEvent) OwnerEmail() string {
-//    return self.ownerEmail
+//func (event BaseEvent) OwnerEmail() string {
+//    return event.ownerEmail
 //}
-func (self BaseEvent) Location() *time.Location {
-	if self.locEnable && self.loc != nil {
-		return self.loc
+func (event BaseEvent) Location() *time.Location {
+	if event.locEnable && event.loc != nil {
+		return event.loc
 	}
 	// FIXME
 	//return time.Now().Location()
 	return time.UTC
 }
-func (self BaseEvent) CalType() cal_types.CalType {
-	return self.calType
+func (event BaseEvent) CalType() cal_types.CalType {
+	return event.calType
 }
-func (self BaseEvent) Summary() string {
-	return self.summary
+func (event BaseEvent) Summary() string {
+	return event.summary
 }
-func (self BaseEvent) Description() string {
-	return self.description
+func (event BaseEvent) Description() string {
+	return event.description
 }
-func (self BaseEvent) Icon() string {
-	return self.icon
+func (event BaseEvent) Icon() string {
+	return event.icon
 }
-func (self BaseEvent) NotifyBefore() int {
-	return self.notifyBefore
+func (event BaseEvent) NotifyBefore() int {
+	return event.notifyBefore
 }
 
-func (self BaseEvent) BaseModel() BaseEventModel {
+func (event BaseEvent) BaseModel() BaseEventModel {
 	return BaseEventModel{
-		Id:             bson.ObjectId(self.id),
-		TimeZone:       self.loc.String(),
-		TimeZoneEnable: self.locEnable,
-		CalType:        self.calType.Name(),
-		Summary:        self.summary,
-		Description:    self.description,
-		Icon:           self.icon,
-		//NotifyBefore:   self.notifyBefore,
+		Id:             bson.ObjectId(event.id),
+		TimeZone:       event.loc.String(),
+		TimeZoneEnable: event.locEnable,
+		CalType:        event.calType.Name(),
+		Summary:        event.summary,
+		Description:    event.description,
+		Icon:           event.icon,
+		//NotifyBefore:   event.notifyBefore,
 	}
 }
-func (self BaseEventModel) GetBaseEvent() (BaseEvent, error) {
+
+func (model BaseEventModel) GetBaseEvent() (BaseEvent, error) {
 	var loc *time.Location
 	var err error
-	locEnable := self.TimeZoneEnable
-	if self.TimeZone == "" {
+	locEnable := model.TimeZoneEnable
+	if model.TimeZone == "" {
 		loc = nil // FIXME
 		locEnable = false
 	} else {
-		loc, err = time.LoadLocation(self.TimeZone)
+		loc, err = time.LoadLocation(model.TimeZone)
 		// does time.LoadLocation cache Location structs? FIXME
 		if err != nil {
 			return BaseEvent{}, err
 		}
 	}
-	calType, err2 := cal_types.GetCalType(self.CalType)
+	calType, err2 := cal_types.GetCalType(model.CalType)
 	if err2 != nil {
 		return BaseEvent{}, err2
 	}
 	return BaseEvent{
-		id: string(self.Id),
-		//ownerEmail: self.OwnerEmail,
+		id: string(model.Id),
+		//ownerEmail: model.OwnerEmail,
 		loc:         loc,
 		locEnable:   locEnable,
 		calType:     calType,
-		summary:     self.Summary,
-		description: self.Description,
-		icon:        self.Icon,
-		//notifyBefore: self.NotifyBefore,
+		summary:     model.Summary,
+		description: model.Description,
+		icon:        model.Icon,
+		//notifyBefore: model.NotifyBefore,
 	}, nil
 }

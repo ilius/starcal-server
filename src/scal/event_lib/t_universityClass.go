@@ -24,7 +24,7 @@ type UniversityClassEventModel struct {
 	CourseId        int    `bson:"courseId" json:"courseId"`
 }
 
-func (self UniversityClassEventModel) Type() string {
+func (UniversityClassEventModel) Type() string {
 	return "universityClass"
 }
 
@@ -44,31 +44,32 @@ type UniversityClassEvent struct {
 	weekDayList []int
 }
 
-func (self UniversityClassEvent) Type() string {
+func (UniversityClassEvent) Type() string {
 	return "universityClass"
 }
-func (self UniversityClassEvent) WeekNumMode() string {
-	return self.weekNumMode
+func (event UniversityClassEvent) WeekNumMode() string {
+	return event.weekNumMode
 }
-func (self UniversityClassEvent) WeekDayList() []int {
-	return self.weekDayList
+func (event UniversityClassEvent) WeekDayList() []int {
+	return event.weekDayList
 }
 
-func (self UniversityClassEvent) Model() UniversityClassEventModel {
+func (event UniversityClassEvent) Model() UniversityClassEventModel {
 	return UniversityClassEventModel{
-		BaseEventModel: self.BaseModel(),
-		WeekNumMode:    self.weekNumMode,
-		WeekDayList:    self.weekDayList,
+		BaseEventModel: event.BaseModel(),
+		WeekNumMode:    event.weekNumMode,
+		WeekDayList:    event.weekDayList,
 	}
 }
-func (self UniversityClassEventModel) GetEvent() (UniversityClassEvent, error) {
-	baseEvent, err := self.BaseEventModel.GetBaseEvent()
+
+func (model UniversityClassEventModel) GetEvent() (UniversityClassEvent, error) {
+	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
 		return UniversityClassEvent{}, err
 	}
 	return UniversityClassEvent{
 		BaseEvent:   baseEvent,
-		weekNumMode: self.WeekNumMode,
-		weekDayList: self.WeekDayList,
+		weekNumMode: model.WeekNumMode,
+		weekDayList: model.WeekDayList,
 	}, nil
 }

@@ -60,42 +60,42 @@ type InviteEmailTemplateParams struct {
 	Host         string
 }
 
-func (self EventMetaModel) UniqueM() scal.M {
+func (model EventMetaModel) UniqueM() scal.M {
 	return scal.M{
-		"_id": self.EventId,
+		"_id": model.EventId,
 	}
 }
-func (self EventMetaModel) Collection() string {
+func (model EventMetaModel) Collection() string {
 	return storage.C_eventMeta
 }
-func (self EventMetaModel) GroupIdHex() string {
-	if self.GroupId != nil {
-		return self.GroupId.Hex()
+func (model EventMetaModel) GroupIdHex() string {
+	if model.GroupId != nil {
+		return model.GroupId.Hex()
 	}
 	return ""
 }
-func (self EventMetaModel) JsonM() scal.M {
+func (model EventMetaModel) JsonM() scal.M {
 	return scal.M{
-		"creationTime":   self.CreationTime,
-		"ownerEmail":     self.OwnerEmail,
-		"isPublic":       self.IsPublic,
-		"accessEmails":   self.AccessEmails,
-		"groupId":        self.GroupIdHex(),
-		"publicJoinOpen": self.PublicJoinOpen,
-		"maxAttendees":   self.MaxAttendees,
+		"creationTime":   model.CreationTime,
+		"ownerEmail":     model.OwnerEmail,
+		"isPublic":       model.IsPublic,
+		"accessEmails":   model.AccessEmails,
+		"groupId":        model.GroupIdHex(),
+		"publicJoinOpen": model.PublicJoinOpen,
+		"maxAttendees":   model.MaxAttendees,
 	}
 }
-func (self *EventMetaModel) CanReadFull(email string) bool {
-	if email == self.OwnerEmail {
+func (model *EventMetaModel) CanReadFull(email string) bool {
+	if email == model.OwnerEmail {
 		return true
 	}
-	for _, aEmail := range self.AccessEmails {
+	for _, aEmail := range model.AccessEmails {
 		if email == aEmail {
 			return true
 		}
 	}
-	if self.GroupModel != nil {
-		for _, aEmail := range self.GroupModel.ReadAccessEmails {
+	if model.GroupModel != nil {
+		for _, aEmail := range model.GroupModel.ReadAccessEmails {
 			if email == aEmail {
 				return true
 			}
@@ -103,27 +103,27 @@ func (self *EventMetaModel) CanReadFull(email string) bool {
 	}
 	return false
 }
-func (self *EventMetaModel) CanRead(email string) bool {
-	if self.IsPublic {
+func (model *EventMetaModel) CanRead(email string) bool {
+	if model.IsPublic {
 		return true
 	}
-	return self.CanReadFull(email)
+	return model.CanReadFull(email)
 }
-func (self *EventMetaModel) GetAttending(
+func (model *EventMetaModel) GetAttending(
 	db storage.Database,
 	email string,
 ) string {
 	// returns YES, NO, or MAYBE
-	attendingModel, _ := LoadEventAttendingModel(db, self.EventId, email)
+	attendingModel, _ := LoadEventAttendingModel(db, model.EventId, email)
 	return attendingModel.Attending
 }
-func (self *EventMetaModel) SetAttending(
+func (model *EventMetaModel) SetAttending(
 	db storage.Database,
 	email string,
 	attending string,
 ) error {
 	// attending: YES, NO, or MAYBE
-	attendingModel, err := LoadEventAttendingModel(db, self.EventId, email)
+	attendingModel, err := LoadEventAttendingModel(db, model.EventId, email)
 	if err != nil {
 		return err
 	}
@@ -132,61 +132,61 @@ func (self *EventMetaModel) SetAttending(
 	err = attendingModel.Save(db)
 	return err
 }
-func (self *EventMetaModel) AttendingStatusCount(
+func (model *EventMetaModel) AttendingStatusCount(
 	db storage.Database,
 	attending string,
 ) (int, error) {
 	return db.FindCount(
 		storage.C_attending,
 		scal.M{
-			"eventId":   self.EventId,
+			"eventId":   model.EventId,
 			"attending": attending,
 		},
 	)
 }
-func (self *EventMetaModel) Join(db storage.Database, email string) error {
-	if self.GetAttending(db, email) == YES {
-		// does not make any changes on `self`
+func (model *EventMetaModel) Join(db storage.Database, email string) error {
+	if model.GetAttending(db, email) == YES {
+		// does not make any changes on `model`
 		if settings.ALLOW_REJOIN_EVENT {
 			return nil
 		}
 		return errors.New("you have already joined this event")
 	}
-	if !self.CanReadFull(email) {
-		if self.IsPublic {
-			if !self.PublicJoinOpen {
+	if !model.CanReadFull(email) {
+		if model.IsPublic {
+			if !model.PublicJoinOpen {
 				return errors.New("this public event is not open for joining")
 			}
 		} else {
 			return errors.New("no access, no join")
 		}
 	}
-	if self.MaxAttendees > 0 {
-		attendingCount, err := self.AttendingStatusCount(db, YES)
+	if model.MaxAttendees > 0 {
+		attendingCount, err := model.AttendingStatusCount(db, YES)
 		if err != nil {
 			return err
 		}
-		if attendingCount >= self.MaxAttendees {
+		if attendingCount >= model.MaxAttendees {
 			return errors.New("maximum attendees exceeded, can not join event")
 		}
 	}
-	self.SetAttending(db, email, YES)
+	model.SetAttending(db, email, YES)
 	return nil
 }
-func (self *EventMetaModel) Leave(db storage.Database, email string) error {
-	// does not make any changes on self
-	if self.GetAttending(db, email) == NO {
-		if self.CanReadFull(email) {
+func (model *EventMetaModel) Leave(db storage.Database, email string) error {
+	// does not make any changes on model
+	if model.GetAttending(db, email) == NO {
+		if model.CanReadFull(email) {
 			return errors.New("you are not attending for this event")
 		}
 	}
-	self.SetAttending(db, email, NO)
+	model.SetAttending(db, email, NO)
 	return nil
 }
-func (self *EventMetaModel) PublicCanJoin() bool {
-	return self.IsPublic && self.PublicJoinOpen
+func (model *EventMetaModel) PublicCanJoin() bool {
+	return model.IsPublic && model.PublicJoinOpen
 }
-func (self *EventMetaModel) Invite(
+func (model *EventMetaModel) Invite(
 	db storage.Database,
 	email string,
 	inviteEmails []string,
@@ -200,8 +200,8 @@ func (self *EventMetaModel) Invite(
 
 	now := time.Now()
 
-	fullAc := self.CanReadFull(email)
-	public := self.PublicCanJoin()
+	fullAc := model.CanReadFull(email)
+	public := model.PublicCanJoin()
 	if !(fullAc || public) {
 		return ripo.NewError(ripo.PermissionDenied, "not allowed to invite to this event", nil)
 	}
@@ -210,9 +210,9 @@ func (self *EventMetaModel) Invite(
 		newAccessEmails := make(
 			[]string,
 			0,
-			len(self.AccessEmails)+len(inviteEmails),
+			len(model.AccessEmails)+len(inviteEmails),
 		)
-		for _, aEmail := range self.AccessEmails {
+		for _, aEmail := range model.AccessEmails {
 			accessEmailsMap[aEmail] = true
 			newAccessEmails = append(newAccessEmails, aEmail)
 		}
@@ -226,25 +226,25 @@ func (self *EventMetaModel) Invite(
 			Time:     now,
 			Email:    email,
 			RemoteIp: remoteIp,
-			EventId:  self.EventId,
+			EventId:  model.EventId,
 			FuncName: "SetEventAccess",
 			AccessEmails: &[2][]string{
-				self.AccessEmails,
+				model.AccessEmails,
 				newAccessEmails,
 			},
 		}
-		self.AccessEmails = newAccessEmails
+		model.AccessEmails = newAccessEmails
 		err = db.Insert(metaChangeLog)
 		if err != nil {
 			return ripo.NewError(ripo.Internal, "", err)
 		}
-		err = db.Update(self)
+		err = db.Update(model)
 		if err != nil {
 			return ripo.NewError(ripo.Internal, "", err)
 		}
 	}
 
-	eventRev, err := LoadLastRevisionModel(db, &self.EventId)
+	eventRev, err := LoadLastRevisionModel(db, &model.EventId)
 	if err != nil {
 		if db.IsNotFound(err) {
 			return ripo.NewError(ripo.NotFound, "event not found", err)
@@ -284,13 +284,13 @@ func (self *EventMetaModel) Invite(
 			SenderName:  user.FullName,
 			Email:       inviteEmail,
 			Name:        inviteName,
-			EventType:   self.EventType,
-			EventId:     self.EventId.Hex(),
+			EventType:   model.EventType,
+			EventId:     model.EventId.Hex(),
 			Host:        host,
 		}
 
 		{
-			token, _ := newEventInvitationToken(self.EventId, inviteEmail)
+			token, _ := newEventInvitationToken(model.EventId, inviteEmail)
 			tokenEscaped := url.QueryEscape(token) // Go < 1.8
 			// tokenEscaped := url.PathEscape(token) // Go 1.8
 			tplParams.TokenEscaped = tokenEscaped
@@ -306,7 +306,7 @@ func (self *EventMetaModel) Invite(
 			Time:         now,
 			SenderEmail:  email,
 			InvitedEmail: inviteEmail,
-			EventId:      self.EventId,
+			EventId:      model.EventId,
 		})
 
 		err = scal.SendEmail(&scal.SendEmailInput{
@@ -322,7 +322,7 @@ func (self *EventMetaModel) Invite(
 	}
 	return nil
 }
-func (self *EventMetaModel) GetEmailsByAttendingStatus(
+func (model *EventMetaModel) GetEmailsByAttendingStatus(
 	db storage.Database,
 	attending string,
 ) []string {
@@ -332,14 +332,14 @@ func (self *EventMetaModel) GetEmailsByAttendingStatus(
 	err := db.FindAll(&emailStructs, &storage.FindInput{
 		Collection: storage.C_attending,
 		Conditions: scal.M{
-			"eventId":   self.EventId,
+			"eventId":   model.EventId,
 			"attending": attending,
 		},
 	})
 	if err != nil {
 		log.Printf(
 			"Internal Error: GetAttendingEmails: eventId=%v: %s\n",
-			self.EventId,
+			model.EventId,
 			err.Error(),
 		)
 	}
@@ -349,14 +349,14 @@ func (self *EventMetaModel) GetEmailsByAttendingStatus(
 	}
 	return emails
 }
-func (self *EventMetaModel) GetAttendingEmails(db storage.Database) []string {
-	return self.GetEmailsByAttendingStatus(db, YES)
+func (model *EventMetaModel) GetAttendingEmails(db storage.Database) []string {
+	return model.GetEmailsByAttendingStatus(db, YES)
 }
-func (self *EventMetaModel) GetNotAttendingEmails(db storage.Database) []string {
-	return self.GetEmailsByAttendingStatus(db, NO)
+func (model *EventMetaModel) GetNotAttendingEmails(db storage.Database) []string {
+	return model.GetEmailsByAttendingStatus(db, NO)
 }
-func (self *EventMetaModel) GetMaybeAttendingEmails(db storage.Database) []string {
-	return self.GetEmailsByAttendingStatus(db, MAYBE)
+func (model *EventMetaModel) GetMaybeAttendingEmails(db storage.Database) []string {
+	return model.GetEmailsByAttendingStatus(db, MAYBE)
 }
 
 func LoadEventMetaModel(

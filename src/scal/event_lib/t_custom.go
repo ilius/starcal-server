@@ -48,7 +48,7 @@ type CustomEventModel struct {
 	Rules          EventRuleModelList `bson:"rules" json:"rules"`
 }
 
-func (model CustomEventModel) Type() string {
+func (CustomEventModel) Type() string {
 	return "custom"
 }
 
@@ -70,7 +70,7 @@ type CustomEvent struct {
 	ruleTypes EventRuleTypeList
 }
 
-func (event CustomEvent) Type() string {
+func (CustomEvent) Type() string {
 	return "custom"
 }
 

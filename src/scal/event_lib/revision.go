@@ -14,7 +14,7 @@ type EventRevisionModel struct {
 	//InvitedEmails []string    `bson:"invitedEmails" json:"invitedEmails"`
 }
 
-func (self EventRevisionModel) Collection() string {
+func (model EventRevisionModel) Collection() string {
 	return storage.C_revision
 }
 
