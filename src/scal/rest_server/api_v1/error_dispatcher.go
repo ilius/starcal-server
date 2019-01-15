@@ -28,16 +28,16 @@ func errorDispatcher(request ripo.ExtendedRequest, rpcErr ripo.RPCError) {
 }
 
 type ErrorModel struct {
-	Time           time.Time                `bson:"time"`
-	HandlerName    string                   `bson:"handlerName"`
-	URL            string                   `bson:"url"`
-	Code           string                   `bson:"code"`
-	Message        string                   `bson:"message"`
-	PrivateMessage string                   `bson:"privateMessage"`
-	PrivateType    string                   `bson:"privateType"`
-	Details        map[string]interface{}   `bson:"details"`
-	Request        map[string]interface{}   `bson:"request"`
-	Traceback      []map[string]interface{} `bson:"traceback"`
+	Time         time.Time                `bson:"time"`
+	HandlerName  string                   `bson:"handlerName"`
+	URL          string                   `bson:"url"`
+	Code         string                   `bson:"code"`
+	Message      string                   `bson:"message"`
+	CauseMessage string                   `bson:"causeMessage"`
+	CauseType    string                   `bson:"causeType"`
+	Details      map[string]interface{}   `bson:"details"`
+	Request      map[string]interface{}   `bson:"request"`
+	Traceback    []map[string]interface{} `bson:"traceback"`
 }
 
 func errorCollection(code ripo.Code) string {
@@ -92,8 +92,8 @@ func saveErrors(byCode map[ripo.Code][]*errorChanItem) {
 			}
 			causeErr := rpcErr.Cause()
 			if causeErr != nil {
-				errorModel.PrivateMessage = causeErr.Error()
-				errorModel.PrivateType = fmt.Sprintf("%T", causeErr)
+				errorModel.CauseMessage = causeErr.Error()
+				errorModel.CauseType = fmt.Sprintf("%T", causeErr)
 			}
 			errorModels[index] = errorModel
 		}
