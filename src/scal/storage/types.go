@@ -24,6 +24,7 @@ type FindInput struct {
 type Database interface {
 	IsNotFound(error) bool
 	Insert(model hasCollection) error
+	InsertMany(collection string, models []interface{}) error
 	Update(model hasCollectionUniqueM) error
 	Upsert(model hasCollectionUniqueM) error
 	Remove(model hasCollectionUniqueM) error

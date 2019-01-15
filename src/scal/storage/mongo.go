@@ -39,6 +39,9 @@ func (db *MongoDatabase) IsNotFound(err error) bool {
 func (db *MongoDatabase) Insert(model hasCollection) error {
 	return db.C(model.Collection()).Insert(model)
 }
+func (db *MongoDatabase) InsertMany(collection string, models []interface{}) error {
+	return db.C(collection).Insert(models...)
+}
 func (db *MongoDatabase) Update(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Update(
 		model.UniqueM(),

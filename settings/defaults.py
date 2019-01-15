@@ -112,6 +112,8 @@ API_PAGE_LIMIT_MAX_RATIO = 5.0
 
 day = 24 * 3600
 
+ERRORS_CHANNEL_SIZE = 1000
+
 # 0 means never expire
 ERRORS_EXPIRE_AFTER_SECONDS = {
 	"Internal": 			365 * day,
