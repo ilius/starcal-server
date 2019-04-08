@@ -1,13 +1,16 @@
 package rules_lib
 
-import "log"
-import "scal"
+import (
+	"log"
+
+	lib "github.com/ilius/libgostarcal"
+)
 
 const R_ex_dates = "ex_dates"
 
 func init() {
 	checker := func(value interface{}) bool {
-		list, ok := value.([]scal.Date)
+		list, ok := value.([]lib.Date)
 		if !ok {
 			log.Printf(
 				"%s rule value checker: type conversion failed, value=%v with type %T\n",

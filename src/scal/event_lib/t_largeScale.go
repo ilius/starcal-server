@@ -61,14 +61,14 @@ func (event LargeScaleEvent) EndYear() int64 {
 
 /*
 func (event LargeScaleEvent) StartJd() int64 {
-    return int64(event.calType.ToJd(scal.Date{
+    return int64(event.calType.ToJd(lib.Date{
         int(event.start * event.scale),
         1,
         1,
     }))
 }
 func (event LargeScaleEvent) EndJd() int64 {
-    return int64(event.calType.ToJd(scal.Date{
+    return int64(event.calType.ToJd(lib.Date{
         int(event.end * event.scale),
         1,
         1,

@@ -1,8 +1,12 @@
 package event_lib
 
-import "scal"
-import . "scal/utils"
-import "scal/storage"
+import (
+	lib "github.com/ilius/libgostarcal"
+
+	"scal/storage"
+
+	. "github.com/ilius/libgostarcal/utils"
+)
 
 type MonthlyEventModel struct {
 	BaseEventModel `bson:",inline" json:",inline"`
@@ -57,10 +61,10 @@ func (event MonthlyEvent) DayStartSeconds() uint32 {
 func (event MonthlyEvent) DayEndSeconds() uint32 {
 	return event.dayEndSeconds
 }
-func (event MonthlyEvent) DayStartHMS() scal.HMS {
+func (event MonthlyEvent) DayStartHMS() lib.HMS {
 	return GetHmsBySeconds(int(event.dayStartSeconds))
 }
-func (event MonthlyEvent) DayEndHMS() scal.HMS {
+func (event MonthlyEvent) DayEndHMS() lib.HMS {
 	return GetHmsBySeconds(int(event.dayEndSeconds))
 }
 

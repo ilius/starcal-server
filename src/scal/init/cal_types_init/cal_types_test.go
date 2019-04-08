@@ -3,11 +3,11 @@ package cal_types_init
 import "testing"
 
 import "scal"
-import "scal/cal_types"
+import "github.com/ilius/libgostarcal/cal_types"
 
 func TestConvert(t *testing.T) {
 	t.Log(cal_types.CalTypesMap["gregorian"])
-	gdate := scal.Date{2016, 1, 1}
+	gdate := lib.Date{2016, 1, 1}
 	jdate, err := cal_types.Convert(gdate, "gregorian", "jalali")
 	if err != nil {
 		t.Error(err)
@@ -18,7 +18,7 @@ func TestConvert(t *testing.T) {
 	//t.Logf("%v => %v\n", gdate, jdate)
 }
 func TestToJd(t *testing.T) {
-	gdate := scal.Date{2016, 1, 1}
+	gdate := lib.Date{2016, 1, 1}
 	jd, err := cal_types.ToJd(gdate, "gregorian")
 	if err != nil {
 		t.Error(err)

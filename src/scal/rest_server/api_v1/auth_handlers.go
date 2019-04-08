@@ -11,9 +11,10 @@ import (
 	"scal/storage"
 	"scal/user_lib"
 	. "scal/user_lib"
-	"scal/utils"
 	"text/template"
 	"time"
+
+	"github.com/ilius/libgostarcal/utils"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	. "github.com/ilius/ripo"

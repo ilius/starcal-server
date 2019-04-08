@@ -1,9 +1,9 @@
 package rules_lib
 
 import (
-	"scal"
-	"scal/interval"
-	"scal/utils"
+	lib "github.com/ilius/libgostarcal"
+	"github.com/ilius/libgostarcal/interval"
+	"github.com/ilius/libgostarcal/utils"
 	//"fmt"
 	"strconv"
 )
@@ -39,27 +39,27 @@ var valueDecoders = map[string]func(string) (interface{}, error){
 		return v, err
 	},
 	T_HMS: func(value string) (interface{}, error) {
-		v, err := scal.ParseHMS(value)
+		v, err := lib.ParseHMS(value)
 		return v, err
 	},
 	T_DHMS: func(value string) (interface{}, error) {
-		v, err := scal.ParseDHMS(value)
+		v, err := lib.ParseDHMS(value)
 		return v, err
 	},
 	T_HMSRange: func(value string) (interface{}, error) {
-		v, err := scal.ParseHMSRange(value)
+		v, err := lib.ParseHMSRange(value)
 		return v, err
 	},
 	T_Date: func(value string) (interface{}, error) {
-		v, err := scal.ParseDate(value)
+		v, err := lib.ParseDate(value)
 		return v, err
 	},
 	T_Date_list: func(value string) (interface{}, error) {
-		v, err := scal.ParseDateList(value)
+		v, err := lib.ParseDateList(value)
 		return v, err
 	},
 	T_DateHMS: func(value string) (interface{}, error) {
-		v, err := scal.ParseDateHMS(value)
+		v, err := lib.ParseDateHMS(value)
 		return v, err
 	},
 	T_Duration: func(value string) (interface{}, error) {

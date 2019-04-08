@@ -7,8 +7,9 @@ import (
 	"github.com/globalsign/mgo/bson"
 
 	"scal"
-	"scal/cal_types"
 	"scal/storage"
+
+	"github.com/ilius/libgostarcal/cal_types"
 )
 
 type BaseEventModel struct {

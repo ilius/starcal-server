@@ -1,13 +1,16 @@
 package rules_lib
 
-import "log"
-import "scal"
+import (
+	"log"
+
+	lib "github.com/ilius/libgostarcal"
+)
 
 const R_dayTime = "dayTime"
 
 func init() {
 	checker := func(value interface{}) bool {
-		v, ok := value.(scal.HMS)
+		v, ok := value.(lib.HMS)
 		if !ok {
 			log.Printf(
 				"%s rule value checker: type conversion failed, value=%v with type %T\n",

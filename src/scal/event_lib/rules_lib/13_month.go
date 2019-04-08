@@ -1,7 +1,10 @@
 package rules_lib
 
-import "log"
-import "scal/utils"
+import (
+	"log"
+
+	"github.com/ilius/libgostarcal/utils"
+)
 
 const R_month = "month"
 

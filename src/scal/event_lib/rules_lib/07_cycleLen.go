@@ -1,14 +1,16 @@
 package rules_lib
 
-import "scal"
+import (
+	"log"
 
-import "log"
+	lib "github.com/ilius/libgostarcal"
+)
 
 const R_cycleLen = "cycleLen"
 
 func init() {
 	checker := func(value interface{}) bool {
-		v, ok := value.(scal.DHMS)
+		v, ok := value.(lib.DHMS)
 		if !ok {
 			log.Printf(
 				"%s rule value checker: type conversion failed, value=%v with type %T\n",
