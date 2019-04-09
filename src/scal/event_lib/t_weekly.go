@@ -4,7 +4,7 @@ import (
 	"scal/storage"
 
 	lib "github.com/ilius/libgostarcal"
-	. "github.com/ilius/libgostarcal/utils"
+	"github.com/ilius/libgostarcal/utils"
 )
 
 type WeeklyEventModel struct {
@@ -60,10 +60,10 @@ func (event WeeklyEvent) DayEndSeconds() uint32 {
 	return event.dayEndSeconds
 }
 func (event WeeklyEvent) DayStartHMS() lib.HMS {
-	return GetHmsBySeconds(int(event.dayStartSeconds))
+	return utils.GetHmsBySeconds(int(event.dayStartSeconds))
 }
 func (event WeeklyEvent) DayEndHMS() lib.HMS {
-	return GetHmsBySeconds(int(event.dayEndSeconds))
+	return utils.GetHmsBySeconds(int(event.dayEndSeconds))
 }
 
 func (event WeeklyEvent) Model() WeeklyEventModel {

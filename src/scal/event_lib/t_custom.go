@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"scal/storage"
 
-	. "github.com/ilius/libgostarcal/event/rules_lib"
+	rlib "github.com/ilius/libgostarcal/event/rules_lib"
 )
 
 /*
@@ -42,7 +42,7 @@ weekMonth       json: `{"weekIndex": 4, "weekDay": 6, "month": 12}`
 
 */
 
-type EventRuleModelList []EventRuleModel
+type EventRuleModelList []rlib.EventRuleModel
 
 type CustomEventModel struct {
 	BaseEventModel `bson:",inline" json:",inline"`
@@ -63,12 +63,12 @@ func LoadCustomEventModel(db storage.Database, sha1 string) (
 	return &model, err
 }
 
-type EventRuleMap map[string]EventRule
+type EventRuleMap map[string]rlib.EventRule
 
 type CustomEvent struct {
 	BaseEvent
 	ruleMap   EventRuleMap
-	ruleTypes EventRuleTypeList
+	ruleTypes rlib.EventRuleTypeList
 }
 
 func (CustomEvent) Type() string {
@@ -78,15 +78,15 @@ func (CustomEvent) Type() string {
 //func (event CustomEvent) RuleMap() EventRuleMap {
 //	return event.ruleMap
 //}
-func (event CustomEvent) GetRule(typeName string) (EventRule, bool) {
+func (event CustomEvent) GetRule(typeName string) (rlib.EventRule, bool) {
 	typeObj, ok := event.ruleMap[typeName]
 	return typeObj, ok
 }
-func (event CustomEvent) RuleTypes() EventRuleTypeList {
+func (event CustomEvent) RuleTypes() rlib.EventRuleTypeList {
 	return event.ruleTypes
 }
-func (event CustomEvent) IterRules() <-chan EventRule {
-	ch := make(chan EventRule)
+func (event CustomEvent) IterRules() <-chan rlib.EventRule {
+	ch := make(chan rlib.EventRule)
 	go func() {
 		defer close(ch)
 		for _, ruleType := range event.ruleTypes {
@@ -112,7 +112,7 @@ func (event CustomEvent) CheckRuleTypes() error {
 		//		"rule type " + ruleType.Name + " not found",
 		//	)
 		//}
-		requiredTypes, hasRequired := RulesRequire[ruleType.Name]
+		requiredTypes, hasRequired := rlib.RulesRequire[ruleType.Name]
 		if hasRequired {
 			for _, requiredType := range requiredTypes {
 				_, ok := event.ruleMap[requiredType]
@@ -123,7 +123,7 @@ func (event CustomEvent) CheckRuleTypes() error {
 				}
 			}
 		}
-		conflictTypes, hasConflicts := RulesConflictWith[ruleType.Name]
+		conflictTypes, hasConflicts := rlib.RulesConflictWith[ruleType.Name]
 		if hasConflicts {
 			for _, conflictType := range conflictTypes {
 				_, nok := event.ruleMap[conflictType]
@@ -137,9 +137,9 @@ func (event CustomEvent) CheckRuleTypes() error {
 	}
 	return nil
 }
-func (event *CustomEvent) GetModifiedRuleTypes(oldEvent *CustomEvent) EventRuleTypeList {
+func (event *CustomEvent) GetModifiedRuleTypes(oldEvent *CustomEvent) rlib.EventRuleTypeList {
 	modTypes := make(
-		EventRuleTypeList,
+		rlib.EventRuleTypeList,
 		0,
 		len(event.ruleTypes)+len(oldEvent.ruleTypes),
 	)
@@ -187,7 +187,7 @@ func (eventModel CustomEventModel) GetEvent() (CustomEvent, error) {
 		return CustomEvent{}, err
 	}
 	ruleMap := EventRuleMap{}
-	ruleTypes := make(EventRuleTypeList, len(eventModel.Rules))
+	ruleTypes := make(rlib.EventRuleTypeList, len(eventModel.Rules))
 	for index, ruleModel := range eventModel.Rules {
 		rule, err := ruleModel.Decode()
 		if err != nil {
@@ -241,7 +241,7 @@ func DecodeMapEventRuleModelList(rawMapList interface{}) (EventRuleModelList, er
 				"missing or bad parameter 'value'",
 			)
 		}
-		modelList[i] = EventRuleModel{
+		modelList[i] = rlib.EventRuleModel{
 			Type:  typeName,
 			Value: value,
 		}
