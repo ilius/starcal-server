@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-	. "scal/event_lib/rules_lib"
 	"scal/storage"
+
+	. "github.com/ilius/libgostarcal/event/rules_lib"
 )
 
 /*
