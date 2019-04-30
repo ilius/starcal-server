@@ -48,46 +48,6 @@ func (model EventGroupModel) CanRead(email string) bool {
 	return false
 }
 
-func (model *EventGroupModel) GetAccessCond(email string) scal.M {
-	if model.CanRead(email) {
-		return scal.M{}
-	} else {
-		return scal.M{
-			"$or": []scal.M{
-				{"ownerEmail": email},
-				{"isPublic": true},
-				{"accessEmails": email},
-			},
-		}
-	}
-}
-
-func (model *EventGroupModel) GetLookupMetaAccessPipeline(
-	email string,
-	localField string,
-) []scal.M {
-	if model.CanRead(email) {
-		return []scal.M{}
-	} else {
-		return []scal.M{
-			{"$lookup": scal.M{
-				"from":         storage.C_eventMeta,
-				"localField":   localField,
-				"foreignField": "_id",
-				"as":           "meta",
-			}},
-			{"$unwind": "$meta"},
-			{"$match": scal.M{
-				"$or": []scal.M{
-					{"meta.ownerEmail": email},
-					{"meta.isPublic": true},
-					{"meta.accessEmails": email},
-				},
-			}},
-		}
-	}
-}
-
 func LoadGroupModelById(
 	attrName string,
 	db storage.Database,

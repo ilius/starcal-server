@@ -33,6 +33,12 @@ type MongoDatabase struct {
 	mgo.Database
 }
 
+func (db *MongoDatabase) NewCondition(operator ConditionOperator) Condition {
+	return &MongoCondition{
+		op: operator,
+	}
+}
+
 func (db *MongoDatabase) IsNotFound(err error) bool {
 	return err == mgo.ErrNotFound
 }
@@ -79,9 +85,14 @@ func (db *MongoDatabase) FindCount(colName string, cond scal.M) (int, error) {
 }
 
 func (db *MongoDatabase) FindAll(result interface{}, in *FindInput) error {
-	q := db.C(in.Collection).Find(in.Conditions)
+	condition := in.Condition.Prepare()
+	q := db.C(in.Collection).Find(condition)
 	if in.SortBy != "" {
-		q = q.Sort(in.SortBy)
+		sortBy := in.SortBy
+		if in.ReverseOrder {
+			sortBy = "-" + sortBy
+		}
+		q = q.Sort(sortBy)
 	}
 	if in.Limit > 0 {
 		q = q.Limit(in.Limit)

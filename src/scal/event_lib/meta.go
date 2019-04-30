@@ -329,12 +329,12 @@ func (model *EventMetaModel) GetEmailsByAttendingStatus(
 	emailStructs := []struct {
 		Email string `bson:"email"`
 	}{}
+	cond := db.NewCondition(storage.AND)
+	cond.Equals("eventId", model.EventId)
+	cond.Equals("attending", attending)
 	err := db.FindAll(&emailStructs, &storage.FindInput{
 		Collection: storage.C_attending,
-		Conditions: scal.M{
-			"eventId":   model.EventId,
-			"attending": attending,
-		},
+		Condition:  cond,
 	})
 	if err != nil {
 		log.Printf(
@@ -418,34 +418,4 @@ type EventInvitationModel struct {
 
 func (model EventInvitationModel) Collection() string {
 	return storage.C_invitation
-}
-
-func GetEventMetaPipeResults(
-	db storage.Database,
-	pipeline *[]scal.M,
-) ([]scal.M, error) {
-	results := []scal.M{}
-	next, close := db.PipeIter(storage.C_eventMeta, pipeline)
-	defer close()
-	for {
-		row := scal.M{}
-		err := next(&row)
-		if err != nil {
-			if err.Error() == "EOF" {
-				break
-			}
-			return nil, err
-		}
-		if eventId, ok := row["_id"]; ok {
-			row["eventId"] = eventId
-			delete(row, "_id")
-		}
-		if dataI, ok := row["data"]; ok {
-			data := dataI.(scal.M)
-			delete(data, "_id")
-			row["data"] = data
-		}
-		results = append(results, row)
-	}
-	return results, nil
 }

@@ -80,16 +80,15 @@ func GetGroupList(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 
+	cond := db.NewCondition(storage.OR).
+		Equals("ownerEmail", email).
+		Includes("readAccessEmails", email)
+
 	var results []event_lib.ListGroupsRow
 	err = db.FindAll(&results, &storage.FindInput{
 		Collection: storage.C_group,
-		Conditions: scal.M{
-			"$or": []scal.M{
-				{"ownerEmail": email},
-				{"readAccessEmails": email},
-			},
-		},
-		SortBy: "_id",
+		Condition:  cond,
+		SortBy:     "_id",
 	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
@@ -276,12 +275,13 @@ func DeleteGroup(req Request) (*Response, error) {
 		}
 	}
 
+	cond := db.NewCondition(storage.AND)
+	cond.Equals("groupId", groupId)
+
 	var eventMetaModels []event_lib.EventMetaModel
 	err = db.FindAll(&eventMetaModels, &storage.FindInput{
 		Collection: storage.C_eventMeta,
-		Conditions: scal.M{
-			"groupId": groupId,
-		},
+		Condition:  cond,
 	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
@@ -351,16 +351,23 @@ func GetGroupEventList(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	cond := groupModel.GetAccessCond(email)
-	cond["groupId"] = groupId
-	pageOpts.AddStartIdCond(cond)
+	cond := db.NewCondition(storage.AND)
+	cond.Equals("groupId", groupId)
+	if !groupModel.CanRead(email) {
+		cond.NewSubCondition(storage.OR).
+			Equals("ownerEmail", email).
+			Equals("isPublic", true).
+			Includes("accessEmails", email)
+	}
+	cond.SetPageOptions(pageOpts)
 
 	var results []*event_lib.ListEventsRow
 	err = db.FindAll(&results, &storage.FindInput{
-		Collection: storage.C_eventMeta,
-		Conditions: cond,
-		SortBy:     pageOpts.SortBy(),
-		Limit:      pageOpts.Limit,
+		Collection:   storage.C_eventMeta,
+		Condition:    cond,
+		SortBy:       "_id",
+		ReverseOrder: pageOpts.ReverseOrder,
+		Limit:        pageOpts.Limit,
 		Fields: []string{
 			"_id",
 			"eventType",
@@ -413,32 +420,20 @@ func GetGroupEventListWithSha1(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	cond := groupModel.GetAccessCond(email)
-	cond["groupId"] = groupId
-	pageOpts.AddStartIdCond(cond)
-
-	sortMap := pageOpts.SortByMap()
-
-	pipeline := []scal.M{
-		{"$match": cond},
-		sortMap,
-		{"$limit": pageOpts.Limit},
-		{"$lookup": scal.M{
-			"from":         storage.C_revision,
-			"localField":   "_id",
-			"foreignField": "eventId",
-			"as":           "revision",
-		}},
-		{"$unwind": "$revision"},
-		{"$group": scal.M{
-			"_id":       "$_id",
-			"eventType": scal.M{"$first": "$eventType"},
-			"lastSha1":  scal.M{"$first": "$revision.sha1"},
-		}},
-		sortMap,
+	pipeline := NewPipelines(db, storage.C_eventMeta)
+	pipeline.MatchValue("groupId", groupId)
+	if !groupModel.CanRead(email) {
+		pipeline.AddEventGroupAccess(email)
 	}
+	pipeline.SetPageOptions(pageOpts)
+	pipeline.Lookup(storage.C_revision, "_id", "eventId", "revision")
+	pipeline.Unwind("revision")
 
-	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
+	pipeline.GroupBy("_id").
+		AddFromFirst("eventType", "eventType").
+		AddFromFirst("revision.sha1", "lastSha1")
+
+	results, err := GetEventMetaPipeResults(db, pipeline, nil)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -496,48 +491,33 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 	}
 	groupId := groupModel.Id
 
-	cond := groupModel.GetAccessCond(email)
-	cond["groupId"] = groupId
-	pipeline := []scal.M{
-		{"$match": cond},
-		{"$lookup": scal.M{
-			"from":         storage.C_revision,
-			"localField":   "_id",
-			"foreignField": "eventId",
-			"as":           "revision",
-		}},
-		{"$unwind": "$revision"},
-		{"$match": scal.M{
-			"revision.time": scal.M{
-				"$gt": since,
-			},
-		}},
-		{"$sort": scal.M{"revision.time": -1}},
-		{"$limit": limit},
-		{"$group": scal.M{
-			"_id":       "$_id",
-			"eventType": scal.M{"$first": "$eventType"},
-			"meta": scal.M{
-				"$first": scal.M{
-					"ownerEmail":   "$ownerEmail",
-					"isPublic":     "$isPublic",
-					"creationTime": "$creationTime",
-				},
-			},
-			"lastModifiedTime": scal.M{"$first": "$revision.time"},
-			"lastSha1":         scal.M{"$first": "$revision.sha1"},
-		}},
-		{"$sort": scal.M{"lastModifiedTime": -1}},
-		{"$lookup": scal.M{
-			"from":         storage.C_eventData,
-			"localField":   "lastSha1",
-			"foreignField": "sha1",
-			"as":           "data",
-		}},
-		{"$unwind": "$data"},
+	pipeline := NewPipelines(db, storage.C_eventMeta)
+	pipeline.MatchValue("groupId", groupId)
+	if !groupModel.CanRead(email) {
+		pipeline.AddEventGroupAccess(email)
 	}
+	pipeline.Lookup(storage.C_revision, "_id", "eventId", "revision")
+	pipeline.Unwind("revision")
+	pipeline.NewMatchGreaterThan("revision.time", since)
+	pipeline.Sort("revision.time", false)
+	pipeline.AppendLimit(limit)
+	pipeline.GroupBy("_id").
+		AddFromFirst("eventType", "eventType").
+		AddFromFirst("revision.sha1", "lastSha1").
+		AddFromFirst("revision.time", "lastModifiedTime").
+		AddFromFirst("ownerEmail", "ownerEmail").
+		AddFromFirst("isPublic", "isPublic").
+		AddFromFirst("creationTime", "creationTime")
 
-	results, err := event_lib.GetEventMetaPipeResults(db, &pipeline)
+	pipeline.Sort("lastModifiedTime", false)
+	pipeline.Lookup(storage.C_eventData, "lastSha1", "sha1", "data")
+	pipeline.Unwind("data")
+
+	results, err := GetEventMetaPipeResults(db, pipeline, []string{
+		"ownerEmail",
+		"isPublic",
+		"creationTime",
+	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -600,50 +580,33 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 	}
 	groupId := groupModel.Id
 
-	pipeline := []scal.M{
-		{"$match": scal.M{
-			"groupId": groupId,
-			"time": scal.M{
-				"$gt": since,
-			},
-		}},
-		{"$sort": scal.M{"time": -1}},
-		{"$limit": limit},
+	pipeline := NewPipelines(db, storage.C_eventMetaChangeLog)
+	pipeline.MatchValue("groupId", groupId)
+	pipeline.MatchGreaterThan("time", since)
+	pipeline.Sort("time", false)
+	pipeline.Limit(limit)
+	if !groupModel.CanRead(email) {
+		pipeline.AddEventLookupMetaAccess(
+			email,
+			"eventId", // localField for storage.C_eventMetaChangeLog
+		)
 	}
-	accessPipeline := groupModel.GetLookupMetaAccessPipeline(
-		email,
-		"eventId", // localField for storage.C_eventMetaChangeLog
-	)
-	if len(accessPipeline) > 0 {
-		pipeline = append(pipeline, accessPipeline...)
-	}
-	pipeline = append(pipeline, scal.M{
-		"$group": scal.M{
-			"_id":  "$eventId",
-			"time": scal.M{"$first": "$time"},
-			"oldGroupId": scal.M{"$last": scal.M{
-				"$arrayElemAt": []interface{}{"$groupId", 0},
-			}},
-			"newGroupId": scal.M{"$first": scal.M{
-				"$arrayElemAt": []interface{}{"$groupId", 1},
-			}},
-		},
-	})
-	pipeline = append(pipeline, scal.M{"$sort": scal.M{"time": -1}})
+	pipeline.GroupBy("eventId").
+		AddFromFirst("time", "time").
+		AddFromLast("groupId", "oldGroupItem"). // want the index 0 of {old, new}
+		AddFromFirst("groupId", "newGroupItem") // want the index 1 of {old, new}
+
+	pipeline.Sort("time", false)
 
 	results := []event_lib.MovedEventsRow{}
-	err = storage.PipeAll(db,
-		storage.C_eventMetaChangeLog,
-		&pipeline,
-		&results,
-	)
+	err = pipeline.All(&results)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
-	// convert nil values to empty strings
+	// set OldGroupId and NewGroupId, while also converting nil ObjectId values to empty strings
 	for i := 0; i < len(results); i++ {
-		results[i].OldGroupId = storage.Hex(results[i].OldGroupId)
-		results[i].NewGroupId = storage.Hex(results[i].NewGroupId)
+		results[i].OldGroupId = storage.Hex(results[i].OldGroupItem[0])
+		results[i].NewGroupId = storage.Hex(results[i].NewGroupItem[1])
 	}
 
 	return &Response{

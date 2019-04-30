@@ -67,46 +67,7 @@ func GetReverseOrder(req Request) (bool, error) {
 	return *reverseOrder, nil
 }
 
-type PageOptions struct {
-	ExStartId    *bson.ObjectId
-	ReverseOrder bool
-	Limit        int
-}
-
-// returns "$gt" or "$lt"
-func (o *PageOptions) StartIdOperation() string {
-	if o.ReverseOrder {
-		return "$lt"
-	}
-	return "$gt"
-}
-
-func (o *PageOptions) AddStartIdCond(cond scal.M) {
-	if o.ExStartId != nil {
-		cond["_id"] = scal.M{
-			o.StartIdOperation(): *(o.ExStartId),
-		}
-	}
-}
-
-// returns "_id" or "-_id"
-func (o *PageOptions) SortBy() string {
-	if o.ReverseOrder {
-		return "-_id"
-	}
-	return "_id"
-}
-
-// for pipelines
-func (o *PageOptions) SortByMap() scal.M {
-	orderInt := 1
-	if o.ReverseOrder {
-		orderInt = -1
-	}
-	return scal.M{"$sort": scal.M{"_id": orderInt}}
-}
-
-func GetPageOptions(req Request) (*PageOptions, error) {
+func GetPageOptions(req Request) (*scal.PageOptions, error) {
 	exStartId, err := GetPageExStartId(req)
 	if err != nil {
 		return nil, err
@@ -119,9 +80,12 @@ func GetPageOptions(req Request) (*PageOptions, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &PageOptions{
-		ExStartId:    exStartId,
+	pageOpts := &scal.PageOptions{
 		ReverseOrder: reverseOrder,
 		Limit:        limit,
-	}, nil
+	}
+	if exStartId != nil {
+		pageOpts.ExStartId = *exStartId
+	}
+	return pageOpts, nil
 }
