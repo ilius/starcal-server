@@ -428,7 +428,8 @@ func GetEventMetaPipeResults(
 	next, close := db.PipeIter(storage.C_eventMeta, pipeline)
 	defer close()
 	for {
-		row, err := next()
+		row := scal.M{}
+		err := next(&row)
 		if err != nil {
 			if err.Error() == "EOF" {
 				break

@@ -106,20 +106,19 @@ func (db *MongoDatabase) PipeAll(
 func (db *MongoDatabase) PipeIter(
 	colName string,
 	pipeline *[]scal.M,
-) (func() (scal.M, error), func()) {
+) (func(interface{}) error, func()) {
 	iter := db.C(colName).Pipe(pipeline).Iter()
-	return func() (scal.M, error) {
-			resM := scal.M{}
-			if iter.Next(&resM) {
-				return resM, nil
+	return func(result interface{}) error {
+			if iter.Next(result) {
+				return nil
 			}
 			if err := iter.Err(); err != nil {
-				return nil, err
+				return err
 			}
 			if iter.Timeout() {
-				return nil, errors.New("timeout")
+				return errors.New("timeout")
 			}
-			return nil, io.EOF
+			return io.EOF
 		}, func() {
 			err := iter.Close()
 			if err != nil {

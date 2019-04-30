@@ -33,5 +33,8 @@ type Database interface {
 	FindCount(string, scal.M) (int, error)
 	FindAll(result interface{}, input *FindInput) error
 	PipeAll(collection string, pipeline *[]scal.M, result interface{}) error
-	PipeIter(collection string, pipeline *[]scal.M) (next func() (scal.M, error), close func())
+	PipeIter(collection string, pipeline *[]scal.M) (
+		next func(result interface{}) error,
+		close func(),
+	)
 }
