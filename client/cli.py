@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6
+#!/usr/bin/python3
 
 import sys
 import os
@@ -603,7 +603,7 @@ class CLI():
 					auto_suggest=AutoSuggestFromHistory(),
 					completer=completer,
 				)
-			except KeyboardInterrupt:
+			except (KeyboardInterrupt, EOFError):
 				return
 			
 			err = self.runcmd(user_input)
