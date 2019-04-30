@@ -26,6 +26,8 @@ except:
 	sinceDateTime = parseDatetime(sinceDateTimeInput)
 
 sinceDateTimeStr = sinceDateTime.isoformat()
+if not "Z" in sinceDateTimeStr:
+	sinceDateTimeStr += "Z"
 print("sinceDateTimeStr =", sinceDateTimeStr)
 
 limit = 100
