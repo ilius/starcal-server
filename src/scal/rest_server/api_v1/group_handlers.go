@@ -632,7 +632,7 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 	pipeline = append(pipeline, scal.M{"$sort": scal.M{"time": -1}})
 
 	results := []event_lib.MovedEventsRow{}
-	err = db.PipeAll(
+	err = storage.PipeAll(db,
 		storage.C_eventMetaChangeLog,
 		&pipeline,
 		&results,

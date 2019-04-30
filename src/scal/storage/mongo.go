@@ -95,13 +95,6 @@ func (db *MongoDatabase) FindAll(result interface{}, in *FindInput) error {
 	}
 	return q.All(result)
 }
-func (db *MongoDatabase) PipeAll(
-	colName string,
-	pipeline *[]scal.M,
-	result interface{},
-) error {
-	return db.C(colName).Pipe(pipeline).All(result)
-}
 
 func (db *MongoDatabase) PipeIter(
 	colName string,
