@@ -1,7 +1,7 @@
 package scal
 
 type PageOptions struct {
-	ExStartId    interface{}
+	ExStartId    *string
 	ReverseOrder bool
 	Limit        int
 }

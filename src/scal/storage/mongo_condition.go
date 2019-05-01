@@ -17,6 +17,11 @@ func (c *MongoCondition) Equals(key string, value interface{}) Condition {
 	return c
 }
 
+func (c *MongoCondition) IdEquals(key string, valueHex string) Condition {
+	c.parts = append(c.parts, bson.DocElem{Name: key, Value: bson.ObjectIdHex(valueHex)})
+	return c
+}
+
 func (c *MongoCondition) Includes(key string, value interface{}) Condition {
 	// for Mongo, it's the same as Equals()
 	c.parts = append(c.parts, bson.DocElem{Name: key, Value: value})

@@ -10,16 +10,16 @@ import (
 )
 
 type EventGroupModel struct {
-	Id               bson.ObjectId `bson:"_id" json:"groupId"`
-	Title            string        `bson:"title" json:"title"`
-	OwnerEmail       string        `bson:"ownerEmail" json:"ownerEmail"`
-	AddAccessEmails  []string      `bson:"addAccessEmails,omitempty" json:"addAccessEmails,omitempty"`
-	ReadAccessEmails []string      `bson:"readAccessEmails,omitempty" json:"readAccessEmails,omitempty"`
+	Id               string   `bson:"_id,objectid" json:"groupId"`
+	Title            string   `bson:"title" json:"title"`
+	OwnerEmail       string   `bson:"ownerEmail" json:"ownerEmail"`
+	AddAccessEmails  []string `bson:"addAccessEmails,omitempty" json:"addAccessEmails,omitempty"`
+	ReadAccessEmails []string `bson:"readAccessEmails,omitempty" json:"readAccessEmails,omitempty"`
 }
 
 func (model EventGroupModel) UniqueM() scal.M {
 	return scal.M{
-		"_id": model.Id,
+		"_id": bson.ObjectIdHex(model.Id),
 	}
 }
 func (EventGroupModel) Collection() string {
@@ -51,7 +51,7 @@ func (model EventGroupModel) CanRead(email string) bool {
 func LoadGroupModelById(
 	attrName string,
 	db storage.Database,
-	groupId *bson.ObjectId,
+	groupId *string,
 ) (*EventGroupModel, error) {
 	if groupId == nil {
 		return nil, ripo.NewError(ripo.InvalidArgument, "missing '"+attrName+"'", nil)
@@ -80,10 +80,9 @@ func LoadGroupModelByIdHex(
 	if !bson.IsObjectIdHex(groupIdHex) { // to avoid panic!
 		return nil, ripo.NewError(ripo.InvalidArgument, "invalid '"+attrName+"'", nil)
 	}
-	groupId := bson.ObjectIdHex(groupIdHex)
 	return LoadGroupModelById(
 		attrName,
 		db,
-		&groupId,
+		&groupIdHex,
 	)
 }

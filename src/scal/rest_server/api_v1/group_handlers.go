@@ -1,6 +1,7 @@
 package api_v1
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
@@ -125,7 +126,7 @@ func AddGroup(req Request) (*Response, error) {
 
 	groupModel := event_lib.EventGroupModel{}
 
-	groupId := bson.NewObjectId()
+	groupId := bson.NewObjectId().Hex()
 	groupModel.Id = groupId
 	groupModel.OwnerEmail = email
 	groupModel.Title = *title
@@ -139,7 +140,7 @@ func AddGroup(req Request) (*Response, error) {
 
 	return &Response{
 		Data: map[string]string{
-			"groupId": groupId.Hex(),
+			"groupId": groupId,
 		},
 	}, nil
 }
@@ -276,7 +277,7 @@ func DeleteGroup(req Request) (*Response, error) {
 	}
 
 	cond := db.NewCondition(storage.AND)
-	cond.Equals("groupId", groupId)
+	cond.IdEquals("groupId", *groupId)
 
 	var eventMetaModels []event_lib.EventMetaModel
 	err = db.FindAll(&eventMetaModels, &storage.FindInput{
@@ -300,7 +301,7 @@ func DeleteGroup(req Request) (*Response, error) {
 			RemoteIp: remoteIp,
 			EventId:  eventMetaModel.EventId,
 			FuncName: "DeleteGroup",
-			GroupId: &[2]*bson.ObjectId{
+			GroupId: &[2]*string{
 				groupId,
 				nil,
 			},
@@ -350,9 +351,11 @@ func GetGroupEventList(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("groupModel.Id:", groupModel.Id)
+	fmt.Println("groupId:", *groupId)
 
 	cond := db.NewCondition(storage.AND)
-	cond.Equals("groupId", groupId)
+	cond.IdEquals("groupId", *groupId)
 	if !groupModel.CanRead(email) {
 		cond.NewSubCondition(storage.OR).
 			Equals("ownerEmail", email).
@@ -360,6 +363,11 @@ func GetGroupEventList(req Request) (*Response, error) {
 			Includes("accessEmails", email)
 	}
 	cond.SetPageOptions(pageOpts)
+	{
+		// b, _ := json.MarshalIndent(cond.Prepare(), "", "    ")
+		// fmt.Println(string(b))
+		fmt.Println(cond.Prepare())
+	}
 
 	var results []*event_lib.ListEventsRow
 	err = db.FindAll(&results, &storage.FindInput{

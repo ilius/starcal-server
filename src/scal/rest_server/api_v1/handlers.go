@@ -99,7 +99,7 @@ func DeleteEvent(req Request) (*Response, error) {
 		},
 	}
 	if eventMeta.GroupId != nil {
-		metaChangeLog.GroupId = &[2]*bson.ObjectId{
+		metaChangeLog.GroupId = &[2]*string{
 			eventMeta.GroupId,
 			nil,
 		}
@@ -167,7 +167,7 @@ func CopyEvent(req Request) (*Response, error) {
 		}
 		return nil, NewError(Internal, "", err)
 	}
-	newEventId := bson.NewObjectId()
+	newEventId := bson.NewObjectId().Hex()
 
 	newGroupId := userModel.DefaultGroupId
 	if eventMeta.GroupModel != nil {
@@ -186,7 +186,7 @@ func CopyEvent(req Request) (*Response, error) {
 			nil,
 			&email,
 		},
-		GroupId: &[2]*bson.ObjectId{
+		GroupId: &[2]*string{
 			nil,
 			newGroupId,
 		},
@@ -214,7 +214,7 @@ func CopyEvent(req Request) (*Response, error) {
 	return &Response{
 		Data: map[string]string{
 			"eventType": eventRev.EventType,
-			"eventId":   newEventId.Hex(),
+			"eventId":   newEventId,
 			"sha1":      eventRev.Sha1,
 		},
 	}, nil
@@ -249,17 +249,16 @@ func SetEventGroupId(req Request) (*Response, error) {
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't have write access to this event", err)
 	}
-	newGroupIdHex, err := req.GetString("newGroupId")
+	newGroupId, err := req.GetString("newGroupId")
 	if err != nil {
 		return nil, err
 	}
-	if !bson.IsObjectIdHex(*newGroupIdHex) {
+	if !bson.IsObjectIdHex(*newGroupId) {
 		return nil, NewError(InvalidArgument, "invalid 'newGroupId'", nil)
 		// to avoid panic!
 	}
-	newGroupId := bson.ObjectIdHex(*newGroupIdHex)
 	newGroupModel := event_lib.EventGroupModel{
-		Id: newGroupId,
+		Id: *newGroupId,
 	}
 	err = db.Get(&newGroupModel)
 	if err != nil {
@@ -276,9 +275,9 @@ func SetEventGroupId(req Request) (*Response, error) {
 		RemoteIp: remoteIp,
 		EventId:  *eventId,
 		FuncName: "SetEventGroupId",
-		GroupId: &[2]*bson.ObjectId{
+		GroupId: &[2]*string{
 			eventMeta.GroupId,
-			&newGroupId,
+			newGroupId,
 		},
 	}
 
@@ -299,7 +298,7 @@ func SetEventGroupId(req Request) (*Response, error) {
 	      SetHttpErrorUserNotFound(w, email)
 	      return
 	  }*/
-	eventMeta.GroupId = &newGroupId
+	eventMeta.GroupId = newGroupId
 	err = db.Update(eventMeta)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
@@ -646,7 +645,7 @@ func AppendEventAccess(req Request) (*Response, error) {
 	return &Response{}, nil
 }
 
-func joinEventWithToken(req Request, tokenStr string, eventId *bson.ObjectId) (*Response, error) {
+func joinEventWithToken(req Request, tokenStr string, eventId *string) (*Response, error) {
 	email, err := event_lib.CheckEventInvitationToken(tokenStr, eventId)
 	if err != nil {
 		return nil, ForbiddenError("invalid event invitation token", err)
@@ -674,7 +673,7 @@ func joinEventWithToken(req Request, tokenStr string, eventId *bson.ObjectId) (*
 	eventPath := fmt.Sprintf(
 		"/event/%v/%v/?%v",
 		eventMeta.EventType,
-		eventMeta.EventId.Hex(),
+		eventMeta.EventId,
 		values.Encode(),
 	)
 	fmt.Println("eventPath:", eventPath)

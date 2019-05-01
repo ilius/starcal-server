@@ -24,6 +24,7 @@ const (
 
 type Condition interface {
 	Equals(key string, value interface{}) Condition
+	IdEquals(key string, value string) Condition
 	Includes(key string, value interface{}) Condition
 	GreaterThan(key string, value interface{}) Condition
 	LessThan(key string, value interface{}) Condition

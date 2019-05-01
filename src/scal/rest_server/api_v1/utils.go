@@ -12,7 +12,7 @@ import (
 	. "github.com/ilius/ripo"
 )
 
-func ObjectIdFromRequest(req Request, name string, sources ...FromX) (*bson.ObjectId, error) {
+func ObjectIdFromRequest(req Request, name string, sources ...FromX) (*string, error) {
 	objIdHex, err := req.GetString(name, sources...)
 	if err != nil {
 		return nil, err
@@ -23,8 +23,7 @@ func ObjectIdFromRequest(req Request, name string, sources ...FromX) (*bson.Obje
 	if !bson.IsObjectIdHex(*objIdHex) { // to avoid panic!
 		return nil, NewError(InvalidArgument, fmt.Sprintf("invalid '%s'", name), nil)
 	}
-	objId := bson.ObjectIdHex(*objIdHex)
-	return &objId, nil
+	return objIdHex, nil
 }
 
 func GetDefaultPageLimit(req Request) int {
@@ -55,7 +54,7 @@ func GetPageLimit(req Request) (int, error) {
 	return limit, nil
 }
 
-func GetPageExStartId(req Request) (*bson.ObjectId, error) {
+func GetPageExStartId(req Request) (*string, error) {
 	return ObjectIdFromRequest(req, "exStartId", FromBody, FromForm, FromEmpty)
 }
 
@@ -85,7 +84,7 @@ func GetPageOptions(req Request) (*scal.PageOptions, error) {
 		Limit:        limit,
 	}
 	if exStartId != nil {
-		pageOpts.ExStartId = *exStartId
+		pageOpts.ExStartId = exStartId
 	}
 	return pageOpts, nil
 }

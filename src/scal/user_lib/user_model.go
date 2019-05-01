@@ -4,21 +4,19 @@ import (
 	"log"
 	"time"
 
-	"github.com/globalsign/mgo/bson"
-
 	"scal"
 	"scal/storage"
 )
 
 type UserModel struct {
-	Id             bson.ObjectId  `bson:"_id,omitempty" json:"-"` // FIXME
-	Email          string         `bson:"email" json:"email"`
-	EmailConfirmed bool           `bson:"emailConfirmed" json:"emailConfirmed"`
-	Password       string         `bson:"password" json:"password"`
-	FullName       string         `bson:"fullName" json:"fullName"`
-	Locked         bool           `bson:"locked" json:"-"`
-	DefaultGroupId *bson.ObjectId `bson:"defaultGroupId" json:"defaultGroupId"`
-	LastLogoutTime *time.Time     `bson:"lastLogoutTime" json:"-"`
+	Id             string     `bson:"_id,objectid" json:"-"` // FIXME: why omitempty
+	Email          string     `bson:"email" json:"email"`
+	EmailConfirmed bool       `bson:"emailConfirmed" json:"emailConfirmed"`
+	Password       string     `bson:"password" json:"password"`
+	FullName       string     `bson:"fullName" json:"fullName"`
+	Locked         bool       `bson:"locked" json:"-"`
+	DefaultGroupId *string    `bson:"defaultGroupId,objectid" json:"defaultGroupId"`
+	LastLogoutTime *time.Time `bson:"lastLogoutTime" json:"-"`
 
 	TokenIssuedAt *time.Time `bson:"-" json:"-"`
 }
@@ -53,13 +51,13 @@ type UserChangeLogModel struct {
 	TokenIssuedAt time.Time `bson:"tokenIssuedAt"`
 	FuncName      string    `bson:"funcName"`
 
-	Email          *[2]*string        `bson:"email,omitempty"`
-	EmailConfirmed *[2]bool           `bson:"emailConfirmed,omitempty"`
-	Password       *[2]string         `bson:"password,omitempty"`
-	FullName       *[2]*string        `bson:"fullName,omitempty"`
-	Locked         *[2]bool           `bson:"locked,omitempty"`
-	DefaultGroupId *[2]*bson.ObjectId `bson:"defaultGroupId,omitempty"`
-	LastLogoutTime *[2]*time.Time     `bson:"lastLogoutTime,omitempty"`
+	Email          *[2]*string    `bson:"email,omitempty"`
+	EmailConfirmed *[2]bool       `bson:"emailConfirmed,omitempty"`
+	Password       *[2]string     `bson:"password,omitempty"`
+	FullName       *[2]*string    `bson:"fullName,omitempty"`
+	Locked         *[2]bool       `bson:"locked,omitempty"`
+	DefaultGroupId *[2]*string    `bson:"defaultGroupId,omitempty"`
+	LastLogoutTime *[2]*time.Time `bson:"lastLogoutTime,omitempty"`
 }
 
 func (model UserChangeLogModel) Collection() string {
@@ -96,8 +94,8 @@ func (model ResetPasswordLogModel) Collection() string {
 type UserLoginAttemptModel struct {
 	Time time.Time `bson:"time" json:"time"`
 
-	UserId bson.ObjectId `bson:"userId" json:"userId"`
-	Email  string        `bson:"email" json:"email"`
+	UserId string `bson:"userId,objectid" json:"userId"`
+	Email  string `bson:"email" json:"email"`
 
 	RemoteIp string `bson:"remoteIp" json:"remoteIp"`
 

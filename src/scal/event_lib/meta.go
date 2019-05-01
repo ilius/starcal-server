@@ -9,10 +9,9 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/ilius/ripo"
 	//"net/url"
-
-	"github.com/globalsign/mgo/bson"
 
 	"scal"
 	"scal/settings"
@@ -30,8 +29,8 @@ const (
 */
 
 type EventMetaModel struct {
-	EventId   bson.ObjectId `bson:"_id"`
-	EventType string        `bson:"eventType"`
+	EventId   string `bson:"_id,objectid"`
+	EventType string `bson:"eventType"`
 
 	CreationTime time.Time            `bson:"creationTime"`
 	FieldsMtime  map[string]time.Time `bson:"fieldsMtime"`
@@ -40,7 +39,7 @@ type EventMetaModel struct {
 	IsPublic     bool     `bson:"isPublic"`
 	AccessEmails []string `bson:"accessEmails"`
 
-	GroupId    *bson.ObjectId   `bson:"groupId"`
+	GroupId    *string          `bson:"groupId,objectid"`
 	GroupModel *EventGroupModel `bson:"-"`
 
 	//PublicJoinPolicy string         `bson:"publicJoinPolicy"` // not indexed
@@ -62,7 +61,7 @@ type InviteEmailTemplateParams struct {
 
 func (model EventMetaModel) UniqueM() scal.M {
 	return scal.M{
-		"_id": model.EventId,
+		"_id": bson.ObjectIdHex(model.EventId),
 	}
 }
 func (model EventMetaModel) Collection() string {
@@ -70,7 +69,7 @@ func (model EventMetaModel) Collection() string {
 }
 func (model EventMetaModel) GroupIdHex() string {
 	if model.GroupId != nil {
-		return model.GroupId.Hex()
+		return *model.GroupId
 	}
 	return ""
 }
@@ -285,7 +284,7 @@ func (model *EventMetaModel) Invite(
 			Email:       inviteEmail,
 			Name:        inviteName,
 			EventType:   model.EventType,
-			EventId:     model.EventId.Hex(),
+			EventId:     model.EventId,
 			Host:        host,
 		}
 
@@ -361,7 +360,7 @@ func (model *EventMetaModel) GetMaybeAttendingEmails(db storage.Database) []stri
 
 func LoadEventMetaModel(
 	db storage.Database,
-	eventId *bson.ObjectId,
+	eventId *string,
 	loadGroup bool,
 ) (*EventMetaModel, error) {
 	var err error
@@ -388,21 +387,21 @@ func LoadEventMetaModel(
 }
 
 type EventMetaChangeLogModel struct {
-	Time    time.Time     `bson:"time"`
-	Email   string        `bson:"email"`
-	EventId bson.ObjectId `bson:"eventId"`
+	Time    time.Time `bson:"time"`
+	Email   string    `bson:"email"`
+	EventId string    `bson:"eventId,objectid"`
 
 	RemoteIp      string    `bson:"remoteIp"`
 	TokenIssuedAt time.Time `bson:"tokenIssuedAt"`
 
 	FuncName string `bson:"funcName"`
 
-	GroupId        *[2]*bson.ObjectId `bson:"groupId,omitempty"`
-	OwnerEmail     *[2]*string        `bson:"ownerEmail,omitempty"`
-	IsPublic       *[2]bool           `bson:"isPublic,omitempty"`
-	AccessEmails   *[2][]string       `bson:"accessEmails,omitempty"`
-	PublicJoinOpen *[2]bool           `bson:"publicJoinOpen,omitempty"`
-	MaxAttendees   *[2]int            `bson:"maxAttendees,omitempty"`
+	GroupId        *[2]*string  `bson:"groupId,omitempty"`
+	OwnerEmail     *[2]*string  `bson:"ownerEmail,omitempty"`
+	IsPublic       *[2]bool     `bson:"isPublic,omitempty"`
+	AccessEmails   *[2][]string `bson:"accessEmails,omitempty"`
+	PublicJoinOpen *[2]bool     `bson:"publicJoinOpen,omitempty"`
+	MaxAttendees   *[2]int      `bson:"maxAttendees,omitempty"`
 }
 
 func (model EventMetaChangeLogModel) Collection() string {
@@ -410,10 +409,10 @@ func (model EventMetaChangeLogModel) Collection() string {
 }
 
 type EventInvitationModel struct {
-	Time         time.Time     `bson:"time"`
-	SenderEmail  string        `bson:"senderEmail"`
-	InvitedEmail string        `bson:"invitedEmail"`
-	EventId      bson.ObjectId `bson:"eventId"`
+	Time         time.Time `bson:"time"`
+	SenderEmail  string    `bson:"senderEmail"`
+	InvitedEmail string    `bson:"invitedEmail"`
+	EventId      string    `bson:"eventId,objectid"`
 }
 
 func (model EventInvitationModel) Collection() string {

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/globalsign/mgo/bson"
-
 	"scal"
 	"scal/storage"
 
@@ -13,15 +11,15 @@ import (
 )
 
 type BaseEventModel struct {
-	DummyType      string        `bson:"-" json:"eventType"`
-	Id             bson.ObjectId `bson:"-" json:"eventId,omitempty"`
-	Sha1           string        `bson:"sha1" json:"sha1,omitempty"`
-	TimeZone       string        `bson:"timeZone,omitempty" json:"timeZone"`
-	TimeZoneEnable bool          `bson:"timeZoneEnable" json:"timeZoneEnable"`
-	CalType        string        `bson:"calType" json:"calType"`
-	Summary        string        `bson:"summary" json:"summary"`
-	Description    string        `bson:"description,omitempty" json:"description"`
-	Icon           string        `bson:"icon,omitempty" json:"icon"`
+	DummyType      string `bson:"-" json:"eventType"`
+	Id             string `bson:"-" json:"eventId,omitempty"`
+	Sha1           string `bson:"sha1" json:"sha1,omitempty"`
+	TimeZone       string `bson:"timeZone,omitempty" json:"timeZone"`
+	TimeZoneEnable bool   `bson:"timeZoneEnable" json:"timeZoneEnable"`
+	CalType        string `bson:"calType" json:"calType"`
+	Summary        string `bson:"summary" json:"summary"`
+	Description    string `bson:"description,omitempty" json:"description"`
+	Icon           string `bson:"icon,omitempty" json:"icon"`
 	//NotifyBefore   int           `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
 	//IsAllDay bool
 	GroupId string `bson:"-" json:"groupId"` // FIXME
@@ -101,7 +99,7 @@ func (event BaseEvent) NotifyBefore() int {
 
 func (event BaseEvent) BaseModel() BaseEventModel {
 	return BaseEventModel{
-		Id:             bson.ObjectId(event.id),
+		Id:             event.id,
 		TimeZone:       event.loc.String(),
 		TimeZoneEnable: event.locEnable,
 		CalType:        event.calType.Name(),

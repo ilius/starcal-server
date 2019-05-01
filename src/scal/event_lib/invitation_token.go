@@ -6,7 +6,6 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/globalsign/mgo/bson"
 )
 
 func init() {
@@ -17,12 +16,11 @@ func init() {
 }
 
 // CheckEventInvitationToken: returns (&email, err)
-func CheckEventInvitationToken(tokenStr string, eventId *bson.ObjectId) (*string, error) {
-	eventIdHex := eventId.Hex()
+func CheckEventInvitationToken(tokenStr string, eventIdHex *string) (*string, error) {
 	token, err := jwt.Parse(
 		tokenStr,
 		func(token *jwt.Token) (interface{}, error) {
-			return []byte(settings.EVENT_INVITE_SECRET + eventIdHex), nil
+			return []byte(settings.EVENT_INVITE_SECRET + *eventIdHex), nil
 		},
 	)
 	if err != nil {
@@ -60,7 +58,7 @@ func CheckEventInvitationToken(tokenStr string, eventId *bson.ObjectId) (*string
 		return nil, fmt.Errorf("tokenEventIdHexIn == %#v", tokenEventIdHexIn)
 	}
 
-	if tokenEventIdHex != eventIdHex {
+	if tokenEventIdHex != *eventIdHex {
 		return nil, fmt.Errorf(
 			"MISMATCH eventId: %#v == %#v",
 			tokenEventIdHex,
@@ -71,20 +69,19 @@ func CheckEventInvitationToken(tokenStr string, eventId *bson.ObjectId) (*string
 	return &email, nil
 }
 
-func newEventInvitationToken(eventId bson.ObjectId, email string) (string, time.Time) {
-	eventIdHex := eventId.Hex()
+func newEventInvitationToken(eventId string, email string) (string, time.Time) {
 	now := time.Now()
 	exp := now.Add(time.Duration(settings.EVENT_INVITE_TOKEN_EXP_SECONDS) * time.Second)
 	tokenStr, _ := jwt.NewWithClaims(
 		jwt.GetSigningMethod(settings.EVENT_INVITE_TOKEN_ALG),
 		jwt.MapClaims{
-			"eventId": eventIdHex,
+			"eventId": eventId,
 			"email":   email,
 			"iat":     now.Unix(),
 			"exp":     exp.Unix(),
 		},
 	).SignedString([]byte(
-		settings.EVENT_INVITE_SECRET + eventIdHex,
+		settings.EVENT_INVITE_SECRET + eventId,
 	))
 	return tokenStr, exp
 }

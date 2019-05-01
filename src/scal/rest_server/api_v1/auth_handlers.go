@@ -113,7 +113,7 @@ func RegisterUser(req Request) (*Response, error) {
 	// add new field userModel.PasswordHash, FIXME
 	userModel.Password = passwordHash
 	defaultGroup := event_lib.EventGroupModel{
-		Id:         bson.NewObjectId(),
+		Id:         bson.NewObjectId().Hex(),
 		Title:      userModel.Email,
 		OwnerEmail: userModel.Email,
 	}
@@ -131,7 +131,7 @@ func RegisterUser(req Request) (*Response, error) {
 			nil,
 			&userModel.Email,
 		},
-		DefaultGroupId: &[2]*bson.ObjectId{
+		DefaultGroupId: &[2]*string{
 			nil,
 			userModel.DefaultGroupId,
 		},

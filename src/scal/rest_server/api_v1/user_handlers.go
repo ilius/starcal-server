@@ -6,7 +6,6 @@ import (
 	"scal/user_lib"
 	"time"
 
-	"github.com/globalsign/mgo/bson"
 	. "github.com/ilius/ripo"
 
 	"scal/settings"
@@ -200,7 +199,7 @@ func SetUserDefaultGroupId(req Request) (*Response, error) {
 		RemoteIp:      remoteIp,
 		TokenIssuedAt: *userModel.TokenIssuedAt,
 		FuncName:      "SetUserDefaultGroupId",
-		DefaultGroupId: &[2]*bson.ObjectId{
+		DefaultGroupId: &[2]*string{
 			userModel.DefaultGroupId,
 			&groupId,
 		},
@@ -246,7 +245,7 @@ func UnsetUserDefaultGroupId(req Request) (*Response, error) {
 		RemoteIp:      remoteIp,
 		TokenIssuedAt: *userModel.TokenIssuedAt,
 		FuncName:      "UnsetUserDefaultGroupId",
-		DefaultGroupId: &[2]*bson.ObjectId{
+		DefaultGroupId: &[2]*string{
 			userModel.DefaultGroupId,
 			nil,
 		},

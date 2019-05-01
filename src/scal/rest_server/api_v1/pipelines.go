@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"scal"
 	"scal/storage"
+
+	"github.com/globalsign/mgo/bson"
 )
 
 func NewPipelines(db storage.Database, collection string) *MongoPipelines {
@@ -115,7 +117,7 @@ func (m *MongoPipelines) startIdOperation(o *scal.PageOptions) string {
 func (m *MongoPipelines) SetPageOptions(o *scal.PageOptions) {
 	if o.ExStartId != nil {
 		m.match["_id"] = scal.M{
-			m.startIdOperation(o): o.ExStartId,
+			m.startIdOperation(o): bson.ObjectIdHex(*o.ExStartId),
 		}
 	}
 	m.Sort("_id", !o.ReverseOrder)

@@ -3,8 +3,6 @@ package api_v1
 import (
 	"sort"
 	"sync"
-
-	"github.com/globalsign/mgo/bson"
 )
 
 const (
@@ -103,11 +101,11 @@ func (rl *ResourceLocker) UserLogin(email string, ip string) (bool, func()) {
 }
 
 // returns failed, unlock
-func (rl *ResourceLocker) Event(eventId bson.ObjectId) (bool, func()) {
-	return rl.Resource(restype_event, eventId.Hex())
+func (rl *ResourceLocker) Event(eventId string) (bool, func()) {
+	return rl.Resource(restype_event, eventId)
 }
 
 // returns failed, unlock
-func (rl *ResourceLocker) Group(groupId bson.ObjectId) (bool, func()) {
-	return rl.Resource(restype_group, groupId.Hex())
+func (rl *ResourceLocker) Group(groupId string) (bool, func()) {
+	return rl.Resource(restype_group, groupId)
 }

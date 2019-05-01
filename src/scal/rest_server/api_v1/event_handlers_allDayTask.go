@@ -143,7 +143,7 @@ func AddAllDayTask(req Request) (*Response, error) {
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
 	eventModel.Sha1 = fmt.Sprintf("%x", sha1.Sum(jsonByte))
-	eventId := bson.NewObjectId()
+	eventId := bson.NewObjectId().Hex()
 	eventModel.Id = eventId
 	groupId := userModel.DefaultGroupId
 	if eventModel.GroupId != "" {
@@ -233,7 +233,7 @@ func AddAllDayTask(req Request) (*Response, error) {
 	}
 	return &Response{
 		Data: map[string]string{
-			"eventId": eventId.Hex(),
+			"eventId": eventId,
 			"sha1":    eventModel.Sha1,
 		},
 	}, nil
@@ -499,7 +499,7 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 
 	return &Response{
 		Data: map[string]string{
-			"eventId": eventId.Hex(),
+			"eventId": *eventId,
 			"sha1":    eventRev.Sha1,
 		},
 	}, nil
@@ -765,7 +765,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 	}
 	return &Response{
 		Data: map[string]string{
-			"eventId": eventId.Hex(),
+			"eventId": *eventId,
 			"sha1":    eventModel.Sha1,
 		},
 	}, nil
@@ -815,7 +815,7 @@ func MergeAllDayTask(req Request) (*Response, error) {
 		return nil, NewError(MissingArgument, "missing 'lastMergeSha1'", nil)
 	}
 	inputEventModel := &inputStruct.Event
-	if inputEventModel.Id.Hex() != eventId.Hex() {
+	if inputEventModel.Id != *eventId {
 		return nil, NewError(InvalidArgument, "mismatch 'event.id'", nil)
 	}
 

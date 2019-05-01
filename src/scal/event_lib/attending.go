@@ -5,18 +5,16 @@ import (
 	"log"
 	"time"
 
-	"github.com/globalsign/mgo/bson"
-
 	"scal"
 	"scal/storage"
 )
 
 type EventAttendingModel struct {
-	//Id *bson.ObjectId           `bson:"_id,omitempty"`
-	EventId      bson.ObjectId `bson:"eventId"`
-	Email        string        `bson:"email"`
-	Attending    string        `bson:"attending"` // YES, NO, MAYBE, UNKNOWN
-	ModifiedTime time.Time     `bson:"modifiedTime"`
+	//Id *string           `bson:"_id,objectid"` // omitempty??
+	EventId      string    `bson:"eventId,objectid"`
+	Email        string    `bson:"email"`
+	Attending    string    `bson:"attending"` // YES, NO, MAYBE, UNKNOWN
+	ModifiedTime time.Time `bson:"modifiedTime"`
 }
 
 func (model EventAttendingModel) UniqueM() scal.M {
@@ -42,7 +40,7 @@ func (model *EventAttendingModel) Save(db storage.Database) error {
 
 func LoadEventAttendingModel(
 	db storage.Database,
-	eventId bson.ObjectId,
+	eventId string,
 	email string,
 ) (EventAttendingModel, error) {
 	attendingModel := EventAttendingModel{
