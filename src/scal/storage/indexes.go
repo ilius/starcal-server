@@ -19,6 +19,8 @@ func EnsureIndexes() {
 		db = dbI.(*MongoDatabase)
 	}
 	/*
+		mgo: Drop DropDups as it's unsupported past 2.8.
+
 		With DropDups set to true, documents with the
 		same key as a previously indexed one will be dropped rather than an
 		error returned.
@@ -35,7 +37,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_user, mgo.Index{
 		Key:        []string{"email"},
 		Unique:     true,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -43,7 +44,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_userChangeLog, mgo.Index{
 		Key:        []string{"email"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -51,7 +51,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_userLogins, mgo.Index{
 		Key:        []string{"email"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -59,7 +58,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_userLogins, mgo.Index{
 		Key:        []string{"time"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -67,7 +65,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_group, mgo.Index{
 		Key:        []string{"ownerEmail"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     true,
 	})
@@ -75,7 +72,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_group, mgo.Index{
 		Key:        []string{"readAccessEmails"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     true,
 	})
@@ -83,7 +79,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_eventMeta, mgo.Index{
 		Key:        []string{"ownerEmail"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -91,7 +86,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_eventMeta, mgo.Index{
 		Key:        []string{"groupId"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -99,7 +93,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_eventMeta, mgo.Index{
 		Key:        []string{"creationTime"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -107,7 +100,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_attending, mgo.Index{
 		Key:        []string{"eventId", "email"},
 		Unique:     true,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -115,7 +107,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_attending, mgo.Index{
 		Key:        []string{"eventId", "attending"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -123,7 +114,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_attending, mgo.Index{
 		Key:        []string{"eventId"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -131,49 +121,42 @@ func EnsureIndexes() {
 	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
 	// 	Key:        []string{"time"},
 	// 	Unique:     false,
-	// 	DropDups:   false,
 	// 	Background: false,
 	// 	Sparse:     false,
 	// })
 	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
 	// 	Key:        []string{"email"},
 	// 	Unique:     false,
-	// 	DropDups:   false,
 	// 	Background: false,
 	// 	Sparse:     false,
 	// })
 	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
 	// 	Key:        []string{"eventId"},
 	// 	Unique:     false,
-	// 	DropDups:   false,
 	// 	Background: false,
 	// 	Sparse:     false,
 	// })
 	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
 	// 	Key:        []string{"eventType"},
 	// 	Unique:     false,
-	// 	DropDups:   false,
 	// 	Background: false,
 	// 	Sparse:     false,
 	// })
 	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
 	// 	Key:        []string{"ownerEmail"},
 	// 	Unique:     false,
-	// 	DropDups:   false,
 	// 	Background: false,
 	// 	Sparse:     false,
 	// })
 	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
 	// 	Key:        []string{"groupId"},
 	// 	Unique:     false,
-	// 	DropDups:   false,
 	// 	Background: false,
 	// 	Sparse:     false,
 	// })
 	// db.EnsureIndex(C_eventMetaChangeLog, mgo.Index{
 	// 	Key:        []string{"accessEmails"},
 	// 	Unique:     false,
-	// 	DropDups:   false,
 	// 	Background: false,
 	// 	Sparse:     false,
 	// })
@@ -181,7 +164,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_revision, mgo.Index{
 		Key:        []string{"sha1"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -189,7 +171,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_revision, mgo.Index{
 		Key:        []string{"eventId"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -197,7 +178,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_revision, mgo.Index{
 		Key:        []string{"time"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -205,7 +185,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_eventData, mgo.Index{
 		Key:        []string{"sha1"},
 		Unique:     true,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -227,7 +206,6 @@ func EnsureIndexes() {
 			err = db.C(colName).EnsureIndex(mgo.Index{
 				Key: []string{"sha1"},
 				Unique: true,
-				DropDups: false,
 				Background: false,
 				Sparse: false,
 			})
@@ -240,7 +218,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_resetPwToken, mgo.Index{
 		Key:        []string{"token"},
 		Unique:     true,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -248,7 +225,6 @@ func EnsureIndexes() {
 	db.EnsureIndex(C_resetPwToken, mgo.Index{
 		Key:        []string{"email"},
 		Unique:     false,
-		DropDups:   false,
 		Background: false,
 		Sparse:     false,
 	})
@@ -256,7 +232,6 @@ func EnsureIndexes() {
 	db.EnsureIndexWithTTL(C_resetPwToken, mgo.Index{
 		Key:         []string{"-issueTime"},
 		Unique:      false,
-		DropDups:    false,
 		Background:  false,
 		Sparse:      false,
 		ExpireAfter: time.Second * settings.RESET_PASSWORD_EXP_SECONDS,
@@ -271,7 +246,6 @@ func EnsureIndexes() {
 		db.EnsureIndexWithTTL(C_errorsPrefix+codeStr, mgo.Index{
 			Key:         []string{"-time"},
 			Unique:      false,
-			DropDups:    false,
 			Background:  false,
 			Sparse:      false,
 			ExpireAfter: time.Second * time.Duration(seconds),
