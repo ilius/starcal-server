@@ -1,14 +1,7 @@
 package api_v1
 
 import (
-	logging "github.com/hhkbp2/go-logging"
+	logging "github.com/ilius/go-logging"
 )
 
-var log logging.Logger
-
-func init() {
-	if log == nil {
-		log = logging.GetLogger("api_v1")
-		log.AddHandler(logging.NewStdoutHandler())
-	}
-}
+var log = logging.GetLogger("api_v1").AddHandler(logging.NewStdoutHandler())

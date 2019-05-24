@@ -43,12 +43,18 @@
 [submodule "src/github.com/kr/text"]
 	path = src/github.com/kr/text
 	url = https://github.com/kr/text
-[submodule "src/github.com/hhkbp2/go-logging"]
-	path = src/github.com/hhkbp2/go-logging
-	url = https://github.com/hhkbp2/go-logging
 [submodule "src/github.com/hhkbp2/go-strftime"]
 	path = src/github.com/hhkbp2/go-strftime
 	url = https://github.com/hhkbp2/go-strftime
 [submodule "src/gopkg.in/yaml.v2"]
 	path = src/gopkg.in/yaml.v2
 	url = https://github.com/go-yaml/yaml
+[submodule "src/github.com/hhkbp2/testify"]
+	path = src/github.com/hhkbp2/testify
+	url = https://github.com/hhkbp2/testify
+[submodule "src/github.com/ilius/go-logging"]
+	path = src/github.com/ilius/go-logging
+	url = https://github.com/ilius/go-logging
+[submodule "src/github.com/stretchr/testify"]
+	path = src/github.com/stretchr/testify
+	url = https://github.com/stretchr/testify
