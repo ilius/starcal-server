@@ -1,12 +1,13 @@
 package user_lib
 
 import (
-	"log"
 	"time"
 
 	"scal"
 	"scal/storage"
 )
+
+var log = scal.Log
 
 type UserModel struct {
 	Id             string     `bson:"_id,objectid" json:"-"` // FIXME: why omitempty
@@ -37,7 +38,7 @@ func UserModelByEmail(email string, db storage.Database) *UserModel {
 	err := db.Get(&user)
 	if err != nil {
 		if !db.IsNotFound(err) {
-			log.Print("unknown error in fetching user model:", err)
+			log.Error("unknown error in fetching user model: %v", err)
 		}
 		return nil
 	}

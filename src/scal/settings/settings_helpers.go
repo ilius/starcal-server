@@ -8,11 +8,13 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"os"
 	"strings"
+
+	logging "github.com/ilius/go-logging"
 )
 
+var log = logging.GetLogger("settings").AddHandler(logging.NewStdoutHandler())
 var stdin = bufio.NewReader(os.Stdin)
 var masterKey []byte
 
@@ -33,13 +35,13 @@ func getMasterKey() []byte {
 	for i := 0; i < 10; i++ {
 		valueStr, err = stdin.ReadString('\n')
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			continue
 		}
 		valueStr = strings.TrimRight(valueStr, "\n")
 		value, err := hex.DecodeString(valueStr)
 		if err != nil {
-			log.Println(fmt.Errorf("Master key must be hex-encoded"))
+			log.Error(fmt.Errorf("Master key must be hex-encoded"))
 			continue
 		}
 		masterKey = value

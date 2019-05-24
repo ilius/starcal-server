@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"net/url"
 	"text/template"
 	"time"
@@ -336,7 +335,7 @@ func (model *EventMetaModel) GetEmailsByAttendingStatus(
 		Condition:  cond,
 	})
 	if err != nil {
-		log.Printf(
+		log.Error(
 			"Internal Error: GetAttendingEmails: eventId=%v: %s\n",
 			model.EventId,
 			err.Error(),

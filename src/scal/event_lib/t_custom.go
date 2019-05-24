@@ -3,7 +3,6 @@ package event_lib
 import (
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 	"scal/storage"
 
@@ -92,7 +91,7 @@ func (event CustomEvent) IterRules() <-chan rlib.EventRule {
 		for _, ruleType := range event.ruleTypes {
 			rule, ok := event.ruleMap[ruleType.Name]
 			if !ok {
-				log.Printf(
+				log.Error(
 					"IterRules: rule type %s not found, eventId=%s\n",
 					ruleType.Name,
 					event.Id(),
@@ -146,7 +145,7 @@ func (event *CustomEvent) GetModifiedRuleTypes(oldEvent *CustomEvent) rlib.Event
 	for _, ruleType := range event.ruleTypes {
 		newRule, ok := event.ruleMap[ruleType.Name]
 		if !ok {
-			log.Printf(
+			log.Error(
 				"GetModifiedRuleTypes: rule type %s not found, eventId=%s\n",
 				ruleType.Name,
 				event.Id(),

@@ -2,7 +2,6 @@ package event_lib
 
 import (
 	//"errors"
-	"log"
 	"time"
 
 	"scal"
@@ -54,7 +53,7 @@ func LoadEventAttendingModel(
 		err = nil
 	}
 	if err != nil {
-		log.Printf(
+		log.Error(
 			"Internal Error: fetching EventAttendingModel{%v, %v}: %s\n",
 			eventId,
 			email,

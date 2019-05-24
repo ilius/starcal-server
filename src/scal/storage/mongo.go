@@ -3,7 +3,6 @@ package storage
 import (
 	"errors"
 	"io"
-	"log"
 	"scal"
 	"scal/settings"
 	"time"
@@ -21,7 +20,7 @@ func Hex(id interface{}) string {
 	}
 	id2, ok := id.(hasHex)
 	if !ok {
-		log.Print("storage.Hex: can not convert to hex: ", id)
+		log.Error("storage.Hex: can not convert to hex: %v", id)
 		return ""
 	}
 	return id2.Hex()
@@ -126,7 +125,7 @@ func (db *MongoDatabase) PipeIter(
 		}, func() {
 			err := iter.Close()
 			if err != nil {
-				log.Println("error in closing mongo iter:", err)
+				log.Error("error in closing mongo iter: %v", err)
 			}
 		}
 }
