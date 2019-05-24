@@ -2,7 +2,6 @@ package api_v1
 
 import (
 	"fmt"
-	"log"
 	"scal"
 	"strings"
 
@@ -35,7 +34,7 @@ func GetDefaultPageLimit(req Request) int {
 	if limit > 0 {
 		return limit
 	}
-	log.Println("No default page limit for", handlerName)
+	log.Warn("No default page limit for", handlerName)
 	return settings.API_PAGE_LIMIT_DEFAULT
 }
 

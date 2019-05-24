@@ -1,7 +1,6 @@
 package api_v1
 
 import (
-	"log"
 	"net/http"
 
 	// to load / register calendar types
@@ -13,6 +12,9 @@ var port = "9001"
 func StartAPIv1Server() {
 	go ErrorSaverLoop()
 	router := GetRouter()
-	log.Printf("Starting to serve api v1 on port %v\n", port)
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	log.Info("Starting to serve api v1 on port %v\n", port)
+	err := http.ListenAndServe(":"+port, router)
+	if err != nil {
+		panic(err)
+	}
 }

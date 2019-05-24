@@ -2,7 +2,6 @@ package api_v1
 
 import (
 	"fmt"
-	"log"
 	"scal/settings"
 	"scal/storage"
 	"time"
@@ -24,7 +23,13 @@ func errorDispatcher(request ripo.ExtendedRequest, rpcErr ripo.RPCError) {
 		Request: request,
 		Error:   rpcErr,
 	}
-	log.Println(rpcErr.Code(), rpcErr.Error(), rpcErr.Details(), rpcErr.Cause())
+	log.Error(fmt.Sprintf(
+		"%v %v %v %v",
+		rpcErr.Code(),
+		rpcErr.Error(),
+		rpcErr.Details(),
+		rpcErr.Cause(),
+	))
 }
 
 type ErrorModel struct {
@@ -47,8 +52,8 @@ func errorCollection(code ripo.Code) string {
 func DispatchError(request ripo.Request, rpcErr ripo.RPCError) {
 	requestExt, ok := request.(ripo.ExtendedRequest)
 	if !ok {
-		log.Println(rpcErr)
-		log.Println("CRITICAL: DispatchError: request is not ExtendedRequest")
+		log.Error(rpcErr)
+		log.Error("CRITICAL: DispatchError: request is not ExtendedRequest")
 		return
 	}
 	errorDispatcher(requestExt, rpcErr)
@@ -62,12 +67,12 @@ func saveErrors(byCode map[ripo.Code][]*errorChanItem) {
 	defer func() {
 		r := recover()
 		if r != nil {
-			log.Println("panic in saveErrors:", r)
+			log.Error("panic in saveErrors:", r)
 		}
 	}()
 	db, err := storage.GetDB()
 	if err != nil {
-		log.Println("error in saveErrors: storage.GetDB:", err)
+		log.Error("error in saveErrors: storage.GetDB:", err)
 		return
 	}
 	for code, items := range byCode {
@@ -99,7 +104,7 @@ func saveErrors(byCode map[ripo.Code][]*errorChanItem) {
 		}
 		err := db.InsertMany(errorCollection(code), errorModels)
 		if err != nil {
-			log.Println("error in saveErrors: db.InsertMany:", err)
+			log.Error("error in saveErrors: db.InsertMany:", err)
 			continue
 		}
 	}
@@ -113,13 +118,13 @@ func ErrorSaverLoop() {
 		case item := <-errorChan:
 			code := item.Error.Code()
 			byCode[code] = append(byCode[code], item)
-			// log.Println("-- added to map:", item.Error)
+			// log.Debug("-- added to map:", item.Error)
 		case <-ticker.C:
 			if len(byCode) > 0 {
-				// log.Println("---- saveErrors starting, len(byCode) = ", len(byCode))
+				// log.Debug("---- saveErrors starting, len(byCode) = ", len(byCode))
 				saveErrors(byCode)
 				byCode = map[ripo.Code][]*errorChanItem{}
-				// log.Println("---- saveErrors finished")
+				// log.Debug("---- saveErrors finished")
 			}
 		}
 	}

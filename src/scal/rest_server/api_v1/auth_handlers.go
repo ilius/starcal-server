@@ -3,7 +3,6 @@ package api_v1
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"net/url"
 	"scal"
 	"scal/event_lib"
@@ -152,7 +151,7 @@ func RegisterUser(req Request) (*Response, error) {
 	err = sendEmailConfirmation(req, userModel)
 	if err != nil {
 		// FIXME: call error dispatcher (to save to mongo), but don't return error
-		log.Println(err)
+		log.Error(err)
 	}
 
 	signedToken, exp := NewSignedToken(userModel)
@@ -452,7 +451,7 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		Body:    emailBody,
 	})
 	if err != nil {
-		log.Println("Failed to send email:\n", emailBody)
+		log.Error("Failed to send email:\n", emailBody)
 		return nil, NewError(Unavailable, "error in sending email", err)
 	}
 	return &Response{
