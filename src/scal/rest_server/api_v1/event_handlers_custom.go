@@ -3,13 +3,12 @@
 package api_v1
 
 import (
-	"fmt"
-	"strings"
-	"time"
-	//"log"
 	"crypto/sha1"
 	"encoding/json"
+	"fmt"
 	"reflect"
+	"strings"
+	"time"
 
 	"github.com/globalsign/mgo/bson"
 	. "github.com/ilius/ripo"
