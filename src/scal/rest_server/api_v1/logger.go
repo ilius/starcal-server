@@ -1,7 +1,7 @@
 package api_v1
 
 import (
-	logging "github.com/ilius/go-logging"
+	"scal/settings"
 )
 
-var log = logging.GetLogger("api_v1").AddHandler(logging.NewStdoutHandler())
+var log = settings.NewLogger("api_v1")

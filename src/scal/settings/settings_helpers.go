@@ -10,11 +10,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	logging "github.com/ilius/go-logging"
 )
 
-var log = logging.GetLogger("settings").AddHandler(logging.NewStdoutHandler())
+var log = NewLogger("settings")
 var stdin = bufio.NewReader(os.Stdin)
 var masterKey []byte
 

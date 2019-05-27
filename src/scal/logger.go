@@ -1,9 +1,9 @@
 package scal
 
 import (
-	logging "github.com/ilius/go-logging"
+	"scal/settings"
 )
 
-var log = logging.GetLogger("").AddHandler(logging.NewStdoutHandler())
+var log = settings.NewLogger("")
 
 var Log = log

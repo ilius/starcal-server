@@ -1,7 +1,7 @@
 package storage
 
 import (
-	logging "github.com/ilius/go-logging"
+	"scal/settings"
 )
 
-var log = logging.GetLogger("storage").AddHandler(logging.NewStdoutHandler())
+var log = settings.NewLogger("storage")

@@ -7,6 +7,9 @@ ARCH = "" # "amd64", "386", "arm64", "arm", ...
 # KEEP_SETTINGS_GO=False means the generated settings.go will be deleted after compile
 KEEP_SETTINGS_GO = False
 
+LOG_LEVEL = "DEBUG"
+# allowed values for LOG_LEVEL: "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "NOTSET"
+
 MONGO_HOST = "127.0.0.1:27017"
 MONGO_DB_NAME = "starcal"
 MONGO_USERNAME = ""
