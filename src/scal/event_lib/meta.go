@@ -335,11 +335,11 @@ func (model *EventMetaModel) GetEmailsByAttendingStatus(
 		Condition:  cond,
 	})
 	if err != nil {
-		log.Error(
+		log.Error(fmt.Sprintf(
 			"Internal Error: GetAttendingEmails: eventId=%v: %s\n",
 			model.EventId,
 			err.Error(),
-		)
+		))
 	}
 	emails := make([]string, len(emailStructs))
 	for i, m := range emailStructs {

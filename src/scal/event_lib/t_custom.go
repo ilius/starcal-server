@@ -91,11 +91,11 @@ func (event CustomEvent) IterRules() <-chan rlib.EventRule {
 		for _, ruleType := range event.ruleTypes {
 			rule, ok := event.ruleMap[ruleType.Name]
 			if !ok {
-				log.Error(
+				log.Error(fmt.Sprintf(
 					"IterRules: rule type %s not found, eventId=%s\n",
 					ruleType.Name,
 					event.Id(),
-				)
+				))
 				continue
 			}
 			ch <- rule
@@ -145,11 +145,11 @@ func (event *CustomEvent) GetModifiedRuleTypes(oldEvent *CustomEvent) rlib.Event
 	for _, ruleType := range event.ruleTypes {
 		newRule, ok := event.ruleMap[ruleType.Name]
 		if !ok {
-			log.Error(
+			log.Error(fmt.Sprintf(
 				"GetModifiedRuleTypes: rule type %s not found, eventId=%s\n",
 				ruleType.Name,
 				event.Id(),
-			)
+			))
 			continue
 		}
 		oldRule, hasOld := oldEvent.ruleMap[ruleType.Name]

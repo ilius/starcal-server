@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"scal/settings"
 	"time"
 
@@ -239,7 +240,7 @@ func EnsureIndexes() {
 	for codeStr, seconds := range settings.ERRORS_EXPIRE_AFTER_SECONDS {
 		_, ok := ripo.ErrorCodeByName[codeStr]
 		if !ok {
-			log.Error("invalid error code %#v in settings.ERRORS_EXPIRE_AFTER_SECONDS", codeStr)
+			log.Error(fmt.Sprintf("invalid error code %#v in settings.ERRORS_EXPIRE_AFTER_SECONDS", codeStr))
 			continue
 		}
 		db.EnsureIndexWithTTL(C_errorsPrefix+codeStr, mgo.Index{

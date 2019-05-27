@@ -39,7 +39,7 @@ func getMasterKey() []byte {
 		valueStr = strings.TrimRight(valueStr, "\n")
 		value, err := hex.DecodeString(valueStr)
 		if err != nil {
-			log.Error(fmt.Errorf("Master key must be hex-encoded"))
+			log.Error("Master key must be hex-encoded")
 			continue
 		}
 		masterKey = value

@@ -2,6 +2,7 @@ package event_lib
 
 import (
 	//"errors"
+	"fmt"
 	"time"
 
 	"scal"
@@ -53,12 +54,12 @@ func LoadEventAttendingModel(
 		err = nil
 	}
 	if err != nil {
-		log.Error(
+		log.Error(fmt.Sprintf(
 			"Internal Error: fetching EventAttendingModel{%v, %v}: %s\n",
 			eventId,
 			email,
 			err.Error(),
-		)
+		))
 	}
 	return attendingModel, err
 }

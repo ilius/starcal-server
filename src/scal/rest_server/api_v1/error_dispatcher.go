@@ -67,12 +67,12 @@ func saveErrors(byCode map[ripo.Code][]*errorChanItem) {
 	defer func() {
 		r := recover()
 		if r != nil {
-			log.Error("panic in saveErrors:", r)
+			log.Error("panic in saveErrors: ", r)
 		}
 	}()
 	db, err := storage.GetDB()
 	if err != nil {
-		log.Error("error in saveErrors: storage.GetDB:", err)
+		log.Error("error in saveErrors: storage.GetDB: ", err)
 		return
 	}
 	for code, items := range byCode {
@@ -104,7 +104,7 @@ func saveErrors(byCode map[ripo.Code][]*errorChanItem) {
 		}
 		err := db.InsertMany(errorCollection(code), errorModels)
 		if err != nil {
-			log.Error("error in saveErrors: db.InsertMany:", err)
+			log.Error("error in saveErrors: db.InsertMany: ", err)
 			continue
 		}
 	}
@@ -118,7 +118,7 @@ func ErrorSaverLoop() {
 		case item := <-errorChan:
 			code := item.Error.Code()
 			byCode[code] = append(byCode[code], item)
-			// log.Debug("-- added to map:", item.Error)
+			// log.Debug("-- added to map: Error=", item.Error)
 		case <-ticker.C:
 			if len(byCode) > 0 {
 				// log.Debug("---- saveErrors starting, len(byCode) = ", len(byCode))

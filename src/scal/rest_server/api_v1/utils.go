@@ -34,7 +34,7 @@ func GetDefaultPageLimit(req Request) int {
 	if limit > 0 {
 		return limit
 	}
-	log.Warn("No default page limit for", handlerName)
+	log.Warn("No default page limit for ", handlerName)
 	return settings.API_PAGE_LIMIT_DEFAULT
 }
 

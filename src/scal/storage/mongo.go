@@ -20,7 +20,7 @@ func Hex(id interface{}) string {
 	}
 	id2, ok := id.(hasHex)
 	if !ok {
-		log.Error("storage.Hex: can not convert to hex: %v", id)
+		log.Error("storage.Hex: can not convert to hex: ", id)
 		return ""
 	}
 	return id2.Hex()
@@ -125,7 +125,7 @@ func (db *MongoDatabase) PipeIter(
 		}, func() {
 			err := iter.Close()
 			if err != nil {
-				log.Error("error in closing mongo iter: %v", err)
+				log.Error("error in closing mongo iter: ", err)
 			}
 		}
 }
