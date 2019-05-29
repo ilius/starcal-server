@@ -58,3 +58,6 @@
 [submodule "src/github.com/stretchr/testify"]
 	path = src/github.com/stretchr/testify
 	url = https://github.com/stretchr/testify
+[submodule "src/github.com/ilius/is"]
+	path = src/github.com/ilius/is
+	url = https://github.com/ilius/is
