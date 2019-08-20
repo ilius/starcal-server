@@ -46,6 +46,7 @@ func (mg *MongoGroupBy) AddFromFirst(key string, alias string) GroupByInterface 
 	}
 	return mg
 }
+
 func (mg *MongoGroupBy) AddFromLast(key string, alias string) GroupByInterface {
 	mg.fields[alias] = scal.M{
 		"$last": "$" + key,

@@ -47,9 +47,11 @@ type UniversityClassEvent struct {
 func (UniversityClassEvent) Type() string {
 	return "universityClass"
 }
+
 func (event UniversityClassEvent) WeekNumMode() string {
 	return event.weekNumMode
 }
+
 func (event UniversityClassEvent) WeekDayList() []int {
 	return event.weekDayList
 }

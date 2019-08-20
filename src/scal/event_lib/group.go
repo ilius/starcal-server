@@ -1,12 +1,12 @@
 package event_lib
 
 import (
+	"scal"
+	"scal/storage"
+
 	"github.com/ilius/ripo"
 
 	"github.com/globalsign/mgo/bson"
-
-	"scal"
-	"scal/storage"
 )
 
 type EventGroupModel struct {
@@ -22,9 +22,11 @@ func (model EventGroupModel) UniqueM() scal.M {
 		"_id": bson.ObjectIdHex(model.Id),
 	}
 }
+
 func (EventGroupModel) Collection() string {
 	return storage.C_group
 }
+
 func (model EventGroupModel) EmailCanAdd(email string) bool {
 	if email == model.OwnerEmail {
 		return true
@@ -36,6 +38,7 @@ func (model EventGroupModel) EmailCanAdd(email string) bool {
 	}
 	return false
 }
+
 func (model EventGroupModel) CanRead(email string) bool {
 	if email == model.OwnerEmail {
 		return true

@@ -2,14 +2,13 @@ package api_v1
 
 import (
 	"fmt"
+	"scal"
+	"scal/event_lib"
+	"scal/storage"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
 	. "github.com/ilius/ripo"
-
-	"scal"
-	"scal/event_lib"
-	"scal/storage"
 )
 
 const ALLOW_DELETE_DEFAULT_GROUP = true

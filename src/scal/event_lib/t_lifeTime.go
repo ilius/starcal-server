@@ -31,9 +31,11 @@ type LifeTimeEvent struct {
 func (event LifeTimeEvent) Type() string {
 	return "lifeTime"
 }
+
 func (event LifeTimeEvent) StartJd() int {
 	return event.startJd
 }
+
 func (event LifeTimeEvent) EndJd() int {
 	return event.endJd
 }

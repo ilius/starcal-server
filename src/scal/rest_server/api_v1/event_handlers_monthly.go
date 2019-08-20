@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/globalsign/mgo/bson"
-	. "github.com/ilius/ripo"
-
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
+
+	"github.com/globalsign/mgo/bson"
+	. "github.com/ilius/ripo"
 )
 
 func init() {
@@ -168,7 +168,7 @@ func AddMonthly(req Request) (*Response, error) {
 		CreationTime: time.Now(),
 		OwnerEmail:   email,
 		GroupId:      groupId,
-		//AccessEmails: []string{}
+		// AccessEmails: []string{}
 	}
 	now := time.Now()
 	err = db.Insert(event_lib.EventMetaChangeLogModel{
@@ -519,6 +519,7 @@ func UpdateMonthly(req Request) (*Response, error) {
 		},
 	}, nil
 }
+
 func PatchMonthly(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {

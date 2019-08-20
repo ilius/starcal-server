@@ -3,14 +3,13 @@ package api_v1
 import (
 	"scal"
 	"scal/event_lib"
+	"scal/settings"
+	"scal/storage"
 	"scal/user_lib"
+	. "scal/user_lib"
 	"time"
 
 	. "github.com/ilius/ripo"
-
-	"scal/settings"
-	"scal/storage"
-	. "scal/user_lib"
 )
 
 func init() {

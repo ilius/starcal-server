@@ -74,16 +74,18 @@ func (CustomEvent) Type() string {
 	return "custom"
 }
 
-//func (event CustomEvent) RuleMap() EventRuleMap {
+// func (event CustomEvent) RuleMap() EventRuleMap {
 //	return event.ruleMap
 //}
 func (event CustomEvent) GetRule(typeName string) (rlib.EventRule, bool) {
 	typeObj, ok := event.ruleMap[typeName]
 	return typeObj, ok
 }
+
 func (event CustomEvent) RuleTypes() rlib.EventRuleTypeList {
 	return event.ruleTypes
 }
+
 func (event CustomEvent) IterRules() <-chan rlib.EventRule {
 	ch := make(chan rlib.EventRule)
 	go func() {
@@ -103,10 +105,11 @@ func (event CustomEvent) IterRules() <-chan rlib.EventRule {
 	}()
 	return ch
 }
+
 func (event CustomEvent) CheckRuleTypes() error {
 	for _, ruleType := range event.ruleTypes {
 		//_, ok := event.ruleMap[ruleType.Name]
-		//if !ok {
+		// if !ok {
 		//	return errors.New(
 		//		"rule type " + ruleType.Name + " not found",
 		//	)
@@ -136,6 +139,7 @@ func (event CustomEvent) CheckRuleTypes() error {
 	}
 	return nil
 }
+
 func (event *CustomEvent) GetModifiedRuleTypes(oldEvent *CustomEvent) rlib.EventRuleTypeList {
 	modTypes := make(
 		rlib.EventRuleTypeList,

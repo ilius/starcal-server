@@ -27,6 +27,7 @@ func (m UserModel) UniqueM() scal.M {
 		"email": m.Email,
 	}
 }
+
 func (UserModel) Collection() string {
 	return storage.C_user
 }
@@ -76,6 +77,7 @@ type ResetPasswordTokenModel struct {
 func (model ResetPasswordTokenModel) Collection() string {
 	return storage.C_resetPwToken
 }
+
 func (model ResetPasswordTokenModel) UniqueM() scal.M {
 	return scal.M{
 		"token": model.Token,

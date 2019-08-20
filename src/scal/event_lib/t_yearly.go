@@ -35,15 +35,19 @@ type YearlyEvent struct {
 func (YearlyEvent) Type() string {
 	return "yearly"
 }
+
 func (event YearlyEvent) Month() uint8 {
 	return event.month
 }
+
 func (event YearlyEvent) Day() uint8 {
 	return event.day
 }
+
 func (event YearlyEvent) StartYear() int {
 	return event.startYear
 }
+
 func (event YearlyEvent) StartYearEnable() bool {
 	return event.startYearEnable
 }

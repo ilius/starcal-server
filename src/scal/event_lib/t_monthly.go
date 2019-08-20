@@ -1,9 +1,9 @@
 package event_lib
 
 import (
-	lib "github.com/ilius/libgostarcal"
-
 	"scal/storage"
+
+	lib "github.com/ilius/libgostarcal"
 
 	"github.com/ilius/libgostarcal/utils"
 )
@@ -46,24 +46,31 @@ type MonthlyEvent struct {
 func (MonthlyEvent) Type() string {
 	return "monthly"
 }
+
 func (event MonthlyEvent) StartJd() int {
 	return event.startJd
 }
+
 func (event MonthlyEvent) EndJd() int {
 	return event.endJd
 }
+
 func (event MonthlyEvent) Day() uint8 {
 	return event.day
 }
+
 func (event MonthlyEvent) DayStartSeconds() uint32 {
 	return event.dayStartSeconds
 }
+
 func (event MonthlyEvent) DayEndSeconds() uint32 {
 	return event.dayEndSeconds
 }
+
 func (event MonthlyEvent) DayStartHMS() lib.HMS {
 	return utils.GetHmsBySeconds(int(event.dayStartSeconds))
 }
+
 func (event MonthlyEvent) DayEndHMS() lib.HMS {
 	return utils.GetHmsBySeconds(int(event.dayEndSeconds))
 }

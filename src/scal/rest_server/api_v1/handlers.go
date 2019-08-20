@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
-	"time"
-
-	"github.com/globalsign/mgo/bson"
-	. "github.com/ilius/ripo"
-
 	"scal"
 	"scal/event_lib"
 	"scal/storage"
 	. "scal/user_lib"
+	"time"
+
+	"github.com/globalsign/mgo/bson"
+	. "github.com/ilius/ripo"
 )
 
 func init() {
@@ -200,7 +199,7 @@ func CopyEvent(req Request) (*Response, error) {
 		CreationTime: time.Now(),
 		OwnerEmail:   email,
 		GroupId:      newGroupId,
-		//AccessEmails: []string{}// must not copy AccessEmails
+		// AccessEmails: []string{}// must not copy AccessEmails
 	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)

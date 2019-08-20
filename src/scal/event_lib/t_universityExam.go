@@ -40,15 +40,19 @@ type UniversityExamEvent struct {
 func (UniversityExamEvent) Type() string {
 	return "universityExam"
 }
+
 func (event UniversityExamEvent) DayStartSeconds() uint32 {
 	return event.dayStartSeconds
 }
+
 func (event UniversityExamEvent) DayEndSeconds() uint32 {
 	return event.dayEndSeconds
 }
+
 func (event UniversityExamEvent) DayStartHMS() lib.HMS {
 	return utils.GetHmsBySeconds(int(event.dayStartSeconds))
 }
+
 func (event UniversityExamEvent) DayEndHMS() lib.HMS {
 	return utils.GetHmsBySeconds(int(event.dayEndSeconds))
 }

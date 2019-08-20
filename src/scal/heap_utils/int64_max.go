@@ -11,6 +11,7 @@ func (h *Int64MaxHeap) Push(x interface{}) {
 	// not just its contents.
 	*h = append(*h, x.(int64))
 }
+
 func (h *Int64MaxHeap) Pop() interface{} {
 	old := *h
 	n := len(old)

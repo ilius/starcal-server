@@ -10,7 +10,7 @@ import (
 )
 
 type EventAttendingModel struct {
-	//Id *string           `bson:"_id,objectid"` // omitempty??
+	// Id *string           `bson:"_id,objectid"` // omitempty??
 	EventId      string    `bson:"eventId,objectid"`
 	Email        string    `bson:"email"`
 	Attending    string    `bson:"attending"` // YES, NO, MAYBE, UNKNOWN
@@ -23,9 +23,11 @@ func (model EventAttendingModel) UniqueM() scal.M {
 		"email":   model.Email,
 	}
 }
+
 func (EventAttendingModel) Collection() string {
 	return storage.C_attending
 }
+
 func (model *EventAttendingModel) Save(db storage.Database) error {
 	if model.Attending == UNKNOWN {
 		return db.Remove(model)

@@ -134,7 +134,7 @@ func RegisterUser(req Request) (*Response, error) {
 			nil,
 			userModel.DefaultGroupId,
 		},
-		//FullName: &[2]*string{
+		// FullName: &[2]*string{
 		//	nil
 		//	&userModel.FullName,
 		//},
@@ -215,8 +215,8 @@ func lockedSuccessfulLogin(req Request, db storage.Database, userModel *user_lib
 
 func Login(req Request) (*Response, error) {
 	// Expires the token and cookie in 30 days
-	//expireToken := time.Now().Add(30 * time.Day)
-	//expireCookie := time.Now().Add(30 * time.Day)
+	// expireToken := time.Now().Add(30 * time.Day)
+	// expireCookie := time.Now().Add(30 * time.Day)
 	email, err := req.GetString("email", FromBody) // only from json
 	if err != nil {
 		return nil, err

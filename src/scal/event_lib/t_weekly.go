@@ -44,24 +44,31 @@ type WeeklyEvent struct {
 func (WeeklyEvent) Type() string {
 	return "weekly"
 }
+
 func (event WeeklyEvent) StartJd() int {
 	return event.startJd
 }
+
 func (event WeeklyEvent) EndJd() int {
 	return event.endJd
 }
+
 func (event WeeklyEvent) CycleWeeks() uint {
 	return event.cycleWeeks
 }
+
 func (event WeeklyEvent) DayStartSeconds() uint32 {
 	return event.dayStartSeconds
 }
+
 func (event WeeklyEvent) DayEndSeconds() uint32 {
 	return event.dayEndSeconds
 }
+
 func (event WeeklyEvent) DayStartHMS() lib.HMS {
 	return utils.GetHmsBySeconds(int(event.dayStartSeconds))
 }
+
 func (event WeeklyEvent) DayEndHMS() lib.HMS {
 	return utils.GetHmsBySeconds(int(event.dayEndSeconds))
 }

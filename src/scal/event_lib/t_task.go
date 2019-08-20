@@ -46,21 +46,25 @@ type TaskEvent struct {
 func (TaskEvent) Type() string {
 	return "task"
 }
+
 func (event TaskEvent) StartTime() time.Time {
 	if event.locEnable && event.loc != nil {
 		return event.startTime.In(event.loc)
 	}
 	return event.startTime
 }
+
 func (event TaskEvent) EndTime() time.Time {
 	if event.locEnable && event.loc != nil {
 		return event.endTime.In(event.loc)
 	}
 	return event.endTime
 }
+
 func (event TaskEvent) DurationUnit() uint {
 	return event.durationUnit
 }
+
 func (event TaskEvent) String() string {
 	const time_format = "2006-01-02 15:04:05"
 	return fmt.Sprintf(

@@ -29,6 +29,7 @@ type DailyNoteEvent struct {
 func (DailyNoteEvent) Type() string {
 	return "dailyNote"
 }
+
 func (event DailyNoteEvent) Jd() int {
 	return event.jd
 }
@@ -39,6 +40,7 @@ func (event DailyNoteEvent) Model() DailyNoteEventModel {
 		Jd:             event.jd,
 	}
 }
+
 func (model DailyNoteEventModel) GetEvent() (DailyNoteEvent, error) {
 	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {

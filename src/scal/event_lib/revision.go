@@ -10,7 +10,7 @@ type EventRevisionModel struct {
 	EventType string    `bson:"eventType" json:"eventType"`
 	Sha1      string    `bson:"sha1" json:"sha1"`
 	Time      time.Time `bson:"time" json:"time"`
-	//InvitedEmails []string    `bson:"invitedEmails" json:"invitedEmails"`
+	// InvitedEmails []string    `bson:"invitedEmails" json:"invitedEmails"`
 }
 
 func (model EventRevisionModel) Collection() string {

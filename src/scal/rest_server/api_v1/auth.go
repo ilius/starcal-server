@@ -105,7 +105,7 @@ func CheckAuth(req Request) (*UserModel, error) {
 	}
 	userModel := UserModelByEmail(email, globalDb)
 	if userModel == nil {
-		//SetHttpErrorUserNotFound(w, email) // FIXME
+		// SetHttpErrorUserNotFound(w, email) // FIXME
 		return nil, AuthError(fmt.Errorf("Error parsing token: Bad 'email'"))
 	}
 	if userModel.Locked {

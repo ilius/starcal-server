@@ -41,18 +41,22 @@ func (db *MongoDatabase) NewCondition(operator ConditionOperator) Condition {
 func (db *MongoDatabase) IsNotFound(err error) bool {
 	return err == mgo.ErrNotFound
 }
+
 func (db *MongoDatabase) Insert(model hasCollection) error {
 	return db.C(model.Collection()).Insert(model)
 }
+
 func (db *MongoDatabase) InsertMany(collection string, models []interface{}) error {
 	return db.C(collection).Insert(models...)
 }
+
 func (db *MongoDatabase) Update(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Update(
 		model.UniqueM(),
 		model,
 	)
 }
+
 func (db *MongoDatabase) Upsert(model hasCollectionUniqueM) error {
 	_, err := db.C(model.Collection()).Upsert(
 		model.UniqueM(),
@@ -60,18 +64,20 @@ func (db *MongoDatabase) Upsert(model hasCollectionUniqueM) error {
 	)
 	return err
 }
+
 func (db *MongoDatabase) Remove(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Remove(
 		model.UniqueM(),
 	)
 }
 
-//func (db *MongoDatabase) Find(interface{})
+// func (db *MongoDatabase) Find(interface{})
 func (db *MongoDatabase) Get(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Find(
 		model.UniqueM(),
 	).One(model)
 }
+
 func (db *MongoDatabase) First(
 	cond scal.M,
 	sortBy string,
@@ -79,6 +85,7 @@ func (db *MongoDatabase) First(
 ) error {
 	return db.C(model.Collection()).Find(cond).Sort(sortBy).One(model)
 }
+
 func (db *MongoDatabase) FindCount(colName string, cond scal.M) (int, error) {
 	return db.C(colName).Find(cond).Count()
 }

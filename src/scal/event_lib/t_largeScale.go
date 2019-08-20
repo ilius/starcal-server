@@ -40,21 +40,27 @@ type LargeScaleEvent struct {
 func (LargeScaleEvent) Type() string {
 	return "largeScale"
 }
+
 func (event LargeScaleEvent) Scale() int64 {
 	return event.scale
 }
+
 func (event LargeScaleEvent) Start() int64 {
 	return event.start
 }
+
 func (event LargeScaleEvent) End() int64 {
 	return event.end
 }
+
 func (event LargeScaleEvent) DurationEnable() bool {
 	return event.durationEnable
 }
+
 func (event LargeScaleEvent) StartYear() int64 {
 	return event.start * event.scale
 }
+
 func (event LargeScaleEvent) EndYear() int64 {
 	return event.end * event.scale
 }

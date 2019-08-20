@@ -20,8 +20,8 @@ type BaseEventModel struct {
 	Summary        string `bson:"summary" json:"summary"`
 	Description    string `bson:"description,omitempty" json:"description"`
 	Icon           string `bson:"icon,omitempty" json:"icon"`
-	//NotifyBefore   int           `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
-	//IsAllDay bool
+	// NotifyBefore   int           `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
+	// IsAllDay bool
 	GroupId string `bson:"-" json:"groupId"` // FIXME
 	Meta    scal.M `bson:"-" json:"meta"`
 }
@@ -29,6 +29,7 @@ type BaseEventModel struct {
 func (BaseEventModel) Collection() string {
 	return storage.C_eventData
 }
+
 func (model BaseEventModel) UniqueM() scal.M {
 	return scal.M{
 		"sha1": model.Sha1,
@@ -47,7 +48,7 @@ func LoadBaseEventModel(db storage.Database, sha1 string) (
 
 type BaseEvent struct {
 	id string
-	//ownerEmail string
+	// ownerEmail string
 	loc          *time.Location
 	locEnable    bool
 	calType      cal_types.CalType
@@ -66,11 +67,12 @@ func (event BaseEvent) String() string {
 		event.locEnable,
 	)
 }
+
 func (event BaseEvent) Id() string {
 	return event.id
 }
 
-//func (event BaseEvent) OwnerEmail() string {
+// func (event BaseEvent) OwnerEmail() string {
 //    return event.ownerEmail
 //}
 func (event BaseEvent) Location() *time.Location {
@@ -78,21 +80,26 @@ func (event BaseEvent) Location() *time.Location {
 		return event.loc
 	}
 	// FIXME
-	//return time.Now().Location()
+	// return time.Now().Location()
 	return time.UTC
 }
+
 func (event BaseEvent) CalType() cal_types.CalType {
 	return event.calType
 }
+
 func (event BaseEvent) Summary() string {
 	return event.summary
 }
+
 func (event BaseEvent) Description() string {
 	return event.description
 }
+
 func (event BaseEvent) Icon() string {
 	return event.icon
 }
+
 func (event BaseEvent) NotifyBefore() int {
 	return event.notifyBefore
 }
@@ -106,7 +113,7 @@ func (event BaseEvent) BaseModel() BaseEventModel {
 		Summary:        event.summary,
 		Description:    event.description,
 		Icon:           event.icon,
-		//NotifyBefore:   event.notifyBefore,
+		// NotifyBefore:   event.notifyBefore,
 	}
 }
 
@@ -130,13 +137,13 @@ func (model BaseEventModel) GetBaseEvent() (BaseEvent, error) {
 	}
 	return BaseEvent{
 		id: string(model.Id),
-		//ownerEmail: model.OwnerEmail,
+		// ownerEmail: model.OwnerEmail,
 		loc:         loc,
 		locEnable:   locEnable,
 		calType:     calType,
 		summary:     model.Summary,
 		description: model.Description,
 		icon:        model.Icon,
-		//notifyBefore: model.NotifyBefore,
+		// notifyBefore: model.NotifyBefore,
 	}, nil
 }

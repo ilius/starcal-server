@@ -105,7 +105,6 @@ func extractModelParams(model interface{}) []ParamRow {
 		paramCap := field.Name
 
 		if paramType == "event_lib.BaseEventModel" {
-
 		}
 
 		param := lowerFirstLetter(paramCap)

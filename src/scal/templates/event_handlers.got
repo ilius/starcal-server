@@ -10,12 +10,12 @@ import (
     "strings"
     "time"
 
-	. "github.com/ilius/ripo"
-	"github.com/globalsign/mgo/bson"
-
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
+
+	. "github.com/ilius/ripo"
+	"github.com/globalsign/mgo/bson"
 )
 
 func init() {
@@ -168,7 +168,7 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		CreationTime: time.Now(),
 		OwnerEmail:   email,
 		GroupId:      groupId,
-		//AccessEmails: []string{}
+		// AccessEmails: []string{}
 	}
 	now := time.Now()
 	err = db.Insert(event_lib.EventMetaChangeLogModel{
@@ -467,7 +467,6 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		},
 	}, nil
 }
-
 
 func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)

@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/globalsign/mgo/bson"
-	. "github.com/ilius/ripo"
-
 	"scal/event_lib"
 	"scal/settings"
 	"scal/storage"
+
+	"github.com/globalsign/mgo/bson"
+	. "github.com/ilius/ripo"
 )
 
 func init() {
@@ -168,7 +168,7 @@ func AddLifeTime(req Request) (*Response, error) {
 		CreationTime: time.Now(),
 		OwnerEmail:   email,
 		GroupId:      groupId,
-		//AccessEmails: []string{}
+		// AccessEmails: []string{}
 	}
 	now := time.Now()
 	err = db.Insert(event_lib.EventMetaChangeLogModel{
@@ -495,6 +495,7 @@ func UpdateLifeTime(req Request) (*Response, error) {
 		},
 	}, nil
 }
+
 func PatchLifeTime(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {

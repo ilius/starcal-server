@@ -5,17 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"scal"
+	"scal/settings"
+	"scal/storage"
+	. "scal/user_lib"
 	"text/template"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/ilius/ripo"
 	//"net/url"
-
-	"scal"
-	"scal/settings"
-	"scal/storage"
-	. "scal/user_lib"
 )
 
 /*
@@ -41,7 +40,7 @@ type EventMetaModel struct {
 	GroupId    *string          `bson:"groupId,objectid"`
 	GroupModel *EventGroupModel `bson:"-"`
 
-	//PublicJoinPolicy string         `bson:"publicJoinPolicy"` // not indexed
+	// PublicJoinPolicy string         `bson:"publicJoinPolicy"` // not indexed
 	PublicJoinOpen bool `bson:"publicJoinOpen"`
 	MaxAttendees   int  `bson:"maxAttendees"`
 }
@@ -63,15 +62,18 @@ func (model EventMetaModel) UniqueM() scal.M {
 		"_id": bson.ObjectIdHex(model.EventId),
 	}
 }
+
 func (model EventMetaModel) Collection() string {
 	return storage.C_eventMeta
 }
+
 func (model EventMetaModel) GroupIdHex() string {
 	if model.GroupId != nil {
 		return *model.GroupId
 	}
 	return ""
 }
+
 func (model EventMetaModel) JsonM() scal.M {
 	return scal.M{
 		"creationTime":   model.CreationTime,
@@ -83,6 +85,7 @@ func (model EventMetaModel) JsonM() scal.M {
 		"maxAttendees":   model.MaxAttendees,
 	}
 }
+
 func (model *EventMetaModel) CanReadFull(email string) bool {
 	if email == model.OwnerEmail {
 		return true
@@ -101,12 +104,14 @@ func (model *EventMetaModel) CanReadFull(email string) bool {
 	}
 	return false
 }
+
 func (model *EventMetaModel) CanRead(email string) bool {
 	if model.IsPublic {
 		return true
 	}
 	return model.CanReadFull(email)
 }
+
 func (model *EventMetaModel) GetAttending(
 	db storage.Database,
 	email string,
@@ -115,6 +120,7 @@ func (model *EventMetaModel) GetAttending(
 	attendingModel, _ := LoadEventAttendingModel(db, model.EventId, email)
 	return attendingModel.Attending
 }
+
 func (model *EventMetaModel) SetAttending(
 	db storage.Database,
 	email string,
@@ -130,6 +136,7 @@ func (model *EventMetaModel) SetAttending(
 	err = attendingModel.Save(db)
 	return err
 }
+
 func (model *EventMetaModel) AttendingStatusCount(
 	db storage.Database,
 	attending string,
@@ -142,6 +149,7 @@ func (model *EventMetaModel) AttendingStatusCount(
 		},
 	)
 }
+
 func (model *EventMetaModel) Join(db storage.Database, email string) error {
 	if model.GetAttending(db, email) == YES {
 		// does not make any changes on `model`
@@ -171,6 +179,7 @@ func (model *EventMetaModel) Join(db storage.Database, email string) error {
 	model.SetAttending(db, email, YES)
 	return nil
 }
+
 func (model *EventMetaModel) Leave(db storage.Database, email string) error {
 	// does not make any changes on model
 	if model.GetAttending(db, email) == NO {
@@ -181,9 +190,11 @@ func (model *EventMetaModel) Leave(db storage.Database, email string) error {
 	model.SetAttending(db, email, NO)
 	return nil
 }
+
 func (model *EventMetaModel) PublicCanJoin() bool {
 	return model.IsPublic && model.PublicJoinOpen
 }
+
 func (model *EventMetaModel) Invite(
 	db storage.Database,
 	email string,
@@ -269,7 +280,7 @@ func (model *EventMetaModel) Invite(
 		var inviteName string
 		inviteUser := UserModelByEmail(inviteEmail, db)
 		if inviteUser == nil {
-			//return errors.New("invited email not found"), scal.BadRequest
+			// return errors.New("invited email not found"), scal.BadRequest
 			// FIXME
 			inviteName = ""
 		} else {
@@ -320,6 +331,7 @@ func (model *EventMetaModel) Invite(
 	}
 	return nil
 }
+
 func (model *EventMetaModel) GetEmailsByAttendingStatus(
 	db storage.Database,
 	attending string,
@@ -347,12 +359,15 @@ func (model *EventMetaModel) GetEmailsByAttendingStatus(
 	}
 	return emails
 }
+
 func (model *EventMetaModel) GetAttendingEmails(db storage.Database) []string {
 	return model.GetEmailsByAttendingStatus(db, YES)
 }
+
 func (model *EventMetaModel) GetNotAttendingEmails(db storage.Database) []string {
 	return model.GetEmailsByAttendingStatus(db, NO)
 }
+
 func (model *EventMetaModel) GetMaybeAttendingEmails(db storage.Database) []string {
 	return model.GetEmailsByAttendingStatus(db, MAYBE)
 }
