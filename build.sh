@@ -5,8 +5,10 @@ if [ -z $STARCAL_HOST ] ; then
 	exit 1
 fi
 
-# takes ~ 0.2 seconds if submodules are already initialized / cloned
-git submodule update --init
+if [ -z "$NO_TOUCH_SUBMODULES" ] ; then
+	# takes ~ 0.2 seconds if submodules are already initialized / cloned
+	git submodule update --init
+fi
 
 #GOPATH=$PWD go install github.com/globalsign/mgo
 #GOPATH=$PWD go install golang.org/x/crypto/bcrypt
