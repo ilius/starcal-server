@@ -1,9 +1,11 @@
 package cal_types_init
 
-import "testing"
+import (
+	"testing"
 
-import "scal"
-import "github.com/ilius/libgostarcal/cal_types"
+	lib "github.com/ilius/libgostarcal"
+	"github.com/ilius/libgostarcal/cal_types"
+)
 
 func TestConvert(t *testing.T) {
 	t.Log(cal_types.CalTypesMap["gregorian"])
