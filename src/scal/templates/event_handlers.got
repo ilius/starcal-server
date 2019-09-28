@@ -743,7 +743,8 @@ func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
 	{{ range .EVENT_PATCH_PARAMS }}
-	func(){
+	// define a func because we want to return from it to avoid nested code
+	func() {
 		// PARAM="{{.PARAM}}", PARAM_TYPE="{{.PARAM_TYPE}}", PARAM_INT={{.PARAM_INT}}
 		inputValue := inputEventModel.{{.CAP_PARAM}}
 		lastValue := lastEventModel.{{.CAP_PARAM}}

@@ -832,6 +832,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 	// A <== inputEventModel	<== The input (client's latest) data
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
@@ -855,6 +856,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
@@ -878,6 +880,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
@@ -901,6 +904,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
@@ -924,6 +928,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
@@ -947,6 +952,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
@@ -970,6 +976,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="startJd", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.StartJd
@@ -993,6 +1000,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="endJd", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.EndJd

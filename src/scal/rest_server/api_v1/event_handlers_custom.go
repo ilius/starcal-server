@@ -825,6 +825,7 @@ func MergeCustom(req Request) (*Response, error) {
 	// A <== inputEventModel	<== The input (client's latest) data
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
@@ -848,6 +849,7 @@ func MergeCustom(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
@@ -871,6 +873,7 @@ func MergeCustom(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
@@ -894,6 +897,7 @@ func MergeCustom(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
@@ -917,6 +921,7 @@ func MergeCustom(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
@@ -940,6 +945,7 @@ func MergeCustom(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
@@ -963,6 +969,7 @@ func MergeCustom(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="rules", PARAM_TYPE="event_lib.EventRuleModelList", PARAM_INT=false
 		inputValue := inputEventModel.Rules

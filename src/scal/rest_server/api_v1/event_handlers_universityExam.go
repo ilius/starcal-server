@@ -882,6 +882,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 	// A <== inputEventModel	<== The input (client's latest) data
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
@@ -905,6 +906,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
@@ -928,6 +930,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
@@ -951,6 +954,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
@@ -974,6 +978,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
@@ -997,6 +1002,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
@@ -1020,6 +1026,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="jd", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.Jd
@@ -1043,6 +1050,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="dayStartSeconds", PARAM_TYPE="uint32", PARAM_INT=true
 		inputValue := inputEventModel.DayStartSeconds
@@ -1066,6 +1074,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="dayEndSeconds", PARAM_TYPE="uint32", PARAM_INT=true
 		inputValue := inputEventModel.DayEndSeconds
@@ -1089,6 +1098,7 @@ func MergeUniversityExam(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="courseId", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.CourseId

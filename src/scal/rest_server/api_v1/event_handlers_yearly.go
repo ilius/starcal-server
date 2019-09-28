@@ -881,6 +881,7 @@ func MergeYearly(req Request) (*Response, error) {
 	// A <== inputEventModel	<== The input (client's latest) data
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
@@ -904,6 +905,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
@@ -927,6 +929,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
@@ -950,6 +953,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
@@ -973,6 +977,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
@@ -996,6 +1001,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
@@ -1019,6 +1025,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="month", PARAM_TYPE="uint8", PARAM_INT=true
 		inputValue := inputEventModel.Month
@@ -1042,6 +1049,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="day", PARAM_TYPE="uint8", PARAM_INT=true
 		inputValue := inputEventModel.Day
@@ -1065,6 +1073,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="startYear", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.StartYear
@@ -1088,6 +1097,7 @@ func MergeYearly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="startYearEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.StartYearEnable

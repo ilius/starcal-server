@@ -865,6 +865,7 @@ func MergeTask(req Request) (*Response, error) {
 	// A <== inputEventModel	<== The input (client's latest) data
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
@@ -888,6 +889,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
@@ -911,6 +913,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
@@ -934,6 +937,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
@@ -957,6 +961,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
@@ -980,6 +985,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
@@ -1003,6 +1009,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="startTime", PARAM_TYPE="*time.Time", PARAM_INT=false
 		inputValue := inputEventModel.StartTime
@@ -1026,6 +1033,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="endTime", PARAM_TYPE="*time.Time", PARAM_INT=false
 		inputValue := inputEventModel.EndTime
@@ -1049,6 +1057,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="durationUnit", PARAM_TYPE="uint", PARAM_INT=true
 		inputValue := inputEventModel.DurationUnit

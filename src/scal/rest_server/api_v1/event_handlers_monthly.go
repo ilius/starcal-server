@@ -907,6 +907,7 @@ func MergeMonthly(req Request) (*Response, error) {
 	// A <== inputEventModel	<== The input (client's latest) data
 	// B <== lastEventModel		<== The current (server's latest) data
 	now := time.Now()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.TimeZone
@@ -930,6 +931,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="timeZoneEnable", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.TimeZoneEnable
@@ -953,6 +955,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="calType", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.CalType
@@ -976,6 +979,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="summary", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Summary
@@ -999,6 +1003,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="description", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Description
@@ -1022,6 +1027,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="icon", PARAM_TYPE="string", PARAM_INT=false
 		inputValue := inputEventModel.Icon
@@ -1045,6 +1051,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="startJd", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.StartJd
@@ -1068,6 +1075,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="endJd", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.EndJd
@@ -1091,6 +1099,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="day", PARAM_TYPE="uint8", PARAM_INT=true
 		inputValue := inputEventModel.Day
@@ -1114,6 +1123,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="dayStartSeconds", PARAM_TYPE="uint32", PARAM_INT=true
 		inputValue := inputEventModel.DayStartSeconds
@@ -1137,6 +1147,7 @@ func MergeMonthly(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="dayEndSeconds", PARAM_TYPE="uint32", PARAM_INT=true
 		inputValue := inputEventModel.DayEndSeconds
