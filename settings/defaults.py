@@ -53,8 +53,8 @@ You are invited to event "{{.EventModel.Summary}}", by {{.SenderName}} <{{.Sende
 Click on this link to join the event:
 {{.Host}}/event/{{.EventType}}/{{.EventId}}/join?token={{.TokenEscaped}}
 
-This invitation Email is sent via StarCalendar by one of the users
-Have fun using StarCalendar
+This invitation Email is sent via StarCalendar.
+Have fun using StarCalendar.
 """
 
 ALLOW_REJOIN_EVENT = False
