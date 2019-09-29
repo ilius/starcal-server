@@ -46,6 +46,11 @@ func init() {
 				Pattern: "default-group",
 				Handler: UnsetUserDefaultGroupId,
 			},
+			"GetUserDataFull": {
+				Method:  "GET",
+				Pattern: "data-full",
+				Handler: GetUserDataFull,
+			},
 		},
 	})
 }
@@ -330,6 +335,64 @@ func GetUserLoginHistory(req Request) (*Response, error) {
 	return &Response{
 		Data: scal.M{
 			"lastLogins": lastLogins,
+		},
+	}, nil
+}
+
+func GetUserDataFull(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	email := userModel.Email
+	// -----------------------------------------------
+	db, err := storage.GetDB()
+	if err != nil {
+		return nil, NewError(Unavailable, "", err)
+	}
+
+	lastLogins, err := loadLastLogins(req, userModel, settings.USER_INFO_LAST_LOGINS_LIMIT)
+	if err != nil {
+		return nil, err
+	}
+
+	userData := scal.M{
+		"email":          email,
+		"fullName":       userModel.FullName,
+		"defaultGroupId": userModel.DefaultGroupId,
+		"emailConfirmed": userModel.EmailConfirmed,
+		//"locked": userModel.Locked,
+		"lastLogoutTime": userModel.LastLogoutTime,
+		"lastLogins":     lastLogins,
+	}
+
+	groupCond := db.NewCondition(storage.OR).
+		Equals("ownerEmail", email).
+		Includes("readAccessEmails", email)
+
+	var groups []event_lib.ListGroupsRow
+	err = db.FindAll(&groups, &storage.FindInput{
+		Collection: storage.C_group,
+		Condition:  groupCond,
+		SortBy:     "_id",
+	})
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
+	if groups == nil {
+		groups = make([]event_lib.ListGroupsRow, 0)
+	}
+
+	events, err := getMyEventsFullData(db, email, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Response{
+		Data: scal.M{
+			"user":   userData,
+			"groups": groups,
+			"events": events,
 		},
 	}, nil
 }

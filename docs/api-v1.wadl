@@ -149,6 +149,80 @@
 					</response>
 				</method>
 			</resource>
+			<resource path="data-full">
+				<method name="GET" id="getUserDataFull">
+					<response>
+						<representation mediaType="app/json"/>
+						<param name="user" type="xs:complexType">
+							<element name="email" type="xs:string"/>
+							<element name="fullName" type="xs:string"/>
+							<element name="defaultGroupId" type="xs:string"/>
+							<element name="lastLogoutTime" type="xsd:dateTime" nillable="true" description="dateTime or none"/>
+							<element name="lastLogins" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType">
+									<element name="time" type="xsd:dateTime"/>
+									<element name="userId" type="xs:string"/>
+									<element name="email" type="xs:string"/>
+									<element name="remoteIp" type="xs:string"/>
+									<element name="successful" type="xs:bool" description="password was correct"/>
+									<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
+								</item>
+							</element>
+						</param>
+						<param name="groups" type="xs:list" itemType="xs:complexType">
+							<item type="xs:complexType">
+								<element name="groupId" type="xs:string"/>
+								<element name="title" type="xs:string"/>
+								<element name="ownerEmail" type="xs:string"/>
+							</item>
+						</param>
+						<param name="events" type="xs:list" itemType="xs:complexType">
+							<item type="xs:complexType">
+								<element name="eventId" type="xs:string"/>
+								<element name="eventType" type="xs:string">
+									<option value="allDayTask"/>
+									<option value="custom"/>
+									<option value="dailyNote"/>
+									<option value="largeScale"/>
+									<option value="lifeTime"/>
+									<option value="monthly"/>
+									<option value="task"/>
+									<option value="universityClass"/>
+									<option value="universityExam"/>
+									<option value="weekly"/>
+									<option value="yearly"/>
+								</element>
+								<element name="lastModifiedTime" type="xsd:dateTime"/>
+								<element name="lastSha1" type="xs:string"/>
+								<element name="meta" type="xs:complexType">
+									<element name="ownerEmail" type="xs:string"/>
+									<element name="isPublic" type="xs:boolean"/>
+									<element name="creationTime" type="xsd:dateTime"/>
+								</element>
+								<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
+									only the common elements are documented">
+									<element name="summary" type="xs:string"/>
+									<element name="description" type="xs:string"/>
+									<element name="summaryEncrypted" type="xs:boolean"/>
+									<element name="descriptionEncrypted" type="xs:boolean"/>
+									<element name="calType" type="xs:string">
+										<option value="gregorian"/>
+										<option value="jalali"/>
+										<option value="hijri"/>
+										<option value="indian_national"/>
+										<option value="julian"/>
+										<option value="ethiopian"/>
+										<option value="gregorian_proleptic"/>
+									</element>
+									<element name="icon" type="xs:string"/>
+									<element name="timeZone" type="xs:string"/>
+									<element name="timeZoneEnable" type="xs:boolean"/>
+								</element>
+							</item>
+						</param>
+					</response>
+				</method>
+			</resource>
 		</resource>
 		<resource path="event/my/">
 			<resource path="events/">
