@@ -514,12 +514,15 @@ class CLI():
 					print("WARNING: element %r with tag %r has no type", child, t)
 					continue
 				completer = getParamCompleter(child)
-				valueRaw = prompt(
-					"> Parameter: " + name + " = ",
-					history=FileHistory(self.paramHistoryPath(name)),
-					auto_suggest=AutoSuggestFromHistory(),
-					completer=completer,
-				)
+				try:
+					valueRaw = prompt(
+						"> Parameter: " + name + " = ",
+						history=FileHistory(self.paramHistoryPath(name)),
+						auto_suggest=AutoSuggestFromHistory(),
+						completer=completer,
+					)
+				except KeyboardInterrupt:
+					return "Canceled"
 				if valueRaw != "":
 					value, err = parseInputValue(valueRaw, typ)
 					if err:
