@@ -1,9 +1,11 @@
 package event_lib
 
-import "time"
-
-import "scal"
-import "scal/storage"
+import (
+	"github.com/globalsign/mgo/bson"
+	"scal"
+	"scal/storage"
+	"time"
+)
 
 type EventRevisionModel struct {
 	EventId   string    `bson:"eventId,objectid" json:"eventId"`
@@ -17,11 +19,12 @@ func (model EventRevisionModel) Collection() string {
 	return storage.C_revision
 }
 
-func LoadLastRevisionModel(db storage.Database, eventId *string) (
+func LoadLastRevisionModel(db storage.Database, eventIdHex *string) (
 	*EventRevisionModel,
 	error,
 ) {
 	eventRev := EventRevisionModel{}
+	eventId := bson.ObjectIdHex(*eventIdHex)
 	err := db.First(
 		scal.M{
 			"eventId": eventId,
