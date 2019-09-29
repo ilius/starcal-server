@@ -612,7 +612,7 @@ class CLI():
 		try:
 			resData = res.json()
 		except Exception:
-			return None, "non-json data: " + r.text
+			return None, f"non-json data: {res.text}"
 		err = ""
 		if isinstance(resData, dict):
 			err = resData.get("error", "")
