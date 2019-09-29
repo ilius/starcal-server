@@ -905,25 +905,12 @@ func GetMyEventList(req Request) (*Response, error) {
 	}, nil
 }
 
-func GetMyEventsFull(req Request) (*Response, error) {
-	userModel, err := CheckAuth(req)
-	if err != nil {
-		return nil, err
-	}
-	email := userModel.Email
-	// -----------------------------------------------
-	db, err := storage.GetDB()
-	if err != nil {
-		return nil, NewError(Unavailable, "", err)
-	}
-	pageOpts, err := GetPageOptions(req)
-	if err != nil {
-		return nil, err
-	}
-
+func getMyEventsFullData(db storage.Database, email string, pageOpts *scal.PageOptions) ([]scal.M, error) {
 	pipeline := NewPipelines(db, storage.C_eventMeta)
 	pipeline.MatchValue("ownerEmail", email)
-	pipeline.SetPageOptions(pageOpts)
+	if pageOpts != nil {
+		pipeline.SetPageOptions(pageOpts)
+	}
 	pipeline.Lookup(storage.C_revision, "_id", "eventId", "revision")
 	pipeline.Unwind("revision")
 	pipeline.GroupBy("_id").
@@ -941,7 +928,7 @@ func GetMyEventsFull(req Request) (*Response, error) {
 	pipeline.Lookup(storage.C_eventData, "lastSha1", "sha1", "data")
 	pipeline.Unwind("data")
 
-	results, err := GetEventMetaPipeResults(db, pipeline, []string{
+	return GetEventMetaPipeResults(db, pipeline, []string{
 		"ownerEmail",
 		"isPublic",
 		"creationTime",
@@ -949,6 +936,27 @@ func GetMyEventsFull(req Request) (*Response, error) {
 		"publicJoinOpen",
 		"maxAttendees",
 	})
+}
+
+func GetMyEventsFull(req Request) (*Response, error) {
+	userModel, err := CheckAuth(req)
+	if err != nil {
+		return nil, err
+	}
+	email := userModel.Email
+	// -----------------------------------------------
+	db, err := storage.GetDB()
+	if err != nil {
+		return nil, NewError(Unavailable, "", err)
+	}
+	pageOpts, err := GetPageOptions(req)
+	if err != nil {
+		return nil, err
+	}
+	results, err := getMyEventsFullData(db, email, pageOpts)
+	if err != nil {
+		return nil, err
+	}
 	output := scal.M{
 		"eventsFull": results,
 	}
