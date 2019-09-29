@@ -406,6 +406,10 @@ class CLI():
 			print("< Response:", dataToPrettyJson(resData))
 			return True
 
+		if not pathAbs.endswith("/"):
+			pathAbs += "/"
+			new_vdir.pathAbs = pathAbs
+
 		cur_vdir = self._cwd
 		self.setVirtualDir(new_vdir)
 
