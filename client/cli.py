@@ -63,7 +63,7 @@ elif os.sep == "/":
 elif os.sep == "\\":
 	if myDir.startswith(".\\"):
 		myDir = cwd + myDir[1:]
-#print("myDir=%r"%myDir)
+#print("myDir={myDir!r}")
 
 rootDir = abspath(dirname(myDir))
 docPath = join(rootDir, "docs", "api-v1.wadl")
@@ -89,6 +89,7 @@ indent = "\t"
 with open(docPath, encoding="utf-8") as docFile:
 	doc = etree.XML(docFile.read().encode("utf-8"))
 
+
 def dataToPrettyJson(data, ensure_ascii=False, sort_keys=False):
 	return json.dumps(
 		data,
@@ -96,6 +97,7 @@ def dataToPrettyJson(data, ensure_ascii=False, sort_keys=False):
 		indent=2,
 		ensure_ascii=ensure_ascii,
 	)
+
 
 def getEmail() -> str:
 	email = os.getenv("STARCAL_EMAIL")
@@ -110,6 +112,7 @@ def getEmail() -> str:
 		if email:
 			return email
 	raise ValueError("email is not given")
+
 
 def getPassword() -> str:
 	password = os.getenv("STARCAL_PASSWORD")
@@ -130,6 +133,7 @@ tokenExpFormat = "%Y-%m-%dT%H:%M:%SZ"
 
 localTZ = dateutil.tz.gettz()
 
+
 # returns token
 def getSavedToken(email: str) -> Optional[str]:
 	tokenPath = join(tokenDir, email)
@@ -142,17 +146,21 @@ def getSavedToken(email: str) -> Optional[str]:
 	# print(tokenDict)
 	expStr = tokenDict.get("expiration", "")
 	if not expStr:
-		print("WARNING: invalid token file %r, no 'expiration'" % tokenPath)
+		print(f"WARNING: invalid token file {tokenPath!r}, no 'expiration'")
 		return
 	token = tokenDict.get("token", "")
 	if not token:
-		print("WARNING: invalid token file %r, no 'token'" % tokenPath)
+		print(f"WARNING: invalid token file {tokenPath!r}, no 'token'")
 		return
 	exp = parse_time(expStr)
 	if exp - timedelta(minutes=5) < datetime.now(tz=localTZ):
-		print("Saved token in %s is expired or about to be expired on %s" % (tokenPath, exp))
+		print(
+			f"Saved token in {tokenPath} is expired" +
+			f" or about to be expired on {exp}"
+		)
 		return
 	return token
+
 
 # returns (email, token), error
 def getAuth() -> Tuple[Optional[Tuple[str, str]], Optional[str]]:
@@ -172,16 +180,16 @@ def getAuth() -> Tuple[Optional[Tuple[str, str]], Optional[str]]:
 	err = None
 	try:
 		resData = res.json()
-	except:
+	except Exception:  # simplejson.errors.JSONDecodeError
 		resData = None
 	else:
 		err = resData.get("error")
 	if res.status_code != 200:
 		if not err:
-			err = "%s from %s" % (res, url)
+			err = f"{res} from {url}"
 		return None, err
 	if resData is None:
-		return "", "ERROR: non-json body from %r" % url
+		return "", f"ERROR: non-json body from {url!r}"
 	token = resData.get("token")
 	if not token:
 		return None, "login returned no token"
@@ -205,6 +213,7 @@ def getElemTag(elem) -> str:
 	# for example, elem.tag == "{http://localhost:9001/application.wadl}resource"
 	return elem.tag.split("}")[1]
 
+
 def elemRepr(elem) -> str:
 	tag = getElemTag(elem)
 	prefix = indent * level + getElemTag(elem)
@@ -213,7 +222,12 @@ def elemRepr(elem) -> str:
 	elif tag == "method":
 		return elem.get("name", "NO_NAME") + " (" + elem.get("id", "NO_ID") + ")"
 	elif tag == "param" or tag == "element":
-		return elem.get("name", "NO_NAME") + " (type=" + elem.get("type", "NO_ID") + ")"
+		return (
+			elem.get("name", "NO_NAME") +
+			" (type=" +
+			elem.get("type", "NO_ID") +
+			")"
+		)
 	elif tag == "item":
 		return "(type=" + elem.get("type", "NO_TYPE") + ")"
 	elif tag == "option":
@@ -222,15 +236,28 @@ def elemRepr(elem) -> str:
 		return ""
 	return tag
 
+
 def printElem(elem: Element, level: int):
 	tag = getElemTag(elem)
 	prefix = indent * level + getElemTag(elem)
 	if tag == "resource":
 		print(prefix + ": " + elem.get("path", "NO_PATH"))
 	elif tag == "method":
-		print(prefix + ": " + elem.get("name", "NO_NAME") + " (" + elem.get("id", "NO_ID") + ")")
+		print(
+			prefix + ": " +
+			elem.get("name", "NO_NAME") +
+			" (" +
+			elem.get("id", "NO_ID") +
+			")"
+		)
 	elif tag == "param" or tag == "element":
-		print(prefix + ": " + elem.get("name", "NO_NAME") + " (type=" + elem.get("type", "NO_ID") + ")")
+		print(
+			prefix + ": " +
+			elem.get("name", "NO_NAME") +
+			" (type=" +
+			elem.get("type", "NO_ID") +
+			")"
+		)
 	elif tag == "item":
 		print(prefix + " (type=" + elem.get("type", "NO_TYPE") + ")")
 	elif tag == "option":
@@ -240,14 +267,16 @@ def printElem(elem: Element, level: int):
 	else:
 		print(prefix)
 	for child in elem.getchildren():
-		printElem(child, level+1)
+		printElem(child, level + 1)
+
 
 def nonEmptyStrings(*args) -> List[str]:
-	l = [] # type: List[str]
+	ls = [] # type: List[str]
 	for x in args:
 		if x:
-			l.append(x)
-	return l
+			ls.append(x)
+	return ls
+
 
 def elemKeys(elem) -> str:
 	# returns virtual file names of element
@@ -266,8 +295,12 @@ def elemKeys(elem) -> str:
 		return []
 		# print("elemPath", prefix)
 
+
 # returns (options, optionsMinimal)
-def elemChildOptions(elem: Element) -> Tuple[Dict[str, Element], Dict[str, Element]]:
+def elemChildOptions(elem: Element) -> Tuple[
+	Dict[str, Element],
+	Dict[str, Element],
+]:
 	options = {} # type: Dict[str, Element]
 	optionsMinimal = {} # type: Dict[str, Element]
 	for child in elem.getchildren():
@@ -295,6 +328,7 @@ def getParamCompleter(elem: Element) -> Optional[WordCompleter]:
 		ignore_case=False,
 	)
 
+
 def getMethodElemNamesDict(elem: Element, methods: Dict[str, str]):
 	methodName = elem.get("name", None)
 	if methodName:
@@ -304,6 +338,7 @@ def getMethodElemNamesDict(elem: Element, methods: Dict[str, str]):
 		if methodId:
 			methods[methodId] = methodName
 			# methods[methodId.lower()] = methodName
+
 
 def getMethodNamesDict(elem: Element) -> Dict[str, str]:
 	methods = {} # type: Dict[str, Element]
@@ -321,6 +356,7 @@ def elemIsAction(elem: Element) -> bool:
 		return True
 	return False
 
+
 def parseInputValue(valueRaw: str, typ: str) -> Tuple[Any, Optional[str]]:
 	"""
 		returns (value, error)
@@ -331,24 +367,30 @@ def parseInputValue(valueRaw: str, typ: str) -> Tuple[Any, Optional[str]]:
 		try:
 			return float(valueRaw), None
 		except ValueError:
-			return None, "invalid float value %r" % valueRaw
+			return None, f"invalid float value {valueRaw!r}"
 	if typ == "xs:int":
 		try:
 			return int(valueRaw), None
 		except ValueError:
-			return None, "invalid int value %r" % valueRaw
+			return None, f"invalid int value {valueRaw!r}"
 	if typ == "xs:boolean":
 		valueRaw = valueRaw.lower()
 		if valueRaw in ("true", "t"):
 			return True, None
 		if valueRaw in ("false", "f"):
 			return False, None
-		return None, "invalid boolean value %r" % valueRaw
-	return None, "unsupported type %r" % typ
+		return None, f"invalid boolean value {valueRaw!r}"
+	return None, f"unsupported type {typ!r}"
 
 
 class VirtualDir:
-	def __init__(self, elem, pathRel: str, pathAbs: str, parent: Optional["VirtualDir"]):
+	def __init__(
+		self,
+		elem,
+		pathRel: str,
+		pathAbs: str,
+		parent: Optional["VirtualDir"],
+	) -> None:
 		self.elem = elem
 		self.pathRel = pathRel
 		self.pathAbs = pathAbs
@@ -419,13 +461,13 @@ class CLI():
 				if self.selectPathRel(childPath):
 					self.selectVirtualDir(cur_vdir)
 					return True
-		
+
 		return True
 
 	def selectParentDir(self) -> Optional[str]: # returns error
 		if self._cwd.parent is None:
-			return "no parent for %r" % self._cwd.pathAbs
-		
+			return f"no parent for {self._cwd.pathAbs!r}"
+
 		if not self.selectVirtualDir(self._cwd.parent):
 			return "failed to switch to parent"
 
@@ -433,28 +475,28 @@ class CLI():
 
 	def selectPathAbs(self, pathAbs: str) -> True:
 		if not pathAbs.startswith("/"):
-			raise RuntimeError("selectPathAbs: invalid pathAbs=%r" % pathAbs)
+			raise RuntimeError(f"selectPathAbs: invalid pathAbs={pathAbs!r}")
 		self.selectRoot()
 		self.selectPathRel(pathAbs[1:])
 
 	def selectPathRel(self, pathRel: str) -> True:
-		# print("selectPathRel: %r" % pathRel)
+		# print(f"selectPathRel: {pathRel!r}")
 		if pathRel.startswith("/"):
-			raise RuntimeError("selectPathRel: invalid pathRel=%r" % pathRel)
-		
+			raise RuntimeError(f"selectPathRel: invalid pathRel={pathRel!r}")
+
 		elem = self._cwd.options.get(pathRel, None)
 
 		parts = pathRel.rstrip("/").split("/")
 		if elem is None and len(parts) > 1:
-			if self.selectPathRel(parts[0]+"/"):
-				return self.selectPathRel("/".join(parts[1:])+"/")
+			if self.selectPathRel(parts[0] + "/"):
+				return self.selectPathRel("/".join(parts[1:]) + "/")
 			return False
 
 		part = parts[0]
 		if elem is None:
 			elem = self._cwd.options.get(part, None)
 		if elem is None:
-			elem = self._cwd.options.get(part+"/", None)
+			elem = self._cwd.options.get(part + "/", None)
 		if elem is None:
 			partName = self._urlParamByValue.get(part)
 			if partName is not None:
@@ -462,8 +504,7 @@ class CLI():
 		if elem is None:
 			return False
 
-
-		# FIXME: 
+		# FIXME:
 		if "{" in pathRel:
 			parsedPath = parse_format(pathRel, pathRel)
 			# example: parsedPath.named == {'var1': '{var1}', 'var2': '{var2}'}
@@ -479,27 +520,31 @@ class CLI():
 				except KeyboardInterrupt:
 					return False
 				if value == "":
-					print("ERROR: %s can not be empty" % name)
+					print(f"ERROR: {name} can not be empty")
 					return False
 				formatDict[name] = value
 				self._urlParamByValue[value] = name
-			
+
 			pathRelNew = pathRel.format(**formatDict)
 			self._urlParamByValue[pathRelNew] = pathRel
-			# print("pathRel=%r, pathRelNew=%r" % (pathRel, pathRelNew))
+			# print(f"pathRel={pathRel!r}, pathRelNew={pathRelNew!r}")
 			pathRel = pathRelNew
 
 		pathAbs = self._cwd.pathAbs + pathRel
 
 		return self.selectVirtualDir(VirtualDir(elem, "", pathAbs, self._cwd))
 
-
 	def selectPath(self, path: str) -> True:
 		if path.startswith("/"):
 			return self.selectPathAbs(path)
 		return self.selectPathRel(path)
 
-	def askJsonParams(self, requestElem: Element, path: str, data: Dict[str, Any]) -> Optional[str]:
+	def askJsonParams(
+		self,
+		requestElem: Element,
+		path: str,
+		data: Dict[str, Any],
+	) -> Optional[str]:
 		"""
 			recursive function to ask all json/body parameters
 			updates `data` argument
@@ -536,29 +581,37 @@ class CLI():
 	# returns (responseDict, error)
 	# path argument ends with "/GET" or "/POST" or "/getUserInfo" for example
 	# data is the dicty that is going to become request body (in json)
-	def sendRequest(self, elem: Element, path: str, data: Dict[str, Any]) -> Tuple[Optional[Dict], str]:
+	def sendRequest(
+		self,
+		elem: Element,
+		path: str,
+		data: Dict[str, Any],
+	) -> Tuple[Optional[Dict], str]:
 		pathParts = path.split("/")
 		methodsDict = getMethodNamesDict(elem)
 		methodInput = pathParts[-1]
 		method = methodsDict.get(methodInput, None)
 		if not method:
-			return None, "invalid method: " + methodInput + ", available: %s" % list(methodsDict.keys())
+			return None, (
+				f"invalid method: {methodInput}, " +
+				f"available: {list(methodsDict.keys())}"
+			)
 		url = baseURL + "/".join(pathParts[:-1])
 		kwargs = {
 			"headers": {"Authorization": "bearer " + self._authToken},
 		}
 		if data or method in ("PUT", "POST", "PATCH"):
 			kwargs["json"] = data
-			print("< Sending %s request to %s with json=%s" % (method, url, data))
+			print(f"< Sending {method} request to {url} with json={data}")
 		else:
-			print("< Sending %s request to %s" % (method, url))
+			print(f"< Sending {method} request to {url}")
 		try:
 			res = requests.request(method, url, **kwargs)
 		except Exception as e:
 			return None, str(e)
 		try:
 			resData = res.json()
-		except:
+		except Exception:
 			return None, "non-json data: " + r.text
 		err = ""
 		if isinstance(resData, dict):
@@ -574,7 +627,7 @@ class CLI():
 		return join(histDir, fname)
 
 	def paramHistoryPath(self, name: str) -> str:
-		return join(histDir, "param-"+name)
+		return join(histDir, "param-" + name)
 
 	def runcmd(self, line) -> Optional[str]: # returns error
 		if not line:
@@ -587,10 +640,10 @@ class CLI():
 
 		if self.selectPath(line):
 			return
-		
+
 		if self.selectPath(line + "/"):
 			return
-		
+
 		return "invalid option: " + line
 
 	def finish(self):
@@ -612,10 +665,10 @@ class CLI():
 				)
 			except (KeyboardInterrupt, EOFError):
 				return
-			
+
 			err = self.runcmd(user_input)
 			if err:
-				print("< ERROR: %s" % err)
+				print(f"< ERROR: {err}")
 
 
 resources = doc.getchildren()[0]
