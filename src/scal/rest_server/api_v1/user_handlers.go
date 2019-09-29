@@ -274,7 +274,7 @@ func loadLastLogins(req Request, userModel *user_lib.UserModel, limit int) ([]*u
 		return nil, NewError(Unavailable, "", err)
 	}
 	cond := db.NewCondition(storage.AND)
-	cond.Equals("userId", userModel.Id)
+	cond.IdEquals("userId", userModel.Id)
 	err = db.FindAll(&result, &storage.FindInput{
 		Collection: storage.C_userLogins,
 		Condition:  cond,

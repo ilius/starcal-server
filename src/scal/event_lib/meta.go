@@ -340,7 +340,7 @@ func (model *EventMetaModel) GetEmailsByAttendingStatus(
 		Email string `bson:"email"`
 	}{}
 	cond := db.NewCondition(storage.AND)
-	cond.Equals("eventId", model.EventId)
+	cond.IdEquals("eventId", model.EventId)
 	cond.Equals("attending", attending)
 	err := db.FindAll(&emailStructs, &storage.FindInput{
 		Collection: storage.C_attending,
