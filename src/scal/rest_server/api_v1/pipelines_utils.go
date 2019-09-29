@@ -3,6 +3,7 @@ package api_v1
 import (
 	"scal"
 	"scal/storage"
+	"fmt"
 )
 
 func GetEventMetaPipeResults(
@@ -27,9 +28,13 @@ func GetEventMetaPipeResults(
 			delete(row, "_id")
 		}
 		if dataI, ok := row["data"]; ok {
-			data := dataI.(scal.M)
-			delete(data, "_id")
-			row["data"] = data
+			data, isM := dataI.(scal.M)
+			if isM {
+				delete(data, "_id")
+				row["data"] = data
+			} else {
+				log.Error(fmt.Sprintf("type(dataI)=%T, dataI=%v\n", dataI, dataI))
+			}
 		}
 		if metaKeys != nil {
 			meta := scal.M{}
