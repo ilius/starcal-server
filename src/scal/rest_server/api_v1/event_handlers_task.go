@@ -216,15 +216,17 @@ func AddTask(req Request) (*Response, error) {
 	}
 
 	eventMeta.FieldsMtime = map[string]time.Time{
-		"timeZone":       now,
-		"timeZoneEnable": now,
-		"calType":        now,
-		"summary":        now,
-		"description":    now,
-		"icon":           now,
-		"startTime":      now,
-		"endTime":        now,
-		"durationUnit":   now,
+		"timeZone":             now,
+		"timeZoneEnable":       now,
+		"calType":              now,
+		"summary":              now,
+		"description":          now,
+		"icon":                 now,
+		"summaryEncrypted":     now,
+		"descriptionEncrypted": now,
+		"startTime":            now,
+		"endTime":              now,
+		"durationUnit":         now,
 	}
 	err = db.Insert(eventMeta)
 	if err != nil {
@@ -267,7 +269,9 @@ func GetTask(req Request) (*Response, error) {
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event meta not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}
@@ -290,7 +294,9 @@ func GetTask(req Request) (*Response, error) {
 	eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event revision not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}
@@ -301,7 +307,9 @@ func GetTask(req Request) (*Response, error) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event model not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}
@@ -469,6 +477,20 @@ func UpdateTask(req Request) (*Response, error) {
 		lastEventModel.Icon,
 	) {
 		eventMeta.FieldsMtime["icon"] = now
+	}
+	// PARAM="summaryEncrypted", PARAM_TYPE="bool", PARAM_INT=false
+	if !reflect.DeepEqual(
+		eventModel.SummaryEncrypted,
+		lastEventModel.SummaryEncrypted,
+	) {
+		eventMeta.FieldsMtime["summaryEncrypted"] = now
+	}
+	// PARAM="descriptionEncrypted", PARAM_TYPE="bool", PARAM_INT=false
+	if !reflect.DeepEqual(
+		eventModel.DescriptionEncrypted,
+		lastEventModel.DescriptionEncrypted,
+	) {
+		eventMeta.FieldsMtime["descriptionEncrypted"] = now
 	}
 	// PARAM="startTime", PARAM_TYPE="*time.Time", PARAM_INT=false
 	if !reflect.DeepEqual(
@@ -657,6 +679,38 @@ func PatchTask(req Request) (*Response, error) {
 			eventModel.Icon = value
 			delete(patchMap, "icon")
 			eventMeta.FieldsMtime["icon"] = now
+		}
+	}
+	{
+		rawValue, ok := patchMap["summaryEncrypted"]
+		if ok {
+			value, typeOk := rawValue.(bool)
+			if !typeOk {
+				return nil, NewError(
+					InvalidArgument,
+					"bad type for parameter 'summaryEncrypted'",
+					nil,
+				)
+			}
+			eventModel.SummaryEncrypted = value
+			delete(patchMap, "summaryEncrypted")
+			eventMeta.FieldsMtime["summaryEncrypted"] = now
+		}
+	}
+	{
+		rawValue, ok := patchMap["descriptionEncrypted"]
+		if ok {
+			value, typeOk := rawValue.(bool)
+			if !typeOk {
+				return nil, NewError(
+					InvalidArgument,
+					"bad type for parameter 'descriptionEncrypted'",
+					nil,
+				)
+			}
+			eventModel.DescriptionEncrypted = value
+			delete(patchMap, "descriptionEncrypted")
+			eventMeta.FieldsMtime["descriptionEncrypted"] = now
 		}
 	}
 	{
@@ -1010,6 +1064,52 @@ func MergeTask(req Request) (*Response, error) {
 		}
 	}()
 	// define a func because we want to return from it to avoid nested code
+	func() {
+		// PARAM="summaryEncrypted", PARAM_TYPE="bool", PARAM_INT=false
+		inputValue := inputEventModel.SummaryEncrypted
+		lastValue := lastEventModel.SummaryEncrypted
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.SummaryEncrypted
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.SummaryEncrypted = inputValue
+			eventMeta.FieldsMtime["summaryEncrypted"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["summaryEncrypted"].After(eventMeta.FieldsMtime["summaryEncrypted"]) {
+			lastEventModel.SummaryEncrypted = inputValue
+			eventMeta.FieldsMtime["summaryEncrypted"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="descriptionEncrypted", PARAM_TYPE="bool", PARAM_INT=false
+		inputValue := inputEventModel.DescriptionEncrypted
+		lastValue := lastEventModel.DescriptionEncrypted
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.DescriptionEncrypted
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.DescriptionEncrypted = inputValue
+			eventMeta.FieldsMtime["descriptionEncrypted"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["descriptionEncrypted"].After(eventMeta.FieldsMtime["descriptionEncrypted"]) {
+			lastEventModel.DescriptionEncrypted = inputValue
+			eventMeta.FieldsMtime["descriptionEncrypted"] = now
+			return
+		}
+	}()
 	func() {
 		// PARAM="startTime", PARAM_TYPE="*time.Time", PARAM_INT=false
 		inputValue := inputEventModel.StartTime

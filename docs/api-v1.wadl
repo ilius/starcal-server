@@ -219,6 +219,8 @@
 									only the common elements are documented">
 									<element name="summary" type="xs:string"/>
 									<element name="description" type="xs:string"/>
+									<element name="summaryEncrypted" type="xs:boolean"/>
+									<element name="descriptionEncrypted" type="xs:boolean"/>
 									<element name="calType" type="xs:string">
 										<option value="gregorian"/>
 										<option value="jalali"/>
@@ -385,6 +387,8 @@
 										only the common elements are documented">
 										<element name="summary" type="xs:string"/>
 										<element name="description" type="xs:string"/>
+										<element name="summaryEncrypted" type="xs:boolean"/>
+										<element name="descriptionEncrypted" type="xs:boolean"/>
 										<element name="calType" type="xs:string">
 											<option value="gregorian"/>
 											<option value="jalali"/>
@@ -560,6 +564,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -603,6 +609,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -635,6 +643,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -661,6 +671,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -690,6 +702,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -756,6 +770,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -811,6 +827,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -860,6 +878,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -912,6 +932,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -953,6 +975,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -983,6 +1007,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1007,6 +1033,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1034,6 +1062,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -1078,6 +1108,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1111,6 +1143,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1138,6 +1172,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1168,6 +1204,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -1210,6 +1248,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1241,6 +1281,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1266,6 +1308,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1294,6 +1338,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -1339,6 +1385,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1373,6 +1421,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1401,6 +1451,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1432,6 +1484,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -1475,6 +1529,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1507,6 +1563,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1533,6 +1591,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1562,6 +1622,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -1611,6 +1673,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1649,6 +1713,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1681,6 +1747,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1716,6 +1784,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -1760,6 +1830,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1793,6 +1865,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1820,6 +1894,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1850,6 +1926,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -1895,6 +1973,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1929,6 +2009,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1957,6 +2039,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -1988,6 +2072,8 @@
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" required="true"/>
+					<param name="summaryEncrypted" type="xs:boolean"/>
+					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
 						<option value="gregorian"/>
 						<option value="jalali"/>
@@ -2032,6 +2118,8 @@
 						<param name="eventId" type="xs:string"/>
 						<param name="summary" type="xs:string"/>
 						<param name="description" type="xs:string"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -2065,6 +2153,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" required="true"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
 							<option value="gregorian"/>
 							<option value="jalali"/>
@@ -2092,6 +2182,8 @@
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" required="false"/>
+						<param name="summaryEncrypted" type="xs:boolean"/>
+						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
 							<option value="gregorian"/>
 							<option value="jalali"/>

@@ -216,13 +216,15 @@ func AddDailyNote(req Request) (*Response, error) {
 	}
 
 	eventMeta.FieldsMtime = map[string]time.Time{
-		"timeZone":       now,
-		"timeZoneEnable": now,
-		"calType":        now,
-		"summary":        now,
-		"description":    now,
-		"icon":           now,
-		"jd":             now,
+		"timeZone":             now,
+		"timeZoneEnable":       now,
+		"calType":              now,
+		"summary":              now,
+		"description":          now,
+		"icon":                 now,
+		"summaryEncrypted":     now,
+		"descriptionEncrypted": now,
+		"jd":                   now,
 	}
 	err = db.Insert(eventMeta)
 	if err != nil {
@@ -468,6 +470,20 @@ func UpdateDailyNote(req Request) (*Response, error) {
 	) {
 		eventMeta.FieldsMtime["icon"] = now
 	}
+	// PARAM="summaryEncrypted", PARAM_TYPE="bool", PARAM_INT=false
+	if !reflect.DeepEqual(
+		eventModel.SummaryEncrypted,
+		lastEventModel.SummaryEncrypted,
+	) {
+		eventMeta.FieldsMtime["summaryEncrypted"] = now
+	}
+	// PARAM="descriptionEncrypted", PARAM_TYPE="bool", PARAM_INT=false
+	if !reflect.DeepEqual(
+		eventModel.DescriptionEncrypted,
+		lastEventModel.DescriptionEncrypted,
+	) {
+		eventMeta.FieldsMtime["descriptionEncrypted"] = now
+	}
 	// PARAM="jd", PARAM_TYPE="int", PARAM_INT=true
 	if !reflect.DeepEqual(
 		eventModel.Jd,
@@ -641,6 +657,38 @@ func PatchDailyNote(req Request) (*Response, error) {
 			eventModel.Icon = value
 			delete(patchMap, "icon")
 			eventMeta.FieldsMtime["icon"] = now
+		}
+	}
+	{
+		rawValue, ok := patchMap["summaryEncrypted"]
+		if ok {
+			value, typeOk := rawValue.(bool)
+			if !typeOk {
+				return nil, NewError(
+					InvalidArgument,
+					"bad type for parameter 'summaryEncrypted'",
+					nil,
+				)
+			}
+			eventModel.SummaryEncrypted = value
+			delete(patchMap, "summaryEncrypted")
+			eventMeta.FieldsMtime["summaryEncrypted"] = now
+		}
+	}
+	{
+		rawValue, ok := patchMap["descriptionEncrypted"]
+		if ok {
+			value, typeOk := rawValue.(bool)
+			if !typeOk {
+				return nil, NewError(
+					InvalidArgument,
+					"bad type for parameter 'descriptionEncrypted'",
+					nil,
+				)
+			}
+			eventModel.DescriptionEncrypted = value
+			delete(patchMap, "descriptionEncrypted")
+			eventMeta.FieldsMtime["descriptionEncrypted"] = now
 		}
 	}
 	{
@@ -952,6 +1000,52 @@ func MergeDailyNote(req Request) (*Response, error) {
 		}
 	}()
 	// define a func because we want to return from it to avoid nested code
+	func() {
+		// PARAM="summaryEncrypted", PARAM_TYPE="bool", PARAM_INT=false
+		inputValue := inputEventModel.SummaryEncrypted
+		lastValue := lastEventModel.SummaryEncrypted
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.SummaryEncrypted
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.SummaryEncrypted = inputValue
+			eventMeta.FieldsMtime["summaryEncrypted"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["summaryEncrypted"].After(eventMeta.FieldsMtime["summaryEncrypted"]) {
+			lastEventModel.SummaryEncrypted = inputValue
+			eventMeta.FieldsMtime["summaryEncrypted"] = now
+			return
+		}
+	}()
+	func() {
+		// PARAM="descriptionEncrypted", PARAM_TYPE="bool", PARAM_INT=false
+		inputValue := inputEventModel.DescriptionEncrypted
+		lastValue := lastEventModel.DescriptionEncrypted
+		if reflect.DeepEqual(inputValue, lastValue) {
+			return
+		}
+		parentValue := parentEventModel.DescriptionEncrypted
+		if reflect.DeepEqual(parentValue, lastValue) {
+			return
+		}
+		if reflect.DeepEqual(parentValue, inputValue) {
+			lastEventModel.DescriptionEncrypted = inputValue
+			eventMeta.FieldsMtime["descriptionEncrypted"] = now
+			return
+		}
+		// Now we have a conflict
+		if inputStruct.FieldsMtime["descriptionEncrypted"].After(eventMeta.FieldsMtime["descriptionEncrypted"]) {
+			lastEventModel.DescriptionEncrypted = inputValue
+			eventMeta.FieldsMtime["descriptionEncrypted"] = now
+			return
+		}
+	}()
 	func() {
 		// PARAM="jd", PARAM_TYPE="int", PARAM_INT=true
 		inputValue := inputEventModel.Jd

@@ -20,8 +20,14 @@ type BaseEventModel struct {
 	Summary        string `bson:"summary" json:"summary"`
 	Description    string `bson:"description,omitempty" json:"description"`
 	Icon           string `bson:"icon,omitempty" json:"icon"`
-	// NotifyBefore   int           `bson:"notifyBefore,omitempty" json:"notifyBefore"` // seconds, default 0
+
+	SummaryEncrypted     bool `bson:"summaryEncrypted,omitempty" json:"summaryEncrypted"`
+	DescriptionEncrypted bool `bson:"descriptionEncrypted,omitempty" json:"descriptionEncrypted"`
+
+	// NotifyBefore: seconds, default 0
+	// NotifyBefore int `bson:"notifyBefore,omitempty" json:"notifyBefore"`
 	// IsAllDay bool
+
 	GroupId string `bson:"-" json:"groupId"` // FIXME
 	Meta    scal.M `bson:"-" json:"meta"`
 }
