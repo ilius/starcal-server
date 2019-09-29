@@ -173,10 +173,10 @@ func (m *MongoPipelines) GroupBy(key string) GroupByInterface {
 
 func (m *MongoPipelines) Lookup(from string, localField string, foreignField string, as string) {
 	m.pipelines = append(m.pipelines, scal.M{"$lookup": scal.M{
-		"from":         storage.C_revision,
-		"localField":   "_id",
-		"foreignField": "eventId",
-		"as":           "revision",
+		"from":         from,
+		"localField":   localField,
+		"foreignField": foreignField,
+		"as":           as,
 	}})
 }
 
