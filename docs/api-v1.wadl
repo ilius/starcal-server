@@ -207,7 +207,7 @@
 									<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
 									only the common elements are documented">
 										<element name="summary" type="xs:string"/>
-										<element name="description" type="xs:string"/>
+										<element name="description" type="xs:string" multiline="true"/>
 										<element name="summaryEncrypted" type="xs:boolean"/>
 										<element name="descriptionEncrypted" type="xs:boolean"/>
 										<element name="calType" type="xs:string">
@@ -299,7 +299,7 @@
 									<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
 									only the common elements are documented">
 										<element name="summary" type="xs:string"/>
-										<element name="description" type="xs:string"/>
+										<element name="description" type="xs:string" multiline="true"/>
 										<element name="summaryEncrypted" type="xs:boolean"/>
 										<element name="descriptionEncrypted" type="xs:boolean"/>
 										<element name="calType" type="xs:string">
@@ -473,7 +473,7 @@
 										<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
 										only the common elements are documented">
 											<element name="summary" type="xs:string"/>
-											<element name="description" type="xs:string"/>
+											<element name="description" type="xs:string" multiline="true"/>
 											<element name="summaryEncrypted" type="xs:boolean"/>
 											<element name="descriptionEncrypted" type="xs:boolean"/>
 											<element name="calType" type="xs:string">
@@ -656,7 +656,7 @@
 			<method name="POST" id="add_allDayTask">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -702,7 +702,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -737,7 +737,7 @@
 				<method name="PUT" id="update_allDayTask">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -766,7 +766,7 @@
 				<method name="PATCH" id="patch_allDayTask">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -798,7 +798,7 @@
 			<method name="POST" id="add_custom">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -867,7 +867,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -925,7 +925,7 @@
 				<method name="PUT" id="update_custom">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -977,7 +977,7 @@
 				<method name="PATCH" id="patch_custom">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1032,7 +1032,7 @@
 			<method name="POST" id="add_dailyNote">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1076,7 +1076,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -1109,7 +1109,7 @@
 				<method name="PUT" id="update_dailyNote">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1136,7 +1136,7 @@
 				<method name="PATCH" id="patch_dailyNote">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1166,7 +1166,7 @@
 			<method name="POST" id="add_largeScale">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1213,7 +1213,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -1249,7 +1249,7 @@
 				<method name="PUT" id="update_largeScale">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1279,7 +1279,7 @@
 				<method name="PATCH" id="patch_largeScale">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1312,7 +1312,7 @@
 			<method name="POST" id="add_lifeTime">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1357,7 +1357,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -1391,7 +1391,7 @@
 				<method name="PUT" id="update_lifeTime">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1419,7 +1419,7 @@
 				<method name="PATCH" id="patch_lifeTime">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1450,7 +1450,7 @@
 			<method name="POST" id="add_monthly">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1498,7 +1498,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -1535,7 +1535,7 @@
 				<method name="PUT" id="update_monthly">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1566,7 +1566,7 @@
 				<method name="PATCH" id="patch_monthly">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1600,7 +1600,7 @@
 			<method name="POST" id="add_task">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1646,7 +1646,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -1681,7 +1681,7 @@
 				<method name="PUT" id="update_task">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1710,7 +1710,7 @@
 				<method name="PATCH" id="patch_task">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1742,7 +1742,7 @@
 			<method name="POST" id="add_universityClass">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1794,7 +1794,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -1835,7 +1835,7 @@
 				<method name="PUT" id="update_universityClass">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -1870,7 +1870,7 @@
 				<method name="PATCH" id="patch_universityClass">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -1908,7 +1908,7 @@
 			<method name="POST" id="add_universityExam">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -1955,7 +1955,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -1991,7 +1991,7 @@
 				<method name="PUT" id="update_universityExam">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -2021,7 +2021,7 @@
 				<method name="PATCH" id="patch_universityExam">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -2054,7 +2054,7 @@
 			<method name="POST" id="add_weekly">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -2102,7 +2102,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -2139,7 +2139,7 @@
 				<method name="PUT" id="update_weekly">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -2170,7 +2170,7 @@
 				<method name="PATCH" id="patch_weekly">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
@@ -2204,7 +2204,7 @@
 			<method name="POST" id="add_yearly">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
-					<param name="description" type="xs:string" required="true"/>
+					<param name="description" type="xs:string" multiline="true" required="true"/>
 					<param name="summaryEncrypted" type="xs:boolean"/>
 					<param name="descriptionEncrypted" type="xs:boolean"/>
 					<param name="calType" type="xs:string" required="true">
@@ -2251,7 +2251,7 @@
 							</param>
 							<param name="eventId" type="xs:string"/>
 							<param name="summary" type="xs:string"/>
-							<param name="description" type="xs:string"/>
+							<param name="description" type="xs:string" multiline="true"/>
 							<param name="summaryEncrypted" type="xs:boolean"/>
 							<param name="descriptionEncrypted" type="xs:boolean"/>
 							<param name="calType" type="xs:string">
@@ -2287,7 +2287,7 @@
 				<method name="PUT" id="update_yearly">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
-						<param name="description" type="xs:string" required="true"/>
+						<param name="description" type="xs:string" multiline="true" required="true"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="true">
@@ -2317,7 +2317,7 @@
 				<method name="PATCH" id="patch_yearly">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
-						<param name="description" type="xs:string" required="false"/>
+						<param name="description" type="xs:string" multiline="true" required="false"/>
 						<param name="summaryEncrypted" type="xs:boolean"/>
 						<param name="descriptionEncrypted" type="xs:boolean"/>
 						<param name="calType" type="xs:string" required="false">
