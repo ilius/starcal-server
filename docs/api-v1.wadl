@@ -19,8 +19,9 @@
 						<param name="fullName" type="xs:string" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="token" type="xs:string" required="true"/>
+						<representation mediaType="app/json">
+							<param name="token" type="xs:string" required="true"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -31,9 +32,10 @@
 						<param name="password" type="xs:string" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="token" type="xs:string" required="true"/>
-						<param name="expiration" type="xsd:dateTime" required="true"/>
+						<representation mediaType="app/json">
+							<param name="token" type="xs:string" required="true"/>
+							<param name="expiration" type="xsd:dateTime" required="true"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -83,21 +85,22 @@
 			<resource path="info/">
 				<method name="GET" id="getUserInfo">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="email" type="xs:string"/>
-						<param name="fullName" type="xs:string"/>
-						<param name="defaultGroupId" type="xs:string"/>
-						<param name="lastLogoutTime" type="xsd:dateTime" nillable="true" description="dateTime or none"/>
-						<param name="lastLogins" type="xs:list" itemType="xs:complexType">
-							<item type="xs:complexType">
-								<element name="time" type="xsd:dateTime"/>
-								<element name="userId" type="xs:string"/>
-								<element name="email" type="xs:string"/>
-								<element name="remoteIp" type="xs:string"/>
-								<element name="successful" type="xs:bool" description="password was correct"/>
-								<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
-							</item>
-						</param>
+						<representation mediaType="app/json">
+							<param name="email" type="xs:string"/>
+							<param name="fullName" type="xs:string"/>
+							<param name="defaultGroupId" type="xs:string"/>
+							<param name="lastLogoutTime" type="xsd:dateTime" nillable="true" description="dateTime or none"/>
+							<param name="lastLogins" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType">
+									<element name="time" type="xsd:dateTime"/>
+									<element name="userId" type="xs:string"/>
+									<element name="email" type="xs:string"/>
+									<element name="remoteIp" type="xs:string"/>
+									<element name="successful" type="xs:bool" description="password was correct"/>
+									<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
+								</item>
+							</param>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -107,17 +110,18 @@
 						<param name="limit" type="xs:int" required="false" description="there is a default limit"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="lastLogins" type="xs:list" itemType="xs:complexType">
-							<item type="xs:complexType">
-								<element name="time" type="xsd:dateTime"/>
-								<element name="userId" type="xs:string"/>
-								<element name="email" type="xs:string"/>
-								<element name="remoteIp" type="xs:string"/>
-								<element name="successful" type="xs:bool" description="password was correct"/>
-								<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
-							</item>
-						</param>
+						<representation mediaType="app/json">
+							<param name="lastLogins" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType">
+									<element name="time" type="xsd:dateTime"/>
+									<element name="userId" type="xs:string"/>
+									<element name="email" type="xs:string"/>
+									<element name="remoteIp" type="xs:string"/>
+									<element name="successful" type="xs:bool" description="password was correct"/>
+									<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
+								</item>
+							</param>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -139,8 +143,9 @@
 			<resource path="default-group/">
 				<method name="PUT" id="setUserDefaultGroup">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="defaultGroupId" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="defaultGroupId" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="DELETE" id="unsetUserDefaultGroup">
@@ -152,289 +157,31 @@
 			<resource path="data-full">
 				<method name="GET" id="getUserDataFull">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="user" type="xs:complexType">
-							<element name="email" type="xs:string"/>
-							<element name="fullName" type="xs:string"/>
-							<element name="defaultGroupId" type="xs:string"/>
-							<element name="lastLogoutTime" type="xsd:dateTime" nillable="true" description="dateTime or none"/>
-							<element name="lastLogins" type="xs:list" itemType="xs:complexType">
+						<representation mediaType="app/json">
+							<param name="user" type="xs:complexType">
+								<element name="email" type="xs:string"/>
+								<element name="fullName" type="xs:string"/>
+								<element name="defaultGroupId" type="xs:string"/>
+								<element name="lastLogoutTime" type="xsd:dateTime" nillable="true" description="dateTime or none"/>
+								<element name="lastLogins" type="xs:list" itemType="xs:complexType">
+									<item type="xs:complexType">
+										<element name="time" type="xsd:dateTime"/>
+										<element name="userId" type="xs:string"/>
+										<element name="email" type="xs:string"/>
+										<element name="remoteIp" type="xs:string"/>
+										<element name="successful" type="xs:bool" description="password was correct"/>
+										<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
+									</item>
+								</element>
+							</param>
+							<param name="groups" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
-									<element name="time" type="xsd:dateTime"/>
-									<element name="userId" type="xs:string"/>
-									<element name="email" type="xs:string"/>
-									<element name="remoteIp" type="xs:string"/>
-									<element name="successful" type="xs:bool" description="password was correct"/>
-									<element name="locked" type="xs:bool" required="false" description="password was correct, but user was locked"/>
-								</item>
-							</element>
-						</param>
-						<param name="groups" type="xs:list" itemType="xs:complexType">
-							<item type="xs:complexType">
-								<element name="groupId" type="xs:string"/>
-								<element name="title" type="xs:string"/>
-								<element name="ownerEmail" type="xs:string"/>
-							</item>
-						</param>
-						<param name="events" type="xs:list" itemType="xs:complexType">
-							<item type="xs:complexType">
-								<element name="eventId" type="xs:string"/>
-								<element name="eventType" type="xs:string">
-									<option value="allDayTask"/>
-									<option value="custom"/>
-									<option value="dailyNote"/>
-									<option value="largeScale"/>
-									<option value="lifeTime"/>
-									<option value="monthly"/>
-									<option value="task"/>
-									<option value="universityClass"/>
-									<option value="universityExam"/>
-									<option value="weekly"/>
-									<option value="yearly"/>
-								</element>
-								<element name="lastModifiedTime" type="xsd:dateTime"/>
-								<element name="lastSha1" type="xs:string"/>
-								<element name="meta" type="xs:complexType">
+									<element name="groupId" type="xs:string"/>
+									<element name="title" type="xs:string"/>
 									<element name="ownerEmail" type="xs:string"/>
-									<element name="isPublic" type="xs:boolean"/>
-									<element name="creationTime" type="xsd:dateTime"/>
-								</element>
-								<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
-									only the common elements are documented">
-									<element name="summary" type="xs:string"/>
-									<element name="description" type="xs:string"/>
-									<element name="summaryEncrypted" type="xs:boolean"/>
-									<element name="descriptionEncrypted" type="xs:boolean"/>
-									<element name="calType" type="xs:string">
-										<option value="gregorian"/>
-										<option value="jalali"/>
-										<option value="hijri"/>
-										<option value="indian_national"/>
-										<option value="julian"/>
-										<option value="ethiopian"/>
-										<option value="gregorian_proleptic"/>
-									</element>
-									<element name="icon" type="xs:string"/>
-									<element name="timeZone" type="xs:string"/>
-									<element name="timeZoneEnable" type="xs:boolean"/>
-								</element>
-							</item>
-						</param>
-					</response>
-				</method>
-			</resource>
-		</resource>
-		<resource path="event/my/">
-			<resource path="events/">
-				<method name="GET" id="getMyEventsList">
-					<request>
-						<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
-						<param name="limit" type="xs:int" description="maximum number of events in page"/>
-						<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
-					</request>
-					<response>
-						<representation mediaType="app/json"/>
-						<param name="lastId" type="xs:str" description="the last eventId in this page"/>
-						<param name="events" type="xs:list" itemType="xs:complexType">
-							<item type="xs:complexType">
-								<element name="eventId" type="xs:string"/>
-								<element name="eventType" type="xs:string">
-									<option value="allDayTask"/>
-									<option value="custom"/>
-									<option value="dailyNote"/>
-									<option value="largeScale"/>
-									<option value="lifeTime"/>
-									<option value="monthly"/>
-									<option value="task"/>
-									<option value="universityClass"/>
-									<option value="universityExam"/>
-									<option value="weekly"/>
-									<option value="yearly"/>
-								</element>
-							</item>
-						</param>
-					</response>
-				</method>
-			</resource>
-			<resource path="events-full/">
-				<method name="GET" id="getMyEventsFull">
-					<request>
-						<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
-						<param name="limit" type="xs:int" description="maximum number of events in page"/>
-						<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
-					</request>
-					<response>
-						<representation mediaType="app/json"/>
-						<param name="lastId" type="xs:str" description="the last eventId in this page"/>
-						<param name="eventsFull" type="xs:list" itemType="xs:complexType">
-							<item type="xs:complexType">
-								<element name="eventId" type="xs:string"/>
-								<element name="eventType" type="xs:string">
-									<option value="allDayTask"/>
-									<option value="custom"/>
-									<option value="dailyNote"/>
-									<option value="largeScale"/>
-									<option value="lifeTime"/>
-									<option value="monthly"/>
-									<option value="task"/>
-									<option value="universityClass"/>
-									<option value="universityExam"/>
-									<option value="weekly"/>
-									<option value="yearly"/>
-								</element>
-								<element name="lastModifiedTime" type="xsd:dateTime"/>
-								<element name="lastSha1" type="xs:string"/>
-								<element name="meta" type="xs:complexType">
-									<element name="ownerEmail" type="xs:string"/>
-									<element name="isPublic" type="xs:boolean"/>
-									<element name="creationTime" type="xsd:dateTime"/>
-								</element>
-								<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
-									only the common elements are documented">
-									<element name="summary" type="xs:string"/>
-									<element name="description" type="xs:string"/>
-									<element name="summaryEncrypted" type="xs:boolean"/>
-									<element name="descriptionEncrypted" type="xs:boolean"/>
-									<element name="calType" type="xs:string">
-										<option value="gregorian"/>
-										<option value="jalali"/>
-										<option value="hijri"/>
-										<option value="indian_national"/>
-										<option value="julian"/>
-										<option value="ethiopian"/>
-										<option value="gregorian_proleptic"/>
-									</element>
-									<element name="icon" type="xs:string"/>
-									<element name="timeZone" type="xs:string"/>
-									<element name="timeZoneEnable" type="xs:boolean"/>
-								</element>
-							</item>
-						</param>
-					</response>
-				</method>
-			</resource>
-		</resource>
-		<resource path="event/groups/">
-			<method name="GET" id="getGroupList">
-				<response>
-					<representation mediaType="app/json"/>
-					<param name="groups" type="xs:list" itemType="xs:complexType">
-						<item type="xs:complexType">
-							<element name="groupId" type="xs:string"/>
-							<element name="title" type="xs:string"/>
-							<element name="ownerEmail" type="xs:string"/>
-						</item>
-					</param>
-				</response>
-			</method>
-			<method name="POST" id="addGroup">
-				<request>
-					<param name="title" type="xs:string"/>
-				</request>
-				<response>
-					<representation mediaType="app/json"/>
-					<param name="groupId" type="xs:string"/>
-				</response>
-			</method>
-			<resource path="{groupId}/">
-				<method name="GET" id="getGroup">
-					<response>
-						<representation mediaType="app/json"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="title" type="xs:string"/>
-						<param name="ownerEmail" type="xs:string"/>
-						<param name="addAccessEmails" type="xs:list" itemType="xs:string" required="false" description="missing if it's empty"/>
-						<param name="readAccessEmails" type="xs:list" itemType="xs:string" required="false" description="missing if it's empty"/>
-					</response>
-				</method>
-				<method name="PUT" id="updateGroup">
-					<request>
-						<param name="title" type="xs:string" required="true"/>
-						<param name="addAccessEmails" type="xs:list" itemType="xs:string" required="false" description="supposed empty if missing"/>
-						<param name="readAccessEmails" type="xs:list" itemType="xs:string" required="false" description="supposed empty if missing"/>
-					</request>
-					<response>
-						<representation mediaType="app/json"/>
-					</response>
-				</method>
-				<method name="DELETE" id="deleteGroup">
-				</method>
-				<resource path="events/">
-					<method name="GET" id="getGroupEvents">
-						<request>
-							<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
-							<param name="limit" type="xs:int" description="maximum number of events in page"/>
-							<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
-						</request>
-						<response>
-							<representation mediaType="app/json"/>
-							<param name="lastId" type="xs:str" description="the last eventId in this page"/>
-							<param name="events" type="xs:list" itemType="xs:complexType">
-								<item type="xs:complexType">
-									<element name="eventId" type="xs:string"/>
-									<element name="eventType" type="xs:string">
-										<option value="allDayTask"/>
-										<option value="custom"/>
-										<option value="dailyNote"/>
-										<option value="largeScale"/>
-										<option value="lifeTime"/>
-										<option value="monthly"/>
-										<option value="task"/>
-										<option value="universityClass"/>
-										<option value="universityExam"/>
-										<option value="weekly"/>
-										<option value="yearly"/>
-									</element>
 								</item>
 							</param>
-						</response>
-					</method>
-				</resource>
-				<resource path="events-sha1/">
-					<method name="GET" id="getGroupEventsWithSha1">
-						<request>
-							<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
-							<param name="limit" type="xs:int" description="maximum number of events in page"/>
-							<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
-						</request>
-						<response>
-							<representation mediaType="app/json"/>
-							<param name="lastId" type="xs:str" description="the last eventId in this page"/>
 							<param name="events" type="xs:list" itemType="xs:complexType">
-								<item type="xs:complexType">
-									<element name="eventId" type="xs:string"/>
-									<element name="eventType" type="xs:string">
-										<option value="allDayTask"/>
-										<option value="custom"/>
-										<option value="dailyNote"/>
-										<option value="largeScale"/>
-										<option value="lifeTime"/>
-										<option value="monthly"/>
-										<option value="task"/>
-										<option value="universityClass"/>
-										<option value="universityExam"/>
-										<option value="weekly"/>
-										<option value="yearly"/>
-									</element>
-									<element name="lastSha1" type="xs:string"/>
-								</item>
-							</param>
-						</response>
-					</method>
-				</resource>
-				<resource path="modified-events/{dateTime}/">
-					<param name="dateTime" type="xsd:dateTime" description="filters out modifications before this {dateTime}
-						this should be the time of last sync on this client"/>
-					<method name="GET" id="getGroupModifiedEvents">
-						<request>
-							<param name="limit" type="xs:int" required="false" description="maximum number of events in response"/>
-						</request>
-						<response>
-							<representation mediaType="app/json"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="sinceDatetime" type="xsd:dateTime"/>
-							<param name="limit" type="xs:int"/>
-							<param name="modifiedEvents" type="xs:list" itemType="xs:complexType">
 								<item type="xs:complexType">
 									<element name="eventId" type="xs:string"/>
 									<element name="eventType" type="xs:string">
@@ -458,7 +205,7 @@
 										<element name="creationTime" type="xsd:dateTime"/>
 									</element>
 									<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
-										only the common elements are documented">
+									only the common elements are documented">
 										<element name="summary" type="xs:string"/>
 										<element name="description" type="xs:string"/>
 										<element name="summaryEncrypted" type="xs:boolean"/>
@@ -478,6 +225,273 @@
 									</element>
 								</item>
 							</param>
+						</representation>
+					</response>
+				</method>
+			</resource>
+		</resource>
+		<resource path="event/my/">
+			<resource path="events/">
+				<method name="GET" id="getMyEventsList">
+					<request>
+						<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
+						<param name="limit" type="xs:int" description="maximum number of events in page"/>
+						<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
+					</request>
+					<response>
+						<representation mediaType="app/json">
+							<param name="lastId" type="xs:str" description="the last eventId in this page"/>
+							<param name="events" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType">
+									<element name="eventId" type="xs:string"/>
+									<element name="eventType" type="xs:string">
+										<option value="allDayTask"/>
+										<option value="custom"/>
+										<option value="dailyNote"/>
+										<option value="largeScale"/>
+										<option value="lifeTime"/>
+										<option value="monthly"/>
+										<option value="task"/>
+										<option value="universityClass"/>
+										<option value="universityExam"/>
+										<option value="weekly"/>
+										<option value="yearly"/>
+									</element>
+								</item>
+							</param>
+						</representation>
+					</response>
+				</method>
+			</resource>
+			<resource path="events-full/">
+				<method name="GET" id="getMyEventsFull">
+					<request>
+						<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
+						<param name="limit" type="xs:int" description="maximum number of events in page"/>
+						<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
+					</request>
+					<response>
+						<representation mediaType="app/json">
+							<param name="lastId" type="xs:str" description="the last eventId in this page"/>
+							<param name="eventsFull" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType">
+									<element name="eventId" type="xs:string"/>
+									<element name="eventType" type="xs:string">
+										<option value="allDayTask"/>
+										<option value="custom"/>
+										<option value="dailyNote"/>
+										<option value="largeScale"/>
+										<option value="lifeTime"/>
+										<option value="monthly"/>
+										<option value="task"/>
+										<option value="universityClass"/>
+										<option value="universityExam"/>
+										<option value="weekly"/>
+										<option value="yearly"/>
+									</element>
+									<element name="lastModifiedTime" type="xsd:dateTime"/>
+									<element name="lastSha1" type="xs:string"/>
+									<element name="meta" type="xs:complexType">
+										<element name="ownerEmail" type="xs:string"/>
+										<element name="isPublic" type="xs:boolean"/>
+										<element name="creationTime" type="xsd:dateTime"/>
+									</element>
+									<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
+									only the common elements are documented">
+										<element name="summary" type="xs:string"/>
+										<element name="description" type="xs:string"/>
+										<element name="summaryEncrypted" type="xs:boolean"/>
+										<element name="descriptionEncrypted" type="xs:boolean"/>
+										<element name="calType" type="xs:string">
+											<option value="gregorian"/>
+											<option value="jalali"/>
+											<option value="hijri"/>
+											<option value="indian_national"/>
+											<option value="julian"/>
+											<option value="ethiopian"/>
+											<option value="gregorian_proleptic"/>
+										</element>
+										<element name="icon" type="xs:string"/>
+										<element name="timeZone" type="xs:string"/>
+										<element name="timeZoneEnable" type="xs:boolean"/>
+									</element>
+								</item>
+							</param>
+						</representation>
+					</response>
+				</method>
+			</resource>
+		</resource>
+		<resource path="event/groups/">
+			<method name="GET" id="getGroupList">
+				<response>
+					<representation mediaType="app/json">
+						<param name="groups" type="xs:list" itemType="xs:complexType">
+							<item type="xs:complexType">
+								<element name="groupId" type="xs:string"/>
+								<element name="title" type="xs:string"/>
+								<element name="ownerEmail" type="xs:string"/>
+							</item>
+						</param>
+					</representation>
+				</response>
+			</method>
+			<method name="POST" id="addGroup">
+				<request>
+					<param name="title" type="xs:string"/>
+				</request>
+				<response>
+					<representation mediaType="app/json">
+						<param name="groupId" type="xs:string"/>
+					</representation>
+				</response>
+			</method>
+			<resource path="{groupId}/">
+				<method name="GET" id="getGroup">
+					<response>
+						<representation mediaType="app/json">
+							<param name="groupId" type="xs:string"/>
+							<param name="title" type="xs:string"/>
+							<param name="ownerEmail" type="xs:string"/>
+							<param name="addAccessEmails" type="xs:list" itemType="xs:string" required="false" description="missing if it's empty"/>
+							<param name="readAccessEmails" type="xs:list" itemType="xs:string" required="false" description="missing if it's empty"/>
+						</representation>
+					</response>
+				</method>
+				<method name="PUT" id="updateGroup">
+					<request>
+						<param name="title" type="xs:string" required="true"/>
+						<param name="addAccessEmails" type="xs:list" itemType="xs:string" required="false" description="supposed empty if missing"/>
+						<param name="readAccessEmails" type="xs:list" itemType="xs:string" required="false" description="supposed empty if missing"/>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+				<method name="DELETE" id="deleteGroup">
+				</method>
+				<resource path="events/">
+					<method name="GET" id="getGroupEvents">
+						<request>
+							<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
+							<param name="limit" type="xs:int" description="maximum number of events in page"/>
+							<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
+						</request>
+						<response>
+							<representation mediaType="app/json">
+								<param name="lastId" type="xs:str" description="the last eventId in this page"/>
+								<param name="events" type="xs:list" itemType="xs:complexType">
+									<item type="xs:complexType">
+										<element name="eventId" type="xs:string"/>
+										<element name="eventType" type="xs:string">
+											<option value="allDayTask"/>
+											<option value="custom"/>
+											<option value="dailyNote"/>
+											<option value="largeScale"/>
+											<option value="lifeTime"/>
+											<option value="monthly"/>
+											<option value="task"/>
+											<option value="universityClass"/>
+											<option value="universityExam"/>
+											<option value="weekly"/>
+											<option value="yearly"/>
+										</element>
+									</item>
+								</param>
+							</representation>
+						</response>
+					</method>
+				</resource>
+				<resource path="events-sha1/">
+					<method name="GET" id="getGroupEventsWithSha1">
+						<request>
+							<param name="exStartId" type="xs:str" description="exclusive start eventId, for pagination (lastId of previous respose)"/>
+							<param name="limit" type="xs:int" description="maximum number of events in page"/>
+							<param name="reverseOrder" type="xs:bool" description="if true, returns the most recently created events first"/>
+						</request>
+						<response>
+							<representation mediaType="app/json">
+								<param name="lastId" type="xs:str" description="the last eventId in this page"/>
+								<param name="events" type="xs:list" itemType="xs:complexType">
+									<item type="xs:complexType">
+										<element name="eventId" type="xs:string"/>
+										<element name="eventType" type="xs:string">
+											<option value="allDayTask"/>
+											<option value="custom"/>
+											<option value="dailyNote"/>
+											<option value="largeScale"/>
+											<option value="lifeTime"/>
+											<option value="monthly"/>
+											<option value="task"/>
+											<option value="universityClass"/>
+											<option value="universityExam"/>
+											<option value="weekly"/>
+											<option value="yearly"/>
+										</element>
+										<element name="lastSha1" type="xs:string"/>
+									</item>
+								</param>
+							</representation>
+						</response>
+					</method>
+				</resource>
+				<resource path="modified-events/{dateTime}/">
+					<param name="dateTime" type="xsd:dateTime" description="filters out modifications before this {dateTime}
+						this should be the time of last sync on this client"/>
+					<method name="GET" id="getGroupModifiedEvents">
+						<request>
+							<param name="limit" type="xs:int" required="false" description="maximum number of events in response"/>
+						</request>
+						<response>
+							<representation mediaType="app/json">
+								<param name="groupId" type="xs:string"/>
+								<param name="sinceDatetime" type="xsd:dateTime"/>
+								<param name="limit" type="xs:int"/>
+								<param name="modifiedEvents" type="xs:list" itemType="xs:complexType">
+									<item type="xs:complexType">
+										<element name="eventId" type="xs:string"/>
+										<element name="eventType" type="xs:string">
+											<option value="allDayTask"/>
+											<option value="custom"/>
+											<option value="dailyNote"/>
+											<option value="largeScale"/>
+											<option value="lifeTime"/>
+											<option value="monthly"/>
+											<option value="task"/>
+											<option value="universityClass"/>
+											<option value="universityExam"/>
+											<option value="weekly"/>
+											<option value="yearly"/>
+										</element>
+										<element name="lastModifiedTime" type="xsd:dateTime"/>
+										<element name="lastSha1" type="xs:string"/>
+										<element name="meta" type="xs:complexType">
+											<element name="ownerEmail" type="xs:string"/>
+											<element name="isPublic" type="xs:boolean"/>
+											<element name="creationTime" type="xsd:dateTime"/>
+										</element>
+										<element name="data" type="xs:complexType" description="extra elements are present depending on {eventType},
+										only the common elements are documented">
+											<element name="summary" type="xs:string"/>
+											<element name="description" type="xs:string"/>
+											<element name="summaryEncrypted" type="xs:boolean"/>
+											<element name="descriptionEncrypted" type="xs:boolean"/>
+											<element name="calType" type="xs:string">
+												<option value="gregorian"/>
+												<option value="jalali"/>
+												<option value="hijri"/>
+												<option value="indian_national"/>
+												<option value="julian"/>
+												<option value="ethiopian"/>
+												<option value="gregorian_proleptic"/>
+											</element>
+											<element name="icon" type="xs:string"/>
+											<element name="timeZone" type="xs:string"/>
+											<element name="timeZoneEnable" type="xs:boolean"/>
+										</element>
+									</item>
+								</param>
+							</representation>
 						</response>
 					</method>
 				</resource>
@@ -489,18 +503,19 @@
 							<param name="limit" type="xs:int" required="false" description="maximum number of events in response"/>
 						</request>
 						<response>
-							<representation mediaType="app/json"/>
-							<param name="groupId" type="xs:string"/>
-							<param name="sinceDatetime" type="xsd:dateTime"/>
-							<param name="limit" type="xs:int"/>
-							<param name="movedEvents" type="xs:list" itemType="xs:complexType">
-								<item type="xs:complexType">
-									<element name="eventId" type="xs:string"/>
-									<element name="time" type="xsd:dateTime"/>
-									<element name="oldGroupId" type="xs:string"/>
-									<element name="newGroupId" type="xs:string"/>
-								</item>
-							</param>
+							<representation mediaType="app/json">
+								<param name="groupId" type="xs:string"/>
+								<param name="sinceDatetime" type="xsd:dateTime"/>
+								<param name="limit" type="xs:int"/>
+								<param name="movedEvents" type="xs:list" itemType="xs:complexType">
+									<item type="xs:complexType">
+										<element name="eventId" type="xs:string"/>
+										<element name="time" type="xsd:dateTime"/>
+										<element name="oldGroupId" type="xs:string"/>
+										<element name="newGroupId" type="xs:string"/>
+									</item>
+								</param>
+							</representation>
 						</response>
 					</method>
 				</resource>
@@ -509,22 +524,23 @@
 		<resource path="event/copy/{eventId}/">
 			<method name="POST" id="copyEvent">
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventType" type="xs:string">
-						<option value="allDayTask"/>
-						<option value="custom"/>
-						<option value="dailyNote"/>
-						<option value="largeScale"/>
-						<option value="lifeTime"/>
-						<option value="monthly"/>
-						<option value="task"/>
-						<option value="universityClass"/>
-						<option value="universityExam"/>
-						<option value="weekly"/>
-						<option value="yearly"/>
-					</param>
-					<param name="eventId" type="xs:string" description="the new eventId"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventType" type="xs:string">
+							<option value="allDayTask"/>
+							<option value="custom"/>
+							<option value="dailyNote"/>
+							<option value="largeScale"/>
+							<option value="lifeTime"/>
+							<option value="monthly"/>
+							<option value="task"/>
+							<option value="universityClass"/>
+							<option value="universityExam"/>
+							<option value="weekly"/>
+							<option value="yearly"/>
+						</param>
+						<param name="eventId" type="xs:string" description="the new eventId"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 		</resource>
@@ -558,8 +574,9 @@
 			<resource path="owner/">
 				<method name="GET" id="getEventOwner">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="ownerEmail" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="ownerEmail" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="setEventOwner">
@@ -574,11 +591,12 @@
 			<resource path="access/">
 				<method name="GET" id="getEventAccess">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="isPublic" type="xs:boolean"/>
-						<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-						<param name="publicJoinOpen" type="xs:boolean"/>
-						<param name="maxAttendees" type="xs:int"/>
+						<representation mediaType="app/json">
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="setEventAccess">
@@ -604,17 +622,18 @@
 			<resource path="meta/">
 				<method name="GET" id="getEventMeta">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="ownerEmail" type="xs:string" />
-						<param name="creationTime" type="xsd:dateTime" />
-						<param name="groupId" type="xs:string" />
-						<param name="isPublic" type="xs:boolean"/>
-						<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-						<param name="publicJoinOpen" type="xs:boolean"/>
-						<param name="maxAttendees" type="xs:int"/>
-						<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
-						<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
-						<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="ownerEmail" type="xs:string" />
+							<param name="creationTime" type="xsd:dateTime" />
+							<param name="groupId" type="xs:string" />
+							<param name="isPublic" type="xs:boolean"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+							<param name="publicJoinOpen" type="xs:boolean"/>
+							<param name="maxAttendees" type="xs:int"/>
+							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -657,60 +676,62 @@
 					<param name="durationEnable" type="xs:boolean" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_allDayTask">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="startJd" type="xs:int"/>
-						<param name="endJd" type="xs:int"/>
-						<param name="durationEnable" type="xs:boolean"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="startJd" type="xs:int"/>
+							<param name="endJd" type="xs:int"/>
+							<param name="durationEnable" type="xs:boolean"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_allDayTask">
@@ -736,9 +757,10 @@
 						<param name="durationEnable" type="xs:boolean" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_allDayTask">
@@ -764,9 +786,10 @@
 						<param name="durationEnable" type="xs:boolean" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -818,83 +841,85 @@
 					</param>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_custom">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="rules" type="xs:list" itemType="xs:complexType">
-							<item type="xs:complexType" description="event rule">
-								<element name="type" type="xs:string">
-									<option value="cycleDays"/>
-									<option value="cycleLen"/>
-									<option value="cycleWeeks"/>
-									<option value="date"/>
-									<option value="day"/>
-									<option value="dayTime"/>
-									<option value="dayTimeRange"/>
-									<option value="duration"/>
-									<option value="end"/>
-									<option value="ex_dates"/>
-									<option value="ex_day"/>
-									<option value="ex_month"/>
-									<option value="ex_year"/>
-									<option value="month"/>
-									<option value="start"/>
-									<option value="weekDay"/>
-									<option value="weekMonth"/>
-									<option value="weekNumMode"/>
-									<option value="year"/>
-								</element>
-								<element name="value" type="xs:string" description="format depends on rule type"/>
-							</item>
-						</param>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="rules" type="xs:list" itemType="xs:complexType">
+								<item type="xs:complexType" description="event rule">
+									<element name="type" type="xs:string">
+										<option value="cycleDays"/>
+										<option value="cycleLen"/>
+										<option value="cycleWeeks"/>
+										<option value="date"/>
+										<option value="day"/>
+										<option value="dayTime"/>
+										<option value="dayTimeRange"/>
+										<option value="duration"/>
+										<option value="end"/>
+										<option value="ex_dates"/>
+										<option value="ex_day"/>
+										<option value="ex_month"/>
+										<option value="ex_year"/>
+										<option value="month"/>
+										<option value="start"/>
+										<option value="weekDay"/>
+										<option value="weekMonth"/>
+										<option value="weekNumMode"/>
+										<option value="year"/>
+									</element>
+									<element name="value" type="xs:string" description="format depends on rule type"/>
+								</item>
+							</param>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_custom">
@@ -943,9 +968,10 @@
 						</param>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_custom">
@@ -994,9 +1020,10 @@
 						</param>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -1023,58 +1050,60 @@
 					<param name="jd" type="xs:int" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_dailyNote">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="jd" type="xs:int"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="jd" type="xs:int"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_dailyNote">
@@ -1098,9 +1127,10 @@
 						<param name="jd" type="xs:int" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_dailyNote">
@@ -1124,9 +1154,10 @@
 						<param name="jd" type="xs:int" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -1156,61 +1187,63 @@
 					<param name="durationEnable" type="xs:boolean" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_largeScale">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="scale" type="xs:int"/>
-						<param name="start" type="xs:int"/>
-						<param name="end" type="xs:int"/>
-						<param name="durationEnable" type="xs:boolean"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="scale" type="xs:int"/>
+							<param name="start" type="xs:int"/>
+							<param name="end" type="xs:int"/>
+							<param name="durationEnable" type="xs:boolean"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_largeScale">
@@ -1237,9 +1270,10 @@
 						<param name="durationEnable" type="xs:boolean" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_largeScale">
@@ -1266,9 +1300,10 @@
 						<param name="durationEnable" type="xs:boolean" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -1296,59 +1331,61 @@
 					<param name="endJd" type="xs:int" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_lifeTime">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="startJd" type="xs:int"/>
-						<param name="endJd" type="xs:int"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="startJd" type="xs:int"/>
+							<param name="endJd" type="xs:int"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_lifeTime">
@@ -1373,9 +1410,10 @@
 						<param name="endJd" type="xs:int" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_lifeTime">
@@ -1400,9 +1438,10 @@
 						<param name="endJd" type="xs:int" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -1433,62 +1472,64 @@
 					<param name="dayEndSeconds" type="xs:int" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_monthly">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="startJd" type="xs:int"/>
-						<param name="endJd" type="xs:int"/>
-						<param name="day" type="xs:int"/>
-						<param name="dayStartSeconds" type="xs:int"/>
-						<param name="dayEndSeconds" type="xs:int"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="startJd" type="xs:int"/>
+							<param name="endJd" type="xs:int"/>
+							<param name="day" type="xs:int"/>
+							<param name="dayStartSeconds" type="xs:int"/>
+							<param name="dayEndSeconds" type="xs:int"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_monthly">
@@ -1516,9 +1557,10 @@
 						<param name="dayEndSeconds" type="xs:int" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_monthly">
@@ -1546,9 +1588,10 @@
 						<param name="dayEndSeconds" type="xs:int" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -1577,60 +1620,62 @@
 					<param name="durationUnit" type="xs:int" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_task">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="startTime" type="xsd:dateTime"/>
-						<param name="endTime" type="xsd:dateTime"/>
-						<param name="durationUnit" type="xs:int"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="startTime" type="xsd:dateTime"/>
+							<param name="endTime" type="xsd:dateTime"/>
+							<param name="durationUnit" type="xs:int"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_task">
@@ -1656,9 +1701,10 @@
 						<param name="durationUnit" type="xs:int" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_task">
@@ -1684,9 +1730,10 @@
 						<param name="durationUnit" type="xs:int" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -1721,66 +1768,68 @@
 					<param name="courseId" type="xs:int" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_universityClass">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="weekNumMode" type="xs:string">
-							<option value="any"/>
-							<option value="odd"/>
-							<option value="even"/>
-						</param>
-						<param name="weekDayList" type="xs:list" itemType="xs:int" description="0=Sunday, 6=Saturday"/>
-						<param name="dayStartSeconds" type="xs:int"/>
-						<param name="dayEndSeconds" type="xs:int"/>
-						<param name="courseId" type="xs:int"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="weekNumMode" type="xs:string">
+								<option value="any"/>
+								<option value="odd"/>
+								<option value="even"/>
+							</param>
+							<param name="weekDayList" type="xs:list" itemType="xs:int" description="0=Sunday, 6=Saturday"/>
+							<param name="dayStartSeconds" type="xs:int"/>
+							<param name="dayEndSeconds" type="xs:int"/>
+							<param name="courseId" type="xs:int"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_universityClass">
@@ -1812,9 +1861,10 @@
 						<param name="courseId" type="xs:int" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_universityClass">
@@ -1846,9 +1896,10 @@
 						<param name="courseId" type="xs:int" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -1878,61 +1929,63 @@
 					<param name="courseId" type="xs:int" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_universityExam">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="jd" type="xs:int"/>
-						<param name="dayStartSeconds" type="xs:int"/>
-						<param name="dayEndSeconds" type="xs:int"/>
-						<param name="courseId" type="xs:int"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="jd" type="xs:int"/>
+							<param name="dayStartSeconds" type="xs:int"/>
+							<param name="dayEndSeconds" type="xs:int"/>
+							<param name="courseId" type="xs:int"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_universityExam">
@@ -1959,9 +2012,10 @@
 						<param name="courseId" type="xs:int" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_universityExam">
@@ -1988,9 +2042,10 @@
 						<param name="courseId" type="xs:int" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -2021,62 +2076,64 @@
 					<param name="dayEndSeconds" type="xs:int" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_weekly">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="startJd" type="xs:int"/>
-						<param name="endJd" type="xs:int"/>
-						<param name="cycleWeeks" type="xs:int"/>
-						<param name="dayStartSeconds" type="xs:int"/>
-						<param name="dayEndSeconds" type="xs:int"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="startJd" type="xs:int"/>
+							<param name="endJd" type="xs:int"/>
+							<param name="cycleWeeks" type="xs:int"/>
+							<param name="dayStartSeconds" type="xs:int"/>
+							<param name="dayEndSeconds" type="xs:int"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_weekly">
@@ -2104,9 +2161,10 @@
 						<param name="dayEndSeconds" type="xs:int" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_weekly">
@@ -2134,9 +2192,10 @@
 						<param name="dayEndSeconds" type="xs:int" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -2166,61 +2225,63 @@
 					<param name="startYearEnable" type="xs:boolean" required="true"/>
 				</request>
 				<response>
-					<representation mediaType="app/json"/>
-					<param name="eventId" type="xs:string"/>
-					<param name="sha1" type="xs:string"/>
+					<representation mediaType="app/json">
+						<param name="eventId" type="xs:string"/>
+						<param name="sha1" type="xs:string"/>
+					</representation>
 				</response>
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
 				<method name="GET" id="get_yearly">
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventType" type="xs:string">
-							<option value="allDayTask"/>
-							<option value="custom"/>
-							<option value="dailyNote"/>
-							<option value="largeScale"/>
-							<option value="lifeTime"/>
-							<option value="monthly"/>
-							<option value="task"/>
-							<option value="universityClass"/>
-							<option value="universityExam"/>
-							<option value="weekly"/>
-							<option value="yearly"/>
-						</param>
-						<param name="eventId" type="xs:string"/>
-						<param name="summary" type="xs:string"/>
-						<param name="description" type="xs:string"/>
-						<param name="summaryEncrypted" type="xs:boolean"/>
-						<param name="descriptionEncrypted" type="xs:boolean"/>
-						<param name="calType" type="xs:string">
-							<option value="gregorian"/>
-							<option value="jalali"/>
-							<option value="hijri"/>
-							<option value="indian_national"/>
-							<option value="julian"/>
-							<option value="ethiopian"/>
-							<option value="gregorian_proleptic"/>
-						</param>
-						<param name="icon" type="xs:string"/>
-						<param name="timeZone" type="xs:string"/>
-						<param name="timeZoneEnable" type="xs:boolean"/>
-						<param name="groupId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
-						<param name="meta" type="xs:complexType">
-							<element name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<element name="creationTime" type="xsd:dateTime"/>
-							<element name="groupId" type="xs:string"/>
-							<element name="isPublic" type="xs:boolean"/>
-							<element name="maxAttendees" type="xs:int"/>
-							<element name="ownerEmail" type="xs:string"/>
-							<element name="publicJoinOpen" type="xs:boolean"/>
-						</param>
-						<param name="month" type="xs:int"/>
-						<param name="day" type="xs:int"/>
-						<param name="startYear" type="xs:int"/>
-						<param name="startYearEnable" type="xs:boolean"/>
+						<representation mediaType="app/json">
+							<param name="eventType" type="xs:string">
+								<option value="allDayTask"/>
+								<option value="custom"/>
+								<option value="dailyNote"/>
+								<option value="largeScale"/>
+								<option value="lifeTime"/>
+								<option value="monthly"/>
+								<option value="task"/>
+								<option value="universityClass"/>
+								<option value="universityExam"/>
+								<option value="weekly"/>
+								<option value="yearly"/>
+							</param>
+							<param name="eventId" type="xs:string"/>
+							<param name="summary" type="xs:string"/>
+							<param name="description" type="xs:string"/>
+							<param name="summaryEncrypted" type="xs:boolean"/>
+							<param name="descriptionEncrypted" type="xs:boolean"/>
+							<param name="calType" type="xs:string">
+								<option value="gregorian"/>
+								<option value="jalali"/>
+								<option value="hijri"/>
+								<option value="indian_national"/>
+								<option value="julian"/>
+								<option value="ethiopian"/>
+								<option value="gregorian_proleptic"/>
+							</param>
+							<param name="icon" type="xs:string"/>
+							<param name="timeZone" type="xs:string"/>
+							<param name="timeZoneEnable" type="xs:boolean"/>
+							<param name="groupId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+							<param name="meta" type="xs:complexType">
+								<element name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<element name="creationTime" type="xsd:dateTime"/>
+								<element name="groupId" type="xs:string"/>
+								<element name="isPublic" type="xs:boolean"/>
+								<element name="maxAttendees" type="xs:int"/>
+								<element name="ownerEmail" type="xs:string"/>
+								<element name="publicJoinOpen" type="xs:boolean"/>
+							</param>
+							<param name="month" type="xs:int"/>
+							<param name="day" type="xs:int"/>
+							<param name="startYear" type="xs:int"/>
+							<param name="startYearEnable" type="xs:boolean"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PUT" id="update_yearly">
@@ -2247,9 +2308,10 @@
 						<param name="startYearEnable" type="xs:boolean" required="true"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 				<method name="PATCH" id="patch_yearly">
@@ -2276,9 +2338,10 @@
 						<param name="startYearEnable" type="xs:boolean" required="false"/>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="eventId" type="xs:string"/>
-						<param name="sha1" type="xs:string"/>
+						<representation mediaType="app/json">
+							<param name="eventId" type="xs:string"/>
+							<param name="sha1" type="xs:string"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -2289,12 +2352,13 @@
 					<request>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="locked_resource_count" type="xs:complexType">
-							<element name="event" type="xs:int"/>
-							<element name="group" type="xs:int"/>
-							<element name="user" type="xs:int"/>
-						</param>
+						<representation mediaType="app/json">
+							<param name="locked_resource_count" type="xs:complexType">
+								<element name="event" type="xs:int"/>
+								<element name="group" type="xs:int"/>
+								<element name="user" type="xs:int"/>
+							</param>
+						</representation>
 					</response>
 				</method>
 			</resource>
@@ -2303,10 +2367,11 @@
 					<request>
 					</request>
 					<response>
-						<representation mediaType="app/json"/>
-						<param name="event" type="xs:list" comment="list of locked event IDs"/>
-						<param name="group" type="xs:list" comment="list of locked group IDs"/>
-						<param name="user" type="xs:list" comment="list of locked users emails"/>
+						<representation mediaType="app/json">
+							<param name="event" type="xs:list" comment="list of locked event IDs"/>
+							<param name="group" type="xs:list" comment="list of locked group IDs"/>
+							<param name="user" type="xs:list" comment="list of locked users emails"/>
+						</representation>
 					</response>
 				</method>
 			</resource>
