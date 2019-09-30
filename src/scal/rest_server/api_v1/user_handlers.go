@@ -14,7 +14,7 @@ import (
 
 func init() {
 	routeGroups = append(routeGroups, RouteGroup{
-		Base: "user",
+		Base: "me",
 		Map: RouteMap{
 			"SetUserFullName": {
 				Method:  "PUT",

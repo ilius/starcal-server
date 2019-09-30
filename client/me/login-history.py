@@ -5,7 +5,6 @@
 import sys
 import os
 import requests
-
 from pprint import pprint
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
@@ -14,10 +13,15 @@ if not token:
 	print("Please set and export STARCAL_TOKEN")
 	sys.exit(1)
 
-r = requests.delete(
-	"http://%s:9001/user/full-name/" % host,
+
+limit = 0
+if len(sys.argv) == 2:
+	limit = int(sys.argv[1])
+
+r = requests.get(
+	"http://%s:9001/me/login-history/" % host,
 	headers={"Authorization": "bearer " + token},
-	#headers={'Authorization': 'bearer ' + },
+	json={"limit": limit}
 )
 print(r)
 try:

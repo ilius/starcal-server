@@ -5,6 +5,7 @@
 import sys
 import os
 import requests
+
 from pprint import pprint
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
@@ -13,8 +14,9 @@ if not token:
 	print("Please set and export STARCAL_TOKEN")
 	sys.exit(1)
 
-r = requests.get(
-	"http://%s:9001/user/info/" % host,
+
+r = requests.delete(
+	"http://%s:9001/me/default-group/" % host,
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

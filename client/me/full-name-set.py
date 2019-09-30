@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """
+argv[1]: fullName
 """
 
 import sys
@@ -14,10 +15,14 @@ if not token:
 	print("Please set and export STARCAL_TOKEN")
 	sys.exit(1)
 
+fullName = sys.argv[1]
 
-r = requests.delete(
-	"http://%s:9001/user/default-group/" % host,
+r = requests.put(
+	"http://%s:9001/me/full-name/" % host,
 	headers={"Authorization": "bearer " + token},
+	json={
+		"fullName": fullName,
+	},
 )
 print(r)
 try:

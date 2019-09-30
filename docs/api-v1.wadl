@@ -79,7 +79,7 @@
 				</method>
 			</resource>
 		</resource>
-		<resource path="user/">
+		<resource path="me/">
 			<resource path="info/">
 				<method name="GET" id="getUserInfo">
 					<response>

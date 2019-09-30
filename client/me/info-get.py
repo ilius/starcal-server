@@ -1,12 +1,10 @@
 #!/usr/bin/python3
 """
-argv[1]: fullName
 """
 
 import sys
 import os
 import requests
-
 from pprint import pprint
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
@@ -15,14 +13,9 @@ if not token:
 	print("Please set and export STARCAL_TOKEN")
 	sys.exit(1)
 
-fullName = sys.argv[1]
-
-r = requests.put(
-	"http://%s:9001/user/full-name/" % host,
+r = requests.get(
+	"http://%s:9001/me/info/" % host,
 	headers={"Authorization": "bearer " + token},
-	json={
-		"fullName": fullName,
-	},
 )
 print(r)
 try:
