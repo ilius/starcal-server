@@ -47,7 +47,8 @@ secure = (os.getenv("STARCAL_HOST_SECURE", "") != "")
 
 port = "9001"
 
-baseURL = ("https" if secure else "http") + "://" + host + ":" + port
+protocol = "https" if secure else "http"
+baseURL = f"{protocol}://{host}:{port}"
 
 print("< Base URL:", baseURL)
 
@@ -214,24 +215,39 @@ def getElemTag(elem) -> str:
 	return elem.tag.split("}")[1]
 
 
+def elemName(elem) -> str:
+	return elem.get("name", "NO_NAME")
+
+
+def elemID(elem) -> str:
+	return elem.get("id", "NO_ID")
+
+
+def elemType(elem) -> str:
+	return elem.get("type", "NO_TYPE")
+
+
+def elemPath(elem) -> str:
+	return elem.get("path", "NO_PATH")
+
+
+def elemValue(elem) -> str:
+	return elem.get("value", "NO_VALUE")
+
+
 def elemRepr(elem) -> str:
 	tag = getElemTag(elem)
 	prefix = indent * level + getElemTag(elem)
 	if tag == "resource":
-		return elem.get("path", "NO_PATH")
+		return elemPath(elem)
 	elif tag == "method":
-		return elem.get("name", "NO_NAME") + " (" + elem.get("id", "NO_ID") + ")"
+		return elemName(elem) + f" ({elemID(elem)})"
 	elif tag == "param" or tag == "element":
-		return (
-			elem.get("name", "NO_NAME") +
-			" (type=" +
-			elem.get("type", "NO_ID") +
-			")"
-		)
+		return elemName(elem) + f" (type={elemID(elem)})"
 	elif tag == "item":
-		return "(type=" + elem.get("type", "NO_TYPE") + ")"
+		return f"(type={elemType(elem)})"
 	elif tag == "option":
-		return elem.get("value", "NO_VALUE")
+		return elemValue(elem)
 	elif tag == "representation":
 		return ""
 	return tag
@@ -241,27 +257,15 @@ def printElem(elem: Element, level: int):
 	tag = getElemTag(elem)
 	prefix = indent * level + getElemTag(elem)
 	if tag == "resource":
-		print(prefix + ": " + elem.get("path", "NO_PATH"))
+		print(f"{prefix}: {elemPath(elem)}")
 	elif tag == "method":
-		print(
-			prefix + ": " +
-			elem.get("name", "NO_NAME") +
-			" (" +
-			elem.get("id", "NO_ID") +
-			")"
-		)
+		print(f"{prefix}: {elemName(elem)} ({elemID(elem)})")
 	elif tag == "param" or tag == "element":
-		print(
-			prefix + ": " +
-			elem.get("name", "NO_NAME") +
-			" (type=" +
-			elem.get("type", "NO_ID") +
-			")"
-		)
+		print(f"{prefix}: {elemName(elem)} (type={elemType(elem)})")
 	elif tag == "item":
-		print(prefix + " (type=" + elem.get("type", "NO_TYPE") + ")")
+		print(f"{prefix} (type={elemType(elem)})")
 	elif tag == "option":
-		print(prefix + ": " + elem.get("value", "NO_VALUE"))
+		print(f"{prefix}: {elemValue(elem)}")
 	elif tag == "representation":
 		pass
 	else:
@@ -512,7 +516,7 @@ class CLI():
 			for name in parsedPath.named:
 				try:
 					value = prompt(
-						"> URL Parameter: " + name + " = ",
+						f"> URL Parameter: {name} = ",
 						history=FileHistory(self.paramHistoryPath(name)),
 						auto_suggest=AutoSuggestFromHistory(),
 						# completer=completer,
@@ -565,7 +569,7 @@ class CLI():
 				completer = getParamCompleter(child)
 				try:
 					valueRaw = prompt(
-						"> Parameter: " + name + " = ",
+						f"> Parameter: {name} = ",
 						history=FileHistory(self.paramHistoryPath(name)),
 						auto_suggest=AutoSuggestFromHistory(),
 						completer=completer,
@@ -627,7 +631,7 @@ class CLI():
 		return join(histDir, fname)
 
 	def paramHistoryPath(self, name: str) -> str:
-		return join(histDir, "param-" + name)
+		return join(histDir, f"param-{name}")
 
 	def runcmd(self, line) -> Optional[str]: # returns error
 		if not line:
@@ -644,7 +648,7 @@ class CLI():
 		if self.selectPath(line + "/"):
 			return
 
-		return "invalid option: " + line
+		return f"invalid option: {line}"
 
 	def finish(self):
 		with open(lastPathFile, "w") as f:
