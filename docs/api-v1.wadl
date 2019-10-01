@@ -544,7 +544,7 @@
 				</response>
 			</method>
 		</resource>
-		<resource path="event/{eventType}">
+		<resource path="event/{eventType}/">
 			<param name="eventType" type="xs:string">
 				<option value="allDayTask"/>
 				<option value="custom"/>
