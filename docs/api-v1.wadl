@@ -544,7 +544,7 @@
 				</response>
 			</method>
 		</resource>
-		<resource path="event/{eventType}/{eventId}/">
+		<resource path="event/{eventType}">
 			<param name="eventType" type="xs:string">
 				<option value="allDayTask"/>
 				<option value="custom"/>
@@ -558,98 +558,100 @@
 				<option value="weekly"/>
 				<option value="yearly"/>
 			</param>
-			<param name="eventId" type="xs:string"/>
-			<method name="DELETE" id="deleteEvent">
-			</method>
-			<resource path="group/">
-				<method name="PUT" id="setEventGroupId">
-					<request>
-						<param name="newGroupId" type="xs:string"/>
-					</request>
-					<response>
-						<representation mediaType="app/json"/>
-					</response>
+			<resource path="{eventId}/">
+				<param name="eventId" type="xs:string"/>
+				<method name="DELETE" id="deleteEvent">
 				</method>
-			</resource>
-			<resource path="owner/">
-				<method name="GET" id="getEventOwner">
-					<response>
-						<representation mediaType="app/json">
-							<param name="ownerEmail" type="xs:string"/>
-						</representation>
-					</response>
-				</method>
-				<method name="PUT" id="setEventOwner">
-					<request>
-						<param name="newOwnerEmail" type="xs:string"/>
-					</request>
-					<response>
-						<representation mediaType="app/json"/>
-					</response>
-				</method>
-			</resource>
-			<resource path="access/">
-				<method name="GET" id="getEventAccess">
-					<response>
-						<representation mediaType="app/json">
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-						</representation>
-					</response>
-				</method>
-				<method name="PUT" id="setEventAccess">
-					<request>
-						<param name="isPublic" type="xs:boolean" required="true"/>
-						<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
-						<param name="publicJoinOpen" type="xs:boolean" required="true"/>
-						<param name="maxAttendees" type="xs:int" required="true"/>
-					</request>
-					<response>
-						<representation mediaType="app/json"/>
-					</response>
-				</method>
-				<method name="POST" id="appendEventAccess">
-					<request>
-						<param name="toAddEmail" type="xs:string"/>
-					</request>
-					<response>
-						<representation mediaType="app/json"/>
-					</response>
-				</method>
-			</resource>
-			<resource path="meta/">
-				<method name="GET" id="getEventMeta">
-					<response>
-						<representation mediaType="app/json">
-							<param name="ownerEmail" type="xs:string" />
-							<param name="creationTime" type="xsd:dateTime" />
-							<param name="groupId" type="xs:string" />
-							<param name="isPublic" type="xs:boolean"/>
-							<param name="accessEmails" type="xs:list" itemType="xs:string"/>
-							<param name="publicJoinOpen" type="xs:boolean"/>
-							<param name="maxAttendees" type="xs:int"/>
-							<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
-							<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
-							<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
-						</representation>
-					</response>
-				</method>
-			</resource>
-			<resource path="join/">
-				<method name="POST" id="joinEvent">
-					<response>
-						<representation mediaType="app/json"/>
-					</response>
-				</method>
-			</resource>
-			<resource path="leave/">
-				<method name="POST" id="leaveEvent">
-					<response>
-						<representation mediaType="app/json"/>
-					</response>
-				</method>
+				<resource path="group/">
+					<method name="PUT" id="setEventGroupId">
+						<request>
+							<param name="newGroupId" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="owner/">
+					<method name="GET" id="getEventOwner">
+						<response>
+							<representation mediaType="app/json">
+								<param name="ownerEmail" type="xs:string"/>
+							</representation>
+						</response>
+					</method>
+					<method name="PUT" id="setEventOwner">
+						<request>
+							<param name="newOwnerEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="access/">
+					<method name="GET" id="getEventAccess">
+						<response>
+							<representation mediaType="app/json">
+								<param name="isPublic" type="xs:boolean"/>
+								<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<param name="publicJoinOpen" type="xs:boolean"/>
+								<param name="maxAttendees" type="xs:int"/>
+							</representation>
+						</response>
+					</method>
+					<method name="PUT" id="setEventAccess">
+						<request>
+							<param name="isPublic" type="xs:boolean" required="true"/>
+							<param name="accessEmails" type="xs:list" itemType="xs:string" required="true"/>
+							<param name="publicJoinOpen" type="xs:boolean" required="true"/>
+							<param name="maxAttendees" type="xs:int" required="true"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+					<method name="POST" id="appendEventAccess">
+						<request>
+							<param name="toAddEmail" type="xs:string"/>
+						</request>
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="meta/">
+					<method name="GET" id="getEventMeta">
+						<response>
+							<representation mediaType="app/json">
+								<param name="ownerEmail" type="xs:string" />
+								<param name="creationTime" type="xsd:dateTime" />
+								<param name="groupId" type="xs:string" />
+								<param name="isPublic" type="xs:boolean"/>
+								<param name="accessEmails" type="xs:list" itemType="xs:string"/>
+								<param name="publicJoinOpen" type="xs:boolean"/>
+								<param name="maxAttendees" type="xs:int"/>
+								<param name="attendingEmails" type="xs:list" itemType="xs:string"/>
+								<param name="notAttendingEmails" type="xs:list" itemType="xs:string"/>
+								<param name="maybeAttendingEmails" type="xs:list" itemType="xs:string"/>
+							</representation>
+						</response>
+					</method>
+				</resource>
+				<resource path="join/">
+					<method name="POST" id="joinEvent">
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
+				<resource path="leave/">
+					<method name="POST" id="leaveEvent">
+						<response>
+							<representation mediaType="app/json"/>
+						</response>
+					</method>
+				</resource>
 			</resource>
 		</resource>
 		<resource path="event/allDayTask/">
