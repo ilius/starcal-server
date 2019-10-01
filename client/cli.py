@@ -27,7 +27,7 @@ from lxml.etree import _Element as Element
 
 #import atexit
 
-from prompt_toolkit import prompt
+from prompt_toolkit import prompt as promptLow
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion.word_completer import WordCompleter
@@ -98,6 +98,22 @@ def dataToPrettyJson(data, ensure_ascii=False, sort_keys=False):
 		indent=2,
 		ensure_ascii=ensure_ascii,
 	)
+
+
+def prompt(
+	message: str,
+	multiline: bool = False,
+	**kwargs,
+):
+	text = promptLow(message=message, **kwargs)
+	if multiline and text == "!m":
+		print("Entering Multi-line mode, press Alt+Enter to end")
+		text = promptLow(
+			message="",
+			multiline=True,
+			**kwargs
+		)
+	return text
 
 
 def getEmail() -> str:
@@ -567,9 +583,11 @@ class CLI():
 					print("WARNING: element %r with tag %r has no type", child, t)
 					continue
 				completer = getParamCompleter(child)
+				multiline = child.get("multiline", "") == "true"
 				try:
 					valueRaw = prompt(
 						f"> Parameter: {name} = ",
+						multiline=multiline,
 						history=FileHistory(self.paramHistoryPath(name)),
 						auto_suggest=AutoSuggestFromHistory(),
 						completer=completer,
