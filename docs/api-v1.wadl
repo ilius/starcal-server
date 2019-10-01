@@ -638,15 +638,15 @@
 						</response>
 					</method>
 				</resource>
-				<resource path="join/">
-					<method name="POST" id="joinEvent">
+				<resource path="join/" isAction="true">
+					<method name="GET" id="joinEvent">
 						<response>
 							<representation mediaType="app/json"/>
 						</response>
 					</method>
 				</resource>
-				<resource path="leave/">
-					<method name="POST" id="leaveEvent">
+				<resource path="leave/" isAction="true">
+					<method name="GET" id="leaveEvent">
 						<response>
 							<representation mediaType="app/json"/>
 						</response>
