@@ -298,12 +298,16 @@ def nonEmptyStrings(*args) -> List[str]:
 	return ls
 
 
-def elemKeys(elem) -> str:
+def elemKeys(elem, parentElem) -> str:
 	# returns virtual file names of element
 	tag = getElemTag(elem)
 	if tag == "resource":
 		return nonEmptyStrings(elem.get("path", None))
-	elif tag == "method" or tag == "param" or tag == "element":
+	elif tag == "method" or tag == "element":
+		return nonEmptyStrings(elem.get("name", None), elem.get("id", None))
+	elif tag == "param":
+		if getElemTag(parentElem) == "resource":
+			return []
 		return nonEmptyStrings(elem.get("name", None), elem.get("id", None))
 	# elif tag == "item":
 	# 	return [] # FIXME
@@ -324,7 +328,7 @@ def elemChildOptions(elem: Element) -> Tuple[
 	options = {} # type: Dict[str, Element]
 	optionsMinimal = {} # type: Dict[str, Element]
 	for child in elem.getchildren():
-		keys = elemKeys(child)
+		keys = elemKeys(child, elem)
 		if not keys:
 			continue
 		optionsMinimal[keys[0]] = child
