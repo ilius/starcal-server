@@ -381,6 +381,14 @@ def elemIsAction(elem: Element) -> bool:
 	return False
 
 
+def getChildrenWithTag(elem: Element, tag: str) -> Element:
+	return [
+		child
+		for child in elem.getchildren()
+		if getElemTag(child) == tag
+	]
+
+
 def parseInputValue(valueRaw: str, typ: str) -> Tuple[Any, Optional[str]]:
 	"""
 		returns (value, error)
