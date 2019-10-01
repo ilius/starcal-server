@@ -410,22 +410,27 @@ def parseInputValue(valueRaw: str, typ: str) -> Tuple[Any, Optional[str]]:
 class VirtualDir:
 	def __init__(
 		self,
-		elem,
+		elems: List[Element],
 		pathRel: str,
 		pathAbs: str,
 		parent: Optional["VirtualDir"],
 	) -> None:
-		self.elem = elem
+		self.elems = elems
 		self.pathRel = pathRel
 		self.pathAbs = pathAbs
 		self.parent = parent
-		self.options, self.optionsMinimal = elemChildOptions(elem)
+		self.options = {} # type: Dict[str, Element]
+		self.optionsMinimal = {} # type: Dict[str, Element]
+		for elem in elems:
+			elemEptions, elemOptionsMinimal = elemChildOptions(elem)
+			self.options.update(elemEptions)
+			self.optionsMinimal.update(elemOptionsMinimal)
 
 
 class CLI():
 	def __init__(self, resources: Element) -> None:
 		self._resources = resources
-		self._root = VirtualDir(resources, "", "/", None)
+		self._root = VirtualDir([resources], "", "/", None)
 		self.selectRoot()
 		self._email = ""
 		self._authToken = ""
@@ -448,9 +453,10 @@ class CLI():
 		self.setVirtualDir(self._root)
 
 	def selectVirtualDir(self, new_vdir: VirtualDir) -> bool:
-		elem = new_vdir.elem
+		elems = new_vdir.elems
 		pathAbs = new_vdir.pathAbs
-		if elemIsAction(elem):
+		if len(elems) == 1 and elemIsAction(elems[0]):
+			elem = elems[0]
 			data = {}
 
 			# err = self.askUrlParams(new_vdir, data)
@@ -556,7 +562,9 @@ class CLI():
 
 		pathAbs = self._cwd.pathAbs + pathRel
 
-		return self.selectVirtualDir(VirtualDir(elem, "", pathAbs, self._cwd))
+		return self.selectVirtualDir(
+			VirtualDir([elem], "", pathAbs, self._cwd),
+		)
 
 	def selectPath(self, path: str) -> True:
 		if path.startswith("/"):
