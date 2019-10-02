@@ -150,7 +150,7 @@ type EventHandlersTemplateParams struct {
 var emptyLineRE = regexp.MustCompile(`(?m)^\s+\n`)
 
 func genEventTypeHandlers() {
-	tpl_path := path.Join(templatesDir, "event_handlers.got")
+	tpl_path := path.Join(templatesDir, "event_handlers.go.tpl")
 	tpl_bytes, err := ioutil.ReadFile(tpl_path)
 	if err != nil {
 		panic(err)
