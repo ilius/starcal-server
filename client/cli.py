@@ -87,6 +87,25 @@ if not isdir(tokenDir):
 
 indent = "\t"
 
+
+pathGeneralizeDict = {
+	"event/allDayTask": "event/{eventType}",
+	"event/custom": "event/{eventType}",
+	"event/dailyNote": "event/{eventType}",
+	"event/largeScale": "event/{eventType}",
+	"event/lifeTime": "event/{eventType}",
+	"event/monthly": "event/{eventType}",
+	"event/task": "event/{eventType}",
+	"event/universityClass": "event/{eventType}",
+	"event/universityExam": "event/{eventType}",
+	"event/weekly": "event/{eventType}",
+	"event/yearly": "event/{eventType}",
+}
+pathGeneralizeIdByPath = {
+	"event/{eventType}": "event_eventType_resource",
+}
+
+
 with open(docPath, encoding="utf-8") as docFile:
 	doc = etree.XML(docFile.read().encode("utf-8"))
 
@@ -333,6 +352,8 @@ def elemChildOptions(elem: Element) -> Tuple[
 			continue
 		optionsMinimal[keys[0]] = child
 		for key in keys:
+			if key.strip("/") in pathGeneralizeIdByPath:
+				continue
 			options[key] = child
 			options[key.lower()] = child
 	return options, optionsMinimal
@@ -415,6 +436,17 @@ def parseInputValue(valueRaw: str, typ: str) -> Tuple[Any, Optional[str]]:
 	return None, f"unsupported type {typ!r}"
 
 
+def updateOptionsDict(
+	options: Dict[str, List[Element]],
+	elemEptions: Dict[str, Element],
+):
+	for key, elem in elemEptions.items():
+		if key in options:
+			options[key].append(elem)
+		else:
+			options[key] = [elem]
+
+
 class VirtualDir:
 	def __init__(
 		self,
@@ -427,12 +459,14 @@ class VirtualDir:
 		self.pathRel = pathRel
 		self.pathAbs = pathAbs
 		self.parent = parent
-		self.options = {} # type: Dict[str, Element]
-		self.optionsMinimal = {} # type: Dict[str, Element]
+		options = {}
+		optionsMinimal = {}
 		for elem in elems:
 			elemEptions, elemOptionsMinimal = elemChildOptions(elem)
-			self.options.update(elemEptions)
-			self.optionsMinimal.update(elemOptionsMinimal)
+			updateOptionsDict(options, elemEptions)
+			updateOptionsDict(optionsMinimal, elemOptionsMinimal)
+		self.options = options  # type: Dict[str, List[Element]]
+		self.optionsMinimal = optionsMinimal  # type: Dict[str, List[Element]]
 
 
 class CLI():
@@ -494,11 +528,12 @@ class CLI():
 		self.setVirtualDir(new_vdir)
 
 		if len(new_vdir.optionsMinimal) == 1:
-			childPath, childElem = list(new_vdir.optionsMinimal.items())[0]
-			if elemIsAction(childElem):
-				if self.selectPathRel(childPath):
-					self.selectVirtualDir(cur_vdir)
-					return True
+			childPath, childElems = list(new_vdir.optionsMinimal.items())[0]
+			if len(childElems) == 1:
+				if elemIsAction(childElems[0]):
+					if self.selectPathRel(childPath):
+						self.selectVirtualDir(cur_vdir)
+						return True
 
 		return True
 
@@ -522,24 +557,27 @@ class CLI():
 		if pathRel.startswith("/"):
 			raise RuntimeError(f"selectPathRel: invalid pathRel={pathRel!r}")
 
-		elem = self._cwd.options.get(pathRel, None)
+		elems = self._cwd.options.get(pathRel, [])
+
+		if len(elems) > 1:
+			pass # FIXME
 
 		parts = pathRel.rstrip("/").split("/")
-		if elem is None and len(parts) > 1:
+		if not elems and len(parts) > 1:
 			if self.selectPathRel(parts[0] + "/"):
 				return self.selectPathRel("/".join(parts[1:]) + "/")
 			return False
 
 		part = parts[0]
-		if elem is None:
-			elem = self._cwd.options.get(part, None)
-		if elem is None:
-			elem = self._cwd.options.get(part + "/", None)
-		if elem is None:
+		if not elems:
+			elems = self._cwd.options.get(part, [])
+		if not elems:
+			elems = self._cwd.options.get(part + "/", [])
+		if not elems:
 			partName = self._urlParamByValue.get(part)
 			if partName is not None:
-				elem = self._cwd.options.get(partName, None)
-		if elem is None:
+				elems = self._cwd.options.get(partName, [])
+		if not elems:
 			return False
 
 		# FIXME:
@@ -570,9 +608,20 @@ class CLI():
 
 		pathAbs = self._cwd.pathAbs + pathRel
 
-		return self.selectVirtualDir(
-			VirtualDir([elem], "", pathAbs, self._cwd),
-		)
+		vdirElems = elems
+		secondElemPath = pathGeneralizeDict.get(pathAbs.strip("/"))
+		if secondElemPath:
+			secondElemId = pathGeneralizeIdByPath[secondElemPath]
+			tmpElems = self._resources.xpath(f"//*[@id='{secondElemId}']")
+			if tmpElems:
+				if len(tmpElems) > 1:
+					print(f"Error: {len(tmpElems)} elements found with id='{secondElemId}'")
+				vdirElems += tmpElems
+			else:
+				print(f"Error: No element found with id='{secondElemId}'")
+
+		vdir = VirtualDir(vdirElems, "", pathAbs, self._cwd)
+		return self.selectVirtualDir(vdir)
 
 	def selectPath(self, path: str) -> True:
 		if path.startswith("/"):
