@@ -266,7 +266,9 @@ func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event meta not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}
@@ -289,7 +291,9 @@ func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event revision not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}
@@ -300,7 +304,9 @@ func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event data not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}

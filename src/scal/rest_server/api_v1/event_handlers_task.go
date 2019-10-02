@@ -308,7 +308,7 @@ func GetTask(req Request) (*Response, error) {
 	if err != nil {
 		if db.IsNotFound(err) {
 			return nil, NewError(NotFound, "event not found", err).Add(
-				"msg", "event model not found",
+				"msg", "event data not found",
 			)
 		}
 		return nil, NewError(Internal, "", err)
@@ -1087,6 +1087,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="descriptionEncrypted", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.DescriptionEncrypted
@@ -1110,6 +1111,7 @@ func MergeTask(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="startTime", PARAM_TYPE="*time.Time", PARAM_INT=false
 		inputValue := inputEventModel.StartTime

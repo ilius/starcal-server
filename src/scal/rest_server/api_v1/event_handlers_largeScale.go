@@ -270,7 +270,9 @@ func GetLargeScale(req Request) (*Response, error) {
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event meta not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}
@@ -293,7 +295,9 @@ func GetLargeScale(req Request) (*Response, error) {
 	eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event revision not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}
@@ -304,7 +308,9 @@ func GetLargeScale(req Request) (*Response, error) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, NewError(NotFound, "event not found", err).Add(
+				"msg", "event data not found",
+			)
 		}
 		return nil, NewError(Internal, "", err)
 	}
@@ -1097,6 +1103,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="descriptionEncrypted", PARAM_TYPE="bool", PARAM_INT=false
 		inputValue := inputEventModel.DescriptionEncrypted
@@ -1120,6 +1127,7 @@ func MergeLargeScale(req Request) (*Response, error) {
 			return
 		}
 	}()
+	// define a func because we want to return from it to avoid nested code
 	func() {
 		// PARAM="scale", PARAM_TYPE="int64", PARAM_INT=true
 		inputValue := inputEventModel.Scale
