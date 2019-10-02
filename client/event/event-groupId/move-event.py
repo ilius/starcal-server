@@ -20,11 +20,7 @@ if not token:
 eventType, eventId, newGroupId = sys.argv[1:4]
 
 r = requests.put(
-	"http://%s:9001/event/%s/%s/group/" % (
-		host,
-		eventType,
-		eventId,
-	),
+	f"http://{host}:9001/event/{eventType}/{eventId}/group/",
 	headers={"Authorization": "bearer " + token},
 	json={
 		"newGroupId": newGroupId,

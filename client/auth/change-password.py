@@ -30,7 +30,7 @@ if not (password and newPassword):
 	sys.exit(1)
 
 r = requests.post(
-	"http://%s:9001/auth/change-password/" % host,
+	f"http://{host}:9001/auth/change-password/",
 	json={
 		"email": email,
 		"password": password,

@@ -20,11 +20,7 @@ if not token:
 eventType, eventId, toAddEmail = sys.argv[1:4]
 
 r = requests.post(
-	"http://%s:9001/event/%s/%s/access/" % (
-		host,
-		eventType,
-		eventId,
-	),
+	f"http://{host}:9001/event/{eventType}/{eventId}/access/",
 	headers={"Authorization": "bearer " + token},
 	json={
 		"toAddEmail": toAddEmail,

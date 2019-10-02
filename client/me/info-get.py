@@ -14,7 +14,7 @@ if not token:
 	sys.exit(1)
 
 r = requests.get(
-	"http://%s:9001/me/info/" % host,
+	f"http://{host}:9001/me/info/",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

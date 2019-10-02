@@ -19,7 +19,7 @@ except IndexError:
 	fullName = ""
 
 r = requests.post(
-	"http://%s:9001/auth/reset-password-action/" % host,
+	f"http://{host}:9001/auth/reset-password-action/",
 	json={
 		"email": email,
 		"resetPasswordToken": resetPasswordToken,

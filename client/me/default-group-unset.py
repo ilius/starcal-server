@@ -16,7 +16,7 @@ if not token:
 
 
 r = requests.delete(
-	"http://%s:9001/me/default-group/" % host,
+	f"http://{host}:9001/me/default-group/",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

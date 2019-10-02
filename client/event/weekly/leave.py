@@ -17,7 +17,7 @@ if not token:
 eventId = sys.argv[1]
 
 r = requests.get(
-	"http://%s:9001/event/weekly/%s/leave" % (host, eventId),
+	f"http://{host}:9001/event/weekly/{eventId}/leave",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

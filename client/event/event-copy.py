@@ -18,7 +18,7 @@ if not token:
 eventId = sys.argv[1]
 
 r = requests.post(
-	"http://%s:9001/event/copy/%s/" % (host, eventId),
+	f"http://{host}:9001/event/copy/{eventId}/",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

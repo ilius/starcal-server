@@ -21,9 +21,9 @@ except IndexError:
 else:
 	maxCount = int(maxCount)
 
-url = "http://%s:9001/event/my/last-created-events/" % host
+url = f"http://{host}:9001/event/my/last-created-events/"
 if maxCount is not None:
-	url += "?maxCount=%s" % maxCount
+	url += f"?maxCount={maxCount}"
 
 r = requests.get(
 	url,

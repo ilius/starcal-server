@@ -19,7 +19,7 @@ if len(sys.argv) == 2:
 	limit = int(sys.argv[1])
 
 r = requests.get(
-	"http://%s:9001/me/login-history/" % host,
+	f"http://{host}:9001/me/login-history/",
 	headers={"Authorization": "bearer " + token},
 	json={"limit": limit}
 )

@@ -18,7 +18,7 @@ if not token:
 groupTitle = sys.argv[1]
 
 r = requests.post(
-	"http://%s:9001/event/groups/" % host,
+	f"http://{host}:9001/event/groups/",
 	headers={"Authorization": "bearer " + token},
 	json={
 		"title": groupTitle,

@@ -15,7 +15,7 @@ if not token:
 	sys.exit(1)
 
 r = requests.delete(
-	"http://%s:9001/me/full-name/" % host,
+	f"http://{host}:9001/me/full-name/",
 	headers={"Authorization": "bearer " + token},
 	#headers={'Authorization': 'bearer ' + },
 )

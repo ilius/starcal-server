@@ -19,11 +19,7 @@ if not token:
 eventType, eventId = sys.argv[1:3]
 
 r = requests.get(
-	"http://%s:9001/event/%s/%s/owner/" % (
-		host,
-		eventType,
-		eventId,
-	),
+	f"http://{host}:9001/event/{eventType}/{eventId}/owner/",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

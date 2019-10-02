@@ -18,13 +18,13 @@ limit = 0
 if len(sys.argv) == 2:
 	limit = int(sys.argv[1])
 
-baseUrl = "http://%s:9001/event/my/events/" % host
+baseUrl = f"http://{host}:9001/event/my/events/"
 
 count = 0
 
 exStartId = ""
 while True:
-	url = baseUrl + "?limit=%d&exStartId=%s" % (limit, exStartId)
+	url = f"{baseUrl}?limit={limit}&exStartId={exStartId}"
 	print(url)
 	r = requests.get(
 		url,

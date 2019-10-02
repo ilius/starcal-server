@@ -24,9 +24,9 @@ except IndexError:
 else:
 	maxCount = int(maxCount)
 
-url = "http://%s:9001/event/groups/%s/last-created-events/" % (host, groupId)
+url = f"http://{host}:9001/event/groups/{groupId}/last-created-events/"
 if maxCount is not None:
-	url += "?maxCount=%s" % maxCount
+	url += f"?maxCount={maxCount}"
 
 print(url)
 

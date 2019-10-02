@@ -23,7 +23,7 @@ if not inviteEmails:
 	sys.exit(1)
 
 r = requests.post(
-	"http://%s:9001/event/dailyNote/%s/invite/" % (host, eventId),
+	f"http://{host}:9001/event/dailyNote/{eventId}/invite/",
 	headers={"Authorization": "bearer " + token},
 	json={
 		"inviteEmails": inviteEmails,

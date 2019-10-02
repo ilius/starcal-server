@@ -20,11 +20,7 @@ if not token:
 eventType, eventId, newOwnerEmail = sys.argv[1:4]
 
 r = requests.put(
-	"http://%s:9001/event/%s/%s/owner/" % (
-		host,
-		eventType,
-		eventId,
-	),
+	f"http://{host}:9001/event/{eventType}/{eventId}/owner/",
 	headers={"Authorization": "bearer " + token},
 	json={
 		"newOwnerEmail": newOwnerEmail,

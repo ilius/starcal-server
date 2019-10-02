@@ -21,11 +21,7 @@ eventType, eventId = sys.argv[1:3]
 accessEmails = sys.argv[3:]
 
 r = requests.put(
-	"http://%s:9001/event/%s/%s/access/" % (
-		host,
-		eventType,
-		eventId,
-	),
+	f"http://{host}:9001/event/{eventType}/{eventId}/access/",
 	headers={"Authorization": "bearer " + token},
 	json={
 		"isPublic": False,

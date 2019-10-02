@@ -19,7 +19,7 @@ if not email:
 
 
 r = requests.post(
-	"http://%s:9001/auth/login/" % host,
+	f"http://{host}:9001/auth/login/",
 	json={
 		"email": email,
 		"password": password,
@@ -34,6 +34,6 @@ except:
 else:
 	token = data.get("token")
 	if token:
-		print("export STARCAL_TOKEN='%s'" % token)
+		print(f"export STARCAL_TOKEN='{token}'")
 	else:
 		pprint(data, width=80)

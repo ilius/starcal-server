@@ -12,7 +12,7 @@ host = os.getenv("STARCAL_HOST", "127.0.0.1")
 email = sys.argv[1]
 
 r = requests.post(
-	"http://%s:9001/auth/reset-password-request/" % host,
+	f"http://{host}:9001/auth/reset-password-request/",
 	json={
 		"email": email,
 	},

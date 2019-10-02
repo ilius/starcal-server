@@ -32,13 +32,9 @@ print("sinceDateTimeStr =", sinceDateTimeStr)
 
 limit = 10
 
-baseUrl = "http://%s:9001/event/groups/%s/modified-events/%s/" % (
-	host,
-	groupId,
-	sinceDateTimeStr,
-)
+baseUrl = f"http://{host}:9001/event/groups/{groupId}/modified-events/{sinceDateTimeStr}/"
 
-url = baseUrl + "?limit=%d" % limit
+url = f"{baseUrl}?limit={limit}"
 
 r = requests.get(
 	url,

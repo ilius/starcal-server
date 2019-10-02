@@ -18,7 +18,7 @@ if not token:
 fullName = sys.argv[1]
 
 r = requests.put(
-	"http://%s:9001/me/full-name/" % host,
+	f"http://{host}:9001/me/full-name/",
 	headers={"Authorization": "bearer " + token},
 	json={
 		"fullName": fullName,

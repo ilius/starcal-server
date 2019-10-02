@@ -14,7 +14,7 @@ if not token:
 	sys.exit(1)
 
 r = requests.post(
-	"http://%s:9001/auth/confirm-email-request/" % host,
+	f"http://{host}:9001/auth/confirm-email-request/",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

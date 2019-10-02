@@ -24,7 +24,7 @@ except IndexError:
 	fullName = ""
 
 r = requests.post(
-	"http://%s:9001/auth/register/" % host,
+	f"http://{host}:9001/auth/register/",
 	json={
 		"email": email,
 		"password": password,
@@ -41,7 +41,7 @@ else:
 	token = data.get("token")
 	error = data.get("error")
 	if token:
-		print("export STARCAL_TOKEN='%s'" % token)
+		print(f"export STARCAL_TOKEN='{token}'")
 	elif error:
 		print(error)
 	else:

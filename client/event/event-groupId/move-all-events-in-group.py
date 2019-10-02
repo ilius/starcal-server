@@ -22,13 +22,13 @@ oldGroupId, newGroupId = sys.argv[1:3]
 
 limit = 20
 
-oldGroupUrl = "http://%s:9001/event/groups/%s/" % (host, oldGroupId)
-newGroupUrl = "http://%s:9001/event/groups/%s/" % (host, newGroupId)
+oldGroupUrl = f"http://{host}:9001/event/groups/{oldGroupId}/"
+newGroupUrl = f"http://{host}:9001/event/groups/{newGroupId}/"
 
 
 exStartId = ""
 while True:
-	url = oldGroupUrl + "events/?limit=%d&exStartId=%s" % (limit, exStartId)
+	url = f"{oldGroupUrl}events/?limit={limit}&exStartId={exStartId}"
 	print(url)
 	r = requests.get(
 		url,
@@ -47,12 +47,10 @@ while True:
 		break
 
 	for event in data.get("events", []):
+		eventType = event["eventType"]
+		eventId = event["eventId"]
 		r = requests.put(
-			"http://%s:9001/event/%s/%s/group/" % (
-				host,
-				event["eventType"],
-				event["eventId"],
-			),
+			f"http://{host}:9001/event/{eventType}/{eventId}/group/",
 			headers={"Authorization": "bearer " + token},
 			json={
 				"newGroupId": newGroupId,

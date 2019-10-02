@@ -33,7 +33,7 @@ params = {
 }
 
 r = requests.patch(
-	"http://%s:9001/event/dailyNote/%s/" % (host, eventId),
+	f"http://{host}:9001/event/dailyNote/{eventId}/",
 	headers={"Authorization": "bearer " + token},
 	json=params,
 )

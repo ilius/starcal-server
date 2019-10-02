@@ -18,7 +18,7 @@ if not token:
 groupId = sys.argv[1]
 
 r = requests.delete(
-	"http://%s:9001/event/groups/%s/" % (host, groupId),
+	f"http://{host}:9001/event/groups/{groupId}/",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

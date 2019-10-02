@@ -39,7 +39,7 @@ params = {
 }
 
 r = requests.put(
-	"http://%s:9001/event/monthly/%s/" % (host, eventId),
+	f"http://{host}:9001/event/monthly/{eventId}/",
 	headers={"Authorization": "bearer " + token},
 	json=params,
 )

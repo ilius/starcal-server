@@ -24,7 +24,7 @@ exStartId = ""
 count = 0
 
 while True:
-	url = "http://%s:9001/event/my/events-full/?limit=%d&exStartId=%s" % (host, limit, exStartId)
+	url = f"http://{host}:9001/event/my/events-full/?limit={limit}&exStartId={exStartId}"
 	print(url)
 	r = requests.get(
 		url,

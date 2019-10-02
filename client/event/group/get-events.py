@@ -21,13 +21,13 @@ limit = 0
 if len(sys.argv) == 3:
 	limit = int(sys.argv[2])
 
-baseUrl = "http://%s:9001/event/groups/%s/events/" % (host, groupId)
+baseUrl = f"http://{host}:9001/event/groups/{groupId}/events/"
 
 count = 0
 
 exStartId = ""
 while True:
-	url = baseUrl + "?limit=%d&exStartId=%s" % (limit, exStartId)
+	url = f"{baseUrl}?limit={limit}&exStartId={exStartId}"
 	print(url)
 	r = requests.get(
 		url,

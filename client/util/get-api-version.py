@@ -10,7 +10,7 @@ from pprint import pprint
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 
 r = requests.get(
-	"http://%s:9001/util/api-version/" % host,
+	f"http://{host}:9001/util/api-version/",
 )
 print(r.text)
 print(r.headers)

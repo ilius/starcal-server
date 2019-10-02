@@ -43,7 +43,7 @@ except IndexError:
 	pass
 
 r = requests.post(
-	"http://%s:9001/event/task/" % host,
+	f"http://{host}:9001/event/task/",
 	headers={"Authorization": "bearer " + token},
 	json=params,
 )

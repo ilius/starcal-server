@@ -16,7 +16,7 @@ if not token:
 	sys.exit(1)
 
 r = requests.post(
-	"http://%s:9001/auth/logout/" % host,
+	f"http://{host}:9001/auth/logout/",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

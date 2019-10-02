@@ -31,7 +31,7 @@ if not token:
 
 
 r = requests.post(
-	"http://%s:9001/event/custom/" % host,
+	f"http://{host}:9001/event/custom/",
 	headers={"Authorization": "bearer " + token},
 	json=params,
 )

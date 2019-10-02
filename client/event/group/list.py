@@ -15,7 +15,7 @@ if not token:
 	sys.exit(1)
 
 r = requests.get(
-	"http://%s:9001/event/groups/" % host,
+	f"http://{host}:9001/event/groups/",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)
