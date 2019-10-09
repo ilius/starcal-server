@@ -68,11 +68,11 @@ func (event MonthlyEvent) DayEndSeconds() uint32 {
 }
 
 func (event MonthlyEvent) DayStartHMS() lib.HMS {
-	return utils.GetHmsBySeconds(int(event.dayStartSeconds))
+	return utils.GetHmsBySeconds(uint(event.dayStartSeconds))
 }
 
 func (event MonthlyEvent) DayEndHMS() lib.HMS {
-	return utils.GetHmsBySeconds(int(event.dayEndSeconds))
+	return utils.GetHmsBySeconds(uint(event.dayEndSeconds))
 }
 
 func (event MonthlyEvent) Model() MonthlyEventModel {

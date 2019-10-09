@@ -50,11 +50,11 @@ func (event UniversityExamEvent) DayEndSeconds() uint32 {
 }
 
 func (event UniversityExamEvent) DayStartHMS() lib.HMS {
-	return utils.GetHmsBySeconds(int(event.dayStartSeconds))
+	return utils.GetHmsBySeconds(uint(event.dayStartSeconds))
 }
 
 func (event UniversityExamEvent) DayEndHMS() lib.HMS {
-	return utils.GetHmsBySeconds(int(event.dayEndSeconds))
+	return utils.GetHmsBySeconds(uint(event.dayEndSeconds))
 }
 
 func (event UniversityExamEvent) Model() UniversityExamEventModel {

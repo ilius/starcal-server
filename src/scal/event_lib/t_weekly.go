@@ -66,11 +66,11 @@ func (event WeeklyEvent) DayEndSeconds() uint32 {
 }
 
 func (event WeeklyEvent) DayStartHMS() lib.HMS {
-	return utils.GetHmsBySeconds(int(event.dayStartSeconds))
+	return utils.GetHmsBySeconds(uint(event.dayStartSeconds))
 }
 
 func (event WeeklyEvent) DayEndHMS() lib.HMS {
-	return utils.GetHmsBySeconds(int(event.dayEndSeconds))
+	return utils.GetHmsBySeconds(uint(event.dayEndSeconds))
 }
 
 func (event WeeklyEvent) Model() WeeklyEventModel {
