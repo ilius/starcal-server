@@ -140,3 +140,6 @@ ERRORS_EXPIRE_AFTER_SECONDS = {
 	"InvalidArgument": 		1 * day,
 	"MissingArgument": 		1 * day, # extra code
 }
+
+JALALI_ALGORITHM_2820 = False
+
