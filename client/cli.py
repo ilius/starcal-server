@@ -52,6 +52,12 @@ baseURL = f"{protocol}://{host}:{port}"
 
 print("< Base URL:", baseURL)
 
+noHistoryParams = {
+	"password",
+	"token",
+}
+
+
 myDir = dirname(__file__)
 cwd = os.getcwd()
 if myDir in (".", ""):
@@ -653,11 +659,14 @@ class CLI():
 					continue
 				completer = getParamCompleter(child)
 				multiline = child.get("multiline", "") == "true"
+				history = None
+				if name not in noHistoryParams:
+					history = FileHistory(self.paramHistoryPath(name))
 				try:
 					valueRaw = prompt(
 						f"> Parameter: {name} = ",
 						multiline=multiline,
-						history=FileHistory(self.paramHistoryPath(name)),
+						history=history,
 						auto_suggest=AutoSuggestFromHistory(),
 						completer=completer,
 					)
