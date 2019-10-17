@@ -44,15 +44,15 @@ type FindInput struct {
 
 type Database interface {
 	NewCondition(operator ConditionOperator) Condition
-	IsNotFound(error) bool
+	IsNotFound(err error) bool
 	Insert(model hasCollection) error
 	InsertMany(collection string, models []interface{}) error
 	Update(model hasCollectionUniqueM) error
 	Upsert(model hasCollectionUniqueM) error
 	Remove(model hasCollectionUniqueM) error
 	Get(model hasCollectionUniqueM) error
-	First(scal.M, string, hasCollection) error
-	FindCount(string, scal.M) (int, error)
+	First(cond scal.M, sortBy string, model hasCollection) error
+	FindCount(colName string, cond scal.M) (int, error)
 	FindAll(result interface{}, input *FindInput) error
 	PipeIter(collection string, pipeline *[]scal.M) (
 		next func(result interface{}) error,
