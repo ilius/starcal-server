@@ -204,6 +204,15 @@ def getSavedToken(email: str) -> Optional[str]:
 	return token
 
 
+def deleteSavedToken(email: str) -> bool:
+	tokenPath = join(tokenDir, email)
+	if not isfile(tokenPath):
+		return False
+	os.remove(tokenPath)
+	print(f"removed token file {tokenPath}")
+	return True
+
+
 # returns (email, token), error
 def getAuth() -> Tuple[Optional[Tuple[str, str]], Optional[str]]:
 	email = getEmail()
@@ -716,6 +725,11 @@ class CLI():
 		err = ""
 		if isinstance(resData, dict):
 			err = resData.get("error", "")
+		if not err:
+			if path == "/auth/logout/POST":
+				deleteSavedToken(self._email)
+				# FIXME: should we clear self._authToken and ask user to login again?
+
 		return resData, err
 
 	def currentHistoryPath(self) -> str:
