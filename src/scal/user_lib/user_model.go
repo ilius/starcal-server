@@ -89,9 +89,9 @@ func (model ResetPasswordTokenModel) UniqueM() scal.M {
 }
 
 type ResetPasswordLogModel struct {
-	ResetPasswordTokenModel `bson:",inline"`
-	UsedTime                time.Time `bson:"usedTime"`
-	UsedRemoteIp            string    `bson:"usedRemoteIp"`
+	TokenModel   SpecialUserTokenModel `bson:",inline"`
+	UsedTime     time.Time             `bson:"usedTime"`
+	UsedRemoteIp string                `bson:"usedRemoteIp"`
 }
 
 func (model ResetPasswordLogModel) Collection() string {
