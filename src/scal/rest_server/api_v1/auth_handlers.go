@@ -521,9 +521,9 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	}
 	now := time.Now()
 	logModel := ResetPasswordLogModel{
-		TokenModel:   tokenModel.SpecialUserTokenModel,
-		UsedTime:     now,
-		UsedRemoteIp: remoteIp,
+		TokenModel:     tokenModel.SpecialUserTokenModel,
+		ActionTime:     now,
+		ActionRemoteIp: remoteIp,
 	}
 	err = db.Insert(logModel)
 	if err != nil {
