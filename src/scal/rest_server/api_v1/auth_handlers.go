@@ -468,10 +468,11 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	email, err := req.GetString("email", FromBody) // only from json
+	emailPtr, err := req.GetString("email", FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
+	email := *emailPtr
 	resetPasswordToken, err := req.GetString("resetPasswordToken", FromBody) // only from json
 	if err != nil {
 		return nil, err
@@ -496,10 +497,10 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		}
 		return nil, NewError(Internal, "", err)
 	}
-	if tokenModel.Email != *email {
+	if tokenModel.Email != email {
 		return nil, ForbiddenError(
 			"invalid 'resetPasswordToken'",
-			fmt.Errorf("MISMATCH Email: %#v != %#v", tokenModel.Email, *email),
+			fmt.Errorf("MISMATCH Email: %#v != %#v", tokenModel.Email, email),
 		)
 	}
 	if tokenModel.ExpireTime.Before(time.Now()) {
@@ -508,11 +509,11 @@ func ResetPasswordAction(req Request) (*Response, error) {
 			fmt.Errorf("token expired, ExpireTime=%v", tokenModel.ExpireTime),
 		)
 	}
-	userModel := UserModelByEmail(*email, db)
+	userModel := UserModelByEmail(email, db)
 	if userModel == nil {
 		return nil, ForbiddenError(
 			"invalid 'resetPasswordToken'",
-			fmt.Errorf("no user found with email=%#v", *email),
+			fmt.Errorf("no user found with email=%#v", email),
 		)
 	}
 	if userModel.Locked {
@@ -558,7 +559,7 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	tplText := settings.RESET_PASSWORD_DONE_EMAIL_TEMPLATE
-	tpl, err := template.New("ResetPasswordAction " + *email).Parse(tplText)
+	tpl, err := template.New("ResetPasswordAction " + email).Parse(tplText)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -576,7 +577,7 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	}
 	emailBody := buf.String()
 	err = scal.SendEmail(&scal.SendEmailInput{
-		To:      *email,
+		To:      email,
 		Subject: "StarCalendar Password Reset",
 		IsHtml:  false,
 		Body:    emailBody,
