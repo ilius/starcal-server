@@ -54,6 +54,7 @@ print("< Base URL:", baseURL)
 
 noHistoryParams = {
 	"password",
+	"newPassword",
 	"token",
 	"resetPasswordToken",
 }
