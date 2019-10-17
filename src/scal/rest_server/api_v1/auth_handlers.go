@@ -422,11 +422,13 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	tokenModel := ResetPasswordTokenModel{
-		Token:         token,
-		Email:         *email,
-		IssueTime:     now,
-		ExpireTime:    expTime, // not reliable
-		IssueRemoteIp: remoteIp,
+		SpecialUserTokenModel: SpecialUserTokenModel{
+			Token:         token,
+			Email:         *email,
+			IssueTime:     now,
+			ExpireTime:    expTime, // not reliable
+			IssueRemoteIp: remoteIp,
+		},
 	}
 	err = db.Insert(tokenModel)
 	if err != nil {
@@ -483,7 +485,9 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 	tokenModel := ResetPasswordTokenModel{
-		Token: *resetPasswordToken,
+		SpecialUserTokenModel{
+			Token: *resetPasswordToken,
+		},
 	}
 	err = db.Get(&tokenModel)
 	if err != nil {

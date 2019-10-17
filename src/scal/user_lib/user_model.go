@@ -66,12 +66,16 @@ func (model UserChangeLogModel) Collection() string {
 	return storage.C_userChangeLog
 }
 
-type ResetPasswordTokenModel struct {
+type SpecialUserTokenModel struct {
 	Token         string    `bson:"token"`
 	Email         string    `bson:"email"`
 	IssueTime     time.Time `bson:"issueTime"`
 	ExpireTime    time.Time `bson:"expireTime"` // not reliable
 	IssueRemoteIp string    `bson:"issueRemoteIp"`
+}
+
+type ResetPasswordTokenModel struct {
+	SpecialUserTokenModel `bson:",inline"`
 }
 
 func (model ResetPasswordTokenModel) Collection() string {
