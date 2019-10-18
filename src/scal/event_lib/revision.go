@@ -1,10 +1,11 @@
 package event_lib
 
 import (
-	"github.com/globalsign/mgo/bson"
 	"scal"
 	"scal/storage"
 	"time"
+
+	"github.com/globalsign/mgo/bson"
 )
 
 type EventRevisionModel struct {
