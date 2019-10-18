@@ -52,13 +52,6 @@ baseURL = f"{protocol}://{host}:{port}"
 
 print("< Base URL:", baseURL)
 
-noHistoryParams = {
-	"password",
-	"newPassword",
-	"token",
-	"resetPasswordToken",
-}
-
 
 myDir = dirname(__file__)
 cwd = os.getcwd()
@@ -671,7 +664,7 @@ class CLI():
 				completer = getParamCompleter(child)
 				multiline = child.get("multiline", "") == "true"
 				history = None
-				if name not in noHistoryParams:
+				if child.get("secret", "") != "true":
 					history = FileHistory(self.paramHistoryPath(name))
 				try:
 					valueRaw = prompt(

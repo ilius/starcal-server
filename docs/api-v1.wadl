@@ -15,7 +15,7 @@
 				<method name="POST" id="registerUser">
 					<request>
 						<param name="email" type="xs:string" required="true"/>
-						<param name="password" type="xs:string" required="true"/>
+						<param name="password" type="xs:string" required="true" secret="true"/>
 						<param name="fullName" type="xs:string" required="false"/>
 					</request>
 					<response>
@@ -29,11 +29,11 @@
 				<method name="POST" id="login">
 					<request>
 						<param name="email" type="xs:string" required="true"/>
-						<param name="password" type="xs:string" required="true"/>
+						<param name="password" type="xs:string" required="true" secret="true"/>
 					</request>
 					<response>
 						<representation mediaType="app/json">
-							<param name="token" type="xs:string" required="true"/>
+							<param name="token" type="xs:string" required="true" secret="true"/>
 							<param name="expiration" type="xsd:dateTime" required="true"/>
 						</representation>
 					</response>
@@ -50,8 +50,8 @@
 				<method name="POST" id="changePassword">
 					<request>
 						<param name="email" type="xs:string" required="true"/>
-						<param name="password" type="xs:string" required="true"/>
-						<param name="newPassword" type="xs:string" required="true"/>
+						<param name="password" type="xs:string" required="true" secret="true"/>
+						<param name="newPassword" type="xs:string" required="true" secret="true"/>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
@@ -72,8 +72,8 @@
 				<method name="POST" id="resetPasswordAction">
 					<request>
 						<param name="email" type="xs:string" required="true"/>
-						<param name="resetPasswordToken" type="xs:string" required="true"/>
-						<param name="newPassword" type="xs:string" required="true"/>
+						<param name="resetPasswordToken" type="xs:string" required="true" secret="true"/>
+						<param name="newPassword" type="xs:string" required="true" secret="true"/>
 					</request>
 					<response>
 						<representation mediaType="app/json"/>
