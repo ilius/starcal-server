@@ -95,7 +95,7 @@ type ResetPasswordLogModel struct {
 }
 
 func (model ResetPasswordLogModel) Collection() string {
-	return storage.C_resetPwLog
+	return storage.C_resetPasswordLog
 }
 
 type UserLoginAttemptModel struct {

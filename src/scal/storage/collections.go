@@ -16,7 +16,7 @@ const (
 	C_invitation         = "event_invitation"      // Insert-only, EventInvitationModel
 	C_userChangeLog      = "user_change_log"       // Insert-only, UserChangeLogModel
 	C_eventMetaChangeLog = "event_meta_change_log" // Insert-only, EventMetaChangeLogModel
-	C_resetPwLog         = "reset_password_log"    // Insert-only, ResetPasswordLogModel
+	C_resetPasswordLog   = "reset_password_log"    // Insert-only, ResetPasswordLogModel
 
 	C_errorsPrefix = "errors_"
 )
