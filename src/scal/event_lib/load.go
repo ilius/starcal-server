@@ -71,6 +71,7 @@ func LoadTaskEventModel(db storage.Database, sha1 string) (
 	err := db.Get(&model)
 	return &model, err
 }
+
 func LoadUniversityClassEventModel(db storage.Database, sha1 string) (
 	*UniversityClassEventModel,
 	error,
@@ -90,6 +91,7 @@ func LoadUniversityExamEventModel(db storage.Database, sha1 string) (
 	err := db.Get(&model)
 	return &model, err
 }
+
 func LoadWeeklyEventModel(db storage.Database, sha1 string) (
 	*WeeklyEventModel,
 	error,
