@@ -704,11 +704,16 @@ class CLI():
 		kwargs = {
 			"headers": {"Authorization": "bearer " + self._authToken},
 		}
-		if data or method in ("PUT", "POST", "PATCH"):
+		if method in ("PUT", "POST", "PATCH"):
 			kwargs["json"] = data
 			print(f"< Sending {method} request to {url} with json={data}")
 		else:
-			print(f"< Sending {method} request to {url}")
+			if data:
+				params = list(data.items())
+				kwargs["params"] = params
+				print(f"< Sending {method} request to {url} with params={params}")
+			else:
+				print(f"< Sending {method} request to {url}")
 		try:
 			res = requests.request(method, url, **kwargs)
 		except Exception as e:
