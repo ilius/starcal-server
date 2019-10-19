@@ -3,7 +3,6 @@ package event_lib
 import (
 	"errors"
 	"fmt"
-	"scal/storage"
 	"time"
 )
 
@@ -24,16 +23,6 @@ type TaskEventModel struct {
 
 func (TaskEventModel) Type() string {
 	return "task"
-}
-
-func LoadTaskEventModel(db storage.Database, sha1 string) (
-	*TaskEventModel,
-	error,
-) {
-	model := TaskEventModel{}
-	model.Sha1 = sha1
-	err := db.Get(&model)
-	return &model, err
 }
 
 type TaskEvent struct {

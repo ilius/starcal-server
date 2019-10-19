@@ -1,7 +1,5 @@
 package event_lib
 
-import "scal/storage"
-
 // DurationEnable is just a matter of UI
 
 type AllDayTaskEventModel struct {
@@ -13,16 +11,6 @@ type AllDayTaskEventModel struct {
 
 func (AllDayTaskEventModel) Type() string {
 	return "allDayTask"
-}
-
-func LoadAllDayTaskEventModel(db storage.Database, sha1 string) (
-	*AllDayTaskEventModel,
-	error,
-) {
-	model := AllDayTaskEventModel{}
-	model.Sha1 = sha1
-	err := db.Get(&model)
-	return &model, err
 }
 
 type AllDayTaskEvent struct {

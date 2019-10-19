@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"scal/storage"
 
 	rlib "github.com/ilius/libgostarcal/event/rules_lib"
 )
@@ -50,16 +49,6 @@ type CustomEventModel struct {
 
 func (CustomEventModel) Type() string {
 	return "custom"
-}
-
-func LoadCustomEventModel(db storage.Database, sha1 string) (
-	*CustomEventModel,
-	error,
-) {
-	model := CustomEventModel{}
-	model.Sha1 = sha1
-	err := db.Get(&model)
-	return &model, err
 }
 
 type EventRuleMap map[string]rlib.EventRule

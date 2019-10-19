@@ -1,8 +1,6 @@
 package event_lib
 
 import (
-	"scal/storage"
-
 	lib "github.com/ilius/libgostarcal"
 
 	"github.com/ilius/libgostarcal/utils"
@@ -22,16 +20,6 @@ type MonthlyEventModel struct {
 
 func (MonthlyEventModel) Type() string {
 	return "monthly"
-}
-
-func LoadMonthlyEventModel(db storage.Database, sha1 string) (
-	*MonthlyEventModel,
-	error,
-) {
-	model := MonthlyEventModel{}
-	model.Sha1 = sha1
-	err := db.Get(&model)
-	return &model, err
 }
 
 type MonthlyEvent struct {

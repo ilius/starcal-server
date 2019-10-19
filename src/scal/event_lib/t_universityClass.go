@@ -1,7 +1,5 @@
 package event_lib
 
-import "scal/storage"
-
 // WeekNumMode: "any" | "odd" | "even"
 /*
    WeekDayList: a slice of integers,
@@ -26,16 +24,6 @@ type UniversityClassEventModel struct {
 
 func (UniversityClassEventModel) Type() string {
 	return "universityClass"
-}
-
-func LoadUniversityClassEventModel(db storage.Database, sha1 string) (
-	*UniversityClassEventModel,
-	error,
-) {
-	model := UniversityClassEventModel{}
-	model.Sha1 = sha1
-	err := db.Get(&model)
-	return &model, err
 }
 
 type UniversityClassEvent struct {

@@ -1,7 +1,5 @@
 package event_lib
 
-import "scal/storage"
-
 type YearlyEventModel struct {
 	BaseEventModel  `bson:",inline" json:",inline"`
 	Month           uint8 `bson:"month" json:"month"`
@@ -12,16 +10,6 @@ type YearlyEventModel struct {
 
 func (YearlyEventModel) Type() string {
 	return "yearly"
-}
-
-func LoadYearlyEventModel(db storage.Database, sha1 string) (
-	*YearlyEventModel,
-	error,
-) {
-	model := YearlyEventModel{}
-	model.Sha1 = sha1
-	err := db.Get(&model)
-	return &model, err
 }
 
 type YearlyEvent struct {
