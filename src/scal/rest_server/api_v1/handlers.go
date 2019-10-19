@@ -378,7 +378,7 @@ func SetEventOwner(req Request) (*Response, error) {
 			InvalidArgument,
 			fmt.Sprintf(
 				"user with email '%s' does not exist",
-				newOwnerEmail,
+				*newOwnerEmail,
 			),
 			nil,
 		)
