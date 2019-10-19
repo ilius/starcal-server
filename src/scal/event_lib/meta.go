@@ -271,12 +271,12 @@ func (model *EventMetaModel) Invite(
 		return ripo.NewError(ripo.NotFound, "user not found", nil)
 		// FIXME: or Internal?
 	}
+	subject := "Invitation to event: " + eventModel.Summary
+	tpl, err := template.New(subject).Parse(tplText)
+	if err != nil {
+		return ripo.NewError(ripo.Internal, "", err)
+	}
 	for _, inviteEmail := range inviteEmails {
-		subject := "Invitation to event: " + eventModel.Summary
-		tpl, err := template.New(subject).Parse(tplText)
-		if err != nil {
-			return ripo.NewError(ripo.Internal, "", err)
-		}
 		var inviteName string
 		inviteUser := UserModelByEmail(inviteEmail, db)
 		if inviteUser == nil {
