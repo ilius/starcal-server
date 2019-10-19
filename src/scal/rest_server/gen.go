@@ -18,7 +18,11 @@ import (
 	"github.com/kardianos/osext"
 )
 
-var enableGoFmt = true
+// format file (with go fmt or goreturns)
+var enableFormatFile = true
+
+// no flag for it for now
+var useGoreturns = true
 
 var myDir string
 var apiDir string
@@ -41,8 +45,14 @@ var activeEventModels = []interface{}{
 
 var fmtWG sync.WaitGroup
 
-func goFmt(fpath string) {
-	err := exec.Command("go", "fmt", fpath).Run()
+func formatFile(fpath string) {
+	var cmd *exec.Cmd
+	if useGoreturns {
+		cmd = exec.Command("goreturns", "-w", fpath)
+	} else {
+		cmd = exec.Command("go", "fmt", fpath)
+	}
+	err := cmd.Run()
 	fmtWG.Done()
 	if err != nil {
 		panic(err)
@@ -59,7 +69,7 @@ func init() {
 	myParentDir = filepath.Dir(myDir)
 	templatesDir = filepath.Join(myParentDir, "templates")
 	if len(os.Args) > 1 && os.Args[1] == "--no-fmt" {
-		enableGoFmt = false
+		enableFormatFile = false
 	}
 }
 
@@ -184,9 +194,9 @@ func genEventTypeHandlers() {
 		if err != nil {
 			panic(err)
 		}
-		if enableGoFmt {
+		if enableFormatFile {
 			fmtWG.Add(1)
-			go goFmt(goPath)
+			go formatFile(goPath)
 		}
 	}
 }
