@@ -374,6 +374,11 @@ func ChangePassword(req Request) (*Response, error) {
 	return &Response{}, nil
 }
 
+type ResetPasswordRequestTemplateParams struct {
+	ResetPasswordTokenModel
+	Host string
+}
+
 func ResetPasswordRequest(req Request) (*Response, error) {
 	remoteIp, err := req.RemoteIP()
 	if err != nil {
@@ -441,7 +446,10 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	buf := bytes.NewBufferString("")
-	err = tpl.Execute(buf, tokenModel)
+	err = tpl.Execute(buf, ResetPasswordRequestTemplateParams{
+		ResetPasswordTokenModel: tokenModel,
+		Host: settings.HOST,
+	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}
@@ -567,9 +575,11 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	tplParams := struct {
 		Name     string
 		RemoteIp string
+		Host     string
 	}{
 		Name:     userModel.FullName,
 		RemoteIp: remoteIp,
+		Host:     settings.HOST,
 	}
 	err = tpl.Execute(buf, tplParams)
 	if err != nil {
@@ -583,6 +593,7 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		Body:    emailBody,
 	})
 	if err != nil {
+		log.Error("Failed to send email:\n", emailBody)
 		return nil, NewError(Unavailable, "", err)
 	}
 	return &Response{}, nil
@@ -623,10 +634,12 @@ func sendEmailConfirmation(req Request, userModel *UserModel) error {
 		Name            string
 		ConfirmationURL string
 		ExpirationTime  string
+		Host            string
 	}{
 		Name:            userModel.FullName,
 		ConfirmationURL: confirmationURL,
 		ExpirationTime:  exp.Format(time.RFC1123),
+		Host:            settings.HOST,
 	}
 	err = tpl.Execute(buf, tplParams)
 	if err != nil {
@@ -641,6 +654,7 @@ func sendEmailConfirmation(req Request, userModel *UserModel) error {
 		emailBody,
 	})
 	if err != nil {
+		log.Error("Failed to send email:\n", emailBody)
 		return NewError(Unavailable, "", err)
 	}
 	return nil

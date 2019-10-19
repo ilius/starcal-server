@@ -22,7 +22,7 @@ PASSWORD_SALT = os.getenv("STARCAL_PASSWORD_SALT", "")
 RESET_PASSWORD_TOKEN_LENGTH = 32
 RESET_PASSWORD_EXP_SECONDS = 30 * 60
 RESET_PASSWORD_REJECT_SECONDS = 60
-RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE = """You or someone else has requested a password reset for your StarCalendar account
+RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE = """You or someone else has requested a password reset for your StarCalendar account (on {{.Host}})
 
 If it was you, you can use the following token to reset your password:
 Reset Password Token: {{.Token}}
@@ -36,7 +36,7 @@ Have fun using StarCalendar
 
 RESET_PASSWORD_DONE_EMAIL_TEMPLATE = """Hi {{.Name}}
 
-Your StarCalendar password has been reset by this IP: {{.RemoteIp}}
+The password for your StarCalendar account on {{.Host}} has been reset by this IP: {{.RemoteIp}}
 
 Have fun using StarCalendar
 """
@@ -63,6 +63,8 @@ CONFIRM_EMAIL_SECRET = os.getenv("STARCAL_CONFIRM_EMAIL_SECRET", "")
 
 
 CONFIRM_EMAIL_EMAIL_TEMPLATE = """Hi {{.Name}}
+
+This email is for confirming your email address on StarCalendar service ({{.Host}})
 
 Please open this link in your browser to confirm your email address:
 {{.ConfirmationURL}}
