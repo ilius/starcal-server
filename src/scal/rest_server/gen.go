@@ -31,6 +31,7 @@ var templatesDir string
 
 var activeEventModels = []interface{}{
 	event_lib.AllDayTaskEventModel{},
+	event_lib.CustomEventModel{},
 	event_lib.DailyNoteEventModel{},
 	event_lib.LargeScaleEventModel{},
 	event_lib.LifeTimeEventModel{},
@@ -40,7 +41,6 @@ var activeEventModels = []interface{}{
 	event_lib.UniversityExamEventModel{},
 	event_lib.WeeklyEventModel{},
 	event_lib.YearlyEventModel{},
-	event_lib.CustomEventModel{},
 }
 
 var fmtWG sync.WaitGroup
