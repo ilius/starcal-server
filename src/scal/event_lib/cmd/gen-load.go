@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 	"syscall"
 	"text/template"
 )
@@ -79,7 +80,8 @@ func RunCommand3(name string, args ...string) (stdout string, stderr string, exi
 	return
 }
 
-func formatFile(fpath string) {
+func formatFile(fpath string, waitGroup *sync.WaitGroup) {
+	fmt.Println("formatting", fpath)
 	var cmdParts []string
 	if useGoreturns {
 		cmdParts = []string{"goreturns", "-w", fpath}
@@ -87,12 +89,19 @@ func formatFile(fpath string) {
 		cmdParts = []string{"go", "fmt", fpath}
 	}
 	stdout, stderr, exitCode := RunCommand3(cmdParts[0], cmdParts[1:len(cmdParts)]...)
-	fmt.Println(stdout)
+	stdout = strings.TrimSpace(stdout)
+	if stdout != "" {
+		fmt.Println(stdout)
+	}
 	if exitCode != 0 {
 		if stderr != "" {
 			panic(stderr)
 		}
 		panic(fmt.Sprintf("goreturns exited with status %v", exitCode))
+	}
+	fmt.Println("formatted", fpath)
+	if waitGroup != nil {
+		waitGroup.Done()
 	}
 }
 
@@ -132,5 +141,5 @@ import "scal/storage"
 	if err != nil {
 		panic(err)
 	}
-	formatFile(loadGoPath)
+	formatFile(loadGoPath, nil)
 }
