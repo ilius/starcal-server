@@ -224,10 +224,10 @@ func AddUniversityExam(req Request) (*Response, error) {
 		"icon":                 now,
 		"summaryEncrypted":     now,
 		"descriptionEncrypted": now,
-		"jd":                   now,
-		"dayStartSeconds":      now,
-		"dayEndSeconds":        now,
-		"courseId":             now,
+		"jd":              now,
+		"dayStartSeconds": now,
+		"dayEndSeconds":   now,
+		"courseId":        now,
 	}
 	err = db.Insert(eventMeta)
 	if err != nil {
