@@ -80,6 +80,27 @@
 					</response>
 				</method>
 			</resource>
+			<resource path="confirm-email-request/">
+				<method name="POST" id="confirmEmailRequest">
+					<request>
+					</request>
+					<response>
+						<representation mediaType="app/json"/>
+					</response>
+				</method>
+			</resource>
+			<resource path="confirm-email-action/">
+				<method name="GET" id="confirmEmailAction">
+					<request>
+						<param name="token" type="xs:string" required="true" secret="true"/>
+					</request>
+					<response>
+						<representation mediaType="app/json">
+							<param name="message" type="xs:string"/>
+						</representation>
+					</response>
+				</method>
+			</resource>
 		</resource>
 		<resource path="me/">
 			<resource path="info/">
