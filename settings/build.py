@@ -9,10 +9,17 @@ from pprint import pprint
 
 from build_common import *
 
+interactive = "--interactive" in sys.argv
+
+hostFile = join(myDir, "hosts", hostName + ".py")
+
+if not isfile(hostFile):
+	print(f"Creating new host file: {hostFile}")
+	with open(hostFile, "w", encoding="utf8") as hostFp:
+		hostFp.write("")
 
 if isfile(goSettingsFile):
 	defaultsFile = join(myDir, "defaults.py")
-	hostFile = join(myDir, "hosts", hostName + ".py")
 	configLastModified = max(
 		os.stat(defaultsFile).st_mtime,
 		os.stat(hostFile).st_mtime,
@@ -31,60 +38,77 @@ defaultsDict = {
 settingsDict = defaultsDict.copy()
 
 
-hostModulePath = join(myDir, "hosts", hostName + ".py")
-if isfile(hostModulePath):
-	with open(hostModulePath, encoding="utf-8") as hostFp:
-		hostModuleCode = hostFp.read()
+with open(hostFile, encoding="utf-8") as hostFp:
+	hostCode = hostFp.read()
 
-	hostGlobals = dict(hostGlobalsCommon)
-	exec(hostModuleCode, hostGlobals)
-	# exec(object[, globals[, locals]])
-	# If only globals is given, locals defaults to it
-	for param, value in hostGlobals.items():
-		if param in hostGlobalsCommon:
-			continue
-		if param in hostMetaParams:
-			hostMetaParams[param] = value
-			continue
-		if param.startswith("_"):
-			continue
-		if param.upper() != param:
-			print("skipping non-uppercase parameter %r" % param)
-			continue
-		if param not in defaultsDict:
-			print("skipping unknown parameter %r" % param)
-			continue
-		valueTypeExpected = type(defaultsDict[param])
-		valueTypeActual = type(value)
-		if isinstance(value, GoExpr):
-			valueTypeActual = value.getPyType()
-		if valueTypeActual != valueTypeExpected:
-			raise ValueError(
-				"invalid type for parameter %r, " % param +
-				"must be %s, " % valueTypeExpected.__name__ +
-				"not %s" % valueTypeActual.__name__
-			)
-		settingsDict[param] = value
-else:
-	print('No settings file found for host %r' % hostName)
+hostGlobals = dict(hostGlobalsCommon)
+exec(hostCode, hostGlobals)
+# exec(object[, globals[, locals]])
+# If only globals is given, locals defaults to it
+for param, value in hostGlobals.items():
+	if param in hostGlobalsCommon:
+		continue
+	if param in hostMetaParams:
+		hostMetaParams[param] = value
+		continue
+	if param.startswith("_"):
+		continue
+	if param.upper() != param:
+		print("skipping non-uppercase parameter %r" % param)
+		continue
+	if param not in defaultsDict:
+		print("skipping unknown parameter %r" % param)
+		continue
+	valueTypeExpected = type(defaultsDict[param])
+	valueTypeActual = type(value)
+	if isinstance(value, GoExpr):
+		valueTypeActual = value.getPyType()
+	if valueTypeActual != valueTypeExpected:
+		raise ValueError(
+			"invalid type for parameter %r, " % param +
+			"must be %s, " % valueTypeExpected.__name__ +
+			"not %s" % valueTypeActual.__name__
+		)
+	settingsDict[param] = value
+
+
+hostNewLines = []
+
+def askForParam(param: str) -> None:
+	value = prompt(f"{param} = ")
+	settingsDict[param] = value
+	hostNewLines.append(f"{param} = {value!r}")
 
 
 for param, value in settingsDict.items():
 	if "SECRET" in param and value == "":
+		if interactive:
+			askForParam(param)
+		else:
+			sys.stderr.write(
+				"%s can not be empty\n" % param +
+				"Set (and export) environment variable STARCAL_%s\n" % param +
+				"Or define %s in host settings file\n" % param
+			)
+			sys.exit(1)
+
+if not settingsDict.get("PASSWORD_SALT"):
+	if interactive:
+		askForParam("PASSWORD_SALT")
+	else:
 		sys.stderr.write(
-			"%s can not be empty\n" % param +
-			"Set (and export) environment variable STARCAL_%s\n" % param +
-			"Or define %s in host settings file\n" % param
+			"PASSWORD_SALT can not be empty\n" +
+			"Set (and export) environment variable STARCAL_PASSWORD_SALT\n" +
+			"Or define PASSWORD_SALT in host settings file\n"
 		)
 		sys.exit(1)
 
-if not settingsDict.get("PASSWORD_SALT"):
-	sys.stderr.write(
-		"PASSWORD_SALT can not be empty\n" +
-		"Set (and export) environment variable STARCAL_PASSWORD_SALT\n" +
-		"Or define PASSWORD_SALT in host settings file\n"
-	)
-	sys.exit(1)
+if hostNewLines:
+	hostCode += "\n\n" + "\n".join(hostNewLines) + "\n"
+	print(f"Writing file: {hostFile}")
+	with open(hostFile, "w", encoding="utf-8") as hostFp:
+		hostFp.write(hostCode)
+
 
 
 hostOS = settingsDict.pop("OS")

@@ -13,6 +13,12 @@ from typing import (
 	List,
 )
 
+from prompt_toolkit import prompt as promptLow
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.completion.word_completer import WordCompleter
+
+
 import defaults
 
 secretSettingsParams = {
@@ -22,6 +28,7 @@ secretSettingsParams = {
 myDir = dirname(abspath(__file__))
 rootDir = dirname(myDir)
 srcDir = join(rootDir, "src")
+settingsDir = join(rootDir, "settings")
 
 goSettingsDir = join(srcDir, "scal", "settings")
 goSettingsFile = join(goSettingsDir, "settings.go")
@@ -134,4 +141,18 @@ def encodeGoValue(v) -> Tuple[str, str]:
 		return v.getGoType(), v.getExpr()
 	return "", str(v)
 
+def prompt(
+	message: str,
+	multiline: bool = False,
+	**kwargs,
+):
+	text = promptLow(message=message, **kwargs)
+	if multiline and text == "!m":
+		print("Entering Multi-line mode, press Alt+Enter to end")
+		text = promptLow(
+			message="",
+			multiline=True,
+			**kwargs
+		)
+	return text
 
