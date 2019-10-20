@@ -26,7 +26,7 @@ RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE = """You or someone else has requested a pas
 
 If it was you, you can use the following token to reset your password:
 Reset Password Token: {{.Token}}
-This token will be expired at {{.ExpireTime}}
+This token will be expired at {{.ExpireTime.Format "2006-01-02T15:04:05Z07:00"}}
 
 If it wasn't you, you can ignore this email.
 But you should know that this request was sent from this IP: {{.IssueRemoteIp}}
@@ -69,7 +69,7 @@ This email is for confirming your email address on StarCalendar service ({{.Host
 Please open this link in your browser to confirm your email address:
 {{.ConfirmationURL}}
 
-The link above will be expired on {{.ExpirationTime}}
+The link above will be expired on {{.ExpirationTime.Format "2006-01-02T15:04:05Z07:00"}}
 You also need to open the link with the same IP address as you requested with.
 
 Have fun using StarCalendar
