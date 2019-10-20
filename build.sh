@@ -1,9 +1,4 @@
 #!/bin/bash
-if [ -z $STARCAL_HOST ] ; then
-	echo 'Set (and export) environment varibale `STARCAL_HOST` before running this script'
-	echo 'For example: export STARCAL_HOST=localhost'
-	exit 1
-fi
 
 if [ -z "$NO_TOUCH_SUBMODULES" ] ; then
 	# takes ~ 0.2 seconds if submodules are already initialized / cloned
