@@ -71,20 +71,14 @@ rootDir = abspath(dirname(myDir))
 docPath = join(rootDir, "docs", "api-v1.wadl")
 
 homeDir = os.getenv("HOME")
-confDir = join(homeDir, ".starcal-server-cli")
+confDir = join(homeDir, ".starcal-server", "cli")
 histDir = join(confDir, "history")
 tokenDirParent = join(confDir, "auth-tokens")
 tokenDir = join(tokenDirParent, host)
 lastPathFile = join(confDir, "last-path")
 
-if not isdir(confDir):
-	os.mkdir(confDir, 0o700)
-if not isdir(histDir):
-	os.mkdir(histDir, 0o700)
-if not isdir(tokenDirParent):
-	os.mkdir(tokenDirParent, 0o700)
-if not isdir(tokenDir):
-	os.mkdir(tokenDir, 0o700)
+for direc in (confDir, histDir, tokenDirParent, tokenDir):
+	os.makedirs(direc, mode=0o700, exist_ok=True)
 
 indent = "\t"
 
