@@ -35,7 +35,7 @@ goSettingsFile = join(goSettingsDir, "settings.go")
 
 
 hostName = os.getenv("STARCAL_HOST")
-print("Generating settings based on: STARCAL_HOST = %r" % hostName)
+print(f"Generating settings based on: STARCAL_HOST = {hostName!r}")
 if not hostName:
 	raise ValueError(
 		"Set (and export) environment varibale `STARCAL_HOST` " +
@@ -43,12 +43,13 @@ if not hostName:
 		"For example: export STARCAL_HOST=localhost",
 	)
 
+
 def goBuildAndExit(keepSettingsGo: bool):
 	os.putenv("GOPATH", rootDir)
 	status = subprocess.call([
 		"go",
 		"build",
-		"-o", "server-%s" % hostName,
+		"-o", f"server-{hostName}",
 		"server.go",
 	])
 
@@ -58,6 +59,7 @@ def goBuildAndExit(keepSettingsGo: bool):
 		os.remove(goSettingsFile)
 
 	sys.exit(status)
+
 
 class GoExpr(object):
 	def __init__(
@@ -87,14 +89,14 @@ class GoExpr(object):
 		return self._imports
 
 
-
 def goGetenv(varName: str) -> GoExpr:
 	return GoExpr(
 		str,
 		"string",
-		"os.Getenv(%s)" % json.dumps(varName),
+		f"os.Getenv({json.dumps(varName)})",
 		imports=["os"],
 	)
+
 
 def passwordStore(*args) -> str:
 	from subprocess import Popen, PIPE
@@ -103,14 +105,16 @@ def passwordStore(*args) -> str:
 	lastLine = stdout.decode("utf-8").strip().split("\n")[-1]
 	return lastLine
 
+
 def goSecretCBC(valueEncBase64: str) -> GoExpr:
 	from base64 import b64decode
 	b64decode(valueEncBase64) # just to validate
 	return GoExpr(
 		str,
 		"string",
-		"secretCBC(%s)" % json.dumps(valueEncBase64),
+		f"secretCBC({json.dumps(valueEncBase64)})",
 	)
+
 
 # variables that are not converted to Go code
 # only change the behavior of build
@@ -125,6 +129,7 @@ hostGlobalsCommon = {
 	"passwordStore": passwordStore,
 	"goSecretCBC": goSecretCBC,
 }
+
 
 # returns (goTypeStr, goValueStr)
 def encodeGoValue(v) -> Tuple[str, str]:
@@ -141,6 +146,7 @@ def encodeGoValue(v) -> Tuple[str, str]:
 		return v.getGoType(), v.getExpr()
 	return "", str(v)
 
+
 def prompt(
 	message: str,
 	multiline: bool = False,
@@ -155,4 +161,3 @@ def prompt(
 			**kwargs
 		)
 	return text
-

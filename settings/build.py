@@ -54,10 +54,10 @@ for param, value in hostGlobals.items():
 	if param.startswith("_"):
 		continue
 	if param.upper() != param:
-		print("skipping non-uppercase parameter %r" % param)
+		print(f"skipping non-uppercase parameter {param!r}")
 		continue
 	if param not in defaultsDict:
-		print("skipping unknown parameter %r" % param)
+		print(f"skipping unknown parameter {param!r}")
 		continue
 	valueTypeExpected = type(defaultsDict[param])
 	valueTypeActual = type(value)
@@ -65,14 +65,15 @@ for param, value in hostGlobals.items():
 		valueTypeActual = value.getPyType()
 	if valueTypeActual != valueTypeExpected:
 		raise ValueError(
-			"invalid type for parameter %r, " % param +
-			"must be %s, " % valueTypeExpected.__name__ +
-			"not %s" % valueTypeActual.__name__
+			f"invalid type for parameter {param!r}, " +
+			f"must be {valueTypeExpected.__name__}, " +
+			f"not {valueTypeActual.__name__}"
 		)
 	settingsDict[param] = value
 
 
 hostNewLines = []
+
 
 def askForParam(param: str) -> None:
 	value = prompt(f"{param} = ")
@@ -86,9 +87,9 @@ for param, value in settingsDict.items():
 			askForParam(param)
 		else:
 			sys.stderr.write(
-				"%s can not be empty\n" % param +
-				"Set (and export) environment variable STARCAL_%s\n" % param +
-				"Or define %s in host settings file\n" % param
+				f"{param} can not be empty\n" +
+				f"Set (and export) environment variable STARCAL_{param}\n" +
+				f"Or define {param} in host settings file\n"
 			)
 			sys.exit(1)
 
@@ -110,14 +111,13 @@ if hostNewLines:
 		hostFp.write(hostCode)
 
 
-
 hostOS = settingsDict.pop("OS")
 hostArch = settingsDict.pop("ARCH")
 
 #pprint(settingsDict)
 
 constLines = [
-	"\tHOST = %s" % json.dumps(hostName),
+	"\tHOST = " + json.dumps(hostName),
 ]
 varLines = []
 printLines = [
@@ -129,80 +129,81 @@ importLines = set(["fmt"])
 for param, value in sorted(settingsDict.items()):
 	valueType = type(value)
 	if valueType in (str, int, float, bool):
-		constLines.append("\t%s = %s" % (param, json.dumps(value)))
+		constLines.append(f"\t{param} = {json.dumps(value)}")
 	elif isinstance(value, GoExpr):
-		varLines.append("\t%s = %s" % (param, value.getExpr()))
+		varLines.append(f"\t{param} = {value.getExpr()}")
 		importLines.update(set(value.getImports()))
 	elif valueType == list:
 		itemTypes = set()
 		itemValuesGo = []
 		if len(value) == 0:
-			print("Empty list %s, assuming list of strings" % param)
+			print(f"Empty list {param}, assuming list of strings")
 			itemTypes.add("string")
 		else:
 			for item in value:
 				itemType, itemValueGo = encodeGoValue(item)
 				if not itemType:
-					print("Unsupported type for %r in list %s" %(item, param))
+					print(f"Unsupported type for {item!r} in list {param}")
 					sys.exit(1)
 				itemTypes.add(itemType)
 				itemValuesGo.append(itemValueGo)
 
 		if len(itemTypes) > 1:
-			print("List %s has more than one item type: %r" % (param, list(itemTypes)))
+			print(f"List {param} has more than one item type: {list(itemTypes)!r}")
 			sys.exit(1)
 
 		valueGo = "[]" + itemTypes.pop() + "{" + ", ".join(itemValuesGo) + "}"
-		varLines.append("\t%s = %s" % (param, valueGo))
+		varLines.append(f"\t{param} = {valueGo}")
 	elif valueType == dict:
 		keysValuesGo = {}
 		keyTypes = set()
 		valueTypes = set()
 		if len(value) == 0:
-			print("Empty dict %s, assuming generic: map[string]interface{}" % param)
+			print(f"Empty dict {param}, assuming generic: map[string]interface{{}}")
 			keyTypes.add("string")
 			valueTypes.add("interface{}")
 		else:
 			for k, v in value.items():
 				k_type, k_value = encodeGoValue(k)
 				if not k_type:
-					print("Unsupported type for key %r in dict %s" %(k, param))
+					print(f"Unsupported type for key {k!r} in dict {param}")
 					sys.exit(1)
 				v_type, v_value = encodeGoValue(v)
 				if not v_type:
-					print("Unsupported type for key %r in dict %s" %(v, param))
+					print(f"Unsupported type for key {v!r} in dict {param}")
 					sys.exit(1)
 				keyTypes.add(k_type)
 				valueTypes.add(v_type)
 				keysValuesGo[k_value] = v_value
 
 		if len(keyTypes) > 1:
-			print("Dict %s has more than one key type: %r" % (param, list(keyTypes)))
+			print(f"Dict {param} has more than one key type: {list(keyTypes)!r}")
 			sys.exit(1)
 		if len(valueTypes) > 1:
-			print("Dict %s has more than one key type: %r" % (param, list(valueTypes)))
+			print(f"Dict {param} has more than one key type: {list(valueTypes)!r}")
 			sys.exit(1)
-		
-		typeGo = "map[%s]%s" % (keyTypes.pop(), valueTypes.pop())
+
+		keyType = keyTypes.pop()
+		valueType = valueTypes.pop()
+		typeGo = f"map[{keyType}]{valueType}"
 		valueGo = typeGo + "{" + "".join(
 			"\n\t\t" + k + ": " + v + ","
 			for k, v in keysValuesGo.items()
 		) + "\n\t}"
-		varLines.append("\t%s = %s" % (param, valueGo))
+		varLines.append(f"\t{param} = {valueGo}")
 	else:
 		# FIXME
 		print(
-			"skipping unknown value type %s" % valueType +
-			", param %s" % param
+			f"skipping unknown value type {valueType}" +
+			f", param {param}"
 		)
 		# valueRepr = str(value)
-		# varLines.append("\t%s = %s" % (param, valueRepr))
+		# varLines.append(f"\t{param} = {valueRepr}")
 	if "SECRET" in param:
 		continue
 	if param in secretSettingsParams:
 		continue
 	printLines.append('\tfmt.Printf("%s=%%#v\\n", %s)' % (param, param))
-
 
 
 importBlock = "import (\n" + "\n".join(
@@ -212,7 +213,7 @@ importBlock = "import (\n" + "\n".join(
 
 constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
 varBlock = "var (\n" + "\n".join(varLines) + "\n)\n"
-printFunc = "func PrintSettings() {\n%s\n}" % "\n".join(printLines)
+printFunc = "func PrintSettings() {\n" + "\n".join(printLines) + "\n}"
 
 #print(constBlock)
 
@@ -220,20 +221,15 @@ printFunc = "func PrintSettings() {\n%s\n}" % "\n".join(printLines)
 if not isdir(goSettingsDir):
 	os.mkdir(goSettingsDir)
 with open(goSettingsFile, "w") as goFp:
-	goFp.write("""// This is an auto-generated code. DO NOT MODIFY
+	goFp.write(f"""// This is an auto-generated code. DO NOT MODIFY
 package settings
-%s
+{importBlock}
 
-%s
+{constBlock}
 
-%s
+{varBlock}
 
-%s""" % (
-	importBlock,
-	constBlock,
-	varBlock,
-	printFunc,
-))
+{printFunc}""")
 
 
 if hostOS:
@@ -244,5 +240,8 @@ if hostArch:
 if "--no-build" in sys.argv:
 	sys.exit(0)
 
-keepSettingsGo = hostMetaParams["KEEP_SETTINGS_GO"] or "--no-remove" in sys.argv
+keepSettingsGo = hostMetaParams["KEEP_SETTINGS_GO"]
+if "--no-remove" in sys.argv:
+	keepSettingsGo = True
+
 goBuildAndExit(keepSettingsGo)
