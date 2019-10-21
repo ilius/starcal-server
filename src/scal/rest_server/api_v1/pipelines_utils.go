@@ -1,9 +1,9 @@
 package api_v1
 
 import (
+	"fmt"
 	"scal"
 	"scal/storage"
-	"fmt"
 )
 
 func GetEventMetaPipeResults(
