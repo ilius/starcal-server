@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"os"
 	"scal/settings"
 	. "scal/user_lib"
 	"strings"
@@ -25,6 +26,14 @@ var (
 	errClaimsNotFound      = errors.New("JWT claims not found")
 	errClaimsEmailNotFound = errors.New("Email not found in JWT claims")
 )
+
+// testUserMap: a map to set in test, to bypass JWY authentication
+// key of map is the value of req.Header("Authorization")
+var testUserMap map[string]*UserModel
+
+func testUserMapClear() {
+	testUserMap = nil
+}
 
 func TokenFromHeader(authHeader string) (*jwt.Token, error) {
 	authHeaderParts := strings.Split(authHeader, " ")
@@ -79,10 +88,20 @@ func ForbiddenError(publicMsg string, err error) RPCError {
 	return NewError(PermissionDenied, publicMsg, err)
 }
 
+func isGoTest() bool {
+	return strings.HasSuffix(os.Args[0], ".test") // OR strings.Contains(os.Args[0], "/_test/")
+}
+
 func CheckAuth(req Request) (*UserModel, error) {
 	authHeader := req.Header("Authorization")
 	if authHeader == "" {
 		return nil, AuthError(errTokenNotFound)
+	}
+	if isGoTest() && testUserMap != nil {
+		userModel := testUserMap[authHeader]
+		if userModel != nil {
+			return userModel, nil
+		}
 	}
 	token, err := TokenFromHeader(authHeader)
 	if err != nil {
