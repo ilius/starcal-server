@@ -136,3 +136,23 @@ func TestAdminGetStats(t *testing.T) {
 		"user_login": 0,
 	})
 }
+
+func TestAdminListLockedResources(t *testing.T) {
+	handler := AdminListLockedResources
+
+	testAdmin_Unauthenticated(t, handler)
+	testAdmin_NotAdmin(t, handler)
+	testAdmin_EmailNotConfirmed(t, handler)
+
+	res := testAdmin_OK(t, handler)
+
+	is := is.New(t)
+	is.NotNil(res.Data)
+	is.Equal(res.Data, map[string][]string{
+		"event":      {},
+		"group":      {},
+		"user":       {},
+		"user_login": {},
+	})
+
+}
