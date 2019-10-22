@@ -17,7 +17,7 @@ func resetAdminEmails() {
 	settings.ADMIN_EMAILS = origAdminEmails
 }
 
-func TestAdminGetStats_Unauthenticated(t *testing.T) {
+func testAdmin_Unauthenticated(t *testing.T, handler Handler) {
 	is := is.New(t)
 
 	ctrl := gomock.NewController(t)
@@ -27,14 +27,14 @@ func TestAdminGetStats_Unauthenticated(t *testing.T) {
 
 	mockReq.EXPECT().Header(gomock.Eq("Authorization"))
 
-	res, err := AdminGetStats(req)
+	res, err := handler(req)
 	rpcErr := err.(RPCError)
 	is.Err(rpcErr)
 	is.Equal(rpcErr.Code(), Unauthenticated)
 	is.Nil(res)
 }
 
-func TestAdminGetStats_NotAdmin(t *testing.T) {
+func testAdmin_NotAdmin(t *testing.T, handler Handler) {
 	defer testUserMapClear()
 
 	authorization := "abcd"
@@ -52,7 +52,7 @@ func TestAdminGetStats_NotAdmin(t *testing.T) {
 	mockReq.EXPECT().Header(gomock.Eq("Authorization")).Return(authorization)
 
 	is := is.New(t)
-	res, err := AdminGetStats(req)
+	res, err := handler(req)
 	rpcErr := err.(RPCError)
 	is.Err(rpcErr)
 	is.Equal(rpcErr.Code(), PermissionDenied)
@@ -60,7 +60,7 @@ func TestAdminGetStats_NotAdmin(t *testing.T) {
 	is.Nil(res)
 }
 
-func TestAdminGetStats_EmailNotConfirmed(t *testing.T) {
+func testAdmin_EmailNotConfirmed(t *testing.T, handler Handler) {
 	defer testUserMapClear()
 	defer resetAdminEmails()
 
@@ -80,7 +80,7 @@ func TestAdminGetStats_EmailNotConfirmed(t *testing.T) {
 	mockReq.EXPECT().Header(gomock.Eq("Authorization")).Return(authorization)
 
 	is := is.New(t)
-	res, err := AdminGetStats(req)
+	res, err := handler(req)
 	rpcErr := err.(RPCError)
 	is.Equal(rpcErr.Code(), PermissionDenied)
 	is.Equal(rpcErr.Message(), "email is not confirmed")
@@ -88,7 +88,7 @@ func TestAdminGetStats_EmailNotConfirmed(t *testing.T) {
 	is.Nil(res)
 }
 
-func TestAdminGetStats_OK(t *testing.T) {
+func testAdmin_OK(t *testing.T, handler Handler) *Response {
 	defer testUserMapClear()
 	defer resetAdminEmails()
 
@@ -109,9 +109,23 @@ func TestAdminGetStats_OK(t *testing.T) {
 	mockReq.EXPECT().Header(gomock.Eq("Authorization")).Return(authorization)
 
 	is := is.New(t)
-	res, err := AdminGetStats(req)
+	res, err := handler(req)
 	is.NotErr(err)
 	is.NotNil(res)
+
+	return res
+}
+
+func TestAdminGetStats(t *testing.T) {
+	handler := AdminGetStats
+
+	testAdmin_Unauthenticated(t, handler)
+	testAdmin_NotAdmin(t, handler)
+	testAdmin_EmailNotConfirmed(t, handler)
+
+	res := testAdmin_OK(t, handler)
+
+	is := is.New(t)
 	is.NotNil(res.Data)
 	dataMap := res.Data.(map[string]interface{})
 	locked_resource_count := dataMap["locked_resource_count"]
