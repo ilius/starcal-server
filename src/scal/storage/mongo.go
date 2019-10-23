@@ -97,8 +97,8 @@ func (db *MongoDatabase) First(
 	return db.C(model.Collection()).Find(cond).Sort(sortBy).One(model)
 }
 
-func (db *MongoDatabase) FindCount(colName string, cond scal.M) (int, error) {
-	return db.C(colName).Find(cond).Count()
+func (db *MongoDatabase) FindCount(collection string, cond scal.M) (int, error) {
+	return db.C(collection).Find(cond).Count()
 }
 
 func (db *MongoDatabase) FindAll(result interface{}, in *FindInput) error {

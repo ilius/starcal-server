@@ -53,7 +53,7 @@ type Database interface {
 	RemoveAll(collection string, cond scal.M) (count int, err error)
 	Get(model hasCollectionUniqueM) error
 	First(cond scal.M, sortBy string, model hasCollection) error
-	FindCount(colName string, cond scal.M) (int, error)
+	FindCount(collection string, cond scal.M) (count int, err error)
 	FindAll(result interface{}, input *FindInput) error
 	PipeIter(collection string, pipeline *[]scal.M) (
 		next func(result interface{}) error,
