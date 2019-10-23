@@ -1,3 +1,4 @@
+// Do not modify this file, it's auto-generated
 package event_lib
 
 import "scal/storage"

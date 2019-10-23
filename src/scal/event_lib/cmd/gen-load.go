@@ -54,7 +54,8 @@ func main() {
 	// 	panic(err)
 	// }
 
-	src := `package event_lib
+	src := `// Do not modify this file, it's auto-generated
+package event_lib
 import "scal/storage"
 	`
 	for _, capEventType := range capEventTypes {
