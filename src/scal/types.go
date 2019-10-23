@@ -1,6 +1,6 @@
 package scal
 
-type M map[string]interface{}
+type M = map[string]interface{}
 
 type MErr struct {
 	M
