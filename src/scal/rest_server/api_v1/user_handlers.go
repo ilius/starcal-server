@@ -26,16 +26,6 @@ func init() {
 				Pattern: "full-name",
 				Handler: UnsetUserFullName,
 			},
-			"GetUserInfo": {
-				Method:  "GET",
-				Pattern: "info",
-				Handler: GetUserInfo,
-			},
-			"GetUserLoginHistory": {
-				Method:  "GET",
-				Pattern: "login-history",
-				Handler: GetUserLoginHistory,
-			},
 			"SetUserDefaultGroupId": {
 				Method:  "PUT",
 				Pattern: "default-group",
@@ -45,6 +35,16 @@ func init() {
 				Method:  "DELETE",
 				Pattern: "default-group",
 				Handler: UnsetUserDefaultGroupId,
+			},
+			"GetUserInfo": {
+				Method:  "GET",
+				Pattern: "info",
+				Handler: GetUserInfo,
+			},
+			"GetUserLoginHistory": {
+				Method:  "GET",
+				Pattern: "login-history",
+				Handler: GetUserLoginHistory,
 			},
 			"GetUserDataFull": {
 				Method:  "GET",
