@@ -1,6 +1,7 @@
 package api_v1
 
 import (
+	"scal"
 	"scal/event_lib"
 	"scal/storage"
 	"scal/user_lib"
@@ -37,6 +38,7 @@ type TestHelper struct {
 	db           storage.Database           // set on Start()
 	userModel    *user_lib.UserModel        // set on Start()
 	defaultGroup *event_lib.EventGroupModel // set on Start()
+	startTime    *time.Time                 // set on Start()
 
 	mockControllers []*gomock.Controller // added to in NewRequestMock
 }
@@ -47,6 +49,8 @@ func (h *TestHelper) SetUserAuth(userAuth string) {
 
 func (h *TestHelper) Start() {
 	var err error
+	now := time.Now()
+	h.startTime = &now
 	h.is = is.New(h.t)
 	h.db, err = storage.GetDB()
 	if err != nil {
@@ -165,6 +169,21 @@ func (h *TestHelper) deleteUser() {
 			panic(err)
 		}
 	}
+}
+
+func (h *TestHelper) RemoveLoginHistory() {
+	startTime := *h.startTime
+	db := h.db
+	count, err := db.RemoveAll(storage.C_userLogins, scal.M{
+		"email": h.userEmail,
+		"time": scal.M{
+			"$gte": startTime,
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	h.t.Logf("Removed %d login entries", count)
 }
 
 func (h *TestHelper) Finish() {

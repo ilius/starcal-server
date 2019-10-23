@@ -95,14 +95,12 @@ func TestGetUserInfo(t *testing.T) {
 	}
 }
 
-func addLoginHistory(h *TestHelper, count int, delta time.Duration, remoteIp string) {
-	now := time.Now()
-	start := now.Add(-time.Duration(count) * delta)
+func addLoginHistory(h *TestHelper, count int, sleep time.Duration, remoteIp string) {
 	db := h.DB()
 	userModel := h.UserModel()
 	for i := 0; i < count; i++ {
 		err := db.Insert(&user_lib.UserLoginAttemptModel{
-			Time:       start.Add(time.Duration(i) * delta),
+			Time:       time.Now(),
 			UserId:     userModel.Id,
 			Email:      userModel.Email,
 			RemoteIp:   remoteIp,
@@ -111,6 +109,7 @@ func addLoginHistory(h *TestHelper, count int, delta time.Duration, remoteIp str
 		if err != nil {
 			panic(err)
 		}
+		time.Sleep(sleep)
 	}
 }
 
@@ -141,13 +140,14 @@ func TestGetUserLoginHistoryFull(t *testing.T) {
 	email := "a5@dummy.com"
 	remoteIp := "127.0.0.1"
 	loginsCount := 15
-	delta := time.Second
+	sleep := 100 * time.Millisecond
 
 	h := NewTestHelper(t, email)
 	defer h.Finish()
+	defer h.RemoveLoginHistory()
 	h.Start()
 
-	addLoginHistory(h, loginsCount, delta, remoteIp)
+	addLoginHistory(h, loginsCount, sleep, remoteIp)
 
 	is := h.Is()
 	userId := h.UserModel().Id
@@ -176,13 +176,14 @@ func TestGetUserLoginHistoryLimit1(t *testing.T) {
 	email := "a6@dummy.com"
 	remoteIp := "127.0.0.1"
 	loginsCount := 25
-	delta := time.Second
+	sleep := 100 * time.Millisecond
 
 	h := NewTestHelper(t, email)
 	defer h.Finish()
+	defer h.RemoveLoginHistory()
 	h.Start()
 
-	addLoginHistory(h, loginsCount, delta, remoteIp)
+	addLoginHistory(h, loginsCount, sleep, remoteIp)
 
 	is := h.Is()
 	userId := h.UserModel().Id
@@ -211,13 +212,14 @@ func TestGetUserLoginHistoryLimit2(t *testing.T) {
 	email := "a7@dummy.com"
 	remoteIp := "127.0.0.1"
 	loginsCount := 10
-	delta := time.Second
+	sleep := 100 * time.Millisecond
 
 	h := NewTestHelper(t, email)
 	defer h.Finish()
+	defer h.RemoveLoginHistory()
 	h.Start()
 
-	addLoginHistory(h, loginsCount, delta, remoteIp)
+	addLoginHistory(h, loginsCount, sleep, remoteIp)
 
 	is := h.Is()
 	userId := h.UserModel().Id
