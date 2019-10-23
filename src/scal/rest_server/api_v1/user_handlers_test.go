@@ -3,6 +3,7 @@ package api_v1
 import (
 	"scal/user_lib"
 	"testing"
+	"time"
 
 	"github.com/ilius/ripo"
 )
@@ -91,5 +92,152 @@ func TestGetUserInfo(t *testing.T) {
 		is.Nil(dataMap["lastLogoutTime"])
 		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
 		is.Equal(len(lastLogins), 0)
+	}
+}
+
+func addLoginHistory(h *TestHelper, count int, delta time.Duration, remoteIp string) {
+	now := time.Now()
+	start := now.Add(-time.Duration(count) * delta)
+	db := h.DB()
+	userModel := h.UserModel()
+	for i := 0; i < count; i++ {
+		err := db.Insert(&user_lib.UserLoginAttemptModel{
+			Time:       start.Add(time.Duration(i) * delta),
+			UserId:     userModel.Id,
+			Email:      userModel.Email,
+			RemoteIp:   remoteIp,
+			Successful: true,
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func TestGetUserLoginHistoryEmpty(t *testing.T) {
+	email := "a4@dummy.com"
+
+	h := NewTestHelper(t, email)
+	defer h.Finish()
+	h.Start()
+
+	is := h.Is()
+	{
+		req, mockReq := h.NewRequestMock(true, "")
+		mockReq.EXPECT().GetIntDefault("limit", 20).Return(20, nil)
+		res, err := GetUserLoginHistory(req)
+		if err != nil {
+			rpcErr := err.(ripo.RPCError)
+			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
+		}
+		is.NotNil(res)
+		dataMap := res.Data.(map[string]interface{})
+		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
+		is.Equal(len(lastLogins), 0)
+	}
+}
+
+func TestGetUserLoginHistoryFull(t *testing.T) {
+	email := "a5@dummy.com"
+	remoteIp := "127.0.0.1"
+	loginsCount := 15
+	delta := time.Second
+
+	h := NewTestHelper(t, email)
+	defer h.Finish()
+	h.Start()
+
+	addLoginHistory(h, loginsCount, delta, remoteIp)
+
+	is := h.Is()
+	userId := h.UserModel().Id
+	{
+		req, mockReq := h.NewRequestMock(true, "")
+		mockReq.EXPECT().GetIntDefault("limit", 20).Return(20, nil)
+		res, err := GetUserLoginHistory(req)
+		if err != nil {
+			rpcErr := err.(ripo.RPCError)
+			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
+		}
+		is.NotNil(res)
+		dataMap := res.Data.(map[string]interface{})
+		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
+		is.Equal(len(lastLogins), loginsCount)
+		for _, m := range lastLogins {
+			is.Equal(m.UserId, userId)
+			is.Equal(m.Email, email)
+			is.Equal(m.RemoteIp, remoteIp)
+			is.True(m.Successful)
+		}
+	}
+}
+
+func TestGetUserLoginHistoryLimit1(t *testing.T) {
+	email := "a6@dummy.com"
+	remoteIp := "127.0.0.1"
+	loginsCount := 25
+	delta := time.Second
+
+	h := NewTestHelper(t, email)
+	defer h.Finish()
+	h.Start()
+
+	addLoginHistory(h, loginsCount, delta, remoteIp)
+
+	is := h.Is()
+	userId := h.UserModel().Id
+	{
+		req, mockReq := h.NewRequestMock(true, "")
+		mockReq.EXPECT().GetIntDefault("limit", 20).Return(20, nil)
+		res, err := GetUserLoginHistory(req)
+		if err != nil {
+			rpcErr := err.(ripo.RPCError)
+			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
+		}
+		is.NotNil(res)
+		dataMap := res.Data.(map[string]interface{})
+		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
+		is.Equal(len(lastLogins), 20)
+		for _, m := range lastLogins {
+			is.Equal(m.UserId, userId)
+			is.Equal(m.Email, email)
+			is.Equal(m.RemoteIp, remoteIp)
+			is.True(m.Successful)
+		}
+	}
+}
+
+func TestGetUserLoginHistoryLimit2(t *testing.T) {
+	email := "a7@dummy.com"
+	remoteIp := "127.0.0.1"
+	loginsCount := 10
+	delta := time.Second
+
+	h := NewTestHelper(t, email)
+	defer h.Finish()
+	h.Start()
+
+	addLoginHistory(h, loginsCount, delta, remoteIp)
+
+	is := h.Is()
+	userId := h.UserModel().Id
+	{
+		req, mockReq := h.NewRequestMock(true, "")
+		mockReq.EXPECT().GetIntDefault("limit", 20).Return(7, nil)
+		res, err := GetUserLoginHistory(req)
+		if err != nil {
+			rpcErr := err.(ripo.RPCError)
+			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
+		}
+		is.NotNil(res)
+		dataMap := res.Data.(map[string]interface{})
+		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
+		is.Equal(len(lastLogins), 7)
+		for _, m := range lastLogins {
+			is.Equal(m.UserId, userId)
+			is.Equal(m.Email, email)
+			is.Equal(m.RemoteIp, remoteIp)
+			is.True(m.Successful)
+		}
 	}
 }

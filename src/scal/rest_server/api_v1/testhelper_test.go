@@ -61,6 +61,10 @@ func (h *TestHelper) Is() *is.Is {
 	return h.is
 }
 
+func (h *TestHelper) DB() storage.Database {
+	return h.db
+}
+
 func (h *TestHelper) UserModel() *user_lib.UserModel {
 	return h.userModel
 }
