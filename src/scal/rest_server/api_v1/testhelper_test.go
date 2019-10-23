@@ -41,6 +41,10 @@ type TestHelper struct {
 	mockControllers []*gomock.Controller // added to in NewRequestMock
 }
 
+func (h *TestHelper) SetUserAuth(userAuth string) {
+	h.userAuth = userAuth
+}
+
 func (h *TestHelper) Start() {
 	var err error
 	h.is = is.New(h.t)
@@ -77,10 +81,12 @@ func (h *TestHelper) createUser() {
 		TokenIssuedAt:  &now,
 	}
 
-	if testUserMap == nil {
-		testUserMap = map[string]*user_lib.UserModel{}
+	if h.userAuth != "" {
+		if testUserMap == nil {
+			testUserMap = map[string]*user_lib.UserModel{}
+		}
+		testUserMap[h.userAuth] = h.userModel
 	}
-	testUserMap[h.userAuth] = h.userModel
 
 	h.defaultGroup = &event_lib.EventGroupModel{
 		Id:         bson.NewObjectId().Hex(),
