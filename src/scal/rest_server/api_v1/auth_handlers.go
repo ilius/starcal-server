@@ -494,7 +494,7 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 	tokenModel := ResetPasswordTokenModel{
-		SpecialUserTokenModel{
+		SpecialUserTokenModel: SpecialUserTokenModel{
 			Token: *resetPasswordToken,
 		},
 	}
@@ -648,10 +648,10 @@ func sendEmailConfirmation(req Request, userModel *UserModel) error {
 	emailBody := buf.String()
 	fmt.Println(emailBody)
 	err = scal.SendEmail(&scal.SendEmailInput{
-		email,
-		"StarCalendar Email Confirmation",
-		false, // isHtml
-		emailBody,
+		To:      email,
+		Subject: "StarCalendar Email Confirmation",
+		IsHtml:  false,
+		Body:    emailBody,
 	})
 	if err != nil {
 		log.Error("Failed to send email:\n", emailBody)
