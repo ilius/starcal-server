@@ -89,7 +89,7 @@ func ForbiddenError(publicMsg string, err error) RPCError {
 }
 
 func isGoTest() bool {
-	return strings.HasSuffix(os.Args[0], ".test") // OR strings.Contains(os.Args[0], "/_test/")
+	return strings.HasSuffix(os.Args[0], ".test")
 }
 
 func CheckAuth(req Request) (*UserModel, error) {
