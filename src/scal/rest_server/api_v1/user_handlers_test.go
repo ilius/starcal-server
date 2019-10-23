@@ -1,7 +1,10 @@
 package api_v1
 
 import (
+	"scal/user_lib"
 	"testing"
+
+	"github.com/ilius/ripo"
 )
 
 func TestUserFullName(t *testing.T) {
@@ -60,5 +63,33 @@ func TestUserDefaultGroupId(t *testing.T) {
 		is.NotErr(err)
 		is.NotNil(res)
 		is.Nil(h.UserModel().DefaultGroupId)
+	}
+}
+
+func TestGetUserInfo(t *testing.T) {
+	email := "a3@dummy.com"
+
+	h := NewTestHelper(t, email)
+	defer h.Finish()
+	h.Start()
+
+	is := h.Is()
+
+	{
+		req, _ := h.NewRequestMock(true, "")
+		res, err := GetUserInfo(req)
+		if err != nil {
+			rpcErr := err.(ripo.RPCError)
+			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
+		}
+		is.NotNil(res)
+		dataMap := res.Data.(map[string]interface{})
+		is.Equal(dataMap["email"], email)
+		is.Equal(dataMap["defaultGroupId"], h.DefaultGroup().Id)
+		is.Equal(dataMap["fullName"], "")
+		is.Equal(dataMap["emailConfirmed"], false)
+		is.Nil(dataMap["lastLogoutTime"])
+		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
+		is.Equal(len(lastLogins), 0)
 	}
 }
