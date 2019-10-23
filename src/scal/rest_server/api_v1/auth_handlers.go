@@ -148,7 +148,7 @@ func RegisterUser(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 
-	err = sendEmailConfirmation(req, userModel)
+	err = sendEmailConfirmation(req, userModel, remoteIp)
 	if err != nil {
 		// FIXME: call error dispatcher (to save to mongo), but don't return error
 		log.Error(err)
@@ -599,12 +599,8 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	return &Response{}, nil
 }
 
-func sendEmailConfirmation(req Request, userModel *UserModel) error {
+func sendEmailConfirmation(req Request, userModel *UserModel, remoteIp string) error {
 	email := userModel.Email
-	remoteIp, err := req.RemoteIP()
-	if err != nil {
-		return err
-	}
 
 	now := time.Now()
 	exp := now.Add(time.Duration(60) * time.Minute)
@@ -661,6 +657,10 @@ func sendEmailConfirmation(req Request, userModel *UserModel) error {
 }
 
 func ConfirmEmailRequest(req Request) (*Response, error) {
+	remoteIp, err := req.RemoteIP()
+	if err != nil {
+		return nil, err
+	}
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -672,7 +672,7 @@ func ConfirmEmailRequest(req Request) (*Response, error) {
 			},
 		}, nil
 	}
-	err = sendEmailConfirmation(req, userModel)
+	err = sendEmailConfirmation(req, userModel, remoteIp)
 	if err != nil {
 		return nil, err
 	}
