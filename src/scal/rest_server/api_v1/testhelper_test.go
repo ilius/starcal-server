@@ -71,6 +71,7 @@ func (h *TestHelper) createUser() {
 	email := h.userEmail
 	now := time.Now()
 	h.userModel = &user_lib.UserModel{
+		Id:             bson.NewObjectId().Hex(),
 		Email:          email,
 		EmailConfirmed: h.emailConfirmed,
 		TokenIssuedAt:  &now,
