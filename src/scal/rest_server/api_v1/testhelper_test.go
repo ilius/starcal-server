@@ -16,9 +16,13 @@ import (
 )
 
 func NewTestHelper(t *testing.T, userEmail string) *TestHelper {
-	userAuth, err := utils.GenerateRandomBase64String(16)
-	if err != nil {
-		panic(err)
+	userAuth := ""
+	if userEmail != "" {
+		var err error
+		userAuth, err = utils.GenerateRandomBase64String(16)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return &TestHelper{
 		t:         t,
@@ -168,6 +172,17 @@ func (h *TestHelper) deleteUser() {
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func (h *TestHelper) DeleteUserByEmail(email string) {
+	userModel := &user_lib.UserModel{
+		Email: email,
+	}
+	db := h.db
+	err := db.Remove(userModel)
+	if err != nil {
+		panic(err)
 	}
 }
 
