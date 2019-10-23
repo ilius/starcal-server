@@ -71,6 +71,17 @@ func (db *MongoDatabase) Remove(model hasCollectionUniqueM) error {
 	)
 }
 
+func (db *MongoDatabase) RemoveAll(collection string, cond scal.M) (int, error) {
+	info, err := db.C(collection).RemoveAll(
+		cond,
+	)
+	count := 0
+	if info != nil {
+		count = info.Removed
+	}
+	return count, err
+}
+
 // func (db *MongoDatabase) Find(interface{})
 func (db *MongoDatabase) Get(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Find(

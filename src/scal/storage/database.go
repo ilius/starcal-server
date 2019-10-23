@@ -50,6 +50,7 @@ type Database interface {
 	Update(model hasCollectionUniqueM) error
 	Upsert(model hasCollectionUniqueM) error
 	Remove(model hasCollectionUniqueM) error
+	RemoveAll(collection string, cond scal.M) (count int, err error)
 	Get(model hasCollectionUniqueM) error
 	First(cond scal.M, sortBy string, model hasCollection) error
 	FindCount(colName string, cond scal.M) (int, error)
