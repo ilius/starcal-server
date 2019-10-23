@@ -93,6 +93,27 @@ func (h *TestHelper) createUser() {
 	}
 }
 
+func (h *TestHelper) DefaultGroup() *event_lib.EventGroupModel {
+	return h.defaultGroup
+}
+
+func (h *TestHelper) CreateGroup(title string) *event_lib.EventGroupModel {
+	groupModel := &event_lib.EventGroupModel{}
+
+	groupId := bson.NewObjectId().Hex()
+	groupModel.Id = groupId
+	groupModel.OwnerEmail = h.userEmail
+	groupModel.Title = title
+	// groupModel.AddAccessEmails = addAccessEmails
+	// groupModel.ReadAccessEmails = readAccessEmails
+
+	err := h.db.Insert(groupModel)
+	if err != nil {
+		panic(err)
+	}
+	return groupModel
+}
+
 func (h *TestHelper) NewRequestMock(authHeader bool, remoteIp string) (ExtendedRequest, *MockExtendedRequest) {
 	ctrl := gomock.NewController(h.t)
 	h.mockControllers = append(h.mockControllers, ctrl)
