@@ -10,14 +10,19 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/golang/mock/gomock"
 	"github.com/ilius/is"
+	"github.com/ilius/libgostarcal/utils"
 	. "github.com/ilius/ripo"
 )
 
 func NewTestHelper(t *testing.T, userEmail string) *TestHelper {
+	userAuth, err := utils.GenerateRandomBase64String(16)
+	if err != nil {
+		panic(err)
+	}
 	return &TestHelper{
 		t:         t,
 		userEmail: userEmail,
-		userAuth:  "abcd",
+		userAuth:  userAuth,
 	}
 }
 
