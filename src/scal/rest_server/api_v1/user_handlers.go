@@ -302,7 +302,7 @@ func GetUserInfo(req Request) (*Response, error) {
 		Data: scal.M{
 			"email":          email,
 			"fullName":       userModel.FullName,
-			"defaultGroupId": *userModel.DefaultGroupId,
+			"defaultGroupId": userModel.DefaultGroupId, // pointer can be nil / null
 			"emailConfirmed": userModel.EmailConfirmed,
 			//"locked": userModel.Locked,
 
