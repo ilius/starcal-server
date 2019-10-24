@@ -37,6 +37,7 @@ type TestHelper struct {
 	userEmail      string // set in NewTestHelper
 	userAuth       string // set in NewTestHelper
 	emailConfirmed bool   // set in SetEmailConfirmed
+	userPassword   string // set in SetUserPassword, it's the hash
 
 	is           *is.Is                     // set on Start()
 	db           storage.Database           // set on Start()
@@ -82,6 +83,14 @@ func (h *TestHelper) SetEmailConfirmed(emailConfirmed bool) *TestHelper {
 	return h
 }
 
+func (h *TestHelper) SetUserPassword(password string) {
+	passwordHash, err := GetPasswordHash(h.userEmail, password)
+	if err != nil {
+		panic(err)
+	}
+	h.userPassword = passwordHash
+}
+
 func (h *TestHelper) createUser() {
 	db := h.db
 	email := h.userEmail
@@ -91,6 +100,7 @@ func (h *TestHelper) createUser() {
 		Email:          email,
 		EmailConfirmed: h.emailConfirmed,
 		TokenIssuedAt:  &now,
+		Password:       h.userPassword,
 	}
 
 	if h.userAuth != "" {
