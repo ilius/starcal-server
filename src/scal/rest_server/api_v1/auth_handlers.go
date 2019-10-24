@@ -311,7 +311,10 @@ func Logout(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	userModel.LastLogoutTime = &now
-	db.Update(userModel)
+	err = db.Update(userModel)
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
 	return &Response{}, nil
 }
 
