@@ -1,3 +1,4 @@
+//go:generate $GOPATH/src/scal/rest_server/gen -event-type {{.EVENT_TYPE}}
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
 package api_v1
@@ -5,10 +6,10 @@ package api_v1
 import (
 	"crypto/sha1"
 	"encoding/json"
-    "fmt"
+	"fmt"
 	"reflect"
-    "strings"
-    "time"
+	"strings"
+	"time"
 
 	"scal/event_lib"
 	"scal/settings"

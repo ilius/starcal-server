@@ -1,3 +1,4 @@
+//go:generate $GOPATH/src/scal/rest_server/gen -event-type custom
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Django template file named `*.got` inside "templates" directory
 package api_v1

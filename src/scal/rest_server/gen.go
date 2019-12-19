@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -19,8 +19,8 @@ import (
 	"github.com/kardianos/osext"
 )
 
-// format file (with go fmt or goreturns)
-var enableFormatGoFile = true
+// disable formatting file (with go fmt or goreturns)
+var disableFormatGoFile = true
 
 // no flag for it for now
 var useGoreturns = true
@@ -46,6 +46,8 @@ var activeEventModels = []interface{}{
 
 var formatWaitGroup sync.WaitGroup
 
+var eventModelByEventType = map[string]interface{}{}
+
 func init() {
 	var err error
 	myDir, err = osext.ExecutableFolder()
@@ -55,8 +57,9 @@ func init() {
 	apiDir = filepath.Join(myDir, "api_v1")
 	myParentDir = filepath.Dir(myDir)
 	templatesDir = filepath.Join(myParentDir, "templates")
-	if len(os.Args) > 1 && os.Args[1] == "--no-fmt" {
-		enableFormatGoFile = false
+	for _, eventModel := range activeEventModels {
+		eventType := eventModel.(WithType).Type()
+		eventModelByEventType[eventType] = eventModel
 	}
 }
 
@@ -146,7 +149,7 @@ type EventHandlersTemplateParams struct {
 
 var emptyLineRE = regexp.MustCompile(`(?m)^\s+\n`)
 
-func genEventTypeHandlers() {
+func genEventTypeHandlers(eventType string) {
 	tpl_path := path.Join(templatesDir, "event_handlers.go.tpl")
 	tpl_bytes, err := ioutil.ReadFile(tpl_path)
 	if err != nil {
@@ -158,8 +161,15 @@ func genEventTypeHandlers() {
 		panic(err)
 	}
 
+	eventModels := activeEventModels
+	if eventType != "" {
+		eventModels = []interface{}{
+			eventModelByEventType[eventType],
+		}
+	}
+
 	basePatchParams := extractModelPatchParams(event_lib.BaseEventModel{})
-	for _, eventModel := range activeEventModels {
+	for _, eventModel := range eventModels {
 		eventType := eventModel.(WithType).Type()
 		eventTypeCap := upperFirstLetter(eventType)
 		typePatchParams := append(basePatchParams, extractModelPatchParams(eventModel)...)
@@ -181,7 +191,7 @@ func genEventTypeHandlers() {
 		if err != nil {
 			panic(err)
 		}
-		if enableFormatGoFile {
+		if !disableFormatGoFile {
 			formatWaitGroup.Add(1)
 			go genlib.FormatGoFile(goPath, &formatWaitGroup, useGoreturns)
 		}
@@ -189,6 +199,13 @@ func genEventTypeHandlers() {
 }
 
 func main() {
-	genEventTypeHandlers()
+	eventType := ""
+	flag.StringVar(&eventType, "event-type", "", "Event Type")
+
+	flag.BoolVar(&disableFormatGoFile, "no-fmt", false, "Do not run format Go files")
+
+	flag.Parse()
+
+	genEventTypeHandlers(eventType)
 	formatWaitGroup.Wait()
 }
