@@ -93,6 +93,7 @@ func isGoTest() bool {
 }
 
 func CheckAuth(req Request) (*UserModel, error) {
+	log.Debug(req.HandlerName())
 	authHeader := req.Header("Authorization")
 	if authHeader == "" {
 		return nil, AuthError(errTokenNotFound)
