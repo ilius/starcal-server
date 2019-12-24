@@ -10,6 +10,9 @@ KEEP_SETTINGS_GO = False
 LOG_LEVEL = "DEBUG"
 # allowed values for LOG_LEVEL: "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "NOTSET"
 
+LOG_FORMAT = "%(asctime)s %(levelname)s: %(name)s: %(filename)s:%(lineno)d: %(message)s"
+LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%3n"
+
 MONGO_HOST = "127.0.0.1:27017"
 MONGO_DB_NAME = "starcal"
 MONGO_USERNAME = ""
