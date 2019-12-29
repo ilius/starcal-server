@@ -120,6 +120,7 @@ constLines = [
 	"\tHOST = " + json.dumps(hostName),
 ]
 varLines = []
+zeroValueLines = []
 printLines = [
 	'\tfmt.Printf("HOST=%#v\\n", HOST)'
 ]
@@ -128,9 +129,15 @@ importLines = set(["fmt"])
 
 for param, value in sorted(settingsDict.items()):
 	valueType = type(value)
-	if valueType in (str, int, float, bool):
+	zeroValue = ""
+	if valueType in goZeroValueByType:
 		constLines.append(f"\t{param} = {json.dumps(value)}")
+		zeroValue = goZeroValueByType[valueType]
 	elif isinstance(value, GoExpr):
+		if value.getPyType() in goZeroValueByType:
+			zeroValue = goZeroValueByType[value.getPyType()]
+		else:
+			zeroValue = value.getGoType() + "{}"  # for maps and slices
 		varLines.append(f"\t{param} = {value.getExpr()}")
 		importLines.update(set(value.getImports()))
 	elif valueType == list:
@@ -152,7 +159,9 @@ for param, value in sorted(settingsDict.items()):
 			print(f"List {param} has more than one item type: {list(itemTypes)!r}")
 			sys.exit(1)
 
-		valueGo = "[]" + itemTypes.pop() + "{" + ", ".join(itemValuesGo) + "}"
+		typeGo = "[]" + itemTypes.pop()
+		zeroValue = typeGo + "{}"
+		valueGo = typeGo + "{" + ", ".join(itemValuesGo) + "}"
 		varLines.append(f"\t{param} = {valueGo}")
 	elif valueType == dict:
 		keysValuesGo = {}
@@ -186,6 +195,7 @@ for param, value in sorted(settingsDict.items()):
 		keyType = keyTypes.pop()
 		valueType = valueTypes.pop()
 		typeGo = f"map[{keyType}]{valueType}"
+		zeroValue = typeGo + "{}"
 		valueGo = typeGo + "{" + "".join(
 			"\n\t\t" + k + ": " + v + ","
 			for k, v in keysValuesGo.items()
@@ -203,7 +213,10 @@ for param, value in sorted(settingsDict.items()):
 		continue
 	if param in secretSettingsParams:
 		continue
+	if zeroValue:
+		zeroValueLines.append(f'\t"{param}": {zeroValue},')
 	printLines.append('\tfmt.Printf("%s=%%#v\\n", %s)' % (param, param))
+
 
 
 importBlock = "import (\n" + "\n".join(
@@ -213,6 +226,7 @@ importBlock = "import (\n" + "\n".join(
 
 constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
 varBlock = "var (\n" + "\n".join(varLines) + "\n)\n"
+zeroValuesBlock = "var ZeroValues = map[string]interface{}{\n" + "\n".join(zeroValueLines) + "\n}"
 printFunc = "func PrintSettings() {\n" + "\n".join(printLines) + "\n}"
 
 #print(constBlock)
@@ -228,6 +242,8 @@ package settings
 {constBlock}
 
 {varBlock}
+
+{zeroValuesBlock}
 
 {printFunc}""")
 

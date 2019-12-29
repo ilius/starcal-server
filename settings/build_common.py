@@ -21,6 +21,14 @@ from prompt_toolkit.completion.word_completer import WordCompleter
 
 import defaults
 
+
+goZeroValueByType = {
+	str: '""',
+	int: "0",
+	float: "0.0",
+	bool: "false",
+}
+
 secretSettingsParams = {
 	"MONGO_PASSWORD",
 	"PASSWORD_SALT",
