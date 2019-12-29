@@ -198,7 +198,7 @@ for param, value in sorted(settingsDict.items()):
 		zeroValue = typeGo + "{}"
 		valueGo = typeGo + "{" + "".join(
 			"\n\t\t" + k + ": " + v + ","
-			for k, v in keysValuesGo.items()
+			for k, v in sorted(keysValuesGo.items())
 		) + "\n\t}"
 		varLines.append(f"\t{param} = {valueGo}")
 	else:
