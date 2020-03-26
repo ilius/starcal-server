@@ -225,7 +225,7 @@ func AddDailyNote(req Request) (*Response, error) {
 		"icon":                 now,
 		"summaryEncrypted":     now,
 		"descriptionEncrypted": now,
-		"jd": now,
+		"jd":                   now,
 	}
 	err = db.Insert(eventMeta)
 	if err != nil {
