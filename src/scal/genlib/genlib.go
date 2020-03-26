@@ -46,6 +46,10 @@ func RunCommand3(name string, args ...string) (stdout string, stderr string, exi
 }
 
 func FormatGoFile(fpath string, waitGroup *sync.WaitGroup, useGoreturns bool) {
+	// TODO:
+	// if !useGoreturns {
+	//    // use format.Source from "go/format"
+	// }
 	if waitGroup != nil {
 		defer waitGroup.Done()
 	}
