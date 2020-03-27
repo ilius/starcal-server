@@ -3,6 +3,7 @@ package api_v1
 import (
 	"sort"
 	"sync"
+	"scal/settings"
 )
 
 const (
@@ -81,6 +82,9 @@ func (rl *ResourceLocker) Resource(resType int, resId string) (bool, func()) {
 	defer mutex.Unlock()
 	if lockedMap[resId] {
 		return true, nil
+	}
+	if settings.RESOURCE_LOCK_REDIS_ENABLE {
+		// TODO: redis lock
 	}
 	lockedMap[resId] = true
 	return false, func() {

@@ -67,3 +67,6 @@
 [submodule "src/golang.org/x/sys"]
 	path = src/golang.org/x/sys
 	url = https://github.com/golang/sys
+[submodule "src/github.com/go-redsync/redsync"]
+	path = src/github.com/go-redsync/redsync
+	url = https://github.com/go-redsync/redsync
