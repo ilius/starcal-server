@@ -3,6 +3,8 @@ package genlib
 import (
 	"bytes"
 	"fmt"
+	"go/format"
+	"io/ioutil"
 	"os/exec"
 	"strings"
 	"sync"
@@ -45,21 +47,32 @@ func RunCommand3(name string, args ...string) (stdout string, stderr string, exi
 	return
 }
 
+func formatGoFileBuiltin(fpath string) {
+	src, err := ioutil.ReadFile(fpath)
+	if err != nil {
+		panic(err)
+	}
+	src2, err2 := format.Source(src)
+	if err2 != nil {
+		panic(err2)
+	}
+	err3 := ioutil.WriteFile(fpath, src2, 0644)
+	if err3 != nil {
+		panic(err3)
+	}
+}
+
 func FormatGoFile(fpath string, waitGroup *sync.WaitGroup, useGoreturns bool) {
-	// TODO:
-	// if !useGoreturns {
-	//    // use format.Source from "go/format"
-	// }
 	if waitGroup != nil {
 		defer waitGroup.Done()
 	}
 	fmt.Println("formatting", fpath)
-	var cmdParts []string
-	if useGoreturns {
-		cmdParts = []string{"goreturns", "-w", fpath}
-	} else {
-		cmdParts = []string{"go", "fmt", fpath}
+	defer fmt.Println("formatted", fpath)
+	if !useGoreturns {
+		formatGoFileBuiltin(fpath)
+		return
 	}
+	cmdParts := []string{"goreturns", "-w", fpath}
 	stdout, stderr, exitCode := RunCommand3(cmdParts[0], cmdParts[1:len(cmdParts)]...)
 	stdout = strings.TrimSpace(stdout)
 	if stdout != "" {
@@ -71,5 +84,4 @@ func FormatGoFile(fpath string, waitGroup *sync.WaitGroup, useGoreturns bool) {
 		}
 		panic(fmt.Sprintf("goreturns exited with status %v", exitCode))
 	}
-	fmt.Println("formatted", fpath)
 }
