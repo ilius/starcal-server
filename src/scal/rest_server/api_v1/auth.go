@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"scal/settings"
+	"scal/storage"
 	. "scal/user_lib"
 	"strings"
 	"time"
@@ -123,7 +124,11 @@ func CheckAuth(req Request) (*UserModel, error) {
 	if email == "" {
 		return nil, AuthError(fmt.Errorf("Error parsing token: Empty 'email'"))
 	}
-	userModel := UserModelByEmail(email, globalDb)
+	db, err := storage.GetDB()
+	if err != nil {
+		return nil, NewError(Internal, "", err)
+	}
+	userModel := UserModelByEmail(email, db)
 	if userModel == nil {
 		// SetHttpErrorUserNotFound(w, email) // FIXME
 		return nil, AuthError(fmt.Errorf("Error parsing token: Bad 'email'"))

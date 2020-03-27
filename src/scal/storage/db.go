@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"time"
 
 	mgo "github.com/globalsign/mgo"
@@ -10,9 +11,13 @@ import (
 var db *MongoDatabase
 
 func GetDB() (Database, error) {
-	if db != nil {
-		return db, nil
+	if db == nil {
+		return nil, fmt.Errorf("database is not initialized")
 	}
+	return db, nil
+}
+
+func InitDB() {
 	mongoDBDialInfo := &mgo.DialInfo{
 		Addrs:    []string{settings.MONGO_HOST},
 		Timeout:  2 * time.Second,
@@ -25,7 +30,7 @@ func GetDB() (Database, error) {
 	// to our MongoDB.
 	mongoSession, err := mgo.DialWithInfo(mongoDBDialInfo)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	// Reads may not be entirely up-to-date, but they will always see the
@@ -38,5 +43,4 @@ func GetDB() (Database, error) {
 	db = &MongoDatabase{
 		*mongoSession.DB(settings.MONGO_DB_NAME),
 	}
-	return db, nil
 }

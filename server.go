@@ -19,6 +19,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	storage.InitDB()
 	storage.EnsureIndexes()
 	api_v1.SetMongoErrorDispatcher()
 	api_v1.StartAPIv1Server()
