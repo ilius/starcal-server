@@ -111,6 +111,9 @@ func RegisterUser(req Request) (*Response, error) {
 
 	// add new field userModel.PasswordHash, FIXME
 	userModel.Password = passwordHash
+
+	userModel.Id = bson.NewObjectId().Hex()
+
 	defaultGroup := event_lib.EventGroupModel{
 		Id:         bson.NewObjectId().Hex(),
 		Title:      userModel.Email,
