@@ -451,7 +451,7 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 	buf := bytes.NewBufferString("")
 	err = tpl.Execute(buf, ResetPasswordRequestTemplateParams{
 		ResetPasswordTokenModel: tokenModel,
-		Host: settings.HOST,
+		Host:                    settings.HOST,
 	})
 	if err != nil {
 		return nil, NewError(Internal, "", err)

@@ -11,14 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexandrevicenzi/unchained"
 	jwt "github.com/dgrijalva/jwt-go"
 	. "github.com/ilius/ripo"
-	"golang.org/x/crypto/bcrypt"
 )
 
 const TOKEN_CONTEXT = "user"
-
-const PASSWORD_HASH_COST = 14
 
 var (
 	errTokenNotFound       = errors.New("JWT Authorization token not found")
@@ -200,33 +198,22 @@ func AdminCheckAuth(req Request) (*UserModel, error) {
 }
 
 func GetPasswordHash(email string, password string) (string, error) {
-	pwHash, err := bcrypt.GenerateFromPassword(
-		[]byte(
-			fmt.Sprintf(
-				"%s:%s:%s",
-				email,
-				settings.PASSWORD_SALT,
-				password,
-			),
-		),
-		PASSWORD_HASH_COST,
+	return unchained.MakePassword(
+		password,
+		"", // BCrypt does not take salt as input
+		unchained.BCryptHasher,
 	)
-	return string(pwHash), err
 }
 
 func CheckPasswordHash(email string, password string, pwHash string) bool {
-	err := bcrypt.CompareHashAndPassword(
-		[]byte(pwHash),
-		[]byte(
-			fmt.Sprintf(
-				"%s:%s:%s",
-				email,
-				settings.PASSWORD_SALT,
-				password,
-			),
-		),
+	valid, err := unchained.CheckPassword(
+		password,
+		pwHash,
 	)
-	return err == nil
+	if err != nil {
+		log.Error("error in CheckPassword: %v", err)
+	}
+	return valid
 }
 
 func NewSignedToken(userModel *UserModel) (string, time.Time) {

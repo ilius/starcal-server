@@ -31,7 +31,6 @@ goZeroValueByType = {
 
 secretSettingsParams = {
 	"MONGO_PASSWORD",
-	"PASSWORD_SALT",
 }
 myDir = dirname(abspath(__file__))
 rootDir = dirname(myDir)
