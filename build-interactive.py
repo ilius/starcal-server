@@ -46,11 +46,6 @@ if not os.getenv("NO_TOUCH_SUBMODULES"):
 	subprocess.call(["git", "submodule", "update", "--init"])
 
 
-# GOPATH=$PWD go install github.com/globalsign/mgo
-# GOPATH=$PWD go install golang.org/x/crypto/bcrypt
-# GOPATH=$PWD go install golang.org/x/net/context
-
-
 env = dict(os.environ)
 env["STARCAL_HOST"] = hostName
 exit_code = subprocess.call(

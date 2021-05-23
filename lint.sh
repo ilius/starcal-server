@@ -1,2 +1,2 @@
 #!/bin/bash
-GOPATH=$PWD golint scal/... | less
+golint github.com/ilius/starcal-server/src/scal/... | less

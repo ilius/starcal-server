@@ -1,13 +1,10 @@
 *.bin
-pkg
 bin_cache/
 server-*
 settings/hosts/*
-src/scal/settings/settings.go
-src/scal/rest_server/gen
+pkg/scal/settings/settings.go
+pkg/scal/rest_server/gen
 __pycache__
 *.pyc
 bin/
-src/github.com/mdempsky/
-src/golang.org/x/tools/
 .vscode

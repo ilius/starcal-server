@@ -34,10 +34,10 @@ secretSettingsParams = {
 }
 myDir = dirname(abspath(__file__))
 rootDir = dirname(myDir)
-srcDir = join(rootDir, "src")
+pkgDir = join(rootDir, "pkg")
 settingsDir = join(rootDir, "settings")
 
-goSettingsDir = join(srcDir, "scal", "settings")
+goSettingsDir = join(pkgDir, "scal", "settings")
 goSettingsFile = join(goSettingsDir, "settings.go")
 
 
@@ -52,7 +52,6 @@ if not hostName:
 
 
 def goBuildAndExit(keepSettingsGo: bool):
-	os.putenv("GOPATH", rootDir)
 	status = subprocess.call([
 		"go",
 		"build",
