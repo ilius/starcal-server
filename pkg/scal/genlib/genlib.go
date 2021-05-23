@@ -73,7 +73,7 @@ func FormatGoFile(fpath string, waitGroup *sync.WaitGroup, useGoreturns bool) {
 		return
 	}
 	cmdParts := []string{"goreturns", "-w", fpath}
-	stdout, stderr, exitCode := RunCommand3(cmdParts[0], cmdParts[1:len(cmdParts)]...)
+	stdout, stderr, exitCode := RunCommand3(cmdParts[0], cmdParts[1:]...)
 	stdout = strings.TrimSpace(stdout)
 	if stdout != "" {
 		fmt.Println(stdout)

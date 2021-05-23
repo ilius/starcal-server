@@ -10,5 +10,5 @@ require (
 	github.com/ilius/mgo v0.0.0-20210523222948-287f01f7db87
 	github.com/ilius/ripo v0.0.0-20200423104447-a0418787dfa2
 	github.com/julienschmidt/httprouter v1.3.0
-	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 )

@@ -3,11 +3,11 @@ package api_v1
 import (
 	"errors"
 	"fmt"
-	"math/rand"
-	"os"
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 	. "github.com/ilius/starcal-server/pkg/scal/user_lib"
+	"math/rand"
+	"os"
 	"strings"
 	"time"
 

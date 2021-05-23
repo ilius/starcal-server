@@ -2,12 +2,12 @@ package api_v1
 
 import (
 	"fmt"
-	"net/url"
-	"reflect"
 	"github.com/ilius/starcal-server/pkg/scal"
 	"github.com/ilius/starcal-server/pkg/scal/event_lib"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 	. "github.com/ilius/starcal-server/pkg/scal/user_lib"
+	"net/url"
+	"reflect"
 	"time"
 
 	"github.com/ilius/mgo/bson"

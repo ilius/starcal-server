@@ -2,8 +2,8 @@ package storage
 
 import (
 	"errors"
-	"io"
 	"github.com/ilius/starcal-server/pkg/scal"
+	"io"
 
 	mgo "github.com/ilius/mgo"
 )

@@ -1,2 +1,2 @@
 #!/bin/bash
-find ./src/scal* -name '*.go' -exec gofmt -s -w '{}' \;
+find ./pkg/scal* -name '*.go' -exec gofmt -s -w '{}' \;

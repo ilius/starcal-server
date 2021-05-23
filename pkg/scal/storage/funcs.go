@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"reflect"
 	"github.com/ilius/starcal-server/pkg/scal"
+	"reflect"
 )
 
 func PipeAll(db Database, collection string, pipeline *[]scal.M, result interface{}) error {

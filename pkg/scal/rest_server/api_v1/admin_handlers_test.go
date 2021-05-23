@@ -40,7 +40,7 @@ func testAdmin_NotAdmin(t *testing.T, handler Handler) {
 	authorization := "abcd"
 	email := "abcd@dummy.com"
 	testUserMap = map[string]*UserModel{
-		authorization: &UserModel{
+		authorization: {
 			Email: email,
 		},
 	}
@@ -67,7 +67,7 @@ func testAdmin_EmailNotConfirmed(t *testing.T, handler Handler) {
 	authorization := "abcd"
 	email := "abcd@dummy.com"
 	testUserMap = map[string]*UserModel{
-		authorization: &UserModel{
+		authorization: {
 			Email: email,
 		},
 	}
@@ -95,7 +95,7 @@ func testAdmin_OK(t *testing.T, handler Handler) *Response {
 	authorization := "abcd"
 	email := "abcd@dummy.com"
 	testUserMap = map[string]*UserModel{
-		authorization: &UserModel{
+		authorization: {
 			Email:          email,
 			EmailConfirmed: true,
 		},

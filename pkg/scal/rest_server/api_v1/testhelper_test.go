@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ilius/mgo/bson"
 	"github.com/golang/mock/gomock"
 	"github.com/ilius/is"
 	"github.com/ilius/libgostarcal/utils"
+	"github.com/ilius/mgo/bson"
 	. "github.com/ilius/ripo"
 )
 

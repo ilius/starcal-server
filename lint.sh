@@ -1,2 +1,2 @@
 #!/bin/bash
-golint github.com/ilius/starcal-server/src/scal/... | less
+golint github.com/ilius/starcal-server/pkg/scal/... | less
