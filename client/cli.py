@@ -88,7 +88,7 @@ pathGeneralizeDict = {
 	"event/custom": "event/{eventType}",
 	"event/dailyNote": "event/{eventType}",
 	"event/largeScale": "event/{eventType}",
-	"event/lifeTime": "event/{eventType}",
+	"event/lifetime": "event/{eventType}",
 	"event/monthly": "event/{eventType}",
 	"event/task": "event/{eventType}",
 	"event/universityClass": "event/{eventType}",

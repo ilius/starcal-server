@@ -210,7 +210,7 @@
 										<option value="custom"/>
 										<option value="dailyNote"/>
 										<option value="largeScale"/>
-										<option value="lifeTime"/>
+										<option value="lifetime"/>
 										<option value="monthly"/>
 										<option value="task"/>
 										<option value="universityClass"/>
@@ -270,7 +270,7 @@
 										<option value="custom"/>
 										<option value="dailyNote"/>
 										<option value="largeScale"/>
-										<option value="lifeTime"/>
+										<option value="lifetime"/>
 										<option value="monthly"/>
 										<option value="task"/>
 										<option value="universityClass"/>
@@ -302,7 +302,7 @@
 										<option value="custom"/>
 										<option value="dailyNote"/>
 										<option value="largeScale"/>
-										<option value="lifeTime"/>
+										<option value="lifetime"/>
 										<option value="monthly"/>
 										<option value="task"/>
 										<option value="universityClass"/>
@@ -409,7 +409,7 @@
 											<option value="custom"/>
 											<option value="dailyNote"/>
 											<option value="largeScale"/>
-											<option value="lifeTime"/>
+											<option value="lifetime"/>
 											<option value="monthly"/>
 											<option value="task"/>
 											<option value="universityClass"/>
@@ -441,7 +441,7 @@
 											<option value="custom"/>
 											<option value="dailyNote"/>
 											<option value="largeScale"/>
-											<option value="lifeTime"/>
+											<option value="lifetime"/>
 											<option value="monthly"/>
 											<option value="task"/>
 											<option value="universityClass"/>
@@ -476,7 +476,7 @@
 											<option value="custom"/>
 											<option value="dailyNote"/>
 											<option value="largeScale"/>
-											<option value="lifeTime"/>
+											<option value="lifetime"/>
 											<option value="monthly"/>
 											<option value="task"/>
 											<option value="universityClass"/>
@@ -551,7 +551,7 @@
 							<option value="custom"/>
 							<option value="dailyNote"/>
 							<option value="largeScale"/>
-							<option value="lifeTime"/>
+							<option value="lifetime"/>
 							<option value="monthly"/>
 							<option value="task"/>
 							<option value="universityClass"/>
@@ -571,7 +571,7 @@
 				<option value="custom"/>
 				<option value="dailyNote"/>
 				<option value="largeScale"/>
-				<option value="lifeTime"/>
+				<option value="lifetime"/>
 				<option value="monthly"/>
 				<option value="task"/>
 				<option value="universityClass"/>
@@ -715,7 +715,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -880,7 +880,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -1089,7 +1089,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -1226,7 +1226,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -1331,8 +1331,8 @@
 				</method>
 			</resource>
 		</resource>
-		<resource path="event/lifeTime/">
-			<method name="POST" id="add_lifeTime">
+		<resource path="event/lifetime/">
+			<method name="POST" id="add_lifetime">
 				<request>
 					<param name="summary" type="xs:string" required="true"/>
 					<param name="description" type="xs:string" multiline="true" required="true"/>
@@ -1362,7 +1362,7 @@
 			</method>
 			<resource path="{eventId}/">
 				<param name="eventId" type="xs:string"/>
-				<method name="GET" id="get_lifeTime">
+				<method name="GET" id="get_lifetime">
 					<response>
 						<representation mediaType="app/json">
 							<param name="eventType" type="xs:string">
@@ -1370,7 +1370,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -1411,7 +1411,7 @@
 						</representation>
 					</response>
 				</method>
-				<method name="PUT" id="update_lifeTime">
+				<method name="PUT" id="update_lifetime">
 					<request>
 						<param name="summary" type="xs:string" required="true"/>
 						<param name="description" type="xs:string" multiline="true" required="true"/>
@@ -1439,7 +1439,7 @@
 						</representation>
 					</response>
 				</method>
-				<method name="PATCH" id="patch_lifeTime">
+				<method name="PATCH" id="patch_lifetime">
 					<request>
 						<param name="summary" type="xs:string" required="false"/>
 						<param name="description" type="xs:string" multiline="true" required="false"/>
@@ -1511,7 +1511,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -1659,7 +1659,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -1807,7 +1807,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -1968,7 +1968,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -2115,7 +2115,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>
@@ -2264,7 +2264,7 @@
 								<option value="custom"/>
 								<option value="dailyNote"/>
 								<option value="largeScale"/>
-								<option value="lifeTime"/>
+								<option value="lifetime"/>
 								<option value="monthly"/>
 								<option value="task"/>
 								<option value="universityClass"/>

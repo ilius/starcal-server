@@ -16,7 +16,7 @@ var capEventTypes = []string{
 	"Custom",
 	"DailyNote",
 	"LargeScale",
-	"LifeTime",
+	"Lifetime",
 	"Monthly",
 	"Task",
 	"UniversityClass",

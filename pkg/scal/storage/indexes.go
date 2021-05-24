@@ -195,7 +195,7 @@ func EnsureIndexes() {
 			"events_custom",
 			"events_dailyNote",
 			"events_largeScale",
-			"events_lifeTime",
+			"events_lifetime",
 			"events_monthly",
 			"events_task",
 			"events_universityClass",

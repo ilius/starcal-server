@@ -35,7 +35,7 @@ var activeEventModels = []interface{}{
 	event_lib.CustomEventModel{},
 	event_lib.DailyNoteEventModel{},
 	event_lib.LargeScaleEventModel{},
-	event_lib.LifeTimeEventModel{},
+	event_lib.LifetimeEventModel{},
 	event_lib.MonthlyEventModel{},
 	event_lib.TaskEventModel{},
 	event_lib.UniversityClassEventModel{},

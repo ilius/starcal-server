@@ -1,47 +1,47 @@
 package event_lib
 
-type LifeTimeEventModel struct {
+type LifetimeEventModel struct {
 	BaseEventModel `bson:",inline" json:",inline"`
 	StartJd        int `bson:"startJd" json:"startJd"`
 	EndJd          int `bson:"endJd" json:"endJd"`
 }
 
-func (LifeTimeEventModel) Type() string {
-	return "lifeTime"
+func (LifetimeEventModel) Type() string {
+	return "lifetime"
 }
 
-type LifeTimeEvent struct {
+type LifetimeEvent struct {
 	BaseEvent
 	startJd int
 	endJd   int
 }
 
-func (event LifeTimeEvent) Type() string {
-	return "lifeTime"
+func (event LifetimeEvent) Type() string {
+	return "lifetime"
 }
 
-func (event LifeTimeEvent) StartJd() int {
+func (event LifetimeEvent) StartJd() int {
 	return event.startJd
 }
 
-func (event LifeTimeEvent) EndJd() int {
+func (event LifetimeEvent) EndJd() int {
 	return event.endJd
 }
 
-func (event LifeTimeEvent) Model() LifeTimeEventModel {
-	return LifeTimeEventModel{
+func (event LifetimeEvent) Model() LifetimeEventModel {
+	return LifetimeEventModel{
 		BaseEventModel: event.BaseModel(),
 		StartJd:        event.startJd,
 		EndJd:          event.endJd,
 	}
 }
 
-func (model LifeTimeEventModel) GetEvent() (LifeTimeEvent, error) {
+func (model LifetimeEventModel) GetEvent() (LifetimeEvent, error) {
 	baseEvent, err := model.BaseEventModel.GetBaseEvent()
 	if err != nil {
-		return LifeTimeEvent{}, err
+		return LifetimeEvent{}, err
 	}
-	return LifeTimeEvent{
+	return LifetimeEvent{
 		BaseEvent: baseEvent,
 		startJd:   model.StartJd,
 		endJd:     model.EndJd,

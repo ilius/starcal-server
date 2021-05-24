@@ -1,4 +1,4 @@
-//go:generate $GOPATH/pkg/scal/rest_server/gen -event-type lifeTime
+//go:generate $GOPATH/pkg/scal/rest_server/gen -event-type lifetime
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Go template file named `*.go.tpl` inside "templates" directory
 package api_v1
@@ -21,89 +21,89 @@ import (
 
 func init() {
 	routeGroups = append(routeGroups, RouteGroup{
-		Base: "event/lifeTime",
+		Base: "event/lifetime",
 		Map: RouteMap{
-			"AddLifeTime": {
+			"AddLifetime": {
 				Method:  "POST",
 				Pattern: "",
-				Handler: AddLifeTime,
+				Handler: AddLifetime,
 			},
-			"GetLifeTime": {
+			"GetLifetime": {
 				Method:  "GET",
 				Pattern: ":eventId",
-				Handler: GetLifeTime,
+				Handler: GetLifetime,
 			},
-			"UpdateLifeTime": {
+			"UpdateLifetime": {
 				Method:  "PUT",
 				Pattern: ":eventId",
-				Handler: UpdateLifeTime,
+				Handler: UpdateLifetime,
 			},
-			"PatchLifeTime": {
+			"PatchLifetime": {
 				Method:  "PATCH",
 				Pattern: ":eventId",
-				Handler: PatchLifeTime,
+				Handler: PatchLifetime,
 			},
-			"MergeLifeTime": {
+			"MergeLifetime": {
 				Method:  "POST",
 				Pattern: ":eventId/merge",
-				Handler: MergeLifeTime,
+				Handler: MergeLifetime,
 			},
 			// functions of following operations are defined in handlers.go
 			// because their definition does not depend on event type
 			// but their URL still contains eventType for sake of compatibility
 			// so we will have to register their routes for each event type
 			// we don't use eventType in these functions
-			"DeleteEvent_lifeTime": {
+			"DeleteEvent_lifetime": {
 				Method:  "DELETE",
 				Pattern: ":eventId",
 				Handler: DeleteEvent,
 			},
-			"SetEventGroupId_lifeTime": {
+			"SetEventGroupId_lifetime": {
 				Method:  "PUT",
 				Pattern: ":eventId/group",
 				Handler: SetEventGroupId,
 			},
-			"GetEventOwner_lifeTime": {
+			"GetEventOwner_lifetime": {
 				Method:  "GET",
 				Pattern: ":eventId/owner",
 				Handler: GetEventOwner,
 			},
-			"SetEventOwner_lifeTime": {
+			"SetEventOwner_lifetime": {
 				Method:  "PUT",
 				Pattern: ":eventId/owner",
 				Handler: SetEventOwner,
 			},
-			"GetEventMeta_lifeTime": {
+			"GetEventMeta_lifetime": {
 				Method:  "GET",
 				Pattern: ":eventId/meta",
 				Handler: GetEventMeta,
 			},
-			"GetEventAccess_lifeTime": {
+			"GetEventAccess_lifetime": {
 				Method:  "GET",
 				Pattern: ":eventId/access",
 				Handler: GetEventAccess,
 			},
-			"SetEventAccess_lifeTime": {
+			"SetEventAccess_lifetime": {
 				Method:  "PUT",
 				Pattern: ":eventId/access",
 				Handler: SetEventAccess,
 			},
-			"AppendEventAccess_lifeTime": {
+			"AppendEventAccess_lifetime": {
 				Method:  "POST",
 				Pattern: ":eventId/access",
 				Handler: AppendEventAccess,
 			},
-			"JoinEvent_lifeTime": {
+			"JoinEvent_lifetime": {
 				Method:  "GET",
 				Pattern: ":eventId/join",
 				Handler: JoinEvent,
 			},
-			"LeaveEvent_lifeTime": {
+			"LeaveEvent_lifetime": {
 				Method:  "GET",
 				Pattern: ":eventId/leave",
 				Handler: LeaveEvent,
 			},
-			"InviteToEvent_lifeTime": {
+			"InviteToEvent_lifetime": {
 				Method:  "POST",
 				Pattern: ":eventId/invite",
 				Handler: InviteToEvent,
@@ -112,14 +112,14 @@ func init() {
 	})
 }
 
-func AddLifeTime(req Request) (*Response, error) {
+func AddLifetime(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventModel := event_lib.LifeTimeEventModel{} // DYNAMIC
+	eventModel := event_lib.LifetimeEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	remoteIp, err := req.RemoteIP()
 	if err != nil {
@@ -180,7 +180,7 @@ func AddLifeTime(req Request) (*Response, error) {
 		TokenIssuedAt: *userModel.TokenIssuedAt,
 
 		EventId:  eventId,
-		FuncName: "AddLifeTime",
+		FuncName: "AddLifetime",
 		OwnerEmail: &[2]*string{
 			nil,
 			&email,
@@ -201,7 +201,7 @@ func AddLifeTime(req Request) (*Response, error) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLifeTimeEventModel(
+	_, err = event_lib.LoadLifetimeEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -240,7 +240,7 @@ func AddLifeTime(req Request) (*Response, error) {
 	}, nil
 }
 
-func GetLifeTime(req Request) (*Response, error) {
+func GetLifetime(req Request) (*Response, error) {
 	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
@@ -279,7 +279,7 @@ func GetLifeTime(req Request) (*Response, error) {
 		return nil, ForbiddenError("you don't have access to this event", nil)
 	}
 	if !settings.ALLOW_MISMATCH_EVENT_TYPE {
-		if eventMeta.EventType != "lifeTime" {
+		if eventMeta.EventType != "lifetime" {
 			return nil, NewError(
 				InvalidArgument,
 				fmt.Sprintf(
@@ -301,7 +301,7 @@ func GetLifeTime(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 
-	eventModel, err := event_lib.LoadLifeTimeEventModel(
+	eventModel, err := event_lib.LoadLifetimeEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -315,7 +315,7 @@ func GetLifeTime(req Request) (*Response, error) {
 	}
 
 	eventModel.Id = *eventId
-	eventModel.DummyType = eventMeta.EventType  // not "lifeTime"
+	eventModel.DummyType = eventMeta.EventType  // not "lifetime"
 	eventModel.GroupId = eventMeta.GroupIdHex() // FIXME
 	if eventMeta.CanReadFull(email) {
 		eventModel.Meta = eventMeta.JsonM()
@@ -325,14 +325,14 @@ func GetLifeTime(req Request) (*Response, error) {
 	}, nil
 }
 
-func UpdateLifeTime(req Request) (*Response, error) {
+func UpdateLifetime(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	eventModel := event_lib.LifeTimeEventModel{} // DYNAMIC
+	eventModel := event_lib.LifetimeEventModel{} // DYNAMIC
 	// -----------------------------------------------
 	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
@@ -380,7 +380,7 @@ func UpdateLifeTime(req Request) (*Response, error) {
 		}
 		return nil, NewError(Internal, "", err)
 	}
-	lastEventModel, err := event_lib.LoadLifeTimeEventModel(
+	lastEventModel, err := event_lib.LoadLifetimeEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -421,7 +421,7 @@ func UpdateLifeTime(req Request) (*Response, error) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLifeTimeEventModel(
+	_, err = event_lib.LoadLifetimeEventModel(
 		db,
 		eventRev.Sha1,
 	)
@@ -519,7 +519,7 @@ func UpdateLifeTime(req Request) (*Response, error) {
 	}, nil
 }
 
-func PatchLifeTime(req Request) (*Response, error) {
+func PatchLifetime(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -570,7 +570,7 @@ func PatchLifeTime(req Request) (*Response, error) {
 		}
 		return nil, NewError(Internal, "", err)
 	}
-	eventModel, err := event_lib.LoadLifeTimeEventModel(
+	eventModel, err := event_lib.LoadLifetimeEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
@@ -775,7 +775,7 @@ func PatchLifeTime(req Request) (*Response, error) {
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
 	// like git's blobs and trees
-	_, err = event_lib.LoadLifeTimeEventModel(
+	_, err = event_lib.LoadLifetimeEventModel(
 		db,
 		eventModel.Sha1,
 	)
@@ -802,7 +802,7 @@ func PatchLifeTime(req Request) (*Response, error) {
 	}, nil
 }
 
-func MergeLifeTime(req Request) (*Response, error) {
+func MergeLifetime(req Request) (*Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -820,7 +820,7 @@ func MergeLifeTime(req Request) (*Response, error) {
 	defer unlock()
 	// -----------------------------------------------
 	inputStruct := struct {
-		Event event_lib.LifeTimeEventModel `json:"event"` // DYNAMIC
+		Event event_lib.LifetimeEventModel `json:"event"` // DYNAMIC
 
 		LastMergeSha1 string               `json:"lastMergeSha1"`
 		FieldsMtime   map[string]time.Time `json:"fieldsMtime"`
@@ -868,14 +868,14 @@ func MergeLifeTime(req Request) (*Response, error) {
 		}
 		return nil, NewError(Internal, "", err)
 	}
-	parentEventModel, err := event_lib.LoadLifeTimeEventModel(db, inputStruct.LastMergeSha1)
+	parentEventModel, err := event_lib.LoadLifetimeEventModel(db, inputStruct.LastMergeSha1)
 	if err != nil {
 		if db.IsNotFound(err) {
 			return nil, NewError(InvalidArgument, "invalid lastMergeSha1: revision not found", err)
 		}
 		return nil, NewError(Internal, "", err)
 	}
-	lastEventModel, err := event_lib.LoadLifeTimeEventModel(db, lastRevModel.Sha1)
+	lastEventModel, err := event_lib.LoadLifetimeEventModel(db, lastRevModel.Sha1)
 	if err != nil {
 		return nil, NewError(Internal, "", err)
 	}

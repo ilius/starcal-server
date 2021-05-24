@@ -43,11 +43,11 @@ func LoadLargeScaleEventModel(db storage.Database, sha1 string) (
 	return &model, err
 }
 
-func LoadLifeTimeEventModel(db storage.Database, sha1 string) (
-	*LifeTimeEventModel,
+func LoadLifetimeEventModel(db storage.Database, sha1 string) (
+	*LifetimeEventModel,
 	error,
 ) {
-	model := LifeTimeEventModel{}
+	model := LifetimeEventModel{}
 	model.Sha1 = sha1
 	err := db.Get(&model)
 	return &model, err
