@@ -39,13 +39,6 @@ def getHostName() -> str:
 hostName = getHostName()
 print()
 
-
-if not os.getenv("NO_TOUCH_SUBMODULES"):
-	# takes ~ 0.2 seconds if submodules are already initialized / cloned
-	print("Running: git submodule update --init")
-	subprocess.call(["git", "submodule", "update", "--init"])
-
-
 env = dict(os.environ)
 env["STARCAL_HOST"] = hostName
 exit_code = subprocess.call(
