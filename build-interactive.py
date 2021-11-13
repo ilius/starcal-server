@@ -20,7 +20,7 @@ from settings.build_common import (
 homeDir = os.getenv("HOME")
 if not homeDir:
 	raise ValueError("HOME is not set")
-confDir = join(homeDir, ".starcal-server-cli")
+confDir = join(homeDir, ".starcal-server", "cli")
 hostHistPath = join(confDir, "host-history")
 
 
