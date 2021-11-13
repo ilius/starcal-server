@@ -14,7 +14,11 @@ from dateutil.parser import parse as parse_time
 import dateutil.tz
 from dateutil.tz.tz import tzutc
 
-from parse import parse as parse_format
+try:
+	from parse import parse as parse_format
+except ModuleNotFoundError as e:
+	e.msg += f", run `sudo pip3 install parse` to install"
+	raise e
 
 
 from lxml import etree
@@ -135,11 +139,14 @@ def getEmail() -> str:
 	if email:
 		return email
 	while True:
-		email = prompt(
-			"Email: ",
-			history=FileHistory(join(histDir, "email")),
-			auto_suggest=AutoSuggestFromHistory(),
-		)
+		try:
+			email = prompt(
+				"Email: ",
+				history=FileHistory(join(histDir, "email")),
+				auto_suggest=AutoSuggestFromHistory(),
+			)
+		except KeyboardInterrupt:
+			sys.exit(0)
 		if email:
 			return email
 	raise ValueError("email is not given")
