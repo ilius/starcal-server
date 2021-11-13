@@ -6,7 +6,7 @@ import (
 	_ "github.com/ilius/libgostarcal/cal_types/ethiopian"
 	_ "github.com/ilius/libgostarcal/cal_types/gregorian"
 	_ "github.com/ilius/libgostarcal/cal_types/gregorian_proleptic"
-	_ "github.com/ilius/libgostarcal/cal_types/hijri"
+	"github.com/ilius/libgostarcal/cal_types/hijri"
 	_ "github.com/ilius/libgostarcal/cal_types/indian_national"
 	"github.com/ilius/libgostarcal/cal_types/jalali"
 	_ "github.com/ilius/libgostarcal/cal_types/julian"
@@ -15,4 +15,5 @@ import (
 
 func init() {
 	jalali.SetAlgorithm2820(settings.JALALI_ALGORITHM_2820)
+	hijri.SetUseMonthData(settings.HIJRI_USE_MONTH_DATA)
 }

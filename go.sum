@@ -14,6 +14,8 @@ github.com/hhkbp2/testify v0.0.0-20150512090439-112845ebc045/go.mod h1:8DUHF4igl
 github.com/ilius/is/v2 v2.2.0/go.mod h1:OMGTmQDDc3Svaj3EoQHeNnXHP0R1HCb5u/Hfm7kuYIM=
 github.com/ilius/libgostarcal v0.0.0-20201102130510-dab59dbc517e h1:mp8EhUA53gSZ9VkvljVjlqyyjZsLhQxWJfF8OBh7nxE=
 github.com/ilius/libgostarcal v0.0.0-20201102130510-dab59dbc517e/go.mod h1:Z/LqOxZPpxPdTol947deWMWmHoslJXW0WbGCmI+KvkU=
+github.com/ilius/libgostarcal v0.0.0-20211113141313-cbbda95d98c2 h1:fp5JxhxOxsuDq7pN4YXuneqtEH2R3w6/zOi3z6JBwr8=
+github.com/ilius/libgostarcal v0.0.0-20211113141313-cbbda95d98c2/go.mod h1:Z/LqOxZPpxPdTol947deWMWmHoslJXW0WbGCmI+KvkU=
 github.com/ilius/mgo v0.0.0-20210523222948-287f01f7db87 h1:jugawHKZjZb+68eoRyywyijeRxOOMsrjE07DKg9U0d8=
 github.com/ilius/mgo v0.0.0-20210523222948-287f01f7db87/go.mod h1:vGW8lJTg55qR5oO+3j1Yt893SwHKavMQJuNXq3HA0U0=
 github.com/ilius/ripo v0.0.0-20200423104447-a0418787dfa2 h1:LxkYSV7CCAGW06Oz6Qtz07OFHpobzPQlQNhKqYymAXg=
