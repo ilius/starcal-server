@@ -71,7 +71,7 @@ This email is for confirming your email address on StarCalendar service ({{.Host
 Please open this link in your browser to confirm your email address:
 {{.ConfirmationURL}}
 
-The link above will be expired on {{.ExpirationTime.Format "2006-01-02T15:04:05Z07:00"}}
+The link above will be expired on {{.ExpirationTime}}
 You also need to open the link with the same IP address as you requested with.
 
 Have fun using StarCalendar
