@@ -23,6 +23,7 @@ if not homeDir:
 confDir = join(homeDir, ".starcal-server", "cli")
 hostHistPath = join(confDir, "host-history")
 
+os.makedirs(confDir, exist_ok=True)
 
 def getHostName() -> str:
 	while True:
