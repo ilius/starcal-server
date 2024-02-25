@@ -2,10 +2,11 @@ package event_lib
 
 import (
 	"fmt"
-	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/ilius/starcal-server/pkg/scal/settings"
+
+	jwt "github.com/golang-jwt/jwt/v5"
 )
 
 func init() {

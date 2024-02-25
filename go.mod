@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/alexandrevicenzi/unchained v1.3.0
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/golang/mock v1.6.0
 	github.com/hhkbp2/go-logging v0.3.7
 	github.com/ilius/is v1.1.2

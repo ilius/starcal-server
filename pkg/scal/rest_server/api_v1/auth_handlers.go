@@ -3,19 +3,20 @@ package api_v1
 import (
 	"bytes"
 	"fmt"
+	"net/url"
+	"text/template"
+	"time"
+
 	"github.com/ilius/starcal-server/pkg/scal"
 	"github.com/ilius/starcal-server/pkg/scal/event_lib"
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 	"github.com/ilius/starcal-server/pkg/scal/user_lib"
 	. "github.com/ilius/starcal-server/pkg/scal/user_lib"
-	"net/url"
-	"text/template"
-	"time"
 
 	"github.com/ilius/libgostarcal/utils"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt/v5"
 	. "github.com/ilius/ripo"
 
 	"github.com/ilius/mgo/bson"

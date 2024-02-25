@@ -3,16 +3,17 @@ package api_v1
 import (
 	"errors"
 	"fmt"
-	"github.com/ilius/starcal-server/pkg/scal/settings"
-	"github.com/ilius/starcal-server/pkg/scal/storage"
-	. "github.com/ilius/starcal-server/pkg/scal/user_lib"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/ilius/starcal-server/pkg/scal/settings"
+	"github.com/ilius/starcal-server/pkg/scal/storage"
+	. "github.com/ilius/starcal-server/pkg/scal/user_lib"
+
 	"github.com/alexandrevicenzi/unchained"
-	jwt "github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt/v5"
 	. "github.com/ilius/ripo"
 )
 

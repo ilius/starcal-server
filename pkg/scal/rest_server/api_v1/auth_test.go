@@ -1,11 +1,12 @@
 package api_v1
 
 import (
-	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"testing"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/ilius/starcal-server/pkg/scal/settings"
+
+	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/ilius/is"
 	"github.com/ilius/libgostarcal/utils"
 	"github.com/ilius/ripo"
