@@ -2,10 +2,11 @@ package api_v1
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/ilius/starcal-server/pkg/scal"
 	"github.com/ilius/starcal-server/pkg/scal/event_lib"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
-	"time"
 
 	"github.com/ilius/mgo/bson"
 	. "github.com/ilius/ripo"
@@ -611,7 +612,7 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 		return nil, NewError(Internal, "", err)
 	}
 	// set OldGroupId and NewGroupId, while also converting nil ObjectId values to empty strings
-	for i := 0; i < len(results); i++ {
+	for i := range len(results) {
 		results[i].OldGroupId = storage.Hex(results[i].OldGroupItem[0])
 		results[i].NewGroupId = storage.Hex(results[i].NewGroupItem[1])
 	}

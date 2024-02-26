@@ -96,7 +96,7 @@ var intKinds = map[reflect.Kind]bool{
 func extractModelParams(model any) []ParamRow {
 	modelType := reflect.TypeOf(model)
 	params := make([]ParamRow, modelType.NumField())
-	for i := 0; i < modelType.NumField(); i++ {
+	for i := range modelType.NumField() {
 		field := modelType.Field(i)
 
 		paramType := field.Type.String()

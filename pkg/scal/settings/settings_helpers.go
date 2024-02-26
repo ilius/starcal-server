@@ -30,7 +30,7 @@ func getMasterKey() []byte {
 		masterKey = value
 		return masterKey
 	}
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		valueStr, err = stdin.ReadString('\n')
 		if err != nil {
 			log.Error(err)

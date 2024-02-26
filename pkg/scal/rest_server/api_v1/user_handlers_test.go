@@ -101,7 +101,7 @@ func TestGetUserInfo(t *testing.T) {
 func addLoginHistory(h *TestHelper, count int, sleep time.Duration, remoteIp string) {
 	db := h.DB()
 	userModel := h.UserModel()
-	for i := 0; i < count; i++ {
+	for range count {
 		err := db.Insert(&user_lib.UserLoginAttemptModel{
 			Time:       time.Now(),
 			UserId:     userModel.Id,
