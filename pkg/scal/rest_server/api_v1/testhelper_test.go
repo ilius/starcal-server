@@ -1,12 +1,13 @@
 package api_v1
 
 import (
+	"testing"
+	"time"
+
 	"github.com/ilius/starcal-server/pkg/scal"
 	"github.com/ilius/starcal-server/pkg/scal/event_lib"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 	"github.com/ilius/starcal-server/pkg/scal/user_lib"
-	"testing"
-	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/ilius/is"

@@ -154,5 +154,4 @@ func TestAdminListLockedResources(t *testing.T) {
 		"user":       {},
 		"user_login": {},
 	})
-
 }

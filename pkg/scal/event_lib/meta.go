@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"net/url"
+	"text/template"
+	"time"
+
 	"github.com/ilius/starcal-server/pkg/scal"
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 	. "github.com/ilius/starcal-server/pkg/scal/user_lib"
-	"net/url"
-	"text/template"
-	"time"
 
 	"github.com/ilius/mgo/bson"
 	"github.com/ilius/ripo"

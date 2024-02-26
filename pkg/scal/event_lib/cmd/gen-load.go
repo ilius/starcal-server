@@ -3,10 +3,11 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/ilius/starcal-server/pkg/scal/genlib"
 	"os"
 	"path/filepath"
 	"text/template"
+
+	"github.com/ilius/starcal-server/pkg/scal/genlib"
 )
 
 var useGoreturns = true

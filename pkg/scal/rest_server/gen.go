@@ -26,10 +26,12 @@ var disableFormatGoFile = true
 // no flag for it for now
 var useGoreturns = true
 
-var myDir string
-var apiDir string
-var myParentDir string
-var templatesDir string
+var (
+	myDir        string
+	apiDir       string
+	myParentDir  string
+	templatesDir string
+)
 
 var activeEventModels = []any{
 	event_lib.AllDayTaskEventModel{},
@@ -188,7 +190,7 @@ func genEventTypeHandlers(eventType string) {
 		goPath := path.Join(apiDir, fmt.Sprintf("event_handlers_%v.go", eventType))
 		goText := string(goBytes)
 		goText = emptyLineRE.ReplaceAllString(goText, "")
-		err = ioutil.WriteFile(goPath, []byte(goText), 0644)
+		err = ioutil.WriteFile(goPath, []byte(goText), 0o644)
 		if err != nil {
 			panic(err)
 		}

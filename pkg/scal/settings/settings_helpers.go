@@ -12,9 +12,11 @@ import (
 	"strings"
 )
 
-var log = NewLogger("settings")
-var stdin = bufio.NewReader(os.Stdin)
-var masterKey []byte
+var (
+	log       = NewLogger("settings")
+	stdin     = bufio.NewReader(os.Stdin)
+	masterKey []byte
+)
 
 func getMasterKey() []byte {
 	var err error

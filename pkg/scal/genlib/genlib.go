@@ -56,7 +56,7 @@ func formatGoFileBuiltin(fpath string) {
 	if err2 != nil {
 		panic(err2)
 	}
-	err3 := ioutil.WriteFile(fpath, src2, 0644)
+	err3 := ioutil.WriteFile(fpath, src2, 0o644)
 	if err3 != nil {
 		panic(err3)
 	}

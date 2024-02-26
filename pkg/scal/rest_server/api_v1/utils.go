@@ -2,8 +2,9 @@ package api_v1
 
 import (
 	"fmt"
-	"github.com/ilius/starcal-server/pkg/scal"
 	"strings"
+
+	"github.com/ilius/starcal-server/pkg/scal"
 
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 

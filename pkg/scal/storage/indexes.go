@@ -2,8 +2,9 @@ package storage
 
 import (
 	"fmt"
-	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"time"
+
+	"github.com/ilius/starcal-server/pkg/scal/settings"
 
 	mgo "github.com/ilius/mgo"
 	"github.com/ilius/ripo"

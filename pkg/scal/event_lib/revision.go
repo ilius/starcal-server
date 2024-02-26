@@ -1,9 +1,10 @@
 package event_lib
 
 import (
+	"time"
+
 	"github.com/ilius/starcal-server/pkg/scal"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
-	"time"
 
 	"github.com/ilius/mgo/bson"
 )
