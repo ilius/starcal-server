@@ -4,12 +4,8 @@ package cal_types_init
 
 import (
 	_ "github.com/ilius/libgostarcal/cal_types/ethiopian"
-	_ "github.com/ilius/libgostarcal/cal_types/gregorian"
-	_ "github.com/ilius/libgostarcal/cal_types/gregorian_proleptic"
 	"github.com/ilius/libgostarcal/cal_types/hijri"
-	_ "github.com/ilius/libgostarcal/cal_types/indian_national"
 	"github.com/ilius/libgostarcal/cal_types/jalali"
-	_ "github.com/ilius/libgostarcal/cal_types/julian"
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 )
 

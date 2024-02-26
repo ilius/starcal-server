@@ -9,7 +9,7 @@ import (
 
 func TestConvert(t *testing.T) {
 	t.Log(cal_types.CalTypesMap["gregorian"])
-	gdate := lib.Date{2016, 1, 1}
+	gdate := &lib.Date{2016, 1, 1}
 	jdate, err := cal_types.Convert(gdate, "gregorian", "jalali")
 	if err != nil {
 		t.Error(err)
@@ -21,7 +21,7 @@ func TestConvert(t *testing.T) {
 }
 
 func TestToJd(t *testing.T) {
-	gdate := lib.Date{2016, 1, 1}
+	gdate := &lib.Date{2016, 1, 1}
 	jd, err := cal_types.ToJd(gdate, "gregorian")
 	if err != nil {
 		t.Error(err)
