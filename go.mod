@@ -1,6 +1,6 @@
 module github.com/ilius/starcal-server
 
-go 1.15
+go 1.22
 
 require (
 	github.com/alexandrevicenzi/unchained v1.3.0
@@ -13,6 +13,12 @@ require (
 	github.com/ilius/ripo v0.0.0-20240224234150-1ad83b3e1b4e
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
+)
+
+require (
+	github.com/hhkbp2/go-strftime v0.0.0-20150709091403-d82166ec6782 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	golang.org/x/crypto v0.19.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
