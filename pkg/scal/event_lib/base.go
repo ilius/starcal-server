@@ -78,9 +78,9 @@ func (event BaseEvent) Id() string {
 	return event.id
 }
 
-// func (event BaseEvent) OwnerEmail() string {
-//    return event.ownerEmail
-//}
+//	func (event BaseEvent) OwnerEmail() string {
+//	   return event.ownerEmail
+//	}
 func (event BaseEvent) Location() *time.Location {
 	if event.locEnable && event.loc != nil {
 		return event.loc

@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"github.com/ilius/starcal-server/pkg/scal/rest_server/api_v1"
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
+	"os"
 )
 
 func main() {
