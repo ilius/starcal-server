@@ -1,6 +1,7 @@
-//go:generate $GOPATH/pkg/scal/rest_server/gen -event-type {{.EVENT_TYPE}}
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Go template file named `*.go.tpl` inside "templates" directory
+//
+//go:generate $GOPATH/pkg/scal/rest_server/gen -event-type {{.EVENT_TYPE}}
 package api_v1
 
 import (
