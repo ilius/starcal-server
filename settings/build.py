@@ -159,7 +159,7 @@ for param, value in sorted(settingsDict.items()):
 		if len(value) == 0:
 			print(f"Empty dict {param}, assuming generic: map[string]interface{{}}")
 			keyTypes.add("string")
-			valueTypes.add("interface{}")
+			valueTypes.add("any")
 		else:
 			for k, v in value.items():
 				k_type, k_value = encodeGoValue(k)
@@ -215,7 +215,7 @@ importBlock = "import (\n" + "\n".join(
 
 constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
 varBlock = "var (\n" + "\n".join(varLines) + "\n)\n"
-zeroValuesBlock = "var ZeroValues = map[string]interface{}{\n" + "\n".join(zeroValueLines) + "\n}"
+zeroValuesBlock = "var ZeroValues = map[string]any{\n" + "\n".join(zeroValueLines) + "\n}"
 printFunc = "func PrintSettings() {\n" + "\n".join(printLines) + "\n}"
 
 #print(constBlock)

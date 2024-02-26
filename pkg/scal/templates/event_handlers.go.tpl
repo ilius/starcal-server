@@ -492,7 +492,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 	defer unlock()
 	// -----------------------------------------------
-	patchMap := map[string]interface{}{}
+	patchMap := map[string]any{}
 	err = req.BodyTo(&patchMap)
 	if err != nil {
 		// msg := err.Error()
