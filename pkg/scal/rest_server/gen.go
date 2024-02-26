@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"github.com/ilius/starcal-server/pkg/scal/event_lib"
 	"io/ioutil"
 	"path"
 	"path/filepath"
@@ -13,6 +12,8 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+
+	"github.com/ilius/starcal-server/pkg/scal/event_lib"
 
 	"github.com/ilius/starcal-server/pkg/scal/genlib"
 
@@ -30,7 +31,7 @@ var apiDir string
 var myParentDir string
 var templatesDir string
 
-var activeEventModels = []interface{}{
+var activeEventModels = []any{
 	event_lib.AllDayTaskEventModel{},
 	event_lib.CustomEventModel{},
 	event_lib.DailyNoteEventModel{},
@@ -46,7 +47,7 @@ var activeEventModels = []interface{}{
 
 var formatWaitGroup sync.WaitGroup
 
-var eventModelByEventType = map[string]interface{}{}
+var eventModelByEventType = map[string]any{}
 
 func init() {
 	var err error
@@ -92,7 +93,7 @@ var intKinds = map[reflect.Kind]bool{
 	reflect.Uint64: true,
 }
 
-func extractModelParams(model interface{}) []ParamRow {
+func extractModelParams(model any) []ParamRow {
 	modelType := reflect.TypeOf(model)
 	params := make([]ParamRow, modelType.NumField())
 	for i := 0; i < modelType.NumField(); i++ {
@@ -119,7 +120,7 @@ func extractModelParams(model interface{}) []ParamRow {
 	return params
 }
 
-func extractModelPatchParams(model interface{}) []ParamRow {
+func extractModelPatchParams(model any) []ParamRow {
 	params := extractModelParams(model)
 	patchParams := make([]ParamRow, 0, len(params))
 	for _, row := range params {
@@ -163,7 +164,7 @@ func genEventTypeHandlers(eventType string) {
 
 	eventModels := activeEventModels
 	if eventType != "" {
-		eventModels = []interface{}{
+		eventModels = []any{
 			eventModelByEventType[eventType],
 		}
 	}

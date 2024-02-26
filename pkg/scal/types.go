@@ -1,6 +1,6 @@
 package scal
 
-type M = map[string]interface{}
+type M = map[string]any
 
 type MErr struct {
 	M
@@ -11,7 +11,7 @@ type D []DItem
 
 type DItem struct {
 	Name  string
-	Value interface{}
+	Value any
 }
 
 func (d D) Map() (m M) {

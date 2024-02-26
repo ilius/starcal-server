@@ -20,7 +20,7 @@ func init() {
 func CheckEventInvitationToken(tokenStr string, eventIdHex *string) (*string, error) {
 	token, err := jwt.Parse(
 		tokenStr,
-		func(token *jwt.Token) (interface{}, error) {
+		func(token *jwt.Token) (any, error) {
 			return []byte(settings.EVENT_INVITE_SECRET + *eventIdHex), nil
 		},
 	)

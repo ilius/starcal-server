@@ -2,9 +2,10 @@ package api_v1
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
-	"time"
 
 	"github.com/ilius/ripo"
 )
@@ -33,16 +34,16 @@ func errorDispatcher(request ripo.ExtendedRequest, rpcErr ripo.RPCError) {
 }
 
 type ErrorModel struct {
-	Time         time.Time                `bson:"time"`
-	HandlerName  string                   `bson:"handlerName"`
-	URL          string                   `bson:"url"`
-	Code         string                   `bson:"code"`
-	Message      string                   `bson:"message"`
-	CauseMessage string                   `bson:"causeMessage"`
-	CauseType    string                   `bson:"causeType"`
-	Details      map[string]interface{}   `bson:"details"`
-	Request      map[string]interface{}   `bson:"request"`
-	Traceback    []map[string]interface{} `bson:"traceback"`
+	Time         time.Time        `bson:"time"`
+	HandlerName  string           `bson:"handlerName"`
+	URL          string           `bson:"url"`
+	Code         string           `bson:"code"`
+	Message      string           `bson:"message"`
+	CauseMessage string           `bson:"causeMessage"`
+	CauseType    string           `bson:"causeType"`
+	Details      map[string]any   `bson:"details"`
+	Request      map[string]any   `bson:"request"`
+	Traceback    []map[string]any `bson:"traceback"`
 }
 
 func errorCollection(code ripo.Code) string {
@@ -79,7 +80,7 @@ func saveErrors(byCode map[ripo.Code][]*errorChanItem) {
 		if len(items) == 0 {
 			continue
 		}
-		errorModels := make([]interface{}, len(items))
+		errorModels := make([]any, len(items))
 		for index, item := range items {
 			rpcErr := item.Error
 			request := item.Request

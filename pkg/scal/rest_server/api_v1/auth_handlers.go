@@ -160,7 +160,7 @@ func RegisterUser(req Request) (*Response, error) {
 
 	signedToken, exp := NewSignedToken(userModel)
 	return &Response{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"token":      signedToken,
 			"expiration": exp.Format(time.RFC3339),
 			"message":    "an email confirmation is sent to your email address",
@@ -697,7 +697,7 @@ func ConfirmEmailAction(req Request) (*Response, error) {
 	}
 	token, err := jwt.Parse(
 		*tokenStr,
-		func(token *jwt.Token) (interface{}, error) {
+		func(token *jwt.Token) (any, error) {
 			return []byte(settings.CONFIRM_EMAIL_SECRET), nil
 		},
 	)

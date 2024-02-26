@@ -23,11 +23,11 @@ const (
 )
 
 type Condition interface {
-	Equals(key string, value interface{}) Condition
+	Equals(key string, value any) Condition
 	IdEquals(key string, value string) Condition
-	Includes(key string, value interface{}) Condition
-	GreaterThan(key string, value interface{}) Condition
-	LessThan(key string, value interface{}) Condition
+	Includes(key string, value any) Condition
+	GreaterThan(key string, value any) Condition
+	LessThan(key string, value any) Condition
 	SetPageOptions(o *scal.PageOptions) Condition
 	NewSubCondition(operator ConditionOperator) Condition
 	Prepare() bson.D
@@ -46,7 +46,7 @@ type Database interface {
 	NewCondition(operator ConditionOperator) Condition
 	IsNotFound(err error) bool
 	Insert(model hasCollection) error
-	InsertMany(collection string, models []interface{}) error
+	InsertMany(collection string, models []any) error
 	Update(model hasCollectionUniqueM) error
 	Upsert(model hasCollectionUniqueM) error
 	Remove(model hasCollectionUniqueM) error
@@ -54,9 +54,9 @@ type Database interface {
 	Get(model hasCollectionUniqueM) error
 	First(cond scal.M, sortBy string, model hasCollection) error
 	FindCount(collection string, cond scal.M) (count int, err error)
-	FindAll(result interface{}, input *FindInput) error
+	FindAll(result any, input *FindInput) error
 	PipeIter(collection string, pipeline *[]scal.M) (
-		next func(result interface{}) error,
+		next func(result any) error,
 		close func(),
 	)
 }

@@ -1,6 +1,7 @@
-//go:generate $GOPATH/pkg/scal/rest_server/gen -event-type allDayTask
 // if this is a *.go file, don't modify it, it's auto-generated
 // from a Go template file named `*.go.tpl` inside "templates" directory
+//
+//go:generate $GOPATH/pkg/scal/rest_server/gen -event-type allDayTask
 package api_v1
 
 import (
@@ -544,7 +545,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 	}
 	defer unlock()
 	// -----------------------------------------------
-	patchMap := map[string]interface{}{}
+	patchMap := map[string]any{}
 	err = req.BodyTo(&patchMap)
 	if err != nil {
 		// msg := err.Error()

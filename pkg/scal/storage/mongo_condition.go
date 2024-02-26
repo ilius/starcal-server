@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+
 	"github.com/ilius/starcal-server/pkg/scal"
 
 	"github.com/ilius/mgo/bson"
@@ -9,10 +10,10 @@ import (
 
 type MongoCondition struct {
 	op    ConditionOperator
-	parts []interface{}
+	parts []any
 }
 
-func (c *MongoCondition) Equals(key string, value interface{}) Condition {
+func (c *MongoCondition) Equals(key string, value any) Condition {
 	c.parts = append(c.parts, bson.DocElem{Name: key, Value: value})
 	return c
 }
@@ -22,13 +23,13 @@ func (c *MongoCondition) IdEquals(key string, valueHex string) Condition {
 	return c
 }
 
-func (c *MongoCondition) Includes(key string, value interface{}) Condition {
+func (c *MongoCondition) Includes(key string, value any) Condition {
 	// for Mongo, it's the same as Equals()
 	c.parts = append(c.parts, bson.DocElem{Name: key, Value: value})
 	return c
 }
 
-func (c *MongoCondition) GreaterThan(key string, value interface{}) Condition {
+func (c *MongoCondition) GreaterThan(key string, value any) Condition {
 	c.parts = append(c.parts, bson.DocElem{
 		Name: key,
 		Value: scal.M{
@@ -38,7 +39,7 @@ func (c *MongoCondition) GreaterThan(key string, value interface{}) Condition {
 	return c
 }
 
-func (c *MongoCondition) LessThan(key string, value interface{}) Condition {
+func (c *MongoCondition) LessThan(key string, value any) Condition {
 	c.parts = append(c.parts, bson.DocElem{
 		Name: key,
 		Value: scal.M{

@@ -7,12 +7,12 @@ import (
 )
 
 type MovedEventsRow struct {
-	EventId      string         `bson:"_id,objectid" json:"eventId"`
-	OldGroupId   interface{}    `json:"oldGroupId"`
-	OldGroupItem [2]interface{} `bson:"oldGroupItem"`
-	NewGroupId   interface{}    `json:"newGroupId"`
-	NewGroupItem [2]interface{} `bson:"newGroupItem"`
-	Time         time.Time      `bson:"time" json:"time"`
+	EventId      string    `bson:"_id,objectid" json:"eventId"`
+	OldGroupId   any       `json:"oldGroupId"`
+	OldGroupItem [2]any    `bson:"oldGroupItem"`
+	NewGroupId   any       `json:"newGroupId"`
+	NewGroupItem [2]any    `bson:"newGroupItem"`
+	Time         time.Time `bson:"time" json:"time"`
 }
 
 // TODO: measure memory usage of large slice of this struct

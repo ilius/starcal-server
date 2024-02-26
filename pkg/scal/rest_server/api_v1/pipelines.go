@@ -2,6 +2,7 @@ package api_v1
 
 import (
 	"fmt"
+
 	"github.com/ilius/starcal-server/pkg/scal"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 
@@ -31,7 +32,7 @@ type MongoPipelines struct {
 
 	match     scal.M
 	limit     int
-	pipelines []interface{}
+	pipelines []any
 	trail     []scal.M
 }
 
@@ -65,17 +66,17 @@ func (mg *MongoGroupBy) prepare() scal.M {
 	return scal.M{"$group": value}
 }
 
-func (m *MongoPipelines) MatchValue(key string, value interface{}) {
+func (m *MongoPipelines) MatchValue(key string, value any) {
 	m.match[key] = value
 }
 
-func (m *MongoPipelines) MatchGreaterThan(key string, value interface{}) {
+func (m *MongoPipelines) MatchGreaterThan(key string, value any) {
 	m.match[key] = scal.M{
 		"$gt": value,
 	}
 }
 
-func (m *MongoPipelines) NewMatchGreaterThan(key string, value interface{}) {
+func (m *MongoPipelines) NewMatchGreaterThan(key string, value any) {
 	m.pipelines = append(m.pipelines, scal.M{
 		"$match": scal.M{
 			"$gt": value,
@@ -130,7 +131,7 @@ func (m *MongoPipelines) AddEventLookupMetaAccess(
 	email string,
 	localField string,
 ) {
-	m.pipelines = append(m.pipelines, []interface{}{
+	m.pipelines = append(m.pipelines, []any{
 		scal.M{"$lookup": scal.M{
 			"from":         storage.C_eventMeta,
 			"localField":   localField,
@@ -223,7 +224,7 @@ func (m *MongoPipelines) prepare() []scal.M {
 	return pipelines
 }
 
-func (m *MongoPipelines) All(results interface{}) error {
+func (m *MongoPipelines) All(results any) error {
 	pipelines := m.prepare()
 	return storage.PipeAll(
 		m.db,
@@ -234,7 +235,7 @@ func (m *MongoPipelines) All(results interface{}) error {
 }
 
 func (m *MongoPipelines) Iter() (
-	next func(result interface{}) error,
+	next func(result any) error,
 	close func(),
 ) {
 	pipelines := m.prepare()

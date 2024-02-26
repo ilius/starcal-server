@@ -47,7 +47,7 @@ func TokenFromHeader(authHeader string) (*jwt.Token, error) {
 
 	token, err := jwt.Parse(
 		tokenStr,
-		func(token *jwt.Token) (interface{}, error) {
+		func(token *jwt.Token) (any, error) {
 			return []byte(settings.JWT_TOKEN_SECRET), nil
 		},
 	)

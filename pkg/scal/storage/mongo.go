@@ -2,8 +2,9 @@ package storage
 
 import (
 	"errors"
-	"github.com/ilius/starcal-server/pkg/scal"
 	"io"
+
+	"github.com/ilius/starcal-server/pkg/scal"
 
 	mgo "github.com/ilius/mgo"
 )
@@ -12,7 +13,7 @@ type hasHex interface {
 	Hex() string
 }
 
-func Hex(id interface{}) string {
+func Hex(id any) string {
 	if id == nil {
 		return ""
 	}
@@ -42,7 +43,7 @@ func (db *MongoDatabase) Insert(model hasCollection) error {
 	return db.C(model.Collection()).Insert(model)
 }
 
-func (db *MongoDatabase) InsertMany(collection string, models []interface{}) error {
+func (db *MongoDatabase) InsertMany(collection string, models []any) error {
 	return db.C(collection).Insert(models...)
 }
 
@@ -78,7 +79,7 @@ func (db *MongoDatabase) RemoveAll(collection string, cond scal.M) (int, error) 
 	return count, err
 }
 
-// func (db *MongoDatabase) Find(interface{})
+// func (db *MongoDatabase) Find(any)
 func (db *MongoDatabase) Get(model hasCollectionUniqueM) error {
 	return db.C(model.Collection()).Find(
 		model.UniqueM(),
@@ -97,7 +98,7 @@ func (db *MongoDatabase) FindCount(collection string, cond scal.M) (int, error) 
 	return db.C(collection).Find(cond).Count()
 }
 
-func (db *MongoDatabase) FindAll(result interface{}, in *FindInput) error {
+func (db *MongoDatabase) FindAll(result any, in *FindInput) error {
 	condition := in.Condition.Prepare()
 	q := db.C(in.Collection).Find(condition)
 	if in.SortBy != "" {
@@ -123,9 +124,9 @@ func (db *MongoDatabase) FindAll(result interface{}, in *FindInput) error {
 func (db *MongoDatabase) PipeIter(
 	colName string,
 	pipeline *[]scal.M,
-) (func(interface{}) error, func()) {
+) (func(any) error, func()) {
 	iter := db.C(colName).Pipe(pipeline).Iter()
-	return func(result interface{}) error {
+	return func(result any) error {
 			if iter.Next(result) {
 				return nil
 			}

@@ -28,7 +28,7 @@ func AdminGetStats(req Request) (*Response, error) {
 		return nil, err
 	}
 	return &Response{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"locked_resource_count": resLock.CountLocked(),
 		},
 	}, nil

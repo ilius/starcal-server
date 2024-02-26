@@ -10,7 +10,7 @@ import (
 
 /*
 bson/bson.go:
-    type M map[string]interface{}
+    type M map[string]any
 
 
 Current rule value types:
@@ -63,9 +63,9 @@ func (CustomEvent) Type() string {
 	return "custom"
 }
 
-// func (event CustomEvent) RuleMap() EventRuleMap {
-//	return event.ruleMap
-//}
+//	func (event CustomEvent) RuleMap() EventRuleMap {
+//		return event.ruleMap
+//	}
 func (event CustomEvent) GetRule(typeName string) (rlib.EventRule, bool) {
 	typeObj, ok := event.ruleMap[typeName]
 	return typeObj, ok
@@ -204,8 +204,8 @@ func (eventModel CustomEventModel) GetEvent() (CustomEvent, error) {
 	return event, err
 }
 
-func DecodeMapEventRuleModelList(rawMapList interface{}) (EventRuleModelList, error) {
-	rawList, ok := rawMapList.([]interface{})
+func DecodeMapEventRuleModelList(rawMapList any) (EventRuleModelList, error) {
+	rawList, ok := rawMapList.([]any)
 	if !ok {
 		return EventRuleModelList{}, errors.New(
 			"could not convert to rawList",
@@ -213,7 +213,7 @@ func DecodeMapEventRuleModelList(rawMapList interface{}) (EventRuleModelList, er
 	}
 	modelList := make(EventRuleModelList, len(rawList))
 	for i, raw := range rawList {
-		m, ok := raw.(map[string]interface{})
+		m, ok := raw.(map[string]any)
 		if !ok {
 			return EventRuleModelList{}, fmt.Errorf(
 				"could not convert %v with type %T to M",

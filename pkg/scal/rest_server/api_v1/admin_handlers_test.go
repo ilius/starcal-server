@@ -127,7 +127,7 @@ func TestAdminGetStats(t *testing.T) {
 
 	is := is.New(t)
 	is.NotNil(res.Data)
-	dataMap := res.Data.(map[string]interface{})
+	dataMap := res.Data.(map[string]any)
 	locked_resource_count := dataMap["locked_resource_count"]
 	is.Equal(locked_resource_count, map[string]int{
 		"event":      0,

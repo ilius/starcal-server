@@ -1,9 +1,10 @@
 package api_v1
 
 import (
-	"github.com/ilius/starcal-server/pkg/scal/user_lib"
 	"testing"
 	"time"
+
+	"github.com/ilius/starcal-server/pkg/scal/user_lib"
 
 	"github.com/ilius/ripo"
 )
@@ -84,7 +85,7 @@ func TestGetUserInfo(t *testing.T) {
 			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
 		}
 		is.NotNil(res)
-		dataMap := res.Data.(map[string]interface{})
+		dataMap := res.Data.(map[string]any)
 		is.Equal(dataMap["email"], email)
 		defaultGroupId := dataMap["defaultGroupId"].(*string)
 		is.NotNil(defaultGroupId)
@@ -132,7 +133,7 @@ func TestGetUserLoginHistoryEmpty(t *testing.T) {
 			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
 		}
 		is.NotNil(res)
-		dataMap := res.Data.(map[string]interface{})
+		dataMap := res.Data.(map[string]any)
 		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
 		is.Equal(len(lastLogins), 0)
 	}
@@ -162,7 +163,7 @@ func TestGetUserLoginHistoryFull(t *testing.T) {
 			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
 		}
 		is.NotNil(res)
-		dataMap := res.Data.(map[string]interface{})
+		dataMap := res.Data.(map[string]any)
 		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
 		is.Equal(len(lastLogins), loginsCount)
 		for _, m := range lastLogins {
@@ -198,7 +199,7 @@ func TestGetUserLoginHistoryLimit1(t *testing.T) {
 			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
 		}
 		is.NotNil(res)
-		dataMap := res.Data.(map[string]interface{})
+		dataMap := res.Data.(map[string]any)
 		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
 		is.Equal(len(lastLogins), 20)
 		for _, m := range lastLogins {
@@ -234,7 +235,7 @@ func TestGetUserLoginHistoryLimit2(t *testing.T) {
 			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
 		}
 		is.NotNil(res)
-		dataMap := res.Data.(map[string]interface{})
+		dataMap := res.Data.(map[string]any)
 		lastLogins := dataMap["lastLogins"].([]*user_lib.UserLoginAttemptModel)
 		is.Equal(len(lastLogins), 7)
 		for _, m := range lastLogins {

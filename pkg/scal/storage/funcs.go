@@ -1,11 +1,12 @@
 package storage
 
 import (
-	"github.com/ilius/starcal-server/pkg/scal"
 	"reflect"
+
+	"github.com/ilius/starcal-server/pkg/scal"
 )
 
-func PipeAll(db Database, collection string, pipeline *[]scal.M, result interface{}) error {
+func PipeAll(db Database, collection string, pipeline *[]scal.M, result any) error {
 	next, close := db.PipeIter(collection, pipeline)
 	defer close()
 

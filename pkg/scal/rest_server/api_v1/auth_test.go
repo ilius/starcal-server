@@ -42,7 +42,7 @@ func TestRegisterUser(t *testing.T) {
 			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
 		}
 		is.NotNil(res)
-		dataMap := res.Data.(map[string]interface{})
+		dataMap := res.Data.(map[string]any)
 		t.Log(dataMap)
 	}
 	{
@@ -84,7 +84,7 @@ func TestLogin(t *testing.T) {
 			t.Fatal(rpcErr.Code(), ":", rpcErr.Cause())
 		}
 		is.NotNil(res)
-		dataMap := res.Data.(map[string]interface{})
+		dataMap := res.Data.(map[string]any)
 		expETA := now.Add(settings.JWT_TOKEN_EXP_SECONDS * time.Second)
 		{
 			expStr := dataMap["expiration"].(string)
@@ -100,7 +100,7 @@ func TestLogin(t *testing.T) {
 			tokenStr := dataMap["token"].(string)
 			_, err := jwt.Parse(
 				tokenStr,
-				func(token *jwt.Token) (interface{}, error) {
+				func(token *jwt.Token) (any, error) {
 					return []byte(settings.JWT_TOKEN_SECRET), nil
 				},
 			)
