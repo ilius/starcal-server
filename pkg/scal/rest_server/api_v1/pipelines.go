@@ -214,9 +214,7 @@ func (m *MongoPipelines) prepare() []scal.M {
 			panic(fmt.Errorf("invalid type %T", p))
 		}
 	}
-	for _, p := range m.trail {
-		pipelines = append(pipelines, p)
-	}
+	pipelines = append(pipelines, m.trail...)
 	// for _, p := range pipelines {
 	// 	b, _ := json.MarshalIndent(p, "", "    ")
 	// 	fmt.Println(string(b))

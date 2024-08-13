@@ -21,11 +21,14 @@ func ModifyIndexTTL(db mgo.Database, collection string, index mgo.Index) error {
 		expireAfterSeconds,
 	)
 	err = db.Run(bson.D{
-		{"collMod", collection},
-		{"index", bson.M{
-			"keyPattern":         keyInfo.Key,
-			"expireAfterSeconds": expireAfterSeconds,
-		}},
+		{Name: "collMod", Value: collection},
+		{
+			Name: "index",
+			Value: bson.M{
+				"keyPattern":         keyInfo.Key,
+				"expireAfterSeconds": expireAfterSeconds,
+			},
+		},
 	}, nil)
 	if err != nil {
 		return err

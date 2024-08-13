@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -107,8 +107,8 @@ func extractModelParams(model any) []ParamRow {
 
 		paramCap := field.Name
 
-		if paramType == "event_lib.BaseEventModel" {
-		}
+		// if paramType == "event_lib.BaseEventModel" {
+		// }
 
 		param := lowerFirstLetter(paramCap)
 		params[i] = ParamRow{
@@ -154,7 +154,7 @@ var emptyLineRE = regexp.MustCompile(`(?m)^\s+\n`)
 
 func genEventTypeHandlers(eventType string) {
 	tpl_path := path.Join(templatesDir, "event_handlers.go.tpl")
-	tpl_bytes, err := ioutil.ReadFile(tpl_path)
+	tpl_bytes, err := os.ReadFile(tpl_path)
 	if err != nil {
 		panic(err)
 	}
@@ -190,7 +190,7 @@ func genEventTypeHandlers(eventType string) {
 		goPath := path.Join(apiDir, fmt.Sprintf("event_handlers_%v.go", eventType))
 		goText := string(goBytes)
 		goText = emptyLineRE.ReplaceAllString(goText, "")
-		err = ioutil.WriteFile(goPath, []byte(goText), 0o644)
+		err = os.WriteFile(goPath, []byte(goText), 0o644)
 		if err != nil {
 			panic(err)
 		}

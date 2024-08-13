@@ -12,12 +12,11 @@ import (
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 	"github.com/ilius/starcal-server/pkg/scal/user_lib"
-	. "github.com/ilius/starcal-server/pkg/scal/user_lib"
 
 	"github.com/ilius/libgostarcal/utils"
 
 	jwt "github.com/golang-jwt/jwt/v5"
-	. "github.com/ilius/ripo"
+	rp "github.com/ilius/ripo"
 
 	"github.com/ilius/mgo/bson"
 )
@@ -70,33 +69,33 @@ func init() {
 	})
 }
 
-func RegisterUser(req Request) (*Response, error) {
+func RegisterUser(req rp.Request) (*rp.Response, error) {
 	remoteIp, err := req.RemoteIP()
 	if err != nil {
 		return nil, err
 	}
-	email, err := req.GetString("email", FromBody) // only from json
+	email, err := req.GetString("email", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	password, err := req.GetString("password", FromBody) // only from json
+	password, err := req.GetString("password", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
 
-	userModel := &UserModel{
+	userModel := &user_lib.UserModel{
 		Email:    *email,
 		Password: *password,
 	}
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
-	anotherUserModel := UserModelByEmail(userModel.Email, db)
+	anotherUserModel := user_lib.UserModelByEmail(userModel.Email, db)
 	if anotherUserModel != nil {
-		return nil, NewError(
-			AlreadyExists, // FIXME: right code?
+		return nil, rp.NewError(
+			rp.AlreadyExists, // FIXME: right code?
 			"email is already registered",
 			nil,
 		)
@@ -107,7 +106,7 @@ func RegisterUser(req Request) (*Response, error) {
 		userModel.Password,
 	)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	// add new field userModel.PasswordHash, FIXME
@@ -122,10 +121,10 @@ func RegisterUser(req Request) (*Response, error) {
 	}
 	err = db.Insert(defaultGroup)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	userModel.DefaultGroupId = &defaultGroup.Id
-	err = db.Insert(UserChangeLogModel{
+	err = db.Insert(user_lib.UserChangeLogModel{
 		Time:         time.Now(),
 		RequestEmail: "", // FIXME
 		RemoteIp:     remoteIp,
@@ -144,12 +143,12 @@ func RegisterUser(req Request) (*Response, error) {
 		//},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	err = db.Insert(userModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	err = sendEmailConfirmation(req, userModel, remoteIp)
@@ -159,7 +158,7 @@ func RegisterUser(req Request) (*Response, error) {
 	}
 
 	signedToken, exp := NewSignedToken(userModel)
-	return &Response{
+	return &rp.Response{
 		Data: map[string]any{
 			"token":      signedToken,
 			"expiration": exp.Format(time.RFC3339),
@@ -168,10 +167,10 @@ func RegisterUser(req Request) (*Response, error) {
 	}, nil
 }
 
-func failedLogin(req Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
+func failedLogin(req rp.Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
 	if settings.STORE_FAILED_LOGINS {
 		now := time.Now()
-		err := db.Insert(UserLoginAttemptModel{
+		err := db.Insert(user_lib.UserLoginAttemptModel{
 			Time:       now,
 			UserId:     userModel.Id,
 			Email:      userModel.Email,
@@ -179,15 +178,15 @@ func failedLogin(req Request, db storage.Database, userModel *user_lib.UserModel
 			Successful: false,
 		})
 		if err != nil {
-			DispatchError(req, NewError(Internal, "", err))
+			DispatchError(req, rp.NewError(rp.Internal, "", err))
 		}
 	}
 }
 
-func successfulLogin(req Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
+func successfulLogin(req rp.Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
 	if settings.STORE_SUCCESSFUL_LOGINS {
 		now := time.Now()
-		err := db.Insert(UserLoginAttemptModel{
+		err := db.Insert(user_lib.UserLoginAttemptModel{
 			Time:       now,
 			UserId:     userModel.Id,
 			Email:      userModel.Email,
@@ -195,15 +194,15 @@ func successfulLogin(req Request, db storage.Database, userModel *user_lib.UserM
 			Successful: true,
 		})
 		if err != nil {
-			DispatchError(req, NewError(Internal, "", err))
+			DispatchError(req, rp.NewError(rp.Internal, "", err))
 		}
 	}
 }
 
-func lockedSuccessfulLogin(req Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
+func lockedSuccessfulLogin(req rp.Request, db storage.Database, userModel *user_lib.UserModel, remoteIP string) {
 	if settings.STORE_LOCKED_SUCCESSFUL_LOGINS {
 		now := time.Now()
-		err := db.Insert(UserLoginAttemptModel{
+		err := db.Insert(user_lib.UserLoginAttemptModel{
 			Time:       now,
 			UserId:     userModel.Id,
 			Email:      userModel.Email,
@@ -212,16 +211,16 @@ func lockedSuccessfulLogin(req Request, db storage.Database, userModel *user_lib
 			Locked:     true,
 		})
 		if err != nil {
-			DispatchError(req, NewError(Internal, "", err))
+			DispatchError(req, rp.NewError(rp.Internal, "", err))
 		}
 	}
 }
 
-func Login(req Request) (*Response, error) {
+func Login(req rp.Request) (*rp.Response, error) {
 	// Expires the token and cookie in 30 days
 	// expireToken := time.Now().Add(30 * time.Day)
 	// expireCookie := time.Now().Add(30 * time.Day)
-	email, err := req.GetString("email", FromBody) // only from json
+	email, err := req.GetString("email", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
@@ -234,19 +233,19 @@ func Login(req Request) (*Response, error) {
 	failed, unlock := resLock.UserLogin(*email, remoteIP)
 	if failed {
 		time.Sleep(1 * time.Second)
-		return nil, NewError(ResourceLocked, "someone else with your IP is trying to login", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "someone else with your IP is trying to login", nil)
 	}
 	defer unlock()
 	// ----------------------
-	password, err := req.GetString("password", FromBody) // only from json
+	password, err := req.GetString("password", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
-	userModel := UserModelByEmail(*email, db)
+	userModel := user_lib.UserModelByEmail(*email, db)
 	if userModel == nil {
 		return nil, AuthError(fmt.Errorf("no user was found with this email"))
 	}
@@ -275,7 +274,7 @@ func Login(req Request) (*Response, error) {
 		http.SetCookie(w, &cookie)
 	*/
 
-	return &Response{
+	return &rp.Response{
 		Data: scal.M{
 			"token":      signedToken,
 			"expiration": exp.Format(time.RFC3339),
@@ -283,9 +282,9 @@ func Login(req Request) (*Response, error) {
 	}, nil
 }
 
-func Logout(req Request) (*Response, error) {
+func Logout(req rp.Request) (*rp.Response, error) {
 	if req.Header("Authorization") == "" {
-		return &Response{}, nil
+		return &rp.Response{}, nil
 	}
 	userModel, err := CheckAuth(req)
 	if err != nil {
@@ -298,10 +297,10 @@ func Logout(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	now := time.Now()
-	err = db.Insert(UserChangeLogModel{
+	err = db.Insert(user_lib.UserChangeLogModel{
 		Time:         now,
 		RequestEmail: email,
 		RemoteIp:     remoteIp,
@@ -312,38 +311,38 @@ func Logout(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	userModel.LastLogoutTime = &now
 	err = db.Update(userModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func ChangePassword(req Request) (*Response, error) {
+func ChangePassword(req rp.Request) (*rp.Response, error) {
 	remoteIp, err := req.RemoteIP()
 	if err != nil {
 		return nil, err
 	}
-	email, err := req.GetString("email", FromBody) // only from json
+	email, err := req.GetString("email", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	password, err := req.GetString("password", FromBody) // only from json
+	password, err := req.GetString("password", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	newPassword, err := req.GetString("newPassword", FromBody) // only from json
+	newPassword, err := req.GetString("newPassword", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
-	userModel := UserModelByEmail(*email, db)
+	userModel := user_lib.UserModelByEmail(*email, db)
 	if userModel == nil {
 		return nil, AuthError(fmt.Errorf("no user was found with this email"))
 	}
@@ -358,9 +357,9 @@ func ChangePassword(req Request) (*Response, error) {
 		*newPassword,
 	)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	err = db.Insert(UserChangeLogModel{
+	err = db.Insert(user_lib.UserChangeLogModel{
 		Time:         time.Now(),
 		RequestEmail: "", // FIXME
 		RemoteIp:     remoteIp,
@@ -371,41 +370,41 @@ func ChangePassword(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	userModel.Password = newPasswordHash
 	err = db.Update(userModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
 type ResetPasswordRequestTemplateParams struct {
-	ResetPasswordTokenModel
+	user_lib.ResetPasswordTokenModel
 	Host string
 }
 
-func ResetPasswordRequest(req Request) (*Response, error) {
+func ResetPasswordRequest(req rp.Request) (*rp.Response, error) {
 	remoteIp, err := req.RemoteIP()
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	email, err := req.GetString("email", FromBody) // only from json
+	email, err := req.GetString("email", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
-	userModel := UserModelByEmail(*email, db)
+	userModel := user_lib.UserModelByEmail(*email, db)
 	if userModel == nil {
 		// FIXME: should we let them know this email is not registered?
-		return nil, NewError(InvalidArgument, "bad 'email'", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "bad 'email'", nil)
 	}
 	now := time.Now()
-	lastToken := ResetPasswordTokenModel{}
+	lastToken := user_lib.ResetPasswordTokenModel{}
 	err = db.First(
 		scal.M{
 			"email": email,
@@ -415,15 +414,15 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 	)
 	if err == nil {
 		if now.Sub(lastToken.IssueTime) < settings.RESET_PASSWORD_REJECT_SECONDS*time.Second {
-			return nil, NewError(
-				PermissionDenied,
+			return nil, rp.NewError(
+				rp.PermissionDenied,
 				"There has been a Reset Password request for this email recently."+
 					" Check your email inbox, or wait a little bit and re-send this request.",
 				nil,
 			)
 		}
 	} else if !db.IsNotFound(err) {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	expTime := now.Add(settings.RESET_PASSWORD_EXP_SECONDS * time.Second)
@@ -431,10 +430,10 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		settings.RESET_PASSWORD_TOKEN_LENGTH,
 	)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	tokenModel := ResetPasswordTokenModel{
-		SpecialUserTokenModel: SpecialUserTokenModel{
+	tokenModel := user_lib.ResetPasswordTokenModel{
+		SpecialUserTokenModel: user_lib.SpecialUserTokenModel{
 			Token:         token,
 			Email:         *email,
 			IssueTime:     now,
@@ -444,13 +443,13 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 	}
 	err = db.Insert(tokenModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	// send an email containing this `token`, (and some instructions to use it)
 	tplText := settings.RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE
 	tpl, err := template.New("ResetPassword " + *email).Parse(tplText)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	buf := bytes.NewBufferString("")
 	err = tpl.Execute(buf, ResetPasswordRequestTemplateParams{
@@ -458,7 +457,7 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 		Host:                    settings.HOST,
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	emailBody := buf.String()
 	err = scal.SendEmail(&scal.SendEmailInput{
@@ -469,39 +468,39 @@ func ResetPasswordRequest(req Request) (*Response, error) {
 	})
 	if err != nil {
 		log.Error("Failed to send email:\n", emailBody)
-		return nil, NewError(Unavailable, "error in sending email", err)
+		return nil, rp.NewError(rp.Unavailable, "error in sending email", err)
 	}
-	return &Response{
+	return &rp.Response{
 		Data: scal.M{
 			"description": "Reset Password Token is sent to your email",
 		},
 	}, nil
 }
 
-func ResetPasswordAction(req Request) (*Response, error) {
+func ResetPasswordAction(req rp.Request) (*rp.Response, error) {
 	remoteIp, err := req.RemoteIP()
 	if err != nil {
 		return nil, err
 	}
-	emailPtr, err := req.GetString("email", FromBody) // only from json
+	emailPtr, err := req.GetString("email", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
 	email := *emailPtr
-	resetPasswordToken, err := req.GetString("resetPasswordToken", FromBody) // only from json
+	resetPasswordToken, err := req.GetString("resetPasswordToken", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
-	newPassword, err := req.GetString("newPassword", FromBody) // only from json
+	newPassword, err := req.GetString("newPassword", rp.FromBody) // only from json
 	if err != nil {
 		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
-	tokenModel := ResetPasswordTokenModel{
-		SpecialUserTokenModel: SpecialUserTokenModel{
+	tokenModel := user_lib.ResetPasswordTokenModel{
+		SpecialUserTokenModel: user_lib.SpecialUserTokenModel{
 			Token: *resetPasswordToken,
 		},
 	}
@@ -510,7 +509,7 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		if db.IsNotFound(err) {
 			return nil, ForbiddenError("invalid 'resetPasswordToken'", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if tokenModel.Email != email {
 		return nil, ForbiddenError(
@@ -524,7 +523,7 @@ func ResetPasswordAction(req Request) (*Response, error) {
 			fmt.Errorf("token expired, ExpireTime=%v", tokenModel.ExpireTime),
 		)
 	}
-	userModel := UserModelByEmail(email, db)
+	userModel := user_lib.UserModelByEmail(email, db)
 	if userModel == nil {
 		return nil, ForbiddenError(
 			"invalid 'resetPasswordToken'",
@@ -535,27 +534,27 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		return nil, ForbiddenError("user is locked", nil)
 	}
 	now := time.Now()
-	logModel := ResetPasswordLogModel{
+	logModel := user_lib.ResetPasswordLogModel{
 		TokenModel:     tokenModel.SpecialUserTokenModel,
 		ActionTime:     now,
 		ActionRemoteIp: remoteIp,
 	}
 	err = db.Insert(logModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = db.Remove(tokenModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	newPasswordHash, err := GetPasswordHash(
 		userModel.Email,
 		*newPassword,
 	)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	err = db.Insert(UserChangeLogModel{
+	err = db.Insert(user_lib.UserChangeLogModel{
 		Time:         now,
 		RequestEmail: "", // FIXME
 		RemoteIp:     remoteIp,
@@ -566,17 +565,17 @@ func ResetPasswordAction(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	userModel.Password = newPasswordHash
 	err = db.Update(userModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	tplText := settings.RESET_PASSWORD_DONE_EMAIL_TEMPLATE
 	tpl, err := template.New("ResetPasswordAction " + email).Parse(tplText)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	buf := bytes.NewBufferString("")
 	tplParams := struct {
@@ -590,7 +589,7 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	}
 	err = tpl.Execute(buf, tplParams)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	emailBody := buf.String()
 	err = scal.SendEmail(&scal.SendEmailInput{
@@ -601,12 +600,12 @@ func ResetPasswordAction(req Request) (*Response, error) {
 	})
 	if err != nil {
 		log.Error("Failed to send email:\n", emailBody)
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func sendEmailConfirmation(req Request, userModel *UserModel, remoteIp string) error {
+func sendEmailConfirmation(req rp.Request, userModel *user_lib.UserModel, remoteIp string) error {
 	email := userModel.Email
 
 	now := time.Now()
@@ -630,7 +629,7 @@ func sendEmailConfirmation(req Request, userModel *UserModel, remoteIp string) e
 	tplText := settings.CONFIRM_EMAIL_EMAIL_TEMPLATE
 	tpl, err := template.New("ConfirmEmailRequest " + email).Parse(tplText)
 	if err != nil {
-		return NewError(Internal, "", err)
+		return rp.NewError(rp.Internal, "", err)
 	}
 	buf := bytes.NewBufferString("")
 	tplParams := struct {
@@ -646,7 +645,7 @@ func sendEmailConfirmation(req Request, userModel *UserModel, remoteIp string) e
 	}
 	err = tpl.Execute(buf, tplParams)
 	if err != nil {
-		return NewError(Internal, "", err)
+		return rp.NewError(rp.Internal, "", err)
 	}
 	emailBody := buf.String()
 	fmt.Println(emailBody)
@@ -658,12 +657,12 @@ func sendEmailConfirmation(req Request, userModel *UserModel, remoteIp string) e
 	})
 	if err != nil {
 		log.Error("Failed to send email:\n", emailBody)
-		return NewError(Unavailable, "", err)
+		return rp.NewError(rp.Unavailable, "", err)
 	}
 	return nil
 }
 
-func ConfirmEmailRequest(req Request) (*Response, error) {
+func ConfirmEmailRequest(req rp.Request) (*rp.Response, error) {
 	remoteIp, err := req.RemoteIP()
 	if err != nil {
 		return nil, err
@@ -673,7 +672,7 @@ func ConfirmEmailRequest(req Request) (*Response, error) {
 		return nil, err
 	}
 	if userModel.EmailConfirmed {
-		return &Response{
+		return &rp.Response{
 			Data: scal.M{
 				"message": "Your email address has been ALREADY CONFIRMED",
 			},
@@ -683,10 +682,10 @@ func ConfirmEmailRequest(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func ConfirmEmailAction(req Request) (*Response, error) {
+func ConfirmEmailAction(req rp.Request) (*rp.Response, error) {
 	remoteIp, err := req.RemoteIP()
 	if err != nil {
 		return nil, err
@@ -709,7 +708,7 @@ func ConfirmEmailAction(req Request) (*Response, error) {
 	tokenAlg := token.Header["alg"]
 	if expectedAlg != tokenAlg {
 		return nil, ForbiddenError("invalid email confirmation token", fmt.Errorf(
-			"Expected %s signing method but token specified %s",
+			"expected %s signing method but token specified %s",
 			expectedAlg,
 			tokenAlg,
 		))
@@ -741,9 +740,9 @@ func ConfirmEmailAction(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
-	userModel := UserModelByEmail(email, db)
+	userModel := user_lib.UserModelByEmail(email, db)
 	if userModel == nil {
 		return nil, ForbiddenError(
 			"invalid email confirmation token",
@@ -751,13 +750,13 @@ func ConfirmEmailAction(req Request) (*Response, error) {
 		)
 	}
 	if userModel.EmailConfirmed {
-		return &Response{
+		return &rp.Response{
 			Data: scal.M{"message": "Your email address is already confirmed."},
 		}, nil
 	}
 	userModel.EmailConfirmed = true
 
-	err = db.Insert(UserChangeLogModel{
+	err = db.Insert(user_lib.UserChangeLogModel{
 		Time:           time.Now(),
 		RequestEmail:   email,
 		RemoteIp:       remoteIp,
@@ -765,14 +764,14 @@ func ConfirmEmailAction(req Request) (*Response, error) {
 		EmailConfirmed: &[2]bool{false, true},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = db.Update(userModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
-	return &Response{
+	return &rp.Response{
 		Data: scal.M{"message": "Your email address is now confirmed."},
 	}, nil
 }

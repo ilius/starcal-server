@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/format"
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 	"sync"
@@ -48,7 +48,7 @@ func RunCommand3(name string, args ...string) (stdout string, stderr string, exi
 }
 
 func formatGoFileBuiltin(fpath string) {
-	src, err := ioutil.ReadFile(fpath)
+	src, err := os.ReadFile(fpath)
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +56,7 @@ func formatGoFileBuiltin(fpath string) {
 	if err2 != nil {
 		panic(err2)
 	}
-	err3 := ioutil.WriteFile(fpath, src2, 0o644)
+	err3 := os.WriteFile(fpath, src2, 0o644)
 	if err3 != nil {
 		panic(err3)
 	}

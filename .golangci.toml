@@ -1,0 +1,4 @@
+[issues]
+exclude-files = [
+    "pkg/scal/settings/settings_helpers.go",
+]

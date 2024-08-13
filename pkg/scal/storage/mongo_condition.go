@@ -77,9 +77,7 @@ func (c *MongoCondition) Prepare() bson.D {
 		case bson.DocElem:
 			parts = append(parts, pt)
 		case *MongoCondition:
-			for _, elem := range pt.Prepare() {
-				parts = append(parts, elem)
-			}
+			parts = append(parts, pt.Prepare()...)
 		default:
 			panic(fmt.Errorf("invalid type %T", p))
 		}
@@ -99,5 +97,4 @@ func (c *MongoCondition) Prepare() bson.D {
 		}
 	}
 	panic(fmt.Errorf("invalid c.op = %v", c.op))
-	return nil
 }

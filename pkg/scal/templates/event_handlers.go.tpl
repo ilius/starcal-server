@@ -16,8 +16,8 @@ import (
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 
-	. "github.com/ilius/ripo"
 	"github.com/ilius/mgo/bson"
+	rp "github.com/ilius/ripo"
 )
 
 func init() {
@@ -113,7 +113,7 @@ func init() {
 	})
 }
 
-func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+func Add{{.CAP_EVENT_TYPE}}(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -132,14 +132,14 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
-		return nil, NewError(InvalidArgument, err.Error(), err) // FIXME: correct msg?
+		return nil, rp.NewError(rp.InvalidArgument, err.Error(), err) // FIXME: correct msg?
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	if eventModel.Id != "" {
-		return nil, NewError(InvalidArgument, "you can't specify 'eventId'", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "you can't specify 'eventId'", nil)
 	}
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -149,7 +149,7 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	groupId := userModel.DefaultGroupId
 	if eventModel.GroupId != "" {
 		if !bson.IsObjectIdHex(eventModel.GroupId) {
-			return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
+			return nil, rp.NewError(rp.InvalidArgument, "invalid 'groupId'", nil)
 		}
 		groupModel, err := event_lib.LoadGroupModelByIdHex(
 			"groupId",
@@ -188,7 +188,7 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = db.Insert(event_lib.EventRevisionModel{
 		EventId:   eventId,
@@ -197,7 +197,7 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		Time:      time.Now(),
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
@@ -210,10 +210,10 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		if db.IsNotFound(err) {
 			err = db.Insert(eventModel)
 			if err != nil {
-				return nil, NewError(Internal, "", err)
+				return nil, rp.NewError(rp.Internal, "", err)
 			}
 		} else {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 	}
 
@@ -229,9 +229,9 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	{{ end }}
 	err = db.Insert(eventMeta)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{
+	return &rp.Response{
 		Data: map[string]string{
 			"eventId": eventId,
 			"sha1":    eventModel.Sha1,
@@ -239,7 +239,7 @@ func Add{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}, nil
 }
 
-func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+func Get{{.CAP_EVENT_TYPE}}(req rp.Request) (*rp.Response, error) {
 	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
@@ -262,24 +262,24 @@ func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err).Add(
+			return nil, rp.NewError(rp.NotFound, "event not found", err).Add(
 				"msg", "event meta not found",
 			)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if !eventMeta.CanRead(email) {
 		return nil, ForbiddenError("you don't have access to this event", nil)
 	}
 	if !settings.ALLOW_MISMATCH_EVENT_TYPE {
 		if eventMeta.EventType != "{{.EVENT_TYPE}}" {
-			return nil, NewError(
+			return nil, rp.NewError(rp.
 				InvalidArgument,
 				fmt.Sprintf(
 					"mismatch {eventType}, must be '%s'",
@@ -293,11 +293,11 @@ func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err).Add(
+			return nil, rp.NewError(rp.NotFound, "event not found", err).Add(
 				"msg", "event revision not found",
 			)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	eventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
@@ -306,11 +306,11 @@ func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err).Add(
+			return nil, rp.NewError(rp.NotFound, "event not found", err).Add(
 				"msg", "event data not found",
 			)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	eventModel.Id = *eventId
@@ -319,12 +319,12 @@ func Get{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	if eventMeta.CanReadFull(email) {
 		eventModel.Meta = eventMeta.JsonM()
 	}
-	return &Response{
+	return &rp.Response{
 		Data: eventModel,
 	}, nil
 }
 
-func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+func Update{{.CAP_EVENT_TYPE}}(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -339,7 +339,7 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -357,20 +357,20 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		_, err = eventModel.GetEvent() // for validation
 	{{ end }}
 	if err != nil {
-		return nil, NewError(InvalidArgument, err.Error(), err)
+		return nil, rp.NewError(rp.InvalidArgument, err.Error(), err)
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	// check if event exists, and has access to
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't have write access to this event", nil)
@@ -379,9 +379,9 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	lastEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
@@ -389,19 +389,19 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event snapshot not found", err)
+			return nil, rp.NewError(rp.NotFound, "event snapshot not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	if eventModel.Id != "" {
-		return nil, NewError(InvalidArgument, "'eventId' must not be present in JSON", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "'eventId' must not be present in JSON", nil)
 	}
 	if eventModel.GroupId != "" {
-		return nil, NewError(InvalidArgument, "'groupId' must not be present in JSON", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "'groupId' must not be present in JSON", nil)
 	}
 	if len(eventModel.Meta) != 0 {
-		return nil, NewError(InvalidArgument, "'meta' must not be present in JSON", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "'meta' must not be present in JSON", nil)
 	}
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -418,7 +418,7 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	err = db.Insert(eventRev)
 	if err != nil {
 		// FIXME: BadRequest or Internal error?
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	// don't store duplicate eventModel, even if it was added by another user
@@ -433,10 +433,10 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 			err = db.Insert(eventModel)
 			if err != nil {
 				// FIXME: BadRequest or Internal error?
-				return nil, NewError(Internal, "", err)
+				return nil, rp.NewError(rp.Internal, "", err)
 			}
 		} else {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 	}
 
@@ -445,7 +445,7 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		{{ if eq .PARAM "rules" }}
 			lastEvent, err := lastEventModel.GetEvent() // for comparing rules
 			if err != nil {
-				return nil, NewError(Internal, "", err)
+				return nil, rp.NewError(rp.Internal, "", err)
 			}
 			modRuleTypes := event.GetModifiedRuleTypes(&lastEvent)
 			if len(modRuleTypes) > 0 {
@@ -465,10 +465,10 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	{{ end }}
 	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
-	return &Response{
+	return &rp.Response{
 		Data: map[string]string{
 			"eventId": *eventId,
 			"sha1":    eventRev.Sha1,
@@ -476,7 +476,7 @@ func Update{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}, nil
 }
 
-func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+func Patch{{.CAP_EVENT_TYPE}}(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -489,7 +489,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -504,16 +504,16 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	// check if event exists, and has access to
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't have write access to this event", nil)
@@ -523,21 +523,21 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	eventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(
 		db,
 		lastEventRev.Sha1,
 	)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	{{ if eq .EVENT_TYPE "custom" }}
 		lastEvent, err := eventModel.GetEvent()// for comparing rules
 		if err != nil {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 		rulesModified := false
 	{{ end }}
@@ -549,7 +549,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 			{{ if eq .PARAM "rules" }}
 				value, err := event_lib.DecodeMapEventRuleModelList(rawValue)
 				if err != nil {
-					return nil, NewError(
+					return nil, rp.NewError(rp.
 						InvalidArgument,
 						"bad type or value for parameter 'rules': "+err.Error(),
 						err,
@@ -565,7 +565,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 					value, typeOk := rawValue.({{.PARAM_TYPE}})
 				{{ end }}
 				if !typeOk {
-					return nil, NewError(
+					return nil, rp.NewError(rp.
 						InvalidArgument,
 						"bad type for parameter '{{.PARAM}}'",
 						nil,
@@ -578,7 +578,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 				timeValue, err := time.Parse(time.RFC3339, value)
 				if err != nil {
 					// FIXME: give a better msg
-					return nil, NewError(InvalidArgument, err.Error(), err)
+					return nil, rp.NewError(rp.InvalidArgument, err.Error(), err)
 				}
 				eventModel.{{.CAP_PARAM}} = &timeValue
 			{{ else }}
@@ -596,7 +596,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		for param := range patchMap {
 			extraNames = append(extraNames, param)
 		}
-		return nil, NewError(
+		return nil, rp.NewError(rp.
 			InvalidArgument,
 			fmt.Sprintf(
 				"extra parameters: %v",
@@ -611,7 +611,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 		_, err = eventModel.GetEvent() // for validation
 	{{ end }}
 	if err != nil {
-		return nil, NewError(InvalidArgument, err.Error(), err)
+		return nil, rp.NewError(rp.InvalidArgument, err.Error(), err)
 	}
 	{{ if eq .EVENT_TYPE "custom" }}
 		if rulesModified {
@@ -633,7 +633,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	})
 	if err != nil {
 		// FIXME: BadRequest or Internal error?
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
@@ -647,17 +647,17 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 			err = db.Insert(eventModel)
 			if err != nil {
 				// FIXME: BadRequest or Internal error?
-				return nil, NewError(Internal, "", err)
+				return nil, rp.NewError(rp.Internal, "", err)
 			}
 		} else {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 	}
 	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{
+	return &rp.Response{
 		Data: map[string]string{
 			"eventId": *eventId,
 			"sha1":    eventModel.Sha1,
@@ -665,7 +665,7 @@ func Patch{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}, nil
 }
 
-func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
+func Merge{{.CAP_EVENT_TYPE}}(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -678,7 +678,7 @@ func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -696,29 +696,29 @@ func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	// if inputStruct.Event.DummyType == "" {
-	//	return nil, NewError(MissingArgument, "missing 'eventType'", nil)
+	//	return nil, rp.NewError(rp.MissingArgument, "missing 'eventType'", nil)
 	// }
 	if inputStruct.Event.Id == "" {
-		return nil, NewError(MissingArgument, "missing 'eventId'", nil)
+		return nil, rp.NewError(rp.MissingArgument, "missing 'eventId'", nil)
 	}
 	// FIXME: LastMergeSha1 can be empty?
 	if inputStruct.LastMergeSha1 == "" {
-		return nil, NewError(MissingArgument, "missing 'lastMergeSha1'", nil)
+		return nil, rp.NewError(rp.MissingArgument, "missing 'lastMergeSha1'", nil)
 	}
 	inputEventModel := &inputStruct.Event
 	if inputEventModel.Id != *eventId {
-		return nil, NewError(InvalidArgument, "mismatch 'event.id'", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "mismatch 'event.id'", nil)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't own this event", nil)
@@ -727,20 +727,20 @@ func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	lastRevModel, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	parentEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(db, inputStruct.LastMergeSha1)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(InvalidArgument, "invalid lastMergeSha1: revision not found", err)
+			return nil, rp.NewError(rp.InvalidArgument, "invalid lastMergeSha1: revision not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	lastEventModel, err := event_lib.Load{{.CAP_EVENT_TYPE}}EventModel(db, lastRevModel.Sha1)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	fmt.Println(parentEventModel)
 	fmt.Println(lastEventModel)
@@ -782,5 +782,5 @@ func Merge{{.CAP_EVENT_TYPE}}(req Request) (*Response, error) {
 	// 	return
 	// }
 
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }

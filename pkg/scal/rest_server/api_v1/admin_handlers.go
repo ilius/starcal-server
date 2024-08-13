@@ -1,7 +1,7 @@
 package api_v1
 
 import (
-	. "github.com/ilius/ripo"
+	"github.com/ilius/ripo"
 )
 
 func init() {
@@ -22,24 +22,24 @@ func init() {
 	})
 }
 
-func AdminGetStats(req Request) (*Response, error) {
+func AdminGetStats(req ripo.Request) (*ripo.Response, error) {
 	_, err := AdminCheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
-	return &Response{
+	return &ripo.Response{
 		Data: map[string]any{
 			"locked_resource_count": resLock.CountLocked(),
 		},
 	}, nil
 }
 
-func AdminListLockedResources(req Request) (*Response, error) {
+func AdminListLockedResources(req ripo.Request) (*ripo.Response, error) {
 	_, err := AdminCheckAuth(req)
 	if err != nil {
 		return nil, err
 	}
-	return &Response{
+	return &ripo.Response{
 		Data: resLock.ListLocked(),
 	}, nil
 }

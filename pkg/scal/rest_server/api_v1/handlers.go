@@ -9,10 +9,10 @@ import (
 	"github.com/ilius/starcal-server/pkg/scal"
 	"github.com/ilius/starcal-server/pkg/scal/event_lib"
 	"github.com/ilius/starcal-server/pkg/scal/storage"
-	. "github.com/ilius/starcal-server/pkg/scal/user_lib"
+	"github.com/ilius/starcal-server/pkg/scal/user_lib"
 
 	"github.com/ilius/mgo/bson"
-	. "github.com/ilius/ripo"
+	rp "github.com/ilius/ripo"
 )
 
 func init() {
@@ -53,7 +53,7 @@ func init() {
 	})
 }
 
-func DeleteEvent(req Request) (*Response, error) {
+func DeleteEvent(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -72,15 +72,15 @@ func DeleteEvent(req Request) (*Response, error) {
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	if eventMeta.OwnerEmail != email {
@@ -113,7 +113,7 @@ func DeleteEvent(req Request) (*Response, error) {
 	}
 	err = db.Insert(metaChangeLog)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = db.Insert(event_lib.EventRevisionModel{
 		EventId:   *eventId,
@@ -122,16 +122,16 @@ func DeleteEvent(req Request) (*Response, error) {
 		Time:      now,
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = db.Remove(eventMeta)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func CopyEvent(req Request) (*Response, error) {
+func CopyEvent(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -148,14 +148,14 @@ func CopyEvent(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, oldEventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", nil)
+			return nil, rp.NewError(rp.NotFound, "event not found", nil)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if !eventMeta.CanRead(email) {
 		return nil, ForbiddenError("you don't have access to this event", nil)
@@ -163,9 +163,9 @@ func CopyEvent(req Request) (*Response, error) {
 	eventRev, err := event_lib.LoadLastRevisionModel(db, oldEventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", nil)
+			return nil, rp.NewError(rp.NotFound, "event not found", nil)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	newEventId := bson.NewObjectId().Hex()
 
@@ -192,7 +192,7 @@ func CopyEvent(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = db.Insert(event_lib.EventMetaModel{
 		EventId:      newEventId,
@@ -203,15 +203,15 @@ func CopyEvent(req Request) (*Response, error) {
 		// AccessEmails: []string{}// must not copy AccessEmails
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	eventRev.EventId = newEventId
 	err = db.Insert(eventRev)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
-	return &Response{
+	return &rp.Response{
 		Data: map[string]string{
 			"eventType": eventRev.EventType,
 			"eventId":   newEventId,
@@ -220,7 +220,7 @@ func CopyEvent(req Request) (*Response, error) {
 	}, nil
 }
 
-func SetEventGroupId(req Request) (*Response, error) {
+func SetEventGroupId(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -237,14 +237,14 @@ func SetEventGroupId(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't have write access to this event", err)
@@ -254,7 +254,7 @@ func SetEventGroupId(req Request) (*Response, error) {
 		return nil, err
 	}
 	if !bson.IsObjectIdHex(*newGroupId) {
-		return nil, NewError(InvalidArgument, "invalid 'newGroupId'", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "invalid 'newGroupId'", nil)
 		// to avoid panic!
 	}
 	newGroupModel := event_lib.EventGroupModel{
@@ -262,7 +262,7 @@ func SetEventGroupId(req Request) (*Response, error) {
 	}
 	err = db.Get(&newGroupModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if !newGroupModel.EmailCanAdd(email) {
 		return nil, ForbiddenError("you don't have write access to this group", nil)
@@ -291,7 +291,7 @@ func SetEventGroupId(req Request) (*Response, error) {
 	*/
 	err = db.Insert(metaChangeLog)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	/*userModel := UserModelByEmail(email, db)
 	  if userModel == nil {
@@ -301,12 +301,12 @@ func SetEventGroupId(req Request) (*Response, error) {
 	eventMeta.GroupId = newGroupId
 	err = db.Update(eventMeta)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func GetEventOwner(req Request) (*Response, error) {
+func GetEventOwner(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -319,19 +319,19 @@ func GetEventOwner(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if !eventMeta.CanRead(email) {
 		return nil, ForbiddenError("you don't have access to this event", nil)
 	}
-	return &Response{
+	return &rp.Response{
 		Data: scal.M{
 			//"eventId": eventId.Hex(),
 			"ownerEmail": eventMeta.OwnerEmail,
@@ -339,7 +339,7 @@ func GetEventOwner(req Request) (*Response, error) {
 	}, nil
 }
 
-func SetEventOwner(req Request) (*Response, error) {
+func SetEventOwner(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -360,23 +360,23 @@ func SetEventOwner(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't own this event", err)
 	}
 	// should check if user with `newOwnerEmail` exists?
-	newOwnerUserModel := UserModelByEmail(*newOwnerEmail, db)
+	newOwnerUserModel := user_lib.UserModelByEmail(*newOwnerEmail, db)
 	if newOwnerUserModel == nil {
-		return nil, NewError(
-			InvalidArgument,
+		return nil, rp.NewError(
+			rp.InvalidArgument,
 			fmt.Sprintf(
 				"user with email '%s' does not exist",
 				*newOwnerEmail,
@@ -397,32 +397,32 @@ func SetEventOwner(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	eventMeta.OwnerEmail = *newOwnerEmail
 	err = db.Update(eventMeta)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	// send an E-Mail to `newOwnerEmail` FIXME
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func GetEventMetaModelFromRequest(req Request, email string) (*event_lib.EventMetaModel, error) {
+func GetEventMetaModelFromRequest(req rp.Request, email string) (*event_lib.EventMetaModel, error) {
 	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(InvalidArgument, "event not found", err)
+			return nil, rp.NewError(rp.InvalidArgument, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if !eventMeta.CanReadFull(email) {
 		return nil, ForbiddenError("you can't meta information of this event", nil)
@@ -430,7 +430,7 @@ func GetEventMetaModelFromRequest(req Request, email string) (*event_lib.EventMe
 	return eventMeta, nil
 }
 
-func GetEventMeta(req Request) (*Response, error) {
+func GetEventMeta(req rp.Request) (*rp.Response, error) {
 	// includes owner, creation time, groupId, access info, attendings info
 	userModel, err := CheckAuth(req)
 	if err != nil {
@@ -444,10 +444,10 @@ func GetEventMeta(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
-	return &Response{
+	return &rp.Response{
 		Data: scal.M{
 			//"eventId": eventMeta.EventId.Hex(),
 			"ownerEmail":           eventMeta.OwnerEmail,
@@ -465,7 +465,7 @@ func GetEventMeta(req Request) (*Response, error) {
 	}, nil
 }
 
-func GetEventAccess(req Request) (*Response, error) {
+func GetEventAccess(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -476,7 +476,7 @@ func GetEventAccess(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Response{
+	return &rp.Response{
 		Data: scal.M{
 			//"eventId": eventMeta.EventId.Hex(),
 			"isPublic":       eventMeta.IsPublic,
@@ -487,7 +487,7 @@ func GetEventAccess(req Request) (*Response, error) {
 	}, nil
 }
 
-func SetEventAccess(req Request) (*Response, error) {
+func SetEventAccess(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -505,15 +505,15 @@ func SetEventAccess(req Request) (*Response, error) {
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't own this event", nil)
@@ -575,16 +575,16 @@ func SetEventAccess(req Request) (*Response, error) {
 	}
 	err = db.Insert(metaChangeLog)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = db.Update(eventMeta)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func AppendEventAccess(req Request) (*Response, error) {
+func AppendEventAccess(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -602,15 +602,15 @@ func AppendEventAccess(req Request) (*Response, error) {
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't own this event", nil)
@@ -635,17 +635,17 @@ func AppendEventAccess(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	eventMeta.AccessEmails = newAccessEmails
 	err = db.Update(eventMeta)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func joinEventWithToken(req Request, tokenStr string, eventId *string) (*Response, error) {
+func joinEventWithToken(tokenStr string, eventId *string) (*rp.Response, error) {
 	email, err := event_lib.CheckEventInvitationToken(tokenStr, eventId)
 	if err != nil {
 		return nil, ForbiddenError("invalid event invitation token", err)
@@ -653,15 +653,15 @@ func joinEventWithToken(req Request, tokenStr string, eventId *string) (*Respons
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = eventMeta.Join(db, *email)
 	if err != nil {
@@ -677,12 +677,12 @@ func joinEventWithToken(req Request, tokenStr string, eventId *string) (*Respons
 		values.Encode(),
 	)
 	fmt.Println("eventPath:", eventPath)
-	return &Response{
+	return &rp.Response{
 		RedirectPath: eventPath,
 	}, nil
 }
 
-func JoinEvent(req Request) (*Response, error) {
+func JoinEvent(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		tokenPtr, _ := req.GetString("token")
@@ -691,7 +691,7 @@ func JoinEvent(req Request) (*Response, error) {
 			if err != nil {
 				return nil, err
 			}
-			return joinEventWithToken(req, *tokenPtr, eventId)
+			return joinEventWithToken(*tokenPtr, eventId)
 		}
 		return nil, err
 	}
@@ -712,23 +712,23 @@ func JoinEvent(req Request) (*Response, error) {
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = eventMeta.Join(db, email)
 	if err != nil {
 		return nil, ForbiddenError(err.Error(), err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func LeaveEvent(req Request) (*Response, error) {
+func LeaveEvent(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -746,23 +746,23 @@ func LeaveEvent(req Request) (*Response, error) {
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = eventMeta.Leave(db, email)
 	if err != nil {
 		return nil, ForbiddenError(err.Error(), err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func InviteToEvent(req Request) (*Response, error) {
+func InviteToEvent(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -785,14 +785,14 @@ func InviteToEvent(req Request) (*Response, error) {
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = eventMeta.Invite(
 		db,
@@ -804,10 +804,10 @@ func InviteToEvent(req Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func GetUngroupedEvents(req Request) (*Response, error) {
+func GetUngroupedEvents(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -816,7 +816,7 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	pageOpts, err := GetPageOptions(req)
 	if err != nil {
@@ -849,12 +849,12 @@ func GetUngroupedEvents(req Request) (*Response, error) {
 	if len(results) > 0 {
 		output["lastId"] = results[len(results)-1].EventId
 	}
-	return &Response{
+	return &rp.Response{
 		Data: output,
 	}, nil
 }
 
-func GetMyEventList(req Request) (*Response, error) {
+func GetMyEventList(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -863,7 +863,7 @@ func GetMyEventList(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	pageOpts, err := GetPageOptions(req)
 	if err != nil {
@@ -888,7 +888,7 @@ func GetMyEventList(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	if results == nil {
@@ -901,7 +901,7 @@ func GetMyEventList(req Request) (*Response, error) {
 		output["lastId"] = results[len(results)-1].EventId
 	}
 
-	return &Response{
+	return &rp.Response{
 		Data: output,
 	}, nil
 }
@@ -939,7 +939,7 @@ func getMyEventsFullData(db storage.Database, email string, pageOpts *scal.PageO
 	})
 }
 
-func GetMyEventsFull(req Request) (*Response, error) {
+func GetMyEventsFull(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -948,7 +948,7 @@ func GetMyEventsFull(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	pageOpts, err := GetPageOptions(req)
 	if err != nil {
@@ -964,7 +964,7 @@ func GetMyEventsFull(req Request) (*Response, error) {
 	if len(results) > 0 {
 		output["lastId"] = results[len(results)-1]["eventId"]
 	}
-	return &Response{
+	return &rp.Response{
 		Data: output,
 	}, nil
 }

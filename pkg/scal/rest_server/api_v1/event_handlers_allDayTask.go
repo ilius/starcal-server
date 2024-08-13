@@ -17,7 +17,7 @@ import (
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 
 	"github.com/ilius/mgo/bson"
-	. "github.com/ilius/ripo"
+	rp "github.com/ilius/ripo"
 )
 
 func init() {
@@ -113,7 +113,7 @@ func init() {
 	})
 }
 
-func AddAllDayTask(req Request) (*Response, error) {
+func AddAllDayTask(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -132,14 +132,14 @@ func AddAllDayTask(req Request) (*Response, error) {
 	}
 	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
-		return nil, NewError(InvalidArgument, err.Error(), err) // FIXME: correct msg?
+		return nil, rp.NewError(rp.InvalidArgument, err.Error(), err) // FIXME: correct msg?
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	if eventModel.Id != "" {
-		return nil, NewError(InvalidArgument, "you can't specify 'eventId'", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "you can't specify 'eventId'", nil)
 	}
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -149,7 +149,7 @@ func AddAllDayTask(req Request) (*Response, error) {
 	groupId := userModel.DefaultGroupId
 	if eventModel.GroupId != "" {
 		if !bson.IsObjectIdHex(eventModel.GroupId) {
-			return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
+			return nil, rp.NewError(rp.InvalidArgument, "invalid 'groupId'", nil)
 		}
 		groupModel, err := event_lib.LoadGroupModelByIdHex(
 			"groupId",
@@ -188,7 +188,7 @@ func AddAllDayTask(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	err = db.Insert(event_lib.EventRevisionModel{
 		EventId:   eventId,
@@ -197,7 +197,7 @@ func AddAllDayTask(req Request) (*Response, error) {
 		Time:      time.Now(),
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
@@ -210,10 +210,10 @@ func AddAllDayTask(req Request) (*Response, error) {
 		if db.IsNotFound(err) {
 			err = db.Insert(eventModel)
 			if err != nil {
-				return nil, NewError(Internal, "", err)
+				return nil, rp.NewError(rp.Internal, "", err)
 			}
 		} else {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 	}
 
@@ -232,9 +232,9 @@ func AddAllDayTask(req Request) (*Response, error) {
 	}
 	err = db.Insert(eventMeta)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{
+	return &rp.Response{
 		Data: map[string]string{
 			"eventId": eventId,
 			"sha1":    eventModel.Sha1,
@@ -242,7 +242,7 @@ func AddAllDayTask(req Request) (*Response, error) {
 	}, nil
 }
 
-func GetAllDayTask(req Request) (*Response, error) {
+func GetAllDayTask(req rp.Request) (*rp.Response, error) {
 	eventId, err := ObjectIdFromRequest(req, "eventId")
 	if err != nil {
 		return nil, err
@@ -265,24 +265,24 @@ func GetAllDayTask(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err).Add(
+			return nil, rp.NewError(rp.NotFound, "event not found", err).Add(
 				"msg", "event meta not found",
 			)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if !eventMeta.CanRead(email) {
 		return nil, ForbiddenError("you don't have access to this event", nil)
 	}
 	if !settings.ALLOW_MISMATCH_EVENT_TYPE {
 		if eventMeta.EventType != "allDayTask" {
-			return nil, NewError(
+			return nil, rp.NewError(rp.
 				InvalidArgument,
 				fmt.Sprintf(
 					"mismatch {eventType}, must be '%s'",
@@ -296,11 +296,11 @@ func GetAllDayTask(req Request) (*Response, error) {
 	eventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err).Add(
+			return nil, rp.NewError(rp.NotFound, "event not found", err).Add(
 				"msg", "event revision not found",
 			)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	eventModel, err := event_lib.LoadAllDayTaskEventModel(
@@ -309,11 +309,11 @@ func GetAllDayTask(req Request) (*Response, error) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err).Add(
+			return nil, rp.NewError(rp.NotFound, "event not found", err).Add(
 				"msg", "event data not found",
 			)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	eventModel.Id = *eventId
@@ -322,12 +322,12 @@ func GetAllDayTask(req Request) (*Response, error) {
 	if eventMeta.CanReadFull(email) {
 		eventModel.Meta = eventMeta.JsonM()
 	}
-	return &Response{
+	return &rp.Response{
 		Data: eventModel,
 	}, nil
 }
 
-func UpdateAllDayTask(req Request) (*Response, error) {
+func UpdateAllDayTask(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -342,7 +342,7 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -356,20 +356,20 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 	}
 	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
-		return nil, NewError(InvalidArgument, err.Error(), err)
+		return nil, rp.NewError(rp.InvalidArgument, err.Error(), err)
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	// check if event exists, and has access to
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't have write access to this event", nil)
@@ -378,9 +378,9 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	lastEventModel, err := event_lib.LoadAllDayTaskEventModel(
 		db,
@@ -388,19 +388,19 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 	)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event snapshot not found", err)
+			return nil, rp.NewError(rp.NotFound, "event snapshot not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	if eventModel.Id != "" {
-		return nil, NewError(InvalidArgument, "'eventId' must not be present in JSON", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "'eventId' must not be present in JSON", nil)
 	}
 	if eventModel.GroupId != "" {
-		return nil, NewError(InvalidArgument, "'groupId' must not be present in JSON", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "'groupId' must not be present in JSON", nil)
 	}
 	if len(eventModel.Meta) != 0 {
-		return nil, NewError(InvalidArgument, "'meta' must not be present in JSON", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "'meta' must not be present in JSON", nil)
 	}
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -417,7 +417,7 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 	err = db.Insert(eventRev)
 	if err != nil {
 		// FIXME: BadRequest or Internal error?
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	// don't store duplicate eventModel, even if it was added by another user
@@ -432,10 +432,10 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 			err = db.Insert(eventModel)
 			if err != nil {
 				// FIXME: BadRequest or Internal error?
-				return nil, NewError(Internal, "", err)
+				return nil, rp.NewError(rp.Internal, "", err)
 			}
 		} else {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 	}
 	// PARAM="timeZone", PARAM_TYPE="string", PARAM_INT=false
@@ -517,10 +517,10 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 	}
 	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
-	return &Response{
+	return &rp.Response{
 		Data: map[string]string{
 			"eventId": *eventId,
 			"sha1":    eventRev.Sha1,
@@ -528,7 +528,7 @@ func UpdateAllDayTask(req Request) (*Response, error) {
 	}, nil
 }
 
-func PatchAllDayTask(req Request) (*Response, error) {
+func PatchAllDayTask(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -541,7 +541,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -556,16 +556,16 @@ func PatchAllDayTask(req Request) (*Response, error) {
 	}
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	// check if event exists, and has access to
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, false)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't have write access to this event", nil)
@@ -575,16 +575,16 @@ func PatchAllDayTask(req Request) (*Response, error) {
 	lastEventRev, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	eventModel, err := event_lib.LoadAllDayTaskEventModel(
 		db,
 		lastEventRev.Sha1,
 	)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	now := time.Now()
 	{
@@ -592,7 +592,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(string)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'timeZone'",
 					nil,
@@ -608,7 +608,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(bool)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'timeZoneEnable'",
 					nil,
@@ -624,7 +624,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(string)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'calType'",
 					nil,
@@ -640,7 +640,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(string)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'summary'",
 					nil,
@@ -656,7 +656,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(string)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'description'",
 					nil,
@@ -672,7 +672,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(string)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'icon'",
 					nil,
@@ -688,7 +688,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(bool)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'summaryEncrypted'",
 					nil,
@@ -704,7 +704,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(bool)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'descriptionEncrypted'",
 					nil,
@@ -721,7 +721,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 			// json Unmarshal converts int to float64
 			value, typeOk := rawValue.(float64)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'startJd'",
 					nil,
@@ -738,7 +738,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 			// json Unmarshal converts int to float64
 			value, typeOk := rawValue.(float64)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'endJd'",
 					nil,
@@ -754,7 +754,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		if ok {
 			value, typeOk := rawValue.(bool)
 			if !typeOk {
-				return nil, NewError(
+				return nil, rp.NewError(rp.
 					InvalidArgument,
 					"bad type for parameter 'durationEnable'",
 					nil,
@@ -770,7 +770,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 		for param := range patchMap {
 			extraNames = append(extraNames, param)
 		}
-		return nil, NewError(
+		return nil, rp.NewError(rp.
 			InvalidArgument,
 			fmt.Sprintf(
 				"extra parameters: %v",
@@ -781,7 +781,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 	}
 	_, err = eventModel.GetEvent() // for validation
 	if err != nil {
-		return nil, NewError(InvalidArgument, err.Error(), err)
+		return nil, rp.NewError(rp.InvalidArgument, err.Error(), err)
 	}
 	eventModel.Sha1 = ""
 	jsonByte, _ := json.Marshal(eventModel)
@@ -795,7 +795,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 	})
 	if err != nil {
 		// FIXME: BadRequest or Internal error?
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	// don't store duplicate eventModel, even if it was added by another user
 	// the (underlying) eventModel does not belong to anyone
@@ -809,17 +809,17 @@ func PatchAllDayTask(req Request) (*Response, error) {
 			err = db.Insert(eventModel)
 			if err != nil {
 				// FIXME: BadRequest or Internal error?
-				return nil, NewError(Internal, "", err)
+				return nil, rp.NewError(rp.Internal, "", err)
 			}
 		} else {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 	}
 	err = db.Update(eventMeta) // just for FieldsMtime
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{
+	return &rp.Response{
 		Data: map[string]string{
 			"eventId": *eventId,
 			"sha1":    eventModel.Sha1,
@@ -827,7 +827,7 @@ func PatchAllDayTask(req Request) (*Response, error) {
 	}, nil
 }
 
-func MergeAllDayTask(req Request) (*Response, error) {
+func MergeAllDayTask(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -840,7 +840,7 @@ func MergeAllDayTask(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Event(*eventId)
 	if failed {
-		return nil, NewError(ResourceLocked, "event is locked by another request", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "event is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
@@ -858,29 +858,29 @@ func MergeAllDayTask(req Request) (*Response, error) {
 
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	// if inputStruct.Event.DummyType == "" {
-	//	return nil, NewError(MissingArgument, "missing 'eventType'", nil)
+	//	return nil, rp.NewError(rp.MissingArgument, "missing 'eventType'", nil)
 	// }
 	if inputStruct.Event.Id == "" {
-		return nil, NewError(MissingArgument, "missing 'eventId'", nil)
+		return nil, rp.NewError(rp.MissingArgument, "missing 'eventId'", nil)
 	}
 	// FIXME: LastMergeSha1 can be empty?
 	if inputStruct.LastMergeSha1 == "" {
-		return nil, NewError(MissingArgument, "missing 'lastMergeSha1'", nil)
+		return nil, rp.NewError(rp.MissingArgument, "missing 'lastMergeSha1'", nil)
 	}
 	inputEventModel := &inputStruct.Event
 	if inputEventModel.Id != *eventId {
-		return nil, NewError(InvalidArgument, "mismatch 'event.id'", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "mismatch 'event.id'", nil)
 	}
 
 	eventMeta, err := event_lib.LoadEventMetaModel(db, eventId, true)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if eventMeta.OwnerEmail != email {
 		return nil, ForbiddenError("you don't own this event", nil)
@@ -889,20 +889,20 @@ func MergeAllDayTask(req Request) (*Response, error) {
 	lastRevModel, err := event_lib.LoadLastRevisionModel(db, eventId)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(NotFound, "event not found", err)
+			return nil, rp.NewError(rp.NotFound, "event not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	parentEventModel, err := event_lib.LoadAllDayTaskEventModel(db, inputStruct.LastMergeSha1)
 	if err != nil {
 		if db.IsNotFound(err) {
-			return nil, NewError(InvalidArgument, "invalid lastMergeSha1: revision not found", err)
+			return nil, rp.NewError(rp.InvalidArgument, "invalid lastMergeSha1: revision not found", err)
 		}
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	lastEventModel, err := event_lib.LoadAllDayTaskEventModel(db, lastRevModel.Sha1)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	fmt.Println(parentEventModel)
 	fmt.Println(lastEventModel)
@@ -1182,5 +1182,5 @@ func MergeAllDayTask(req Request) (*Response, error) {
 	// 	return
 	// }
 
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }

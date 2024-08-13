@@ -50,7 +50,11 @@ func GetRouter() http.Handler {
 				route.Method,
 				path,
 				func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-					r.ParseForm()
+					err := r.ParseForm()
+					if err != nil {
+						w.WriteHeader(http.StatusBadRequest)
+						return
+					}
 					for _, p := range params {
 						r.Form.Add(p.Key, p.Value)
 					}

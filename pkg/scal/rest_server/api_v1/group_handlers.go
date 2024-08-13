@@ -9,7 +9,7 @@ import (
 	"github.com/ilius/starcal-server/pkg/scal/storage"
 
 	"github.com/ilius/mgo/bson"
-	. "github.com/ilius/ripo"
+	rp "github.com/ilius/ripo"
 )
 
 const ALLOW_DELETE_DEFAULT_GROUP = true
@@ -69,7 +69,7 @@ func init() {
 	})
 }
 
-func GetGroupList(req Request) (*Response, error) {
+func GetGroupList(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func GetGroupList(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	cond := db.NewCondition(storage.OR).
@@ -92,19 +92,19 @@ func GetGroupList(req Request) (*Response, error) {
 		SortBy:     "_id",
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if results == nil {
 		results = make([]event_lib.ListGroupsRow, 0)
 	}
-	return &Response{
+	return &rp.Response{
 		Data: scal.M{
 			"groups": results,
 		},
 	}, nil
 }
 
-func AddGroup(req Request) (*Response, error) {
+func AddGroup(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func AddGroup(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	title, err := req.GetString("title")
@@ -121,8 +121,18 @@ func AddGroup(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	addAccessEmails, _ := req.GetStringList("addAccessEmails", FromBody, FromForm, FromEmpty)
-	readAccessEmails, _ := req.GetStringList("readAccessEmails", FromBody, FromForm, FromEmpty)
+	addAccessEmails, _ := req.GetStringList(
+		"addAccessEmails",
+		rp.FromBody,
+		rp.FromForm,
+		rp.FromEmpty,
+	)
+	readAccessEmails, _ := req.GetStringList(
+		"readAccessEmails",
+		rp.FromBody,
+		rp.FromForm,
+		rp.FromEmpty,
+	)
 
 	groupModel := event_lib.EventGroupModel{}
 
@@ -138,14 +148,14 @@ func AddGroup(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	return &Response{
+	return &rp.Response{
 		Data: map[string]string{
 			"groupId": groupId,
 		},
 	}, nil
 }
 
-func UpdateGroup(req Request) (*Response, error) {
+func UpdateGroup(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -158,13 +168,13 @@ func UpdateGroup(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Group(*groupId)
 	if failed {
-		return nil, NewError(ResourceLocked, "group is locked by another request", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "group is locked by another request", nil)
 	}
 	defer unlock()
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 
 	newTitle, err := req.GetString("title")
@@ -172,8 +182,18 @@ func UpdateGroup(req Request) (*Response, error) {
 		return nil, err
 	}
 
-	newAddAccessEmails, _ := req.GetStringList("addAccessEmails", FromBody, FromForm, FromEmpty)
-	newReadAccessEmails, _ := req.GetStringList("readAccessEmails", FromBody, FromForm, FromEmpty)
+	newAddAccessEmails, _ := req.GetStringList(
+		"addAccessEmails",
+		rp.FromBody,
+		rp.FromForm,
+		rp.FromEmpty,
+	)
+	newReadAccessEmails, _ := req.GetStringList(
+		"readAccessEmails",
+		rp.FromBody,
+		rp.FromForm,
+		rp.FromEmpty,
+	)
 
 	groupModel, err := event_lib.LoadGroupModelById(
 		"groupId",
@@ -191,12 +211,12 @@ func UpdateGroup(req Request) (*Response, error) {
 	groupModel.ReadAccessEmails = newReadAccessEmails
 	err = db.Update(groupModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func GetGroup(req Request) (*Response, error) {
+func GetGroup(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -210,7 +230,7 @@ func GetGroup(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	groupModel, err := event_lib.LoadGroupModelById(
 		"groupId",
@@ -223,12 +243,12 @@ func GetGroup(req Request) (*Response, error) {
 	if !groupModel.CanRead(email) {
 		return nil, ForbiddenError("you don't have access to this event group", nil)
 	}
-	return &Response{
+	return &rp.Response{
 		Data: groupModel,
 	}, nil
 }
 
-func DeleteGroup(req Request) (*Response, error) {
+func DeleteGroup(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -241,7 +261,7 @@ func DeleteGroup(req Request) (*Response, error) {
 	}
 	failed, unlock := resLock.Group(*groupId)
 	if failed {
-		return nil, NewError(ResourceLocked, "group is locked by another request", nil)
+		return nil, rp.NewError(rp.ResourceLocked, "group is locked by another request", nil)
 	}
 	defer unlock()
 	remoteIp, err := req.RemoteIP()
@@ -251,7 +271,7 @@ func DeleteGroup(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	groupModel, err := event_lib.LoadGroupModelById(
 		"groupId",
@@ -272,7 +292,7 @@ func DeleteGroup(req Request) (*Response, error) {
 		userModel.DefaultGroupId = nil
 		err = db.Update(userModel)
 		if err != nil {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 	}
 
@@ -285,15 +305,15 @@ func DeleteGroup(req Request) (*Response, error) {
 		Condition:  cond,
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	for _, eventMetaModel := range eventMetaModels {
-		if eventMetaModel.OwnerEmail != email {
-			// send an Email to {eventMetaModel.OwnerEmail}
-			// to inform the event owner, and let him move this
-			// (ungrouped) event into his default (or any other) group
-			// FIXME
-		}
+		// send an Email to {eventMetaModel.OwnerEmail}
+		// to inform the event owner, and let him move this
+		// (ungrouped) event into his default (or any other) group
+		// FIXME
+		// if eventMetaModel.OwnerEmail != email {
+		// }
 		now := time.Now()
 		err = db.Insert(event_lib.EventMetaChangeLogModel{
 			Time:     now,
@@ -307,22 +327,22 @@ func DeleteGroup(req Request) (*Response, error) {
 			},
 		})
 		if err != nil {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 		eventMetaModel.GroupId = nil
 		err = db.Update(eventMetaModel)
 		if err != nil {
-			return nil, NewError(Internal, "", err)
+			return nil, rp.NewError(rp.Internal, "", err)
 		}
 	}
 	err = db.Remove(groupModel)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
-	return &Response{}, nil
+	return &rp.Response{}, nil
 }
 
-func GetGroupEventList(req Request) (*Response, error) {
+func GetGroupEventList(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -340,7 +360,7 @@ func GetGroupEventList(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	// -----------------------------------------------
 	groupModel, err := event_lib.LoadGroupModelById(
@@ -383,7 +403,7 @@ func GetGroupEventList(req Request) (*Response, error) {
 		},
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	if results == nil {
 		results = make([]*event_lib.ListEventsRow, 0)
@@ -394,12 +414,12 @@ func GetGroupEventList(req Request) (*Response, error) {
 	if len(results) > 0 {
 		output["lastId"] = results[len(results)-1].EventId
 	}
-	return &Response{
+	return &rp.Response{
 		Data: output,
 	}, nil
 }
 
-func GetGroupEventListWithSha1(req Request) (*Response, error) {
+func GetGroupEventListWithSha1(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -417,7 +437,7 @@ func GetGroupEventListWithSha1(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	groupModel, err := event_lib.LoadGroupModelById(
 		"groupId",
@@ -443,7 +463,7 @@ func GetGroupEventListWithSha1(req Request) (*Response, error) {
 
 	results, err := GetEventMetaPipeResults(db, pipeline, nil)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	output := scal.M{
 		"events": results,
@@ -451,12 +471,12 @@ func GetGroupEventListWithSha1(req Request) (*Response, error) {
 	if len(results) > 0 {
 		output["lastId"] = results[len(results)-1]["eventId"]
 	}
-	return &Response{
+	return &rp.Response{
 		Data: output,
 	}, nil
 }
 
-func GetGroupModifiedEvents(req Request) (*Response, error) {
+func GetGroupModifiedEvents(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -483,10 +503,10 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	if !bson.IsObjectIdHex(*groupIdHex) {
-		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "invalid 'groupId'", nil)
 		// to avoid panic!
 	}
 	groupModel, err := event_lib.LoadGroupModelByIdHex(
@@ -527,7 +547,7 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 		"creationTime",
 	})
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 
 	output := scal.M{
@@ -536,12 +556,12 @@ func GetGroupModifiedEvents(req Request) (*Response, error) {
 		"limit":          limit,
 		"modifiedEvents": results,
 	}
-	return &Response{
+	return &rp.Response{
 		Data: output,
 	}, nil
 }
 
-func GetGroupMovedEvents(req Request) (*Response, error) {
+func GetGroupMovedEvents(req rp.Request) (*rp.Response, error) {
 	userModel, err := CheckAuth(req)
 	if err != nil {
 		return nil, err
@@ -568,13 +588,13 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 	// -----------------------------------------------
 	db, err := storage.GetDB()
 	if err != nil {
-		return nil, NewError(Unavailable, "", err)
+		return nil, rp.NewError(rp.Unavailable, "", err)
 	}
 	if *groupIdHex == "" {
-		return nil, NewError(MissingArgument, "missing 'groupId'", nil)
+		return nil, rp.NewError(rp.MissingArgument, "missing 'groupId'", nil)
 	}
 	if !bson.IsObjectIdHex(*groupIdHex) {
-		return nil, NewError(InvalidArgument, "invalid 'groupId'", nil)
+		return nil, rp.NewError(rp.InvalidArgument, "invalid 'groupId'", nil)
 		// to avoid panic!
 	}
 
@@ -609,7 +629,7 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 	results := []event_lib.MovedEventsRow{}
 	err = pipeline.All(&results)
 	if err != nil {
-		return nil, NewError(Internal, "", err)
+		return nil, rp.NewError(rp.Internal, "", err)
 	}
 	// set OldGroupId and NewGroupId, while also converting nil ObjectId values to empty strings
 	for i := range len(results) {
@@ -617,7 +637,7 @@ func GetGroupMovedEvents(req Request) (*Response, error) {
 		results[i].NewGroupId = storage.Hex(results[i].NewGroupItem[1])
 	}
 
-	return &Response{
+	return &rp.Response{
 		Data: scal.M{
 			"groupId":       groupModel.Id,
 			"sinceDatetime": since,

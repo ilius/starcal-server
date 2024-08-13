@@ -177,8 +177,7 @@ func (model *EventMetaModel) Join(db storage.Database, email string) error {
 			return errors.New("maximum attendees exceeded, can not join event")
 		}
 	}
-	model.SetAttending(db, email, YES)
-	return nil
+	return model.SetAttending(db, email, YES)
 }
 
 func (model *EventMetaModel) Leave(db storage.Database, email string) error {
@@ -188,8 +187,7 @@ func (model *EventMetaModel) Leave(db storage.Database, email string) error {
 			return errors.New("you are not attending for this event")
 		}
 	}
-	model.SetAttending(db, email, NO)
-	return nil
+	return model.SetAttending(db, email, NO)
 }
 
 func (model *EventMetaModel) PublicCanJoin() bool {
@@ -312,12 +310,15 @@ func (model *EventMetaModel) Invite(
 			return ripo.NewError(ripo.Internal, "", err)
 		}
 		emailBody := buf.String()
-		db.Insert(EventInvitationModel{
+		err = db.Insert(EventInvitationModel{
 			Time:         now,
 			SenderEmail:  email,
 			InvitedEmail: inviteEmail,
 			EventId:      model.EventId,
 		})
+		if err != nil {
+			return ripo.NewError(ripo.Internal, "", err)
+		}
 
 		err = scal.SendEmail(&scal.SendEmailInput{
 			To:      inviteEmail,

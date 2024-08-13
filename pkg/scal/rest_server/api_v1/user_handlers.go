@@ -268,7 +268,7 @@ func UnsetUserDefaultGroupId(req Request) (*Response, error) {
 	return &Response{}, nil
 }
 
-func loadLastLogins(req Request, userModel *user_lib.UserModel, limit int) ([]*user_lib.UserLoginAttemptModel, error) {
+func loadLastLogins(userModel *user_lib.UserModel, limit int) ([]*user_lib.UserLoginAttemptModel, error) {
 	result := []*user_lib.UserLoginAttemptModel{}
 	db, err := storage.GetDB()
 	if err != nil {
@@ -295,7 +295,7 @@ func GetUserInfo(req Request) (*Response, error) {
 	}
 	email := userModel.Email
 	// -----------------------------------------------
-	lastLogins, err := loadLastLogins(req, userModel, settings.USER_INFO_LAST_LOGINS_LIMIT)
+	lastLogins, err := loadLastLogins(userModel, settings.USER_INFO_LAST_LOGINS_LIMIT)
 	if err != nil {
 		return nil, err
 	}
@@ -329,7 +329,7 @@ func GetUserLoginHistory(req Request) (*Response, error) {
 		limit = defaultLimit
 		// otherwise db will return everything
 	}
-	lastLogins, err := loadLastLogins(req, userModel, limit)
+	lastLogins, err := loadLastLogins(userModel, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -352,7 +352,7 @@ func GetUserDataFull(req Request) (*Response, error) {
 		return nil, NewError(Unavailable, "", err)
 	}
 
-	lastLogins, err := loadLastLogins(req, userModel, settings.USER_INFO_LAST_LOGINS_LIMIT)
+	lastLogins, err := loadLastLogins(userModel, settings.USER_INFO_LAST_LOGINS_LIMIT)
 	if err != nil {
 		return nil, err
 	}

@@ -3,7 +3,7 @@ package api_v1
 import (
 	"net/http"
 
-	. "github.com/ilius/ripo"
+	"github.com/ilius/ripo"
 )
 
 func init() {
@@ -19,10 +19,10 @@ func init() {
 	})
 }
 
-func GetApiVersion(req Request) (*Response, error) {
+func GetApiVersion(req ripo.Request) (*ripo.Response, error) {
 	header := http.Header{}
 	header.Set("Content-Type", "text/plain; charset=UTF-8")
-	return &Response{
+	return &ripo.Response{
 		Header: header,
 		Data:   "1",
 	}, nil

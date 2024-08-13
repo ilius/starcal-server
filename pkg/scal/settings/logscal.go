@@ -20,7 +20,10 @@ func NewLogger(name string) logging.Logger {
 	if !ok {
 		panic(fmt.Errorf("invalid settings.LOG_LEVEL=%#v", levelName))
 	}
-	logger.SetLevel(level)
+	err := logger.SetLevel(level)
+	if err != nil {
+		panic(err)
+	}
 
 	return logger
 }
