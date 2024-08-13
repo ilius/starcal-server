@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-"""
-"""
 
-import sys
+
+import json
 import os
-import requests
-
+import sys
 from pprint import pprint
+
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -33,16 +33,16 @@ while True:
 	print(r)
 	try:
 		data = r.json()
-	except:
+	except json.decoder.JSONDecodeError:
 		print("data is not json")
 		print(r.text)
 		break
-	
+
 	error = data.get("error", "")
 	if error:
 		print(error)
 		break
-	
+
 	pprint(data, width=80)
 	count += len(data.get("events", []))
 
@@ -51,6 +51,6 @@ while True:
 		break
 	exStartId = lastId
 	print("--------------------")
-	
+
 
 print("Total count:", count)

@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 # DO NOT USE DJANGO OR ANY EXTERNAL LIBRARIES IN THIS SCRIPT
 
-import sys
-import os
-from os.path import join, isfile, isdir, dirname, abspath
 import json
-from pprint import pprint
+import os
+import sys
+from os.path import isdir, isfile, join
 
 from build_common import *
 
@@ -30,9 +29,7 @@ if isfile(goSettingsFile):
 
 
 defaultsDict = {
-	key: value for key, value in
-	defaults.__dict__.items()
-	if key.upper() == key
+	key: value for key, value in defaults.__dict__.items() if key.upper() == key
 }
 
 settingsDict = defaultsDict.copy()
@@ -65,9 +62,9 @@ for param, value in hostGlobals.items():
 		valueTypeActual = value.getPyType()
 	if valueTypeActual != valueTypeExpected:
 		raise ValueError(
-			f"invalid type for parameter {param!r}, " +
-			f"must be {valueTypeExpected.__name__}, " +
-			f"not {valueTypeActual.__name__}"
+			f"invalid type for parameter {param!r}, "
+			+ f"must be {valueTypeExpected.__name__}, "
+			+ f"not {valueTypeActual.__name__}"
 		)
 	settingsDict[param] = value
 
@@ -87,9 +84,9 @@ for param, value in settingsDict.items():
 			askForParam(param)
 		else:
 			sys.stderr.write(
-				f"{param} can not be empty\n" +
-				f"Set (and export) environment variable STARCAL_{param}\n" +
-				f"Or define {param} in host settings file\n"
+				f"{param} can not be empty\n"
+				+ f"Set (and export) environment variable STARCAL_{param}\n"
+				+ f"Or define {param} in host settings file\n"
 			)
 			sys.exit(1)
 
@@ -103,18 +100,16 @@ if hostNewLines:
 hostOS = settingsDict.pop("OS")
 hostArch = settingsDict.pop("ARCH")
 
-#pprint(settingsDict)
+# pprint(settingsDict)
 
 constLines = [
 	"\tHOST = " + json.dumps(hostName),
 ]
 varLines = []
 zeroValueLines = []
-printLines = [
-	'\tfmt.Printf("HOST=%#v\\n", HOST)'
-]
+printLines = ['\tfmt.Printf("HOST=%#v\\n", HOST)']
 
-importLines = set(["fmt"])
+importLines = {"fmt"}
 
 for param, value in sorted(settingsDict.items()):
 	valueType = type(value)
@@ -185,17 +180,18 @@ for param, value in sorted(settingsDict.items()):
 		valueType = valueTypes.pop()
 		typeGo = f"map[{keyType}]{valueType}"
 		zeroValue = typeGo + "{}"
-		valueGo = typeGo + "{" + "".join(
-			"\n\t\t" + k + ": " + v + ","
-			for k, v in sorted(keysValuesGo.items())
-		) + "\n\t}"
+		valueGo = (
+			typeGo
+			+ "{"
+			+ "".join(
+				"\n\t\t" + k + ": " + v + "," for k, v in sorted(keysValuesGo.items())
+			)
+			+ "\n\t}"
+		)
 		varLines.append(f"\t{param} = {valueGo}")
 	else:
 		# FIXME
-		print(
-			f"skipping unknown value type {valueType}" +
-			f", param {param}"
-		)
+		print(f"skipping unknown value type {valueType}" + f", param {param}")
 		# valueRepr = str(value)
 		# varLines.append(f"\t{param} = {valueRepr}")
 	if "SECRET" in param:
@@ -204,21 +200,22 @@ for param, value in sorted(settingsDict.items()):
 		continue
 	if zeroValue:
 		zeroValueLines.append(f'\t"{param}": {zeroValue},')
-	printLines.append('\tfmt.Printf("%s=%%#v\\n", %s)' % (param, param))
+	printLines.append(f'\tfmt.Printf("{param}=%#v\\n", {param})')
 
 
-
-importBlock = "import (\n" + "\n".join(
-	'\t"' + line + '"' for line in importLines
-) + "\n)\n"
+importBlock = (
+	"import (\n" + "\n".join('\t"' + line + '"' for line in importLines) + "\n)\n"
+)
 
 
 constBlock = "const (\n" + "\n".join(constLines) + "\n)\n"
 varBlock = "var (\n" + "\n".join(varLines) + "\n)\n"
-zeroValuesBlock = "var ZeroValues = map[string]any{\n" + "\n".join(zeroValueLines) + "\n}"
+zeroValuesBlock = (
+	"var ZeroValues = map[string]any{\n" + "\n".join(zeroValueLines) + "\n}"
+)
 printFunc = "func PrintSettings() {\n" + "\n".join(printLines) + "\n}"
 
-#print(constBlock)
+# print(constBlock)
 
 
 if not isdir(goSettingsDir):

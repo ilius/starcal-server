@@ -1,28 +1,23 @@
 #!/usr/bin/python3
-"""
-argv[1]: groupId, optional
-"""
+"""argv[1]: groupId, optional."""
 
-import sys
+import json
 import os
-import requests
-
+import sys
+from datetime import datetime
 from pprint import pprint
-from datetime import datetime, timedelta
-import time
-from time import strftime, gmtime 
-import random
+
+import requests
 
 nowDt = datetime.now()
 
 params = {
-	#"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
+	# "eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
 	"timeZone": "Asia/Tehran",
 	"calType": "gregorian",
 	"summary": "yeary 1",
 	"description": "desc 1",
 	"icon": "borthday.png",
-
 	"month": nowDt.month,
 	"day": nowDt.day,
 	"startYear": nowDt.year - 30,
@@ -49,7 +44,7 @@ r = requests.post(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

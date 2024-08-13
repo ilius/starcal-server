@@ -1,21 +1,19 @@
 #!/usr/bin/python3
-"""
-argv[1]: eventId
-"""
+"""argv[1]: eventId."""
 
-import sys
+import json
 import os
-import requests
-
+import sys
 from pprint import pprint
 
-params = {
-	#"timeZone": "Asia/Tehran",
-	#"calType": "jalali",
-	"summary": "custom event 1 patched",
-	#"description": "",
-	#"icon": "",
+import requests
 
+params = {
+	# "timeZone": "Asia/Tehran",
+	# "calType": "jalali",
+	"summary": "custom event 1 patched",
+	# "description": "",
+	# "icon": "",
 	"rules": [  # replaces the whole `rules` if present
 		{"type": "start", "value": "1390/02/29 23:55:55"},
 		{"type": "end", "value": "1396/03/23 00:00:00"},
@@ -42,7 +40,7 @@ r = requests.patch(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

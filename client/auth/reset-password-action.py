@@ -2,13 +2,15 @@
 """
 argv[1]: email
 argv[2]: resetPasswordToken
-argv[3]: newPassword
+argv[3]: newPassword.
 """
 
-import sys
+import json
 import os
-import requests
+import sys
 from pprint import pprint
+
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 email, resetPasswordToken, newPassword = sys.argv[1:4]
@@ -29,7 +31,7 @@ r = requests.post(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-"""
-argv[1]: email
-"""
+"""argv[1]: email."""
 
-import sys
+import json
 import os
-import requests
+import sys
 from pprint import pprint
+
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 email = sys.argv[1]
@@ -20,7 +20,7 @@ r = requests.post(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-"""
-argv[1]: eventId
-"""
+"""argv[1]: eventId."""
 
-import sys
+import json
 import os
-import requests
+import sys
 
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -23,7 +22,7 @@ r = requests.get(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data: ", r.text)
 else:
 	error = data.get("error", "")

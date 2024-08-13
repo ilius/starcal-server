@@ -1,15 +1,12 @@
 #!/usr/bin/python3
-"""
-"""
 
-import sys
+
+import json
 import os
-import requests
-
+import sys
 from pprint import pprint
-from datetime import datetime, timedelta
-import time
-from time import strftime, gmtime 
+
+import requests
 
 params = {
 	"timeZone": "Asia/Tehran",
@@ -17,7 +14,6 @@ params = {
 	"summary": "custom event 5",
 	"description": "",
 	"icon": "",
-
 	"rules": [
 		{"type": "date", "value": "1390/02/30"},
 		{"type": "dayTimeRange", "value": "12:30:00 14:30:00"},
@@ -39,7 +35,7 @@ r = requests.post(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

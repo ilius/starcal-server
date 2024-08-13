@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-"""
-"""
 
-import sys
+
+import json
 import os
-import requests
-
+import sys
 from pprint import pprint
+
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -17,12 +17,12 @@ if not token:
 r = requests.delete(
 	f"http://{host}:9001/me/full-name/",
 	headers={"Authorization": "bearer " + token},
-	#headers={'Authorization': 'bearer ' + },
+	# headers={'Authorization': 'bearer ' + },
 )
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

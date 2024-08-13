@@ -1,14 +1,15 @@
 #!/usr/bin/python3
 """
 argv[1]: groupId
-argv[2]: sinceDateTime
+argv[2]: sinceDateTime.
 """
 
-import sys
+import json
 import os
-import requests
-
+import sys
 from pprint import pprint
+
+import requests
 from dateutil.parser import parse as parseDatetime
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
@@ -32,7 +33,9 @@ print("sinceDateTimeStr =", sinceDateTimeStr)
 
 limit = 10
 
-baseUrl = f"http://{host}:9001/event/groups/{groupId}/modified-events/{sinceDateTimeStr}/"
+baseUrl = (
+	f"http://{host}:9001/event/groups/{groupId}/modified-events/{sinceDateTimeStr}/"
+)
 
 url = f"{baseUrl}?limit={limit}"
 
@@ -43,7 +46,7 @@ r = requests.get(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("data is not json")
 	print(r.text)
 else:

@@ -1,16 +1,14 @@
 #!/usr/bin/python3
-"""
-argv[1]: eventId
-"""
+"""argv[1]: eventId."""
 
-import sys
+import json
 import os
-import requests
-
-from pprint import pprint
-from datetime import datetime, timedelta
+import sys
 import time
-from time import strftime, gmtime
+from pprint import pprint
+from time import gmtime, strftime
+
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -23,7 +21,7 @@ eventId = sys.argv[1]
 timeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
 nowEpoch = int(time.time())
-#nowDt = datetime.now()
+# nowDt = datetime.now()
 
 params = {
 	"timeZone": "Asia/Tehran",
@@ -31,7 +29,6 @@ params = {
 	"summary": "task 1",
 	"description": "desc 1",
 	"icon": "task.png",
-
 	"startTime": strftime(timeFormat, gmtime(nowEpoch)),
 	"endTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
 	"durationUnit": 0,
@@ -45,7 +42,7 @@ r = requests.put(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

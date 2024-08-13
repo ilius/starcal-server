@@ -1,13 +1,11 @@
 #!/usr/bin/python3
-"""
-argv[1]: groupId
-"""
+"""argv[1]: groupId."""
 
-import sys
+import json
 import os
-import requests
+import sys
 
-from pprint import pprint
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -36,7 +34,7 @@ while True:
 	print(r)
 	try:
 		data = r.json()
-	except:
+	except json.decoder.JSONDecodeError:
 		print("data is not json")
 		print(r.text)
 		break
@@ -46,8 +44,8 @@ while True:
 		break
 
 	pageCount = len(data.get("events", []))
-	
-	#pprint(data, width=80)
+
+	# pprint(data, width=80)
 	print(pageCount)
 	count += pageCount
 
@@ -56,5 +54,5 @@ while True:
 		break
 	exStartId = lastId
 	print("--------------------")
-	
+
 print("Total count:", count)

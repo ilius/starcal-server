@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-"""
-"""
 
-import sys
+
+import json
 import os
-import requests
+import sys
 
-from pprint import pprint
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -32,7 +31,7 @@ while True:
 	print(r)
 	try:
 		data = r.json()
-	except:
+	except json.decoder.JSONDecodeError:
 		print("non-json data")
 		print(r.text)
 		break
@@ -40,7 +39,7 @@ while True:
 	if error:
 		print(error)
 		break
-	
+
 	pageCount = len(data.get("events", []))
 	count += pageCount
 

@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-"""
-"""
 
-import sys
+
+import json
 import os
-import requests
+import sys
 
-from pprint import pprint
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -24,7 +23,9 @@ exStartId = ""
 count = 0
 
 while True:
-	url = f"http://{host}:9001/event/my/events-full/?limit={limit}&exStartId={exStartId}"
+	url = (
+		f"http://{host}:9001/event/my/events-full/?limit={limit}&exStartId={exStartId}"
+	)
 	print(url)
 	r = requests.get(
 		url,
@@ -33,7 +34,7 @@ while True:
 	print(r)
 	try:
 		data = r.json()
-	except:
+	except json.decoder.JSONDecodeError:
 		print("data is not json")
 		print(r.text)
 		break
@@ -41,7 +42,7 @@ while True:
 	if error:
 		print(error)
 		break
-	#pprint(data, width=80)
+	# pprint(data, width=80)
 	pageCount = len(data.get("eventsFull", []))
 	print(pageCount)
 	count += pageCount

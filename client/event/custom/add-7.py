@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-"""
-"""
 
-import sys
+
+import json
 import os
-import requests
-
+import sys
 from pprint import pprint
+
+import requests
 
 params = {
 	"timeZone": "Asia/Tehran",
@@ -14,13 +14,11 @@ params = {
 	"summary": "custom event 7",
 	"description": "",
 	"icon": "",
-
 	"rules": [
 		{"type": "start", "value": "1390/02/30 23:55:55"},
 		{"type": "end", "value": "1396/04/20 00:00:00"},
 		{"type": "cycleWeeks", "value": "2"},
-		{"type": "dayTimeRange", "value": "14:00:00 15:30:00"}
-
+		{"type": "dayTimeRange", "value": "14:00:00 15:30:00"},
 	],
 }
 
@@ -39,7 +37,7 @@ r = requests.post(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

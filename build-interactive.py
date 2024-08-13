@@ -1,21 +1,18 @@
 #!/usr/bin/python3
 
-import sys
 import os
-from os.path import dirname, join, abspath, isdir, isfile
 import subprocess
+import sys
+from os.path import abspath, dirname, join
 
-from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.history import FileHistory
 
 rootDir = dirname(abspath(__file__))
 settingsDir = join(rootDir, "settings")
 sys.path.insert(0, settingsDir)
 
-from settings.build_common import (
-	prompt,
-)
-
+from settings.build_common import prompt  # noqa: E402
 
 homeDir = os.getenv("HOME")
 if not homeDir:
@@ -24,6 +21,7 @@ confDir = join(homeDir, ".starcal-server", "cli")
 hostHistPath = join(confDir, "host-history")
 
 os.makedirs(confDir, exist_ok=True)
+
 
 def getHostName() -> str:
 	while True:

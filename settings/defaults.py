@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
 
-OS = "" # "linux", "freebsd", "darwin", "android", ...
-ARCH = "" # "amd64", "386", "arm64", "arm", ...
+OS = ""  # "linux", "freebsd", "darwin", "android", ...
+ARCH = ""  # "amd64", "386", "arm64", "arm", ...
 
 # KEEP_SETTINGS_GO=False means the generated settings.go will be deleted after compile
 KEEP_SETTINGS_GO = False
@@ -77,7 +77,7 @@ You also need to open the link with the same IP address as you requested with.
 Have fun using StarCalendar
 """
 
-ADMIN_EMAILS = [""] # type: List[str]
+ADMIN_EMAILS = [""]  # type: List[str]
 
 STORE_FAILED_LOGINS = True
 STORE_SUCCESSFUL_LOGINS = True
@@ -89,18 +89,15 @@ USER_LOGIN_HISTORY_DEFAULT_LIMIT = 20
 
 API_PAGE_LIMIT_DEFAULT = 50
 API_PAGE_LIMITS = {
-	"api_v1.GetGroupEventList": 150, # ~60 bytes -> eventId, eventType
-	"api_v1.GetGroupEventListWithSha1": 100, # ~115 bytes -> eventId, eventType, lastSha1
-	"api_v1.GetGroupModifiedEvents": 20, # ~550 bytes -> Full Event
-	"api_v1.GetGroupMovedEvents": 60, # ~160 bytes -> eventId, oldGroupId, newGroupId, time
-
-	"api_v1.GetUngroupedEvents": 150, # ~60 bytes -> eventId, eventType
-	"api_v1.GetMyEventList": 150, # ~60 bytes -> eventId, eventType
-	"api_v1.GetMyEventsFull": 20, # ~550 bytes -> Full Event
-
-	"api_v1.GetGroupList": 100, # ~100 bytes -> groupId, ownerEmail, title
-
-	"api_v1.GetUserLoginHistory": 70, # ~150 bytes
+	"api_v1.GetGroupEventList": 150,  # ~60 bytes -> eventId, eventType
+	"api_v1.GetGroupEventListWithSha1": 100,  # ~115 bytes -> eventId, eventType, lastSha1
+	"api_v1.GetGroupModifiedEvents": 20,  # ~550 bytes -> Full Event
+	"api_v1.GetGroupMovedEvents": 60,  # ~160 bytes -> eventId, oldGroupId, newGroupId, time
+	"api_v1.GetUngroupedEvents": 150,  # ~60 bytes -> eventId, eventType
+	"api_v1.GetMyEventList": 150,  # ~60 bytes -> eventId, eventType
+	"api_v1.GetMyEventsFull": 20,  # ~550 bytes -> Full Event
+	"api_v1.GetGroupList": 100,  # ~100 bytes -> groupId, ownerEmail, title
+	"api_v1.GetUserLoginHistory": 70,  # ~150 bytes
 }
 
 # 5.0 means that user can specify the page limit up to 5 times the default limit
@@ -125,26 +122,25 @@ ERRORS_LOOP_SLEEP_DURATION_SECONDS = 10
 
 # 0 means never expire
 ERRORS_EXPIRE_AFTER_SECONDS = {
-	"Internal": 			365 * day,
-	"Unknown": 				365 * day,
-	"Unavailable": 			180 * day,
-	"ResourceLocked": 		30 * day, # extra code
-	"PermissionDenied": 	180 * day,
-	"Unauthenticated": 		30 * day,
-	"DataLoss": 			180 * day,
-	"DeadlineExceeded":		10 * day,
-	"ResourceExhausted":	10 * day,
-	"Aborted": 				10 * day,
-	"FailedPrecondition": 	10 * day,
-	"OutOfRange": 			10 * day,
-	"Canceled": 			10 * day,
-	"AlreadyExists": 		1 * day,
-	"Unimplemented": 		1 * day,
-	"NotFound": 			1 * day,
-	"InvalidArgument": 		1 * day,
-	"MissingArgument": 		1 * day, # extra code
+	"Internal": 365 * day,
+	"Unknown": 365 * day,
+	"Unavailable": 180 * day,
+	"ResourceLocked": 30 * day,  # extra code
+	"PermissionDenied": 180 * day,
+	"Unauthenticated": 30 * day,
+	"DataLoss": 180 * day,
+	"DeadlineExceeded": 10 * day,
+	"ResourceExhausted": 10 * day,
+	"Aborted": 10 * day,
+	"FailedPrecondition": 10 * day,
+	"OutOfRange": 10 * day,
+	"Canceled": 10 * day,
+	"AlreadyExists": 1 * day,
+	"Unimplemented": 1 * day,
+	"NotFound": 1 * day,
+	"InvalidArgument": 1 * day,
+	"MissingArgument": 1 * day,  # extra code
 }
 
 JALALI_ALGORITHM_2820 = False
 HIJRI_USE_MONTH_DATA = True
-

@@ -1,29 +1,25 @@
 #!/usr/bin/python3
-"""
-argv[1]: groupId, optional
-"""
+"""argv[1]: groupId, optional."""
 
-import sys
+import json
 import os
+import random
+import sys
+from datetime import datetime
+from pprint import pprint
+
 import requests
 
-from pprint import pprint
-from datetime import datetime, timedelta
-import time
-from time import strftime, gmtime 
-import random
-
 todayJd = datetime.now().toordinal() + 1721425
-dayStartSeconds = random.randint(0, 24*3600-1)
+dayStartSeconds = random.randint(0, 24 * 3600 - 1)
 
 params = {
-	#"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
+	# "eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
 	"timeZone": "Asia/Tehran",
 	"calType": "jalali",
 	"summary": "weekly 1",
 	"description": "desc 1",
 	"icon": "",
-
 	"startJd": todayJd - 365,
 	"endJd": todayJd + 365,
 	"cycleWeeks": random.randint(1, 4),
@@ -51,7 +47,7 @@ r = requests.post(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

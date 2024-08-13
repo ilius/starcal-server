@@ -1,43 +1,36 @@
 #!/usr/bin/python3
 
-import sys
-import os
-from os.path import dirname, join, abspath, isdir, isfile
-
 import json
-import requests
-
-from datetime import datetime
-from datetime import timedelta
-from dateutil.parser import parse as parse_time
+import os
+import sys
+from datetime import datetime, timedelta
+from os.path import abspath, dirname, isfile, join
 
 import dateutil.tz
+import requests
+from dateutil.parser import parse as parse_time
 from dateutil.tz.tz import tzutc
 
 try:
 	from parse import parse as parse_format
 except ModuleNotFoundError as e:
-	e.msg += f", run `sudo pip3 install parse` to install"
+	e.msg += ", run `sudo pip3 install parse` to install"
 	raise e
 
+
+from typing import Any, Optional
 
 from lxml import etree
 from lxml.etree import _Element as Element
 
 # the code for cmd.Cmd is very ugly and hard to understan
-
 # readline's complete func silently (and stupidly) hides any exception
 # and only shows the print if it's in the first line of function. very awkward!
-
-#import atexit
-
+# import atexit
 from prompt_toolkit import prompt as promptLow
-from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion.word_completer import WordCompleter
-
-
-from typing import Dict, Tuple, List, Optional, Any
+from prompt_toolkit.history import FileHistory
 
 utc = tzutc()
 
@@ -45,9 +38,10 @@ utc = tzutc()
 host = os.getenv("STARCAL_HOST")
 if not host:
 	import socket
+
 	host = socket.gethostname()
 
-secure = (os.getenv("STARCAL_HOST_SECURE", "") != "")
+secure = os.getenv("STARCAL_HOST_SECURE", "") != ""
 
 port = "9001"
 
@@ -66,10 +60,9 @@ elif os.sep == "/":
 		myDir = cwd + myDir[1:]
 	elif myDir[0] != "/":
 		myDir = join(cwd, myDir)
-elif os.sep == "\\":
-	if myDir.startswith(".\\"):
-		myDir = cwd + myDir[1:]
-#print("myDir={myDir!r}")
+elif os.sep == "\\" and myDir.startswith(".\\"):
+	myDir = cwd + myDir[1:]
+# print("myDir={myDir!r}")
 
 rootDir = abspath(dirname(myDir))
 docPath = join(rootDir, "docs", "api-v1.wadl")
@@ -126,11 +119,7 @@ def prompt(
 	text = promptLow(message=message, **kwargs)
 	if multiline and text == "!m":
 		print("Entering Multi-line mode, press Alt+Enter to end")
-		text = promptLow(
-			message="",
-			multiline=True,
-			**kwargs
-		)
+		text = promptLow(message="", multiline=True, **kwargs)
 	return text
 
 
@@ -157,6 +146,7 @@ def getPassword() -> str:
 	if password:
 		return password
 	import getpass
+
 	while True:
 		try:
 			password = getpass.getpass("Password: ")
@@ -173,11 +163,11 @@ localTZ = dateutil.tz.gettz()
 
 
 # returns token
-def getSavedToken(email: str) -> Optional[str]:
+def getSavedToken(email: str) -> str | None:
 	tokenPath = join(tokenDir, email)
 	if not isfile(tokenPath):
 		print("Token file does not exist:", tokenPath)
-		return
+		return None
 	with open(tokenPath) as tokenFile:
 		tokenJson = tokenFile.read()
 	tokenDict = json.loads(tokenJson)
@@ -185,18 +175,18 @@ def getSavedToken(email: str) -> Optional[str]:
 	expStr = tokenDict.get("expiration", "")
 	if not expStr:
 		print(f"WARNING: invalid token file {tokenPath!r}, no 'expiration'")
-		return
+		return None
 	token = tokenDict.get("token", "")
 	if not token:
 		print(f"WARNING: invalid token file {tokenPath!r}, no 'token'")
-		return
+		return None
 	exp = parse_time(expStr)
 	if exp - timedelta(minutes=5) < datetime.now(tz=localTZ):
 		print(
-			f"Saved token in {tokenPath} is expired" +
-			f" or about to be expired on {exp}"
+			f"Saved token in {tokenPath} is expired"
+			+ f" or about to be expired on {exp}"
 		)
-		return
+		return None
 	return token
 
 
@@ -210,7 +200,7 @@ def deleteSavedToken(email: str) -> bool:
 
 
 # returns (email, token), error
-def getAuth() -> Tuple[Optional[Tuple[str, str]], Optional[str]]:
+def getAuth() -> tuple[tuple[str, str] | None, str | None]:
 	email = getEmail()
 	token = getSavedToken(email)
 	if token:
@@ -220,10 +210,13 @@ def getAuth() -> Tuple[Optional[Tuple[str, str]], Optional[str]]:
 		return None, "password is empty"
 	url = baseURL + "/auth/login/"
 	print("Sending login request")
-	res = requests.post(url, json={
-		"email": email,
-		"password": password,
-	})
+	res = requests.post(
+		url,
+		json={
+			"email": email,
+			"password": password,
+		},
+	)
 	err = None
 	try:
 		resData = res.json()
@@ -248,10 +241,13 @@ def getAuth() -> Tuple[Optional[Tuple[str, str]], Optional[str]]:
 
 	tokenPath = join(tokenDir, email)
 	with open(tokenPath, "w") as tokenFile:
-		json.dump({
-			"token": token,
-			"expiration": expStr,
-		}, tokenFile)
+		json.dump(
+			{
+				"token": token,
+				"expiration": expStr,
+			},
+			tokenFile,
+		)
 
 	return (email, token), None
 
@@ -283,12 +279,11 @@ def elemValue(elem) -> str:
 
 def elemRepr(elem) -> str:
 	tag = getElemTag(elem)
-	prefix = indent * level + getElemTag(elem)
 	if tag == "resource":
 		return elemPath(elem)
 	elif tag == "method":
 		return elemName(elem) + f" ({elemID(elem)})"
-	elif tag == "param" or tag == "element":
+	elif tag in ("param", "element"):
 		return elemName(elem) + f" (type={elemID(elem)})"
 	elif tag == "item":
 		return f"(type={elemType(elem)})"
@@ -306,7 +301,7 @@ def printElem(elem: Element, level: int):
 		print(f"{prefix}: {elemPath(elem)}")
 	elif tag == "method":
 		print(f"{prefix}: {elemName(elem)} ({elemID(elem)})")
-	elif tag == "param" or tag == "element":
+	elif tag in ("param", "element"):
 		print(f"{prefix}: {elemName(elem)} (type={elemType(elem)})")
 	elif tag == "item":
 		print(f"{prefix} (type={elemType(elem)})")
@@ -320,8 +315,8 @@ def printElem(elem: Element, level: int):
 		printElem(child, level + 1)
 
 
-def nonEmptyStrings(*args) -> List[str]:
-	ls = [] # type: List[str]
+def nonEmptyStrings(*args) -> list[str]:
+	ls = []  # type: List[str]
 	for x in args:
 		if x:
 			ls.append(x)
@@ -333,7 +328,7 @@ def elemKeys(elem, parentElem) -> str:
 	tag = getElemTag(elem)
 	if tag == "resource":
 		return nonEmptyStrings(elem.get("path", None))
-	elif tag == "method" or tag == "element":
+	elif tag in ("method", "element"):
 		return nonEmptyStrings(elem.get("name", None), elem.get("id", None))
 	elif tag == "param":
 		if getElemTag(parentElem) == "resource":
@@ -351,12 +346,14 @@ def elemKeys(elem, parentElem) -> str:
 
 
 # returns (options, optionsMinimal)
-def elemChildOptions(elem: Element) -> Tuple[
-	Dict[str, Element],
-	Dict[str, Element],
+def elemChildOptions(
+	elem: Element,
+) -> tuple[
+	dict[str, Element],
+	dict[str, Element],
 ]:
-	options = {} # type: Dict[str, Element]
-	optionsMinimal = {} # type: Dict[str, Element]
+	options = {}  # type: Dict[str, Element]
+	optionsMinimal = {}  # type: Dict[str, Element]
 	for child in elem.getchildren():
 		keys = elemKeys(child, elem)
 		if not keys:
@@ -370,8 +367,8 @@ def elemChildOptions(elem: Element) -> Tuple[
 	return options, optionsMinimal
 
 
-def getParamCompleter(elem: Element) -> Optional[WordCompleter]:
-	options = [] # type: List[str]
+def getParamCompleter(elem: Element) -> WordCompleter | None:
+	options = []  # type: List[str]
 	for child in elem.getchildren():
 		if getElemTag(child) == "option":
 			value = child.get("value", None)
@@ -385,7 +382,7 @@ def getParamCompleter(elem: Element) -> Optional[WordCompleter]:
 	)
 
 
-def getMethodElemNamesDict(elem: Element, methods: Dict[str, str]):
+def getMethodElemNamesDict(elem: Element, methods: dict[str, str]):
 	methodName = elem.get("name", None)
 	if methodName:
 		methods[methodName] = methodName
@@ -396,8 +393,8 @@ def getMethodElemNamesDict(elem: Element, methods: Dict[str, str]):
 			# methods[methodId.lower()] = methodName
 
 
-def getMethodNamesDict(elem: Element) -> Dict[str, str]:
-	methods = {} # type: Dict[str, Element]
+def getMethodNamesDict(elem: Element) -> dict[str, str]:
+	methods = {}  # type: Dict[str, Element]
 	if getElemTag(elem) == "method":
 		getMethodElemNamesDict(elem, methods)
 		return methods
@@ -408,23 +405,15 @@ def getMethodNamesDict(elem: Element) -> Dict[str, str]:
 
 def elemIsAction(elem: Element) -> bool:
 	tag = getElemTag(elem)
-	if tag == "method":
-		return True
-	return False
+	return tag == "method"
 
 
 def getChildrenWithTag(elem: Element, tag: str) -> Element:
-	return [
-		child
-		for child in elem.getchildren()
-		if getElemTag(child) == tag
-	]
+	return [child for child in elem.getchildren() if getElemTag(child) == tag]
 
 
-def parseInputValue(valueRaw: str, typ: str) -> Tuple[Any, Optional[str]]:
-	"""
-		returns (value, error)
-	"""
+def parseInputValue(valueRaw: str, typ: str) -> tuple[Any, str | None]:
+	"""Returns (value, error)."""
 	if typ == "xs:string":
 		return valueRaw, None
 	if typ == "xs:float":
@@ -448,8 +437,8 @@ def parseInputValue(valueRaw: str, typ: str) -> Tuple[Any, Optional[str]]:
 
 
 def updateOptionsDict(
-	options: Dict[str, List[Element]],
-	elemEptions: Dict[str, Element],
+	options: dict[str, list[Element]],
+	elemEptions: dict[str, Element],
 ):
 	for key, elem in elemEptions.items():
 		if key in options:
@@ -461,7 +450,7 @@ def updateOptionsDict(
 class VirtualDir:
 	def __init__(
 		self,
-		elems: List[Element],
+		elems: list[Element],
 		pathRel: str,
 		pathAbs: str,
 		parent: Optional["VirtualDir"],
@@ -480,7 +469,7 @@ class VirtualDir:
 		self.optionsMinimal = optionsMinimal  # type: Dict[str, List[Element]]
 
 
-class CLI():
+class CLI:
 	def __init__(self, resources: Element) -> None:
 		self._resources = resources
 		self._root = VirtualDir([resources], "", "/", None)
@@ -489,7 +478,7 @@ class CLI():
 		self._authToken = ""
 		self._urlParamByValue = {}
 
-	def init(self) -> Optional[str]:
+	def init(self) -> str | None:
 		auth, err = getAuth()
 		if err:
 			return err
@@ -497,6 +486,8 @@ class CLI():
 		if isfile(lastPathFile):
 			with open(lastPathFile) as f:
 				self.selectPathAbs(f.read().strip())
+				return None
+		return None
 
 	def setVirtualDir(self, new_vdir: VirtualDir) -> None:
 		self._cwd = new_vdir
@@ -539,23 +530,22 @@ class CLI():
 		self.setVirtualDir(new_vdir)
 
 		if len(new_vdir.optionsMinimal) == 1:
-			childPath, childElems = list(new_vdir.optionsMinimal.items())[0]
-			if len(childElems) == 1:
-				if elemIsAction(childElems[0]):
-					if self.selectPathRel(childPath):
-						self.selectVirtualDir(cur_vdir)
-						return True
+			childPath, childElems = next(iter(new_vdir.optionsMinimal.items()))
+			if len(childElems) == 1 and elemIsAction(childElems[0]):
+				if self.selectPathRel(childPath):
+					self.selectVirtualDir(cur_vdir)
+					return True
 
 		return True
 
-	def selectParentDir(self) -> Optional[str]: # returns error
+	def selectParentDir(self) -> str | None:  # returns error
 		if self._cwd.parent is None:
 			return f"no parent for {self._cwd.pathAbs!r}"
 
 		if not self.selectVirtualDir(self._cwd.parent):
 			return "failed to switch to parent"
 
-		return
+		return None
 
 	def selectPathAbs(self, pathAbs: str) -> True:
 		if not pathAbs.startswith("/"):
@@ -571,7 +561,7 @@ class CLI():
 		elems = self._cwd.options.get(pathRel, [])
 
 		if len(elems) > 1:
-			pass # FIXME
+			pass  # FIXME
 
 		parts = pathRel.rstrip("/").split("/")
 		if not elems and len(parts) > 1:
@@ -626,7 +616,9 @@ class CLI():
 			tmpElems = self._resources.xpath(f"//*[@id='{secondElemId}']")
 			if tmpElems:
 				if len(tmpElems) > 1:
-					print(f"Error: {len(tmpElems)} elements found with id='{secondElemId}'")
+					print(
+						f"Error: {len(tmpElems)} elements found with id='{secondElemId}'"
+					)
 				vdirElems += tmpElems
 			else:
 				print(f"Error: No element found with id='{secondElemId}'")
@@ -643,12 +635,12 @@ class CLI():
 		self,
 		requestElem: Element,
 		path: str,
-		data: Dict[str, Any],
-	) -> Optional[str]:
+		data: dict[str, Any],
+	) -> str | None:
 		"""
-			recursive function to ask all json/body parameters
-			updates `data` argument
-			returns error or None
+		recursive function to ask all json/body parameters
+		updates `data` argument
+		returns error or None.
 		"""
 		# FIXME: do we need the path
 		for child in requestElem.getchildren():
@@ -682,6 +674,7 @@ class CLI():
 					if err:
 						return err
 					data[name] = value
+		return None
 
 	# returns (responseDict, error)
 	# path argument ends with "/GET" or "/POST" or "/getUserInfo" for example
@@ -690,16 +683,16 @@ class CLI():
 		self,
 		elem: Element,
 		path: str,
-		data: Dict[str, Any],
-	) -> Tuple[Optional[Dict], str]:
+		data: dict[str, Any],
+	) -> tuple[dict | None, str]:
 		pathParts = path.split("/")
 		methodsDict = getMethodNamesDict(elem)
 		methodInput = pathParts[-1]
 		method = methodsDict.get(methodInput, None)
 		if not method:
 			return None, (
-				f"invalid method: {methodInput}, " +
-				f"available: {list(methodsDict.keys())}"
+				f"invalid method: {methodInput}, "
+				+ f"available: {list(methodsDict.keys())}"
 			)
 		url = baseURL + "/".join(pathParts[:-1])
 		kwargs = {
@@ -708,13 +701,12 @@ class CLI():
 		if method in ("PUT", "POST", "PATCH"):
 			kwargs["json"] = data
 			print(f"< Sending {method} request to {url} with json={data}")
+		elif data:
+			params = list(data.items())
+			kwargs["params"] = params
+			print(f"< Sending {method} request to {url} with params={params}")
 		else:
-			if data:
-				params = list(data.items())
-				kwargs["params"] = params
-				print(f"< Sending {method} request to {url} with params={params}")
-			else:
-				print(f"< Sending {method} request to {url}")
+			print(f"< Sending {method} request to {url}")
 		try:
 			res = requests.request(method, url, **kwargs)
 		except Exception as e:
@@ -726,27 +718,23 @@ class CLI():
 		err = ""
 		if isinstance(resData, dict):
 			err = resData.get("error", "")
-		if not err:
-			if path == "/auth/logout/POST":
-				deleteSavedToken(self._email)
-				# FIXME: should we clear self._authToken and ask user to login again?
+		if not err and path == "/auth/logout/POST":
+			deleteSavedToken(self._email)
+			# FIXME: should we clear self._authToken and ask user to login again?
 
 		return resData, err
 
 	def currentHistoryPath(self) -> str:
 		pathAbs = self._cwd.pathAbs
-		if pathAbs == "/":
-			fname = "root"
-		else:
-			fname = pathAbs.strip("/").replace("/", "_")
+		fname = "root" if pathAbs == "/" else pathAbs.strip("/").replace("/", "_")
 		return join(histDir, fname)
 
 	def paramHistoryPath(self, name: str) -> str:
 		return join(histDir, f"param-{name}")
 
-	def runcmd(self, line) -> Optional[str]: # returns error
+	def runcmd(self, line) -> str | None:  # returns error
 		if not line:
-			return
+			return None
 		# print("runcmd:", line)
 		line = line.strip()
 
@@ -754,10 +742,10 @@ class CLI():
 			return self.selectParentDir()
 
 		if self.selectPath(line):
-			return
+			return None
 
 		if self.selectPath(line + "/"):
-			return
+			return None
 
 		return f"invalid option: {line}"
 
@@ -768,7 +756,7 @@ class CLI():
 	def cmdloop(self):
 		while True:
 			completer = WordCompleter(
-				[key for key in self._cwd.options],
+				list(self._cwd.options),
 				ignore_case=False,
 			)
 			try:
@@ -787,7 +775,7 @@ class CLI():
 
 
 resources = doc.getchildren()[0]
-assert(getElemTag(resources) == "resources")
+assert getElemTag(resources) == "resources"
 
 
 cli = CLI(resources)

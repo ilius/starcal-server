@@ -1,30 +1,27 @@
 #!/usr/bin/python3
-"""
-argv[1]: groupId, optional
-"""
+"""argv[1]: groupId, optional."""
 
-import sys
+import json
 import os
-import requests
-
-from pprint import pprint
-from datetime import datetime, timedelta
+import sys
 import time
-from time import strftime, gmtime 
+from pprint import pprint
+from time import gmtime, strftime
+
+import requests
 
 timeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
 nowEpoch = int(time.time())
-#nowDt = datetime.now()
+# nowDt = datetime.now()
 
 params = {
-	#"eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
+	# "eventId": "57d5e9fee576da5246cbe122",# must show: "you can't specify 'eventId'"
 	"timeZone": "Asia/Tehran",
 	"calType": "jalali",
 	"summary": "task 1",
 	"description": "desc 1",
 	"icon": "task.png",
-
 	"startTime": strftime(timeFormat, gmtime(nowEpoch)),
 	"endTime": strftime(timeFormat, gmtime(nowEpoch - 3600)),
 	"durationUnit": 0,
@@ -50,7 +47,7 @@ r = requests.post(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

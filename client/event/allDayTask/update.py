@@ -1,17 +1,14 @@
 #!/usr/bin/python3
-"""
-argv[1]: eventId
-"""
+"""argv[1]: eventId."""
 
-import sys
+import json
 import os
-import requests
-
-from pprint import pprint
-from datetime import datetime, timedelta
-import time
-from time import strftime, gmtime
 import random
+import sys
+from datetime import datetime
+from pprint import pprint
+
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -29,7 +26,6 @@ params = {
 	"summary": "task 1",
 	"description": "desc 1",
 	"icon": "task.png",
-
 	"startJd": todayJd,
 	"endJd": todayJd + random.randint(1, 5),
 	"durationEnable": False,
@@ -43,7 +39,7 @@ r = requests.put(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

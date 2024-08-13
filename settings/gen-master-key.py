@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-import os
 import binascii
+import os
 
 # length can be 16, 24 or 32
 length = 32

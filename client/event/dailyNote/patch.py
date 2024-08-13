@@ -1,16 +1,13 @@
 #!/usr/bin/python3
-"""
-argv[1]: eventId
-"""
+"""argv[1]: eventId."""
 
-import sys
+import json
 import os
-import requests
-
+import sys
+from datetime import datetime
 from pprint import pprint
-from datetime import datetime, timedelta
-import time
-from time import strftime, gmtime
+
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -28,8 +25,7 @@ params = {
 	"summary": "note patched",
 	"description": "desc patched",
 	"icon": "note-patched.png",
-
-	"jd": todayJd-2,
+	"jd": todayJd - 2,
 }
 
 r = requests.patch(
@@ -40,7 +36,7 @@ r = requests.patch(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 """
 argv[1]: groupId
-argv[2]: sinceDateTime
+argv[2]: sinceDateTime.
 """
 
-import sys
+import json
 import os
-import requests
-
-from pprint import pprint
+import sys
 from datetime import datetime
+from pprint import pprint
+
+import requests
 from dateutil.parser import parse as parseDatetime
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
@@ -22,11 +23,11 @@ groupId, sinceDateTimeInput = sys.argv[1:3]
 
 try:
 	sinceDateTime = datetime.strptime(sinceDateTimeInput, "%Y-%m-%dT%H:%M:%SZ")
-except:
+except json.decoder.JSONDecodeError:
 	sinceDateTime = parseDatetime(sinceDateTimeInput)
 
 sinceDateTimeStr = sinceDateTime.isoformat()
-if not "Z" in sinceDateTimeStr:
+if "Z" not in sinceDateTimeStr:
 	sinceDateTimeStr += "Z"
 print("sinceDateTimeStr =", sinceDateTimeStr)
 
@@ -36,13 +37,13 @@ limit = 100
 baseUrl = f"http://{host}:9001/event/groups/{groupId}/moved-events/{sinceDateTimeStr}/"
 
 r = requests.get(
-	baseUrl + "?limit=%d"%limit,
+	baseUrl + "?limit=%d" % limit,
 	headers={"Authorization": "bearer " + token},
 )
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("data is not json")
 	print(r.text)
 else:
@@ -52,4 +53,4 @@ else:
 	else:
 		pprint(data, width=80)
 		# for event in data["movedEvents"]:
-		#	print(event["time"])
+		# print(event["time"])

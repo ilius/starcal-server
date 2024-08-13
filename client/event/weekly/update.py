@@ -1,17 +1,14 @@
 #!/usr/bin/python3
-"""
-argv[1]: eventId
-"""
+"""argv[1]: eventId."""
 
-import sys
+import json
 import os
-import requests
-
-from pprint import pprint
-from datetime import datetime, timedelta
-import time
-from time import strftime, gmtime
 import random
+import sys
+from datetime import datetime
+from pprint import pprint
+
+import requests
 
 host = os.getenv("STARCAL_HOST", "127.0.0.1")
 token = os.getenv("STARCAL_TOKEN")
@@ -22,7 +19,7 @@ if not token:
 eventId = sys.argv[1]
 
 todayJd = datetime.now().toordinal() + 1721425
-dayStartSeconds = random.randint(0, 24*3600-1)
+dayStartSeconds = random.randint(0, 24 * 3600 - 1)
 
 params = {
 	"timeZone": "Asia/Tehran",
@@ -30,9 +27,8 @@ params = {
 	"summary": "weekly event 1",
 	"description": "desc 1",
 	"icon": "",
-
 	"startJd": todayJd - 365,
-	"endJd": todayJd + 2*365,
+	"endJd": todayJd + 2 * 365,
 	"cycleWeeks": random.randint(1, 4),
 	"dayStartSeconds": dayStartSeconds,
 	"dayEndSeconds": dayStartSeconds + 3600,
@@ -46,7 +42,7 @@ r = requests.put(
 print(r)
 try:
 	data = r.json()
-except:
+except json.decoder.JSONDecodeError:
 	print("non-json data")
 	print(r.text)
 else:

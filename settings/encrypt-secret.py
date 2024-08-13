@@ -4,16 +4,16 @@ import os
 import sys
 
 try:
-	import Crypto
-except:
+	import Crypto  # noqa: F401
+except ImportError:
 	print("Crypto module was not found, try: sudo pip3 install PyCrypto")
 	sys.exit(1)
 
-from Crypto.Cipher import AES
-from Crypto import Random
 import binascii
-
 from base64 import b64encode
+
+from Crypto import Random
+from Crypto.Cipher import AES
 
 masterKeyHex = os.getenv("MASTER_KEY")
 if not masterKeyHex:
@@ -28,7 +28,7 @@ secret = sys.stdin.readline()
 secret = secret.rstrip("\n")
 print(repr(secret))
 
-toAppendBytes = 15 - (len(secret)-1) % 16
+toAppendBytes = 15 - (len(secret) - 1) % 16
 if toAppendBytes > 0:
 	secret = secret + "\x00" * toAppendBytes
 
