@@ -7,7 +7,7 @@ import (
 	"github.com/ilius/starcal-server/pkg/scal/settings"
 
 	jwt "github.com/golang-jwt/jwt/v5"
-	"github.com/ilius/is"
+	"github.com/ilius/is/v2"
 	"github.com/ilius/libgostarcal/utils"
 	"github.com/ilius/ripo"
 )

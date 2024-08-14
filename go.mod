@@ -7,7 +7,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/golang/mock v1.6.0
 	github.com/hhkbp2/go-logging v0.3.7
-	github.com/ilius/is v1.1.2
+	github.com/ilius/is/v2 v2.4.0
 	github.com/ilius/libgostarcal v1.0.0
 	github.com/ilius/mgo v0.0.0-20210523222948-287f01f7db87
 	github.com/ilius/ripo v0.0.0-20240224234150-1ad83b3e1b4e

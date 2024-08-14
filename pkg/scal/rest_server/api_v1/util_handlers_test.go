@@ -3,7 +3,7 @@ package api_v1
 import (
 	"testing"
 
-	"github.com/ilius/is"
+	"github.com/ilius/is/v2"
 	. "github.com/ilius/ripo"
 )
 

@@ -10,7 +10,7 @@ import (
 	"github.com/ilius/starcal-server/pkg/scal/user_lib"
 
 	"github.com/golang/mock/gomock"
-	"github.com/ilius/is"
+	"github.com/ilius/is/v2"
 	"github.com/ilius/libgostarcal/utils"
 	"github.com/ilius/mgo/bson"
 	. "github.com/ilius/ripo"
