@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # DO NOT USE DJANGO OR ANY EXTERNAL LIBRARIES IN THIS SCRIPT
 
 import json
@@ -34,8 +33,8 @@ print(f"Generating settings based on: STARCAL_HOST = {hostName!r}")
 if not hostName:
 	raise ValueError(
 		"Set (and export) environment varibale `STARCAL_HOST` "
-		+ "before running this script\n"
-		+ "For example: export STARCAL_HOST=localhost",
+		"before running this script\n"
+		"For example: export STARCAL_HOST=localhost",
 	)
 
 
@@ -134,13 +133,13 @@ def encodeGoValue(v) -> tuple[str, str]:
 	t = type(v)
 	if t == str:
 		return "string", json.dumps(v)
-	elif t == int:
+	if t == int:
 		return "int", str(v)
-	elif t == float:
+	if t == float:
 		return "float64", str(v)
-	elif t == bool:
+	if t == bool:
 		return "bool", json.dumps(v)
-	elif isinstance(v, GoExpr):
+	if isinstance(v, GoExpr):
 		return v.getGoType(), v.getExpr()
 	return "", str(v)
 

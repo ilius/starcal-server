@@ -21,8 +21,9 @@ if not token:
 
 groupId, sinceDateTimeInput = sys.argv[1:3]
 
+# TODO: use dateutil.parser.parse
 try:
-	sinceDateTime = datetime.strptime(sinceDateTimeInput, "%Y-%m-%dT%H:%M:%SZ")
+	sinceDateTime = datetime.strptime(sinceDateTimeInput, "%Y-%m-%dT%H:%M:%SZ")  # noqa: DTZ007
 except json.decoder.JSONDecodeError:
 	sinceDateTime = parseDatetime(sinceDateTimeInput)
 

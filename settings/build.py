@@ -6,7 +6,21 @@ import os
 import sys
 from os.path import isdir, isfile, join
 
-from build_common import *
+from build_common import (
+	GoExpr,
+	defaults,
+	encodeGoValue,
+	goBuildAndExit,
+	goSettingsDir,
+	goSettingsFile,
+	goZeroValueByType,
+	hostGlobalsCommon,
+	hostMetaParams,
+	hostName,
+	myDir,
+	prompt,
+	secretSettingsParams,
+)
 
 interactive = "--interactive" in sys.argv
 
@@ -63,8 +77,8 @@ for param, value in hostGlobals.items():
 	if valueTypeActual != valueTypeExpected:
 		raise ValueError(
 			f"invalid type for parameter {param!r}, "
-			+ f"must be {valueTypeExpected.__name__}, "
-			+ f"not {valueTypeActual.__name__}"
+			f"must be {valueTypeExpected.__name__}, "
+			f"not {valueTypeActual.__name__}"
 		)
 	settingsDict[param] = value
 
@@ -85,8 +99,8 @@ for param, value in settingsDict.items():
 		else:
 			sys.stderr.write(
 				f"{param} can not be empty\n"
-				+ f"Set (and export) environment variable STARCAL_{param}\n"
-				+ f"Or define {param} in host settings file\n"
+				f"Set (and export) environment variable STARCAL_{param}\n"
+				f"Or define {param} in host settings file\n"
 			)
 			sys.exit(1)
 

@@ -184,7 +184,7 @@ def getSavedToken(email: str) -> str | None:
 	if exp - timedelta(minutes=5) < datetime.now(tz=localTZ):
 		print(
 			f"Saved token in {tokenPath} is expired"
-			+ f" or about to be expired on {exp}"
+			f" or about to be expired on {exp}"
 		)
 		return None
 	return token
@@ -281,15 +281,15 @@ def elemRepr(elem) -> str:
 	tag = getElemTag(elem)
 	if tag == "resource":
 		return elemPath(elem)
-	elif tag == "method":
+	if tag == "method":
 		return elemName(elem) + f" ({elemID(elem)})"
-	elif tag in ("param", "element"):
+	if tag in ("param", "element"):
 		return elemName(elem) + f" (type={elemID(elem)})"
-	elif tag == "item":
+	if tag == "item":
 		return f"(type={elemType(elem)})"
-	elif tag == "option":
+	if tag == "option":
 		return elemValue(elem)
-	elif tag == "representation":
+	if tag == "representation":
 		return ""
 	return tag
 
@@ -316,11 +316,11 @@ def printElem(elem: Element, level: int):
 
 
 def nonEmptyStrings(*args) -> list[str]:
-	ls = []  # type: List[str]
-	for x in args:
-		if x:
-			ls.append(x)
-	return ls
+	return [
+		x
+		for x in args
+		if x
+	]
 
 
 def elemKeys(elem, parentElem) -> str:
@@ -328,21 +328,21 @@ def elemKeys(elem, parentElem) -> str:
 	tag = getElemTag(elem)
 	if tag == "resource":
 		return nonEmptyStrings(elem.get("path", None))
-	elif tag in ("method", "element"):
+	if tag in ("method", "element"):
 		return nonEmptyStrings(elem.get("name", None), elem.get("id", None))
-	elif tag == "param":
+	if tag == "param":
 		if getElemTag(parentElem) == "resource":
 			return []
 		return nonEmptyStrings(elem.get("name", None), elem.get("id", None))
-	# elif tag == "item":
+	# if tag == "item":
 	# 	return [] # FIXME
-	# elif tag == "option":
+	# if tag == "option":
 	# 	return nonEmptyStrings(elem.get("value", None))
-	elif tag == "representation":
+	if tag == "representation":
 		return []
-	else:
-		return []
-		# print("elemPath", prefix)
+
+	return []
+	# print("elemPath", prefix)
 
 
 # returns (options, optionsMinimal)
@@ -510,7 +510,7 @@ class CLI:
 
 			requestElems = elem.xpath("*[local-name() = 'request']")
 			if requestElems:
-				err = self.askJsonParams(requestElems[0], pathAbs, data)
+				err = self.askJsonParams(requestElems[0], data)
 				if err:
 					print("< ERROR:", err)
 					return True
@@ -531,7 +531,7 @@ class CLI:
 
 		if len(new_vdir.optionsMinimal) == 1:
 			childPath, childElems = next(iter(new_vdir.optionsMinimal.items()))
-			if len(childElems) == 1 and elemIsAction(childElems[0]):
+			if len(childElems) == 1 and elemIsAction(childElems[0]):  # noqa: SIM102
 				if self.selectPathRel(childPath):
 					self.selectVirtualDir(cur_vdir)
 					return True
@@ -553,7 +553,7 @@ class CLI:
 		self.selectRoot()
 		self.selectPathRel(pathAbs[1:])
 
-	def selectPathRel(self, pathRel: str) -> True:
+	def selectPathRel(self, pathRel: str) -> True:  # noqa: C901, PLR0912
 		# print(f"selectPathRel: {pathRel!r}")
 		if pathRel.startswith("/"):
 			raise RuntimeError(f"selectPathRel: invalid pathRel={pathRel!r}")
@@ -617,7 +617,8 @@ class CLI:
 			if tmpElems:
 				if len(tmpElems) > 1:
 					print(
-						f"Error: {len(tmpElems)} elements found with id='{secondElemId}'"
+						f"Error: {len(tmpElems)} elements found "
+						f"with id='{secondElemId}'"
 					)
 				vdirElems += tmpElems
 			else:
@@ -634,7 +635,6 @@ class CLI:
 	def askJsonParams(
 		self,
 		requestElem: Element,
-		path: str,
 		data: dict[str, Any],
 	) -> str | None:
 		"""
@@ -642,7 +642,6 @@ class CLI:
 		updates `data` argument
 		returns error or None.
 		"""
-		# FIXME: do we need the path
 		for child in requestElem.getchildren():
 			t = getElemTag(child)
 			if t == "param":
@@ -692,7 +691,7 @@ class CLI:
 		if not method:
 			return None, (
 				f"invalid method: {methodInput}, "
-				+ f"available: {list(methodsDict.keys())}"
+				f"available: {list(methodsDict.keys())}"
 			)
 		url = baseURL + "/".join(pathParts[:-1])
 		kwargs = {

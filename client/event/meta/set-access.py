@@ -27,8 +27,10 @@ r = requests.put(
 	json={
 		"isPublic": False,
 		"accessEmails": accessEmails,
-		"publicJoinOpen": False,  # used for public events, just pass False for non-public events
-		"maxAttendees": 0,  # used for public events, 0 means Unlimited
+		"publicJoinOpen": False,
+		# ^ used for public events, just pass False for non-public events
+		"maxAttendees": 0,
+		# ^ used for public events, 0 means Unlimited
 	},
 )
 print(r)

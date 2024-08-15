@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 import os
 
 OS = ""  # "linux", "freebsd", "darwin", "android", ...
@@ -8,7 +7,8 @@ ARCH = ""  # "amd64", "386", "arm64", "arm", ...
 KEEP_SETTINGS_GO = False
 
 LOG_LEVEL = "DEBUG"
-# allowed values for LOG_LEVEL: "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "NOTSET"
+# allowed values for LOG_LEVEL: "FATAL", "ERROR", "WARN", "INFO",
+# "DEBUG", "TRACE", "NOTSET"
 
 LOG_FORMAT = "%(asctime)s %(levelname)s: %(name)s: %(filename)s:%(lineno)d: %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%3n"
@@ -24,7 +24,8 @@ JWT_ALG = "HS256"
 RESET_PASSWORD_TOKEN_LENGTH = 32
 RESET_PASSWORD_EXP_SECONDS = 30 * 60
 RESET_PASSWORD_REJECT_SECONDS = 60
-RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE = """You or someone else has requested a password reset for your StarCalendar account (on {{.Host}})
+RESET_PASSWORD_TOKEN_EMAIL_TEMPLATE = \
+"""You or someone else has requested a password reset for your StarCalendar account (on {{.Host}})
 
 If it was you, you can use the following token to reset your password:
 Reset Password Token: {{.Token}}
