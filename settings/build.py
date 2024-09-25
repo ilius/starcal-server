@@ -93,7 +93,7 @@ def askForParam(param: str) -> None:
 
 
 for param, value in settingsDict.items():
-	if "SECRET" in param and value == "":
+	if "SECRET" in param and not value:
 		if interactive:
 			askForParam(param)
 		else:
@@ -234,7 +234,7 @@ printFunc = "func PrintSettings() {\n" + "\n".join(printLines) + "\n}"
 
 if not isdir(goSettingsDir):
 	os.mkdir(goSettingsDir)
-with open(goSettingsFile, "w") as goFp:
+with open(goSettingsFile, "w", encoding="utf-8") as goFp:
 	goFp.write(f"""// This is an auto-generated code. DO NOT MODIFY
 package settings
 {importBlock}

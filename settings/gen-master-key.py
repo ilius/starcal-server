@@ -8,4 +8,4 @@ length = 32
 
 print(binascii.hexlify(os.urandom(length)).decode())
 
-## In Python 3.6 you can use secrets.token_hex(length)
+# In Python 3.6 you can use secrets.token_hex(length)

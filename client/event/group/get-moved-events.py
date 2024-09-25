@@ -38,7 +38,7 @@ limit = 100
 baseUrl = f"http://{host}:9001/event/groups/{groupId}/moved-events/{sinceDateTimeStr}/"
 
 r = requests.get(
-	baseUrl + "?limit=%d" % limit,
+	f"{baseUrl}?limit={limit}",
 	headers={"Authorization": "bearer " + token},
 )
 print(r)

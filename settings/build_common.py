@@ -98,7 +98,7 @@ def passwordStore(*args) -> str:
 	from subprocess import PIPE, Popen
 
 	cmd = Popen(["pass"] + list(args), stdout=PIPE)
-	stdout, stderr = cmd.communicate()
+	stdout, _stderr = cmd.communicate()
 	return stdout.decode("utf-8").strip().split("\n")[-1]
 
 

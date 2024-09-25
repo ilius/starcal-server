@@ -30,7 +30,7 @@ print(repr(secret))
 
 toAppendBytes = 15 - (len(secret) - 1) % 16
 if toAppendBytes > 0:
-	secret = secret + "\x00" * toAppendBytes
+	secret += "\x00" * toAppendBytes
 
 iv = Random.new().read(AES.block_size)
 cipher = AES.new(masterKey, AES.MODE_CBC, iv)

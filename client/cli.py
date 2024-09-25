@@ -41,7 +41,7 @@ if not host:
 
 	host = socket.gethostname()
 
-secure = os.getenv("STARCAL_HOST_SECURE", "") != ""
+secure = os.getenv("STARCAL_HOST_SECURE") == "1"
 
 port = "9001"
 
@@ -53,7 +53,7 @@ print("< Base URL:", baseURL)
 
 myDir = dirname(__file__)
 cwd = os.getcwd()
-if myDir in (".", ""):
+if myDir in {".", ""}:
 	myDir = cwd
 elif os.sep == "/":
 	if myDir.startswith("./"):
@@ -123,6 +123,10 @@ def prompt(
 	return text
 
 
+def paramHistoryPath(name: str) -> str:
+	return join(histDir, f"param-{name}")
+
+
 def getEmail() -> str:
 	email = os.getenv("STARCAL_EMAIL")
 	if email:
@@ -168,7 +172,7 @@ def getSavedToken(email: str) -> str | None:
 	if not isfile(tokenPath):
 		print("Token file does not exist:", tokenPath)
 		return None
-	with open(tokenPath) as tokenFile:
+	with open(tokenPath, encoding="utf-8") as tokenFile:
 		tokenJson = tokenFile.read()
 	tokenDict = json.loads(tokenJson)
 	# print(tokenDict)
@@ -240,7 +244,7 @@ def getAuth() -> tuple[tuple[str, str] | None, str | None]:
 		return None, "login returned no expiration"
 
 	tokenPath = join(tokenDir, email)
-	with open(tokenPath, "w") as tokenFile:
+	with open(tokenPath, "w", encoding="utf-8") as tokenFile:
 		json.dump(
 			{
 				"token": token,
@@ -283,7 +287,7 @@ def elemRepr(elem) -> str:
 		return elemPath(elem)
 	if tag == "method":
 		return elemName(elem) + f" ({elemID(elem)})"
-	if tag in ("param", "element"):
+	if tag in {"param", "element"}:
 		return elemName(elem) + f" (type={elemID(elem)})"
 	if tag == "item":
 		return f"(type={elemType(elem)})"
@@ -301,7 +305,7 @@ def printElem(elem: Element, level: int):
 		print(f"{prefix}: {elemPath(elem)}")
 	elif tag == "method":
 		print(f"{prefix}: {elemName(elem)} ({elemID(elem)})")
-	elif tag in ("param", "element"):
+	elif tag in {"param", "element"}:
 		print(f"{prefix}: {elemName(elem)} (type={elemType(elem)})")
 	elif tag == "item":
 		print(f"{prefix} (type={elemType(elem)})")
@@ -328,7 +332,7 @@ def elemKeys(elem, parentElem) -> str:
 	tag = getElemTag(elem)
 	if tag == "resource":
 		return nonEmptyStrings(elem.get("path", None))
-	if tag in ("method", "element"):
+	if tag in {"method", "element"}:
 		return nonEmptyStrings(elem.get("name", None), elem.get("id", None))
 	if tag == "param":
 		if getElemTag(parentElem) == "resource":
@@ -428,9 +432,9 @@ def parseInputValue(valueRaw: str, typ: str) -> tuple[Any, str | None]:
 			return None, f"invalid int value {valueRaw!r}"
 	if typ == "xs:boolean":
 		valueRaw = valueRaw.lower()
-		if valueRaw in ("true", "t"):
+		if valueRaw in {"true", "t"}:
 			return True, None
-		if valueRaw in ("false", "f"):
+		if valueRaw in {"false", "f"}:
 			return False, None
 		return None, f"invalid boolean value {valueRaw!r}"
 	return None, f"unsupported type {typ!r}"
@@ -484,7 +488,7 @@ class CLI:
 			return err
 		self._email, self._authToken = auth
 		if isfile(lastPathFile):
-			with open(lastPathFile) as f:
+			with open(lastPathFile, encoding="utf-8") as f:
 				self.selectPathAbs(f.read().strip())
 				return None
 		return None
@@ -590,13 +594,13 @@ class CLI:
 				try:
 					value = prompt(
 						f"> URL Parameter: {name} = ",
-						history=FileHistory(self.paramHistoryPath(name)),
+						history=FileHistory(paramHistoryPath(name)),
 						auto_suggest=AutoSuggestFromHistory(),
 						# completer=completer,
 					)
 				except KeyboardInterrupt:
 					return False
-				if value == "":
+				if not value:
 					print(f"ERROR: {name} can not be empty")
 					return False
 				formatDict[name] = value
@@ -632,8 +636,8 @@ class CLI:
 			return self.selectPathAbs(path)
 		return self.selectPathRel(path)
 
+	@staticmethod
 	def askJsonParams(
-		self,
 		requestElem: Element,
 		data: dict[str, Any],
 	) -> str | None:
@@ -657,7 +661,7 @@ class CLI:
 				multiline = child.get("multiline", "") == "true"
 				history = None
 				if child.get("secret", "") != "true":
-					history = FileHistory(self.paramHistoryPath(name))
+					history = FileHistory(paramHistoryPath(name))
 				try:
 					valueRaw = prompt(
 						f"> Parameter: {name} = ",
@@ -668,7 +672,7 @@ class CLI:
 					)
 				except KeyboardInterrupt:
 					return "Canceled"
-				if valueRaw != "":
+				if not valueRaw:
 					value, err = parseInputValue(valueRaw, typ)
 					if err:
 						return err
@@ -697,7 +701,7 @@ class CLI:
 		kwargs = {
 			"headers": {"Authorization": "bearer " + self._authToken},
 		}
-		if method in ("PUT", "POST", "PATCH"):
+		if method in {"PUT", "POST", "PATCH"}:
 			kwargs["json"] = data
 			print(f"< Sending {method} request to {url} with json={data}")
 		elif data:
@@ -728,9 +732,6 @@ class CLI:
 		fname = "root" if pathAbs == "/" else pathAbs.strip("/").replace("/", "_")
 		return join(histDir, fname)
 
-	def paramHistoryPath(self, name: str) -> str:
-		return join(histDir, f"param-{name}")
-
 	def runcmd(self, line) -> str | None:  # returns error
 		if not line:
 			return None
@@ -749,7 +750,7 @@ class CLI:
 		return f"invalid option: {line}"
 
 	def finish(self):
-		with open(lastPathFile, "w") as f:
+		with open(lastPathFile, "w", encoding="utf-8") as f:
 			f.write(self._cwd.pathAbs)
 
 	def cmdloop(self):
