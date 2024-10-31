@@ -76,10 +76,13 @@ func (m *MongoPipelines) MatchGreaterThan(key string, value any) {
 	}
 }
 
+// FIXME: this seemed to be broken and I didn't know! make sure to test it
 func (m *MongoPipelines) NewMatchGreaterThan(key string, value any) {
 	m.pipelines = append(m.pipelines, scal.M{
 		"$match": scal.M{
-			"$gt": value,
+			key: scal.M{
+				"$gt": value,
+			},
 		},
 	})
 }

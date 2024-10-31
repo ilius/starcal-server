@@ -199,7 +199,8 @@ func AdminCheckAuth(req rp.Request) (*user_lib.UserModel, error) {
 	return userModel, nil
 }
 
-func GetPasswordHash(email string, password string) (string, error) {
+// first arg is email, will we need it or should I remove it?
+func GetPasswordHash(_ string, password string) (string, error) {
 	return unchained.MakePassword(
 		password,
 		"", // BCrypt does not take salt as input
@@ -207,7 +208,8 @@ func GetPasswordHash(email string, password string) (string, error) {
 	)
 }
 
-func CheckPasswordHash(email string, password string, pwHash string) bool {
+// first arg is email, will we need it or should I remove it?
+func CheckPasswordHash(_ string, password string, pwHash string) bool {
 	valid, err := unchained.CheckPassword(
 		password,
 		pwHash,

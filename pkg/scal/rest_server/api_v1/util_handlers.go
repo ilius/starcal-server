@@ -19,7 +19,7 @@ func init() {
 	})
 }
 
-func GetApiVersion(req ripo.Request) (*ripo.Response, error) {
+func GetApiVersion(_ ripo.Request) (*ripo.Response, error) {
 	header := http.Header{}
 	header.Set("Content-Type", "text/plain; charset=UTF-8")
 	return &ripo.Response{
