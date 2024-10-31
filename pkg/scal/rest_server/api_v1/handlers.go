@@ -929,7 +929,7 @@ func getMyEventsFullData(db storage.Database, email string, pageOpts *scal.PageO
 	pipeline.Lookup(storage.C_eventData, "lastSha1", "sha1", "data")
 	pipeline.Unwind("data")
 
-	return GetEventMetaPipeResults(db, pipeline, []string{
+	return GetEventMetaPipeResults(pipeline, []string{
 		"ownerEmail",
 		"isPublic",
 		"creationTime",

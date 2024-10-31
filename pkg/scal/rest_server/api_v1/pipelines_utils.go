@@ -4,11 +4,9 @@ import (
 	"fmt"
 
 	"github.com/ilius/starcal-server/pkg/scal"
-	"github.com/ilius/starcal-server/pkg/scal/storage"
 )
 
 func GetEventMetaPipeResults(
-	db storage.Database,
 	pipelines *MongoPipelines,
 	metaKeys []string,
 ) ([]scal.M, error) {

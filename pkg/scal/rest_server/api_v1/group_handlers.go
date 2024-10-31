@@ -461,7 +461,7 @@ func GetGroupEventListWithSha1(req rp.Request) (*rp.Response, error) {
 		AddFromFirst("eventType", "eventType").
 		AddFromFirst("revision.sha1", "lastSha1")
 
-	results, err := GetEventMetaPipeResults(db, pipeline, nil)
+	results, err := GetEventMetaPipeResults(pipeline, nil)
 	if err != nil {
 		return nil, rp.NewError(rp.Internal, "", err)
 	}
@@ -541,7 +541,7 @@ func GetGroupModifiedEvents(req rp.Request) (*rp.Response, error) {
 	pipeline.Lookup(storage.C_eventData, "lastSha1", "sha1", "data")
 	pipeline.Unwind("data")
 
-	results, err := GetEventMetaPipeResults(db, pipeline, []string{
+	results, err := GetEventMetaPipeResults(pipeline, []string{
 		"ownerEmail",
 		"isPublic",
 		"creationTime",
