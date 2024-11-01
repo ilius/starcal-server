@@ -142,7 +142,7 @@ func (model BaseEventModel) GetBaseEvent() (BaseEvent, error) {
 		return BaseEvent{}, err2
 	}
 	return BaseEvent{
-		id: string(model.Id),
+		id: model.Id,
 		// ownerEmail: model.OwnerEmail,
 		loc:         loc,
 		locEnable:   locEnable,
