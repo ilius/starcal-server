@@ -18,7 +18,7 @@ require (
 require (
 	github.com/hhkbp2/go-strftime v0.0.0-20150709091403-d82166ec6782 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	golang.org/x/crypto v0.19.0 // indirect
-	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
