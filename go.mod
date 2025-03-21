@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/alexandrevicenzi/unchained v1.3.0
-	github.com/golang-jwt/jwt/v5 v5.2.0
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/golang/mock v1.6.0
 	github.com/hhkbp2/go-logging v0.3.7
 	github.com/ilius/is/v2 v2.4.0
