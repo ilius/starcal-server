@@ -1,6 +1,7 @@
 module github.com/ilius/starcal-server
 
-go 1.22
+go 1.24.0
+
 toolchain go1.24.1
 
 require (
@@ -19,7 +20,7 @@ require (
 require (
 	github.com/hhkbp2/go-strftime v0.0.0-20150709091403-d82166ec6782 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	golang.org/x/crypto v0.35.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
