@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/alexandrevicenzi/unchained v1.3.0
-	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/golang/mock v1.6.0
 	github.com/hhkbp2/go-logging v0.3.7
 	github.com/ilius/is/v2 v2.4.0
@@ -18,7 +18,7 @@ require (
 require (
 	github.com/hhkbp2/go-strftime v0.0.0-20150709091403-d82166ec6782 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	golang.org/x/crypto v0.52.0 // indirect
-	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
